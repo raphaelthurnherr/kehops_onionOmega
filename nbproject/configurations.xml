@@ -1,0 +1,1281 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configurationDescriptor version="100">
+  <logicalFolder name="root" displayName="root" projectFiles="true" kind="ROOT">
+    <logicalFolder name="HeaderFiles"
+                   displayName="Header Files"
+                   projectFiles="true">
+      <itemPath>algobotManager.sh.h</itemPath>
+      <itemPath>asyncTools/asyncLED.h</itemPath>
+      <itemPath>asyncTools/asyncMOTOR.h</itemPath>
+      <itemPath>asyncTools/asyncSTEPPER.h</itemPath>
+      <itemPath>asyncTools/asyncTools.h</itemPath>
+      <itemPath>AlgoidCom/type.h</itemPath>
+    </logicalFolder>
+    <logicalFolder name="ResourceFiles"
+                   displayName="Resource Files"
+                   projectFiles="true">
+    </logicalFolder>
+    <logicalFolder name="SourceFiles"
+                   displayName="Source Files"
+                   projectFiles="true">
+      <logicalFolder name="actuatorsDriver"
+                     displayName="actuatorsDriver"
+                     projectFiles="true">
+        <itemPath>actuatorsDriver/asnycLED.c</itemPath>
+        <itemPath>actuatorsDriver/asyncLED.h</itemPath>
+        <itemPath>actuatorsDriver/asyncMOTOR.c</itemPath>
+        <itemPath>actuatorsDriver/asyncMOTOR.h</itemPath>
+        <itemPath>actuatorsDriver/asyncPWM.c</itemPath>
+        <itemPath>actuatorsDriver/asyncPWM.h</itemPath>
+        <itemPath>actuatorsDriver/asyncSERVO.c</itemPath>
+        <itemPath>actuatorsDriver/asyncSERVO.h</itemPath>
+        <itemPath>actuatorsDriver/asyncSTEPPER.c</itemPath>
+        <itemPath>actuatorsDriver/asyncSTEPPER.h</itemPath>
+        <itemPath>actuatorsDriver/asyncTools.c</itemPath>
+        <itemPath>actuatorsDriver/asyncTools.h</itemPath>
+      </logicalFolder>
+      <logicalFolder name="hwControl" displayName="hwControl" projectFiles="true">
+        <logicalFolder name="libs" displayName="libs" projectFiles="true">
+          <logicalFolder name="i2c" displayName="i2c" projectFiles="true">
+            <itemPath>hwControl/libs/i2c/onion-i2c.c</itemPath>
+            <itemPath>hwControl/libs/i2c/onion-i2c.h</itemPath>
+          </logicalFolder>
+          <logicalFolder name="onion-debug" displayName="onion-debug" projectFiles="true">
+            <itemPath>hwControl/libs/onion-debug/onion-debug.c</itemPath>
+            <itemPath>hwControl/libs/onion-debug/onion-debug.h</itemPath>
+          </logicalFolder>
+        </logicalFolder>
+        <itemPath>hwControl/boardHWctrl.c</itemPath>
+        <itemPath>hwControl/boardHWctrl.h</itemPath>
+        <itemPath>hwControl/boardHWsimu.c</itemPath>
+        <itemPath>hwControl/boardHWsimu.h</itemPath>
+        <itemPath>hwControl/hwManager.c</itemPath>
+        <itemPath>hwControl/hwManager.h</itemPath>
+      </logicalFolder>
+      <logicalFolder name="kehopsCom" displayName="kehopsCom" projectFiles="true">
+        <logicalFolder name="libs" displayName="libs" projectFiles="true">
+          <logicalFolder name="lib_json" displayName="lib_json" projectFiles="true">
+            <itemPath>kehopsCom/libs/lib_json/jRead.c</itemPath>
+            <itemPath>kehopsCom/libs/lib_json/jRead.h</itemPath>
+            <itemPath>kehopsCom/libs/lib_json/jWrite.c</itemPath>
+            <itemPath>kehopsCom/libs/lib_json/jWrite.h</itemPath>
+          </logicalFolder>
+          <logicalFolder name="lib_mqtt" displayName="lib_mqtt" projectFiles="true">
+            <itemPath>kehopsCom/libs/lib_mqtt/Clients.c</itemPath>
+            <itemPath>kehopsCom/libs/lib_mqtt/Clients.h</itemPath>
+            <itemPath>kehopsCom/libs/lib_mqtt/Heap.c</itemPath>
+            <itemPath>kehopsCom/libs/lib_mqtt/Heap.h</itemPath>
+            <itemPath>kehopsCom/libs/lib_mqtt/LinkedList.c</itemPath>
+            <itemPath>kehopsCom/libs/lib_mqtt/LinkedList.h</itemPath>
+            <itemPath>kehopsCom/libs/lib_mqtt/Log.c</itemPath>
+            <itemPath>kehopsCom/libs/lib_mqtt/Log.h</itemPath>
+            <itemPath>kehopsCom/libs/lib_mqtt/MQTTClient.c</itemPath>
+            <itemPath>kehopsCom/libs/lib_mqtt/MQTTClient.h</itemPath>
+            <itemPath>kehopsCom/libs/lib_mqtt/MQTTClientPersistence.h</itemPath>
+            <itemPath>kehopsCom/libs/lib_mqtt/MQTTPacket.c</itemPath>
+            <itemPath>kehopsCom/libs/lib_mqtt/MQTTPacket.h</itemPath>
+            <itemPath>kehopsCom/libs/lib_mqtt/MQTTPacketOut.c</itemPath>
+            <itemPath>kehopsCom/libs/lib_mqtt/MQTTPacketOut.h</itemPath>
+            <itemPath>kehopsCom/libs/lib_mqtt/MQTTPersistence.c</itemPath>
+            <itemPath>kehopsCom/libs/lib_mqtt/MQTTPersistence.h</itemPath>
+            <itemPath>kehopsCom/libs/lib_mqtt/MQTTPersistenceDefault.c</itemPath>
+            <itemPath>kehopsCom/libs/lib_mqtt/MQTTPersistenceDefault.h</itemPath>
+            <itemPath>kehopsCom/libs/lib_mqtt/MQTTProtocol.h</itemPath>
+            <itemPath>kehopsCom/libs/lib_mqtt/MQTTProtocolClient.c</itemPath>
+            <itemPath>kehopsCom/libs/lib_mqtt/MQTTProtocolClient.h</itemPath>
+            <itemPath>kehopsCom/libs/lib_mqtt/MQTTProtocolOut.c</itemPath>
+            <itemPath>kehopsCom/libs/lib_mqtt/MQTTProtocolOut.h</itemPath>
+            <itemPath>kehopsCom/libs/lib_mqtt/Messages.c</itemPath>
+            <itemPath>kehopsCom/libs/lib_mqtt/Messages.h</itemPath>
+            <itemPath>kehopsCom/libs/lib_mqtt/SSLSocket.c</itemPath>
+            <itemPath>kehopsCom/libs/lib_mqtt/SSLSocket.h</itemPath>
+            <itemPath>kehopsCom/libs/lib_mqtt/Socket.c</itemPath>
+            <itemPath>kehopsCom/libs/lib_mqtt/Socket.h</itemPath>
+            <itemPath>kehopsCom/libs/lib_mqtt/SocketBuffer.c</itemPath>
+            <itemPath>kehopsCom/libs/lib_mqtt/SocketBuffer.h</itemPath>
+            <itemPath>kehopsCom/libs/lib_mqtt/StackTrace.c</itemPath>
+            <itemPath>kehopsCom/libs/lib_mqtt/StackTrace.h</itemPath>
+            <itemPath>kehopsCom/libs/lib_mqtt/Thread.c</itemPath>
+            <itemPath>kehopsCom/libs/lib_mqtt/Thread.h</itemPath>
+            <itemPath>kehopsCom/libs/lib_mqtt/Tree.c</itemPath>
+            <itemPath>kehopsCom/libs/lib_mqtt/Tree.h</itemPath>
+            <itemPath>kehopsCom/libs/lib_mqtt/utf-8.c</itemPath>
+            <itemPath>kehopsCom/libs/lib_mqtt/utf-8.h</itemPath>
+          </logicalFolder>
+        </logicalFolder>
+        <itemPath>kehopsCom/linux_JSON.c</itemPath>
+        <itemPath>kehopsCom/linux_json.h</itemPath>
+        <itemPath>kehopsCom/messagesManager.c</itemPath>
+        <itemPath>kehopsCom/messagesManager.h</itemPath>
+        <itemPath>kehopsCom/mqttProtocol.c</itemPath>
+        <itemPath>kehopsCom/mqttProtocol.h</itemPath>
+        <itemPath>kehopsCom/type.h</itemPath>
+        <itemPath>kehopsCom/udpPublish.c</itemPath>
+        <itemPath>kehopsCom/udpPublish.h</itemPath>
+      </logicalFolder>
+      <itemPath>configManager.c</itemPath>
+      <itemPath>configManager.h</itemPath>
+      <itemPath>kehops_main.c</itemPath>
+      <itemPath>timerManager.c</itemPath>
+      <itemPath>tools.c</itemPath>
+    </logicalFolder>
+    <logicalFolder name="TestFiles"
+                   displayName="Test Files"
+                   projectFiles="false"
+                   kind="TEST_LOGICAL_FOLDER">
+    </logicalFolder>
+    <logicalFolder name="ExternalFiles"
+                   displayName="Important Files"
+                   projectFiles="false"
+                   kind="IMPORTANT_FILES_FOLDER">
+      <itemPath>Makefile</itemPath>
+    </logicalFolder>
+    <itemPath>hwControl/changeLog.txt</itemPath>
+    <itemPath>toDo</itemPath>
+  </logicalFolder>
+  <sourceRootList>
+    <Elem>hwControl</Elem>
+    <Elem>asyncTools</Elem>
+    <Elem>kehopsCom</Elem>
+    <Elem>actuatorsDriver</Elem>
+  </sourceRootList>
+  <projectmakefile>Makefile</projectmakefile>
+  <confs>
+    <conf name="Debug" type="1">
+      <toolsSet>
+        <compilerSet>GNU_Omega|GNU</compilerSet>
+        <dependencyChecking>true</dependencyChecking>
+        <rebuildPropChanged>false</rebuildPropChanged>
+      </toolsSet>
+      <compileType>
+        <cTool>
+          <incDir>
+            <pElem>hwControl/libs/i2c</pElem>
+            <pElem>hwControl/libs/onion-debug</pElem>
+            <pElem>hwControl</pElem>
+            <pElem>kehopsCom</pElem>
+            <pElem>kehopsCom/libs</pElem>
+            <pElem>kehopsCom/libs/lib_json</pElem>
+            <pElem>kehopsCom/libs/lib_mqtt</pElem>
+            <pElem>actuatorsDriver</pElem>
+          </incDir>
+          <incFile>
+            <pElem>buildNumber.h</pElem>
+          </incFile>
+          <commandLine>-pthread -lm</commandLine>
+        </cTool>
+        <linkerTool>
+          <output>${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/kehops_onionomega</output>
+          <commandLine>-pthread -lm</commandLine>
+        </linkerTool>
+      </compileType>
+      <item path="AlgoidCom/type.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="actuatorsDriver/asnycLED.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="actuatorsDriver/asyncLED.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="actuatorsDriver/asyncMOTOR.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="actuatorsDriver/asyncMOTOR.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="actuatorsDriver/asyncPWM.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="actuatorsDriver/asyncPWM.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="actuatorsDriver/asyncSERVO.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="actuatorsDriver/asyncSERVO.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="actuatorsDriver/asyncSTEPPER.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="actuatorsDriver/asyncSTEPPER.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="actuatorsDriver/asyncTools.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="actuatorsDriver/asyncTools.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="algobotManager.sh.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="asyncTools/asyncLED.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="asyncTools/asyncMOTOR.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="asyncTools/asyncSTEPPER.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="asyncTools/asyncTools.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="configManager.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="configManager.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="hwControl/boardHWctrl.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="hwControl/boardHWctrl.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="hwControl/boardHWsimu.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="hwControl/boardHWsimu.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="hwControl/changeLog.txt" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="hwControl/hwManager.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="hwControl/hwManager.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="hwControl/libs/i2c/onion-i2c.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="hwControl/libs/i2c/onion-i2c.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="hwControl/libs/onion-debug/onion-debug.c"
+            ex="false"
+            tool="0"
+            flavor2="0">
+      </item>
+      <item path="hwControl/libs/onion-debug/onion-debug.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_json/jRead.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_json/jRead.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_json/jWrite.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_json/jWrite.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/Clients.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/Clients.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/Heap.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/Heap.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/LinkedList.c"
+            ex="false"
+            tool="0"
+            flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/LinkedList.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/Log.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/Log.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/MQTTClient.c"
+            ex="false"
+            tool="0"
+            flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/MQTTClient.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/MQTTClientPersistence.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/MQTTPacket.c"
+            ex="false"
+            tool="0"
+            flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/MQTTPacket.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/MQTTPacketOut.c"
+            ex="false"
+            tool="0"
+            flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/MQTTPacketOut.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/MQTTPersistence.c"
+            ex="false"
+            tool="0"
+            flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/MQTTPersistence.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/MQTTPersistenceDefault.c"
+            ex="false"
+            tool="0"
+            flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/MQTTPersistenceDefault.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/MQTTProtocol.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/MQTTProtocolClient.c"
+            ex="false"
+            tool="0"
+            flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/MQTTProtocolClient.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/MQTTProtocolOut.c"
+            ex="false"
+            tool="0"
+            flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/MQTTProtocolOut.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/Messages.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/Messages.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/SSLSocket.c"
+            ex="false"
+            tool="0"
+            flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/SSLSocket.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/Socket.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/Socket.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/SocketBuffer.c"
+            ex="false"
+            tool="0"
+            flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/SocketBuffer.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/StackTrace.c"
+            ex="false"
+            tool="0"
+            flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/StackTrace.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/Thread.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/Thread.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/Tree.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/Tree.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/utf-8.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/utf-8.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="kehopsCom/linux_JSON.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="kehopsCom/linux_json.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="kehopsCom/messagesManager.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="kehopsCom/messagesManager.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="kehopsCom/mqttProtocol.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="kehopsCom/mqttProtocol.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="kehopsCom/type.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="kehopsCom/udpPublish.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="kehopsCom/udpPublish.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="kehops_main.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="timerManager.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="toDo" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="tools.c" ex="false" tool="0" flavor2="0">
+      </item>
+    </conf>
+    <conf name="Release" type="1">
+      <toolsSet>
+        <compilerSet>GNU_Omega|GNU</compilerSet>
+        <dependencyChecking>true</dependencyChecking>
+        <rebuildPropChanged>false</rebuildPropChanged>
+      </toolsSet>
+      <compileType>
+        <cTool>
+          <developmentMode>5</developmentMode>
+          <incDir>
+            <pElem>hwControl/libs/i2c</pElem>
+            <pElem>hwControl/libs/onion-debug</pElem>
+            <pElem>AlgoidCom/libs/lib_json</pElem>
+            <pElem>AlgoidCom/libs/lib_mqtt</pElem>
+            <pElem>AlgoidCom</pElem>
+            <pElem>hwControl</pElem>
+            <pElem>asyncTools</pElem>
+          </incDir>
+          <commandLine>-pthread -lm</commandLine>
+        </cTool>
+        <ccTool>
+          <developmentMode>5</developmentMode>
+        </ccTool>
+        <fortranCompilerTool>
+          <developmentMode>5</developmentMode>
+        </fortranCompilerTool>
+        <asmTool>
+          <developmentMode>5</developmentMode>
+        </asmTool>
+        <linkerTool>
+          <output>${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/algobot_onionomega</output>
+          <commandLine>-pthread -lm</commandLine>
+        </linkerTool>
+      </compileType>
+      <item path="AlgoidCom/type.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="actuatorsDriver/asnycLED.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="actuatorsDriver/asyncLED.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="actuatorsDriver/asyncMOTOR.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="actuatorsDriver/asyncMOTOR.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="actuatorsDriver/asyncPWM.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="actuatorsDriver/asyncPWM.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="actuatorsDriver/asyncSERVO.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="actuatorsDriver/asyncSERVO.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="actuatorsDriver/asyncSTEPPER.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="actuatorsDriver/asyncSTEPPER.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="actuatorsDriver/asyncTools.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="actuatorsDriver/asyncTools.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="algobotManager.sh.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="asyncTools/asyncLED.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="asyncTools/asyncMOTOR.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="asyncTools/asyncSTEPPER.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="asyncTools/asyncTools.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="configManager.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="configManager.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="hwControl/boardHWctrl.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="hwControl/boardHWctrl.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="hwControl/boardHWsimu.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="hwControl/boardHWsimu.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="hwControl/changeLog.txt" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="hwControl/hwManager.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="hwControl/hwManager.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="hwControl/libs/i2c/onion-i2c.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="hwControl/libs/i2c/onion-i2c.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="hwControl/libs/onion-debug/onion-debug.c"
+            ex="false"
+            tool="0"
+            flavor2="0">
+      </item>
+      <item path="hwControl/libs/onion-debug/onion-debug.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_json/jRead.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_json/jRead.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_json/jWrite.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_json/jWrite.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/Clients.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/Clients.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/Heap.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/Heap.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/LinkedList.c"
+            ex="false"
+            tool="0"
+            flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/LinkedList.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/Log.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/Log.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/MQTTClient.c"
+            ex="false"
+            tool="0"
+            flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/MQTTClient.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/MQTTClientPersistence.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/MQTTPacket.c"
+            ex="false"
+            tool="0"
+            flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/MQTTPacket.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/MQTTPacketOut.c"
+            ex="false"
+            tool="0"
+            flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/MQTTPacketOut.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/MQTTPersistence.c"
+            ex="false"
+            tool="0"
+            flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/MQTTPersistence.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/MQTTPersistenceDefault.c"
+            ex="false"
+            tool="0"
+            flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/MQTTPersistenceDefault.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/MQTTProtocol.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/MQTTProtocolClient.c"
+            ex="false"
+            tool="0"
+            flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/MQTTProtocolClient.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/MQTTProtocolOut.c"
+            ex="false"
+            tool="0"
+            flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/MQTTProtocolOut.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/Messages.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/Messages.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/SSLSocket.c"
+            ex="false"
+            tool="0"
+            flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/SSLSocket.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/Socket.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/Socket.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/SocketBuffer.c"
+            ex="false"
+            tool="0"
+            flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/SocketBuffer.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/StackTrace.c"
+            ex="false"
+            tool="0"
+            flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/StackTrace.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/Thread.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/Thread.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/Tree.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/Tree.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/utf-8.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/utf-8.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="kehopsCom/linux_JSON.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="kehopsCom/linux_json.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="kehopsCom/messagesManager.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="kehopsCom/messagesManager.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="kehopsCom/mqttProtocol.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="kehopsCom/mqttProtocol.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="kehopsCom/type.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="kehopsCom/udpPublish.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="kehopsCom/udpPublish.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="kehops_main.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="timerManager.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="toDo" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="tools.c" ex="false" tool="0" flavor2="0">
+      </item>
+    </conf>
+    <conf name="Debug-GNU-LINUX" type="1">
+      <toolsSet>
+        <compilerSet>GNU|GNU</compilerSet>
+        <dependencyChecking>true</dependencyChecking>
+        <rebuildPropChanged>false</rebuildPropChanged>
+      </toolsSet>
+      <compileType>
+        <cTool>
+          <incDir>
+            <pElem>hwControl/libs/i2c</pElem>
+            <pElem>hwControl/libs/onion-debug</pElem>
+            <pElem>AlgoidCom/libs/lib_json</pElem>
+            <pElem>AlgoidCom/libs/lib_mqtt</pElem>
+            <pElem>AlgoidCom</pElem>
+            <pElem>hwControl</pElem>
+            <pElem>asyncTools</pElem>
+          </incDir>
+          <commandLine>-pthread -lm</commandLine>
+          <preprocessorList>
+            <Elem>I2CSIMU</Elem>
+          </preprocessorList>
+        </cTool>
+        <linkerTool>
+          <commandLine>-pthread -lm</commandLine>
+        </linkerTool>
+      </compileType>
+      <item path="AlgoidCom/type.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="actuatorsDriver/asnycLED.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="actuatorsDriver/asyncLED.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="actuatorsDriver/asyncMOTOR.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="actuatorsDriver/asyncMOTOR.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="actuatorsDriver/asyncPWM.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="actuatorsDriver/asyncPWM.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="actuatorsDriver/asyncSERVO.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="actuatorsDriver/asyncSERVO.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="actuatorsDriver/asyncSTEPPER.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="actuatorsDriver/asyncSTEPPER.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="actuatorsDriver/asyncTools.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="actuatorsDriver/asyncTools.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="algobotManager.sh.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="asyncTools/asyncLED.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="asyncTools/asyncMOTOR.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="asyncTools/asyncSTEPPER.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="asyncTools/asyncTools.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="configManager.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="configManager.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="hwControl/boardHWctrl.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="hwControl/boardHWctrl.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="hwControl/boardHWsimu.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="hwControl/boardHWsimu.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="hwControl/changeLog.txt" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="hwControl/hwManager.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="hwControl/hwManager.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="hwControl/libs/i2c/onion-i2c.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="hwControl/libs/i2c/onion-i2c.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="hwControl/libs/onion-debug/onion-debug.c"
+            ex="false"
+            tool="0"
+            flavor2="0">
+      </item>
+      <item path="hwControl/libs/onion-debug/onion-debug.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_json/jRead.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_json/jRead.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_json/jWrite.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_json/jWrite.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/Clients.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/Clients.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/Heap.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/Heap.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/LinkedList.c"
+            ex="false"
+            tool="0"
+            flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/LinkedList.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/Log.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/Log.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/MQTTClient.c"
+            ex="false"
+            tool="0"
+            flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/MQTTClient.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/MQTTClientPersistence.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/MQTTPacket.c"
+            ex="false"
+            tool="0"
+            flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/MQTTPacket.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/MQTTPacketOut.c"
+            ex="false"
+            tool="0"
+            flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/MQTTPacketOut.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/MQTTPersistence.c"
+            ex="false"
+            tool="0"
+            flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/MQTTPersistence.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/MQTTPersistenceDefault.c"
+            ex="false"
+            tool="0"
+            flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/MQTTPersistenceDefault.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/MQTTProtocol.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/MQTTProtocolClient.c"
+            ex="false"
+            tool="0"
+            flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/MQTTProtocolClient.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/MQTTProtocolOut.c"
+            ex="false"
+            tool="0"
+            flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/MQTTProtocolOut.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/Messages.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/Messages.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/SSLSocket.c"
+            ex="false"
+            tool="0"
+            flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/SSLSocket.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/Socket.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/Socket.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/SocketBuffer.c"
+            ex="false"
+            tool="0"
+            flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/SocketBuffer.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/StackTrace.c"
+            ex="false"
+            tool="0"
+            flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/StackTrace.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/Thread.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/Thread.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/Tree.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/Tree.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/utf-8.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/utf-8.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="kehopsCom/linux_JSON.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="kehopsCom/linux_json.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="kehopsCom/messagesManager.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="kehopsCom/messagesManager.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="kehopsCom/mqttProtocol.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="kehopsCom/mqttProtocol.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="kehopsCom/type.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="kehopsCom/udpPublish.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="kehopsCom/udpPublish.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="kehops_main.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="timerManager.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="toDo" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="tools.c" ex="false" tool="0" flavor2="0">
+      </item>
+    </conf>
+    <conf name="Debug-GNU-LINUX_x86" type="1">
+      <toolsSet>
+        <compilerSet>GNU|GNU</compilerSet>
+        <dependencyChecking>true</dependencyChecking>
+        <rebuildPropChanged>false</rebuildPropChanged>
+      </toolsSet>
+      <compileType>
+        <cTool>
+          <commandlineTool>gcc -m32</commandlineTool>
+          <incDir>
+            <pElem>hwControl/libs/i2c</pElem>
+            <pElem>hwControl/libs/onion-debug</pElem>
+            <pElem>AlgoidCom/libs/lib_json</pElem>
+            <pElem>AlgoidCom/libs/lib_mqtt</pElem>
+            <pElem>AlgoidCom</pElem>
+            <pElem>hwControl</pElem>
+            <pElem>asyncTools</pElem>
+          </incDir>
+          <commandLine>-pthread -lm</commandLine>
+          <preprocessorList>
+            <Elem>I2CSIMU</Elem>
+          </preprocessorList>
+        </cTool>
+        <linkerTool>
+          <output>${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/algobot_onionomega_x86</output>
+          <commandLine>-pthread -lm</commandLine>
+        </linkerTool>
+      </compileType>
+      <item path="AlgoidCom/type.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="actuatorsDriver/asnycLED.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="actuatorsDriver/asyncLED.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="actuatorsDriver/asyncMOTOR.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="actuatorsDriver/asyncMOTOR.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="actuatorsDriver/asyncPWM.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="actuatorsDriver/asyncPWM.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="actuatorsDriver/asyncSERVO.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="actuatorsDriver/asyncSERVO.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="actuatorsDriver/asyncSTEPPER.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="actuatorsDriver/asyncSTEPPER.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="actuatorsDriver/asyncTools.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="actuatorsDriver/asyncTools.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="algobotManager.sh.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="asyncTools/asyncLED.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="asyncTools/asyncMOTOR.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="asyncTools/asyncSTEPPER.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="asyncTools/asyncTools.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="configManager.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="configManager.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="hwControl/boardHWctrl.c" ex="false" tool="0" flavor2="9">
+      </item>
+      <item path="hwControl/boardHWctrl.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="hwControl/boardHWsimu.c" ex="false" tool="0" flavor2="9">
+      </item>
+      <item path="hwControl/boardHWsimu.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="hwControl/changeLog.txt" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="hwControl/hwManager.c" ex="false" tool="0" flavor2="9">
+      </item>
+      <item path="hwControl/hwManager.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="hwControl/libs/i2c/onion-i2c.c" ex="false" tool="0" flavor2="9">
+      </item>
+      <item path="hwControl/libs/i2c/onion-i2c.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="hwControl/libs/onion-debug/onion-debug.c"
+            ex="false"
+            tool="0"
+            flavor2="9">
+      </item>
+      <item path="hwControl/libs/onion-debug/onion-debug.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_json/jRead.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_json/jRead.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_json/jWrite.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_json/jWrite.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/Clients.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/Clients.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/Heap.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/Heap.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/LinkedList.c"
+            ex="false"
+            tool="0"
+            flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/LinkedList.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/Log.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/Log.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/MQTTClient.c"
+            ex="false"
+            tool="0"
+            flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/MQTTClient.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/MQTTClientPersistence.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/MQTTPacket.c"
+            ex="false"
+            tool="0"
+            flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/MQTTPacket.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/MQTTPacketOut.c"
+            ex="false"
+            tool="0"
+            flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/MQTTPacketOut.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/MQTTPersistence.c"
+            ex="false"
+            tool="0"
+            flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/MQTTPersistence.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/MQTTPersistenceDefault.c"
+            ex="false"
+            tool="0"
+            flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/MQTTPersistenceDefault.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/MQTTProtocol.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/MQTTProtocolClient.c"
+            ex="false"
+            tool="0"
+            flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/MQTTProtocolClient.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/MQTTProtocolOut.c"
+            ex="false"
+            tool="0"
+            flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/MQTTProtocolOut.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/Messages.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/Messages.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/SSLSocket.c"
+            ex="false"
+            tool="0"
+            flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/SSLSocket.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/Socket.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/Socket.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/SocketBuffer.c"
+            ex="false"
+            tool="0"
+            flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/SocketBuffer.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/StackTrace.c"
+            ex="false"
+            tool="0"
+            flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/StackTrace.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/Thread.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/Thread.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/Tree.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/Tree.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/utf-8.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/utf-8.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="kehopsCom/linux_JSON.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="kehopsCom/linux_json.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="kehopsCom/messagesManager.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="kehopsCom/messagesManager.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="kehopsCom/mqttProtocol.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="kehopsCom/mqttProtocol.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="kehopsCom/type.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="kehopsCom/udpPublish.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="kehopsCom/udpPublish.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="kehops_main.c" ex="false" tool="0" flavor2="9">
+      </item>
+      <item path="timerManager.c" ex="false" tool="0" flavor2="9">
+      </item>
+      <item path="toDo" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="tools.c" ex="false" tool="0" flavor2="9">
+      </item>
+    </conf>
+  </confs>
+</configurationDescriptor>
