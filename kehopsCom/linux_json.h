@@ -45,14 +45,12 @@ typedef enum msgparam{
 }t_msgparam;
 
 
-struct mMotor{
+struct m2wd{
 	int motor;
 	int speed;
         int velocity;
 	int time;
 	float cm;
-	int accel;
-	int decel;
 };
 
 struct mStepper{
@@ -148,7 +146,7 @@ struct mBattery{
 struct mPwm{
 	int id;
 	char state[50];
-	int  angle;
+	int angle;
 };
 
 struct mLed{
@@ -202,16 +200,16 @@ struct mRGB{
 };
 
 // Structure d'un message algoid recu
-typedef struct JsonMessage{
-    	int msgID;
+typedef struct JsonCommand{
 	char msgTo[32];
 	char msgFrom[32];
-        
+	int msgID;
 	t_msgtype msgType;
 	t_msgparam msgParam;
 	unsigned char msgValueCnt;
 
-	struct mMotor DCmotor[20];
+	// UNION ???
+	struct m2wd DCmotor[20];
         struct mStepper StepperMotor[20];
 	struct mDin DINsens[20];
         struct mDin BTNsens[20];
@@ -222,38 +220,40 @@ typedef struct JsonMessage{
         struct mRGB RGBsens[20];
         struct mConfig Config;
         struct mSystemCmd System;
-}KEHOPS;
+	// UNION ???
+}ALGOID;
 
 // Structure de r�ponse � un message algoid
-typedef struct JsonReply{
+typedef struct JsonResponse{
 	int value;
 	int responseType;
 
+	// UNION ???
         struct mSystem SYSresponse;
-        struct mServo SERVOresponse;
-
-	struct mMotor MOTresponse;
-        struct mStepper STEPPERresponse;
-        struct mDin DINresponse;
+	struct mDin DINresponse;
+	struct mBattery BATTesponse;
 	struct mDistance DISTresponse;
-        struct mBattery BATTesponse;
+        struct mServo SERVOresponse;
+	struct m2wd MOTresponse;
+        struct mStepper STEPPERresponse;
         struct mLed PWMresponse;
         struct mLed LEDresponse;
         struct mDin BTNresponse;
         struct mRGB RGBresponse; 
         struct mConfig CONFIGresponse;
         struct mSystemCmd SYSCMDresponse;
-}KEHOPS_RESPONSE;
+	// UNION ???
+}ALGOID_RESPONSE;
 
-KEHOPS AlgoidCommand;    // Utilis� par main.c
-KEHOPS AlgoidMessageRX;
-KEHOPS AlgoidMsgRXStack[10];
+ALGOID AlgoidCommand;    // Utilis� par main.c
+ALGOID AlgoidMessageRX;
+ALGOID AlgoidMsgRXStack[10];
 
 // Buffer de sortie pour les msgValue[
-KEHOPS_RESPONSE AlgoidResponse[50];
+ALGOID_RESPONSE AlgoidResponse[50];
 
-extern t_sysConfig sysConfig;
+//extern t_sysConfig sysConfig;
 
-extern char GetAlgoidMsg(KEHOPS DestReceiveMessage,char *srcDataBuffer);
+extern char GetAlgoidMsg(ALGOID DestReceiveMessage,char *srcDataBuffer);
 
 void ackToJSON(char * buffer, int msgId, char* to, char * from, char * msgType,char * msgParam, unsigned char value, unsigned char count);

@@ -14,6 +14,7 @@
 #include <stdio.h>
 #include "type.h"
 #include "hwManager.h"
+#include "../kehops_main.h"
 
 #ifdef I2CSIMU
 #include "boardHWsimu.h"
@@ -24,7 +25,7 @@
 #endif
 
 #include "../buggy_descriptor.h"
-#include "type.h"
+#include "../kehopsCom/type.h"
 
 // Thread Messager
 pthread_t th_hwManager;
@@ -100,7 +101,7 @@ int set_i2c_command_queue(int (*callback)(char, int),char adr, int cmd);
 int getHWversion(void);                                                 // Get the hardware board version
 int getMcuFirmware(void);                                              // Get the hardware microcontroller version
 
-int resetHardware(t_sysConfig * Config);
+int resetHardware(t_sysConf * Config);
 // ------------------------------------------
 // Programme principale TIMER
 // ------------------------------------------
@@ -303,16 +304,16 @@ int getColorValue(unsigned char sensorID, unsigned char color){
 int setMotorDirection(int motorName, int direction){
 	unsigned char motorAdress;
 
+        // Check if motor inversion requiered and modify if necessary
+        if(kehops.dcWheel[motorName].config.motor->inverted)
+            direction *= -1;
+
+
 	// Conversion No de moteur en adresse du registre du PWM controleur
 	motorAdress=getOrganI2Cregister(MOTOR, motorName);
 
-	switch(direction){
-		case BUGGY_FORWARD :	set_i2c_command_queue(&MCP2308_DCmotorSetRotation, motorAdress, MCW); break;
-		case BUGGY_BACK :       set_i2c_command_queue(&MCP2308_DCmotorSetRotation, motorAdress, MCCW); break;
-
-		case BUGGY_STOP : 	break;
-		default :		break;
-	}
+        set_i2c_command_queue(&MCP2308_DCmotorSetRotation, motorAdress, direction);
+        
 	return(1);
 }
 
@@ -408,49 +409,6 @@ int setStepperSpeed(int motorNumber, int speed){
 int getStepperState(int motorNumber){
     return motor.stepper[motorNumber].isRunning;
 }                              
-
-/*
-//-----------------------------------------------------------------
-// GETMOTORPOWER
-// Retourne l'�tat actuelle de la puissance du moteur selectionn�
-// -------------------------------------------------------------------
-
-unsigned char getMotorPower(unsigned char motorNr){
-	return motorDCactualPower[motorNr];
-}
-*/
-
-
-/*
-// -------------------------------------------------------------------
-// setMotorAccelDecel
-// D�fini les valeurs d'acceleration et decelaration du moteur
-// Valeur donn�e en % de ce qu'il reste pour atteindre la consigne
-// -------------------------------------------------------------------
-void setMotorAccelDecel(unsigned char motorNo, char accelPercent, char decelPercent){
-
-	//unsigned char motorSlot;
-	//motorSlot = getOrganNumber(motorNo);
-
-	// R�cup�ration de la valeur absolue de l'acceleration
-	if(accelPercent<0) accelPercent*=-1;
-	// D�fini un maximum de 100% d'acceleration
-	if(accelPercent>100)
-		accelPercent=100;
-
-	// R�cup�ration de la valeur absolue de la deceleration
-	if(decelPercent<0) decelPercent*=-1;
-	// D�fini un maximum de 100% de deceleration
-	if(decelPercent>100)
-		decelPercent=100;
-
-	// Ne modifie les valeurs d'acceleration et deceleration uniquement si "valable" (=>0)
-	if(accelPercent>0)
-		motorDCaccelValue[motorNo] = accelPercent;
-	if(decelPercent>0)
-		motorDCdecelValue[motorNo] = decelPercent;
-}
-*/
 
 // ---------------------------------------------------------------------------
 // SETMOTORSPEED
@@ -589,13 +547,13 @@ unsigned char getOrganI2Cregister(char organType, unsigned char organName){
 // Applique un etat initial aux moteurs, LEDS, PWM, etc...
 // -------------------------------------------------------------------
 
-int resetHardware(t_sysConfig * Config){
+int resetHardware(t_sysConf * Config){
     int i;
     
+    printf("\n*****\nTRACE\n********\n");
     // Etat initial des moteur
     for(i=0;i<NBMOTOR;i++){
         setMotorSpeed(i, 0);
-//        setMotorAccelDecel(i, 25, 100);
         setMotorDirection(i, BUGGY_FORWARD);
         EFM8BB_clearWheelDistance(i);
     }
@@ -606,18 +564,14 @@ int resetHardware(t_sysConfig * Config){
 
     // Etat initial des LED       
     for(i=0;i<NBLED;i++){
-        if(Config->led[i].state)
-            setLedPower(i, Config->led[i].power);
-        else
-            setLedPower(i, 0);
+//        if(Config->led[i].state)
+//            setLedPower(i, Config->led[i].power);
+//        else
+//            setLedPower(i, 0);
     }
     // Etat initial des sorties PWM LED
     for(i=0;i<NBPWM;i++){
         setPwmPower(i,0);
     }
-    
-    // Etat initial des Moteur pas à pas
-    //DEBUG //    for(i=0;i<NBPWM;i++)
-//        setPwmPower(i,0);    
     return 0;
 }

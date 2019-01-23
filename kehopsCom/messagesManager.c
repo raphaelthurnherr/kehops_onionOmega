@@ -4,11 +4,11 @@
 
 #define PORT     ":1883"
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include "stdio.h"
+#include "stdlib.h"
+#include "string.h"
 
-#include <pthread.h>
+#include "pthread.h"
 #include "messagesManager.h"
 #include "mqttProtocol.h"
 #include "linux_json.h"
@@ -228,8 +228,6 @@ char clearMsgStack(unsigned char ptrStack){
                                 AlgoidMsgRXStack[ptrStack].DCmotor[i].motor=-1;
 				AlgoidMsgRXStack[ptrStack].DCmotor[i].time=-1;
 				AlgoidMsgRXStack[ptrStack].DCmotor[i].velocity=-1;
-                                AlgoidMsgRXStack[ptrStack].DCmotor[i].accel=-1;
-                                AlgoidMsgRXStack[ptrStack].DCmotor[i].decel=-1;
                                 AlgoidMsgRXStack[ptrStack].DCmotor[i].cm=-1;
 			}
 			return 0;
@@ -287,7 +285,7 @@ int mqttMsgArrived(void *context, char *topicName, int topicLen, MQTTClient_mess
     // Termine la chaine de caract�re
     MqttDataBuffer[messageCharCount]=0;
 
-    mqttDataReady=1;
+	mqttDataReady=1;
 
     MQTTClient_freeMessage(&message);
     MQTTClient_free(topicName);

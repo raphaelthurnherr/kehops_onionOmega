@@ -13,8 +13,8 @@ CND_BUILDDIR=build
 CND_DLIB_EXT=so
 NBTMPDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}/tmp-packaging
 TMPDIRNAME=tmp-packaging
-OUTPUT_PATH=${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/kehops_onionomega
-OUTPUT_BASENAME=kehops_onionomega
+OUTPUT_PATH=${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/kehops_x64
+OUTPUT_BASENAME=kehops_x64
 PACKAGE_TOP_DIR=kehopsonionomega/
 
 # Functions

@@ -49,9 +49,9 @@ int PID_speedControl(int motorId, float currentSpeed, float setPoint){
     float newSum;
     float dErrorLoopTime;
     
-    float Kp = sysConfig.motor[motorId].rpmRegulator.PID_Kp;   
-    float Ki = sysConfig.motor[motorId].rpmRegulator.PID_Ki;   
-    float Kd = sysConfig.motor[motorId].rpmRegulator.PID_Kd;  
+    float Kp = kehops.stepperWheel[motorId].config.pidReg.Kp;   
+    float Ki = kehops.stepperWheel[motorId].config.pidReg.Ki;   
+    float Kd = kehops.stepperWheel[motorId].config.pidReg.Kd;   
      
     error = setPoint - currentSpeed;
     newSum = (sumError[motorId] + error) * loopTimeDT;

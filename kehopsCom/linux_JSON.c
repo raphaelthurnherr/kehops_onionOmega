@@ -49,8 +49,6 @@
 #define KEY_MESSAGE_VALUE_VELOCITY "{'MsgData'{'MsgValue'[*{'velocity'"
 #define KEY_MESSAGE_VALUE_TIME "{'MsgData'{'MsgValue'[*{'time'"
 #define KEY_MESSAGE_VALUE_CM "{'MsgData'{'MsgValue'[*{'cm'"
-#define KEY_MESSAGE_VALUE_ACCEL "{'MsgData'{'MsgValue'[*{'accel'"
-#define KEY_MESSAGE_VALUE_DECEL "{'MsgData'{'MsgValue'[*{'decel'"
 #define KEY_MESSAGE_VALUE_STEP "{'MsgData'{'MsgValue'[*{'step'"
 #define KEY_MESSAGE_VALUE_ROTATION "{'MsgData'{'MsgValue'[*{'rotation'"
 
@@ -105,9 +103,9 @@
 #include "libs/lib_json/jWrite.h"
 
 void ackToJSON(char * buffer, int msgId, char* to, char * from, char * msgType,char * msgParam, unsigned char orgType, unsigned char count);
-char GetAlgoidMsg(KEHOPS destMessage, char *srcDataBuffer);
+char GetAlgoidMsg(ALGOID destMessage, char *srcDataBuffer);
 
-KEHOPS myReplyMessage;
+ALGOID myReplyMessage;
 
 // -----------------------------------------------------------------------------
 // MAIN, APPLICATION PRINCIPALE-------------------------------------------------
@@ -119,7 +117,7 @@ KEHOPS myReplyMessage;
 // Get message from buffer and set in the message structure
 // -----------------------------------------------------------------------------
 
-char GetAlgoidMsg(KEHOPS destMessage, char *srcBuffer){
+char GetAlgoidMsg(ALGOID destMessage, char *srcBuffer){
 	struct jReadElement element, cfg_device_list;
 	int i;
 
@@ -180,8 +178,6 @@ char GetAlgoidMsg(KEHOPS destMessage, char *srcBuffer){
 					    	  AlgoidMessageRX.DCmotor[i].velocity= jRead_long((char *)srcBuffer, KEY_MESSAGE_VALUE_VELOCITY, &i);
 					    	  AlgoidMessageRX.DCmotor[i].time= jRead_long((char *)srcBuffer, KEY_MESSAGE_VALUE_TIME, &i);
 					    	  AlgoidMessageRX.DCmotor[i].cm= jRead_long((char *)srcBuffer, KEY_MESSAGE_VALUE_CM, &i);
-					    	  AlgoidMessageRX.DCmotor[i].accel= jRead_long((char *)srcBuffer, KEY_MESSAGE_VALUE_ACCEL, &i);
-					    	  AlgoidMessageRX.DCmotor[i].decel= jRead_long((char *)srcBuffer, KEY_MESSAGE_VALUE_DECEL, &i); 
 				    	  }
                                           
                                             if(AlgoidMessageRX.msgParam == STEPPER){

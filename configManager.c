@@ -35,20 +35,21 @@
 #define FILE_KEY_CONFIG_STEPPER_ID "{'stepper'[*{'motor'"
 #define FILE_KEY_CONFIG_STEPPER_INVERT "{'stepper'[*{'inverted'"
 #define FILE_KEY_CONFIG_STEPPER_RATIO "{'stepper'[*{'ratio'"
-#define FILE_KEY_CONFIG_STEPPER_STEPS"{'stepper'[*{'steps'"
+#define FILE_KEY_CONFIG_STEPPER_STEPS "{'stepper'[*{'steps'"
 
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
 
-#include "type.h"
-#include "libs/lib_json/jRead.h"
-#include "libs/lib_json/jWrite.h"
+#include "kehopsCom/type.h"
+#include "jRead.h"
+#include "jWrite.h"
+#include "kehops_main.h"
 
 char * OpenConfigFromFile(char *filename);
-char LoadConfig(t_sysConfig * Config, char * fileName);
-char SaveConfig(t_sysConfig * Config, char * fileName);
+char LoadConfig(char * fileName);
+char SaveConfig(char * fileName);
 
 unsigned char mode=0;
 unsigned char dataCommandReady=0;
@@ -102,7 +103,7 @@ char * OpenConfigFromFile(char *filename){
 // Get configuration file and load data into config structure
 // -----------------------------------------------------------------------------
 
-char LoadConfig(t_sysConfig * Config, char * fileName){
+char LoadConfig(char * fileName){
 	struct jReadElement cfg_devices_list;
         int nbOfDeviceInConf, deviceId;
 	int i;
@@ -113,35 +114,36 @@ char LoadConfig(t_sysConfig * Config, char * fileName){
         
         
         if(srcDataBuffer != NULL){
-        // EXTRACT STREAM SETTINGS FROM CONFIG
+    // EXTRACT STREAM SETTINGS FROM CONFIG
             // Load data for stream TIME
-            Config->dataStream.time_ms= jRead_int((char *) srcDataBuffer, FILE_KEY_CONFIG_STREAM_TIME, &i);
+            sysConf.communication.mqtt.stream.time_ms= jRead_int((char *) srcDataBuffer, FILE_KEY_CONFIG_STREAM_TIME, &i);
 
             // Load data for stream STATE
             jRead_string((char *)srcDataBuffer, FILE_KEY_CONFIG_STREAM_STATE, dataValue, 15, &i );
 
             if(!strcmp(dataValue, "on")){
-                Config->dataStream.state = 1;
+                sysConf.communication.mqtt.stream.state = 1;
+                
             }else
                 if(!strcmp(dataValue, "off")){
-                    Config->dataStream.state = 0;
+                    sysConf.communication.mqtt.stream.state = 0;
                 }
 
             // Load data for stream ONEVENT
             jRead_string((char *)srcDataBuffer, FILE_KEY_CONFIG_STREAM_ONEVENT, dataValue, 15, &i );
             if(!strcmp(dataValue, "on")){
-                Config->dataStream.onEvent = 1;
+                sysConf.communication.mqtt.stream.onEvent = 1;
             }else
                 if(!strcmp(dataValue, "off")){
-                    Config->dataStream.onEvent = 0;
+                    sysConf.communication.mqtt.stream.onEvent = 0;
                 }
 
-        // EXTRACT MOTOR SETTINGS FROM CONFIG    
+    // EXTRACT MOTOR SETTINGS FROM CONFIG    
             // Reset motor data config before reading
             for(i=0;i<NBMOTOR;i++){
-              Config->motor[i].inverted = -1;
-              Config->motor[i].minRPM = 0;
-              Config->motor[i].maxRPM = 200;
+              device.actuator.motor[i].config.inverted = 0;
+              kehops.dcWheel[i].config.rpmMin = 20;
+              kehops.dcWheel[i].config.rpmMax = 200;
             }
 
         // Motor Setting
@@ -157,38 +159,36 @@ char LoadConfig(t_sysConfig * Config, char * fileName){
                     deviceId=jRead_int((char *)srcDataBuffer, FILE_KEY_CONFIG_MOTOR_ID, &i); 
 
                     if(deviceId >= 0 && deviceId < NBMOTOR){
-                        Config->motor[deviceId].minRPM = jRead_int((char *)srcDataBuffer, FILE_KEY_CONFIG_MOTOR_MINRPM, &i); 
-                        Config->motor[deviceId].maxRPM = jRead_int((char *)srcDataBuffer, FILE_KEY_CONFIG_MOTOR_MAXRPM, &i); 
-                        Config->motor[deviceId].minPWM = jRead_int((char *)srcDataBuffer, FILE_KEY_CONFIG_MOTOR_MINPWM, &i); 
+                        kehops.dcWheel[deviceId].config.rpmMin = jRead_int((char *)srcDataBuffer, FILE_KEY_CONFIG_MOTOR_MINRPM, &i); 
+                        kehops.dcWheel[deviceId].config.rpmMax = jRead_int((char *)srcDataBuffer, FILE_KEY_CONFIG_MOTOR_MAXRPM, &i); 
+                         device.actuator.motor[deviceId].config.powerMin = jRead_int((char *)srcDataBuffer, FILE_KEY_CONFIG_MOTOR_MINPWM, &i); 
                         jRead_string((char *)srcDataBuffer, FILE_KEY_CONFIG_MOTOR_INVERT, dataValue, 15, &i );
                         if(!strcmp(dataValue, "on")){
-                            Config->motor[deviceId].inverted = 1;
+                            device.actuator.motor[deviceId].config.inverted = 1;
                         }else
                             if(!strcmp(dataValue, "off")){
-                                Config->motor[deviceId].inverted = 0;
+                                device.actuator.motor[deviceId].config.inverted = 0;
                             }
                         // RECUPERATION DES PARAMETRE DU REGULATOR PID
                         jRead_string((char *)srcDataBuffer, FILE_KEY_CONFIG_MOTOR_PIDEN, dataValue, 15, &i );
                         if(!strcmp(dataValue, "on")){
-                            Config->motor[deviceId].rpmRegulator.PIDstate = 1;
+                            kehops.dcWheel[deviceId].config.pidReg.enable = 1;
                         }else
                             if(!strcmp(dataValue, "off")){
-                                Config->motor[deviceId].rpmRegulator.PIDstate = 0;
+                                kehops.dcWheel[deviceId].config.pidReg.enable = 0;
                             }                        
-                        Config->motor[deviceId].rpmRegulator.PID_Kp = jRead_double((char *)srcDataBuffer, FILE_KEY_CONFIG_MOTOR_PIDkp, &i); 
-                        Config->motor[deviceId].rpmRegulator.PID_Ki = jRead_double((char *)srcDataBuffer, FILE_KEY_CONFIG_MOTOR_PIDki, &i); 
-                        Config->motor[deviceId].rpmRegulator.PID_Kd = jRead_double((char *)srcDataBuffer, FILE_KEY_CONFIG_MOTOR_PIDkd, &i); 
-                        //printf("\n****CFG MOTOR #%d: %d\n",deviceId, Config->motor[deviceId].minPower);
+                        kehops.dcWheel[deviceId].config.pidReg.Kp = jRead_double((char *)srcDataBuffer, FILE_KEY_CONFIG_MOTOR_PIDkp, &i); 
+                        kehops.dcWheel[deviceId].config.pidReg.Ki = jRead_double((char *)srcDataBuffer, FILE_KEY_CONFIG_MOTOR_PIDki, &i); 
+                        kehops.dcWheel[deviceId].config.pidReg.Kd = jRead_double((char *)srcDataBuffer, FILE_KEY_CONFIG_MOTOR_PIDkd, &i); 
                     }
                 }
             }
             
-        // EXTRACT WHEEL SETTINGS FROM CONFIG    
+    // EXTRACT WHEEL SETTINGS FROM CONFIG    
             // Reset motor data config before reading
             for(i=0;i<NBMOTOR;i++){
-              Config->wheel[i].diameter=-1;
-              Config->wheel[i].pulsePerRot=-1;
-              Config->wheel[i]._MMPP=-1;
+              kehops.dcWheel[deviceId].config.diameter = -1;
+              kehops.dcWheel[deviceId].config.pulsesPerRot = -1;
             }
 
         // Wheel Setting
@@ -204,21 +204,21 @@ char LoadConfig(t_sysConfig * Config, char * fileName){
                     deviceId=jRead_long((char *)srcDataBuffer, FILE_KEY_CONFIG_WHEEL_ID, &i); 
 
                     if(deviceId >= 0 && deviceId < NBMOTOR){
-                        Config->wheel[deviceId].diameter=jRead_long((char *)srcDataBuffer, FILE_KEY_CONFIG_WHEEL_DIAMETER, &i);
-                        Config->wheel[deviceId].pulsePerRot=jRead_long((char *)srcDataBuffer, FILE_KEY_CONFIG_WHEEL_PULSES, &i);
-                        Config->wheel[deviceId]._MMPP = (Config->wheel[deviceId].diameter * 3.1415926535897932384) / Config->wheel[deviceId].pulsePerRot;
-                        Config->wheel[deviceId]._MAXSPEED_CMSEC = ((float)Config->motor[deviceId].maxRPM /60) *  ((Config->wheel[deviceId].diameter * 3.1415926535897932384)/10);
+                        kehops.dcWheel[deviceId].config.diameter = jRead_long((char *)srcDataBuffer, FILE_KEY_CONFIG_WHEEL_DIAMETER, &i);
+                        kehops.dcWheel[deviceId].config.pulsesPerRot = jRead_long((char *)srcDataBuffer, FILE_KEY_CONFIG_WHEEL_PULSES, &i);
+                        kehops.dcWheel[deviceId].data._MMPP = (kehops.dcWheel[deviceId].config.diameter * 3.1415926535897932384) / kehops.dcWheel[deviceId].config.pulsesPerRot;
+                        kehops.dcWheel[deviceId].data._MAXSPEED_CMSEC = ((float)kehops.dcWheel[deviceId].config.rpmMax /60) *  ((kehops.dcWheel[deviceId].config.diameter * 3.1415926535897932384)/10);
                     }
                 }
             }
             
-        // EXTRACT STEPPER MOPTOR SETTINGS FROM CONFIG
+    // EXTRACT STEPPER MOTOR SETTINGS FROM CONFIG
         
             // Reset motor data config before reading
         for(i=0;i<NBSTEPPER;i++){
-          Config->stepper[i].inverted=-1;
-          Config->stepper[i].ratio=-1;
-          Config->stepper[i].stepPerRot=-1;
+          device.actuator.stepperMotor[i].config.inverted = -1;
+          device.actuator.stepperMotor[i].config.ratio = -1;
+          device.actuator.stepperMotor[i].config.steps = -1;
         }
             
         // Stepper motor Settings
@@ -236,13 +236,13 @@ char LoadConfig(t_sysConfig * Config, char * fileName){
                     if(deviceId >= 0 && deviceId < NBSTEPPER){
                         jRead_string((char *)srcDataBuffer, FILE_KEY_CONFIG_STEPPER_INVERT, dataValue, 15, &i );
                         if(!strcmp(dataValue, "on")){
-                            Config->stepper[deviceId].inverted = 1;
+                           device.actuator.stepperMotor[deviceId].config.inverted = 1;
                         }else
                             if(!strcmp(dataValue, "off")){
-                                Config->stepper[deviceId].inverted = 0;
+                                device.actuator.stepperMotor[deviceId].config.inverted = 0;
                             }
-                        Config->stepper[deviceId].ratio = jRead_long((char *)srcDataBuffer, FILE_KEY_CONFIG_STEPPER_RATIO, &i); 
-                        Config->stepper[deviceId].stepPerRot =jRead_long((char *)srcDataBuffer, FILE_KEY_CONFIG_STEPPER_STEPS, &i); 
+                        device.actuator.stepperMotor[deviceId].config.ratio = jRead_long((char *)srcDataBuffer, FILE_KEY_CONFIG_STEPPER_RATIO, &i); 
+                        device.actuator.stepperMotor[deviceId].config.steps = jRead_long((char *)srcDataBuffer, FILE_KEY_CONFIG_STEPPER_STEPS, &i); 
                     }
                 }
             }            
@@ -250,9 +250,9 @@ char LoadConfig(t_sysConfig * Config, char * fileName){
     // EXTRACT LED SETTINGS FROM CONFIG    
           // Reset motor data config before reading
           for(i=0;i<NBLED;i++){
-            Config->led[i].power=-1;
-            Config->led[i].state=-1;
-            Config->led[i].isServoMode=-1;
+              kehops.led[i].config.defaultPower = -1;
+              kehops.led[i].config.defaultState = -1;
+              kehops.led[i].config.mode = -1;
           }
 
         // Les Setting
@@ -267,15 +267,16 @@ char LoadConfig(t_sysConfig * Config, char * fileName){
                     deviceId=-1;
                     deviceId=jRead_long((char *)srcDataBuffer, FILE_KEY_CONFIG_LED_ID, &i); 
 
-                    Config->led[deviceId].power = jRead_int((char *)srcDataBuffer, FILE_KEY_CONFIG_LED_POWER, &i);                     
+                    kehops.led[deviceId].config.defaultPower = jRead_int((char *)srcDataBuffer, FILE_KEY_CONFIG_LED_POWER, &i);
 
                     if(deviceId >= 0 && deviceId < NBLED){
                         jRead_string((char *)srcDataBuffer, FILE_KEY_CONFIG_LED_STATE, dataValue, 15, &i );
                         if(!strcmp(dataValue, "on")){
-                            Config->led[deviceId].state = 1;
+//                            Config->led[deviceId].state = 1;
+                            kehops.led[deviceId].config.defaultState = 1;
                         }else
                             if(!strcmp(dataValue, "off")){
-                                Config->led[deviceId].state = 0;
+                            kehops.led[deviceId].config.defaultState = 0;
                             }
                     }
                 }
@@ -295,7 +296,7 @@ char LoadConfig(t_sysConfig * Config, char * fileName){
 // Save configuration to file
 // -----------------------------------------------------------------------------
 
-char SaveConfig(t_sysConfig * Config, char * fileName){
+char SaveConfig(char * fileName){
     char buffer[MAX_MQTT_BUFF];
     unsigned int buflen= MAX_MQTT_BUFF;
     int i;
@@ -304,18 +305,18 @@ char SaveConfig(t_sysConfig * Config, char * fileName){
         // CREATE JSON CONFIG FOR STREAM        
             jwObj_object( "stream" );
             
-            if(Config->dataStream.state == 0)
+            if(sysConf.communication.mqtt.stream.state == 0)
                 jwObj_string("state", "off");
             else 
-                if(Config->dataStream.state == 1)
+                if(sysConf.communication.mqtt.stream.state == 1)
                     jwObj_string("state", "on");
 
-                jwObj_int( "time", Config->dataStream.time_ms);
+                jwObj_int( "time", sysConf.communication.mqtt.stream.time_ms);
                 
-            if(Config->dataStream.onEvent == 0)
+            if(sysConf.communication.mqtt.stream.onEvent == 0)
                 jwObj_string("onEvent", "off");
             else 
-                if(Config->dataStream.onEvent == 1)
+                if(sysConf.communication.mqtt.stream.onEvent == 1)
                     jwObj_string("onEvent", "on");                
             jwEnd();
 
@@ -324,23 +325,23 @@ char SaveConfig(t_sysConfig * Config, char * fileName){
                 for(i=0;i<NBMOTOR;i++){
                     jwArr_object();
                         jwObj_int( "motor", i);
-                        if(Config->motor[i].inverted == 0)
+                        if(device.actuator.motor[i].config.inverted == 0)
                             jwObj_string("inverted", "off");
                         else 
-                            if(Config->motor[i].inverted == 1)
+                            if(device.actuator.motor[i].config.inverted == 1)
                                 jwObj_string("inverted", "on");
-                        jwObj_int( "pwmMin", Config->motor[i].minPWM);
-                        jwObj_int( "rpmMin", Config->motor[i].minRPM);
-                        jwObj_int( "rpmMax", Config->motor[i].maxRPM);
+                        jwObj_int( "pwmMin", device.actuator.motor[i].config.powerMin);
+                        jwObj_int( "rpmMin", kehops.dcWheel[i].config.rpmMin);
+                        jwObj_int( "rpmMax", kehops.dcWheel[i].config.rpmMax);
                         jwObj_object("rpmRegulator");
-                            if(Config->motor[i].rpmRegulator.PIDstate == 0)
+                            if(kehops.dcWheel[i].config.pidReg.enable == 0)
                                 jwObj_string("state", "off");
                             else 
-                                if(Config->motor[i].rpmRegulator.PIDstate == 1)
+                                if(kehops.dcWheel[i].config.pidReg.enable == 1)
                                     jwObj_string("state", "on");
-                                    jwObj_double( "PID_Kp", Config->motor[i].rpmRegulator.PID_Kp);
-                                    jwObj_double( "PID_Ki", Config->motor[i].rpmRegulator.PID_Ki);
-                                    jwObj_double( "PID_Kd", Config->motor[i].rpmRegulator.PID_Kd);
+                                    jwObj_double( "PID_Kp", kehops.dcWheel[i].config.pidReg.Kp);
+                                    jwObj_double( "PID_Ki", kehops.dcWheel[i].config.pidReg.Ki);
+                                    jwObj_double( "PID_Kd", kehops.dcWheel[i].config.pidReg.Kd);
                         jwEnd();
                     jwEnd();
                 } 
@@ -351,8 +352,8 @@ char SaveConfig(t_sysConfig * Config, char * fileName){
                 for(i=0;i<NBMOTOR;i++){
                     jwArr_object();
                         jwObj_int( "wheel", i);
-                        jwObj_int( "diameter", Config->wheel[i].diameter);
-                        jwObj_int( "pulses", Config->wheel[i].pulsePerRot);
+                        jwObj_int( "diameter", kehops.dcWheel[i].config.diameter);
+                        jwObj_int( "pulses", kehops.dcWheel[i].config.pulsesPerRot);
                     jwEnd();
                 } 
             jwEnd();            
@@ -362,13 +363,13 @@ char SaveConfig(t_sysConfig * Config, char * fileName){
                 for(i=0;i<NBSTEPPER;i++){
                     jwArr_object();
                         jwObj_int( "motor", i);
-                        if(Config->stepper[i].inverted == 0)
+                        if(device.actuator.stepperMotor[i].config.inverted == 0)
                             jwObj_string("inverted", "off");
                         else 
-                            if(Config->stepper[i].inverted == 1)
+                            if(device.actuator.stepperMotor[i].config.inverted == 1)
                                 jwObj_string("inverted", "on");
-                        jwObj_int( "ratio", Config->stepper[i].ratio);
-                        jwObj_int( "steps", Config->stepper[i].stepPerRot);
+                        jwObj_int( "ratio", device.actuator.stepperMotor[i].config.ratio);
+                        jwObj_int( "steps", device.actuator.stepperMotor[i].config.steps);
                     jwEnd();
                 } 
             jwEnd();            
@@ -378,12 +379,12 @@ char SaveConfig(t_sysConfig * Config, char * fileName){
                 for(i=0;i<NBLED;i++){
                     jwArr_object();
                         jwObj_int( "led", i);
-                        if(Config->led[i].state == 0)
+                        if(kehops.led[i].config.defaultState == 0)
                             jwObj_string("state", "off");
                         else 
-                            if(Config->led[i].state == 1)
+                            if(kehops.led[i].config.defaultState == 1)
                                 jwObj_string("state", "on");
-                        jwObj_int( "power", Config->led[i].power);
+                        jwObj_int( "power", kehops.led[i].config.defaultPower);
                     jwEnd();
                 } 
             jwEnd();            

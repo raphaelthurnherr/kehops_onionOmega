@@ -10,6 +10,7 @@
       <itemPath>asyncTools/asyncSTEPPER.h</itemPath>
       <itemPath>asyncTools/asyncTools.h</itemPath>
       <itemPath>AlgoidCom/type.h</itemPath>
+      <itemPath>AlgoidCom/typeNew.h</itemPath>
     </logicalFolder>
     <logicalFolder name="ResourceFiles"
                    displayName="Resource Files"
@@ -18,21 +19,19 @@
     <logicalFolder name="SourceFiles"
                    displayName="Source Files"
                    projectFiles="true">
-      <logicalFolder name="actuatorsDriver"
-                     displayName="actuatorsDriver"
-                     projectFiles="true">
-        <itemPath>actuatorsDriver/asnycLED.c</itemPath>
-        <itemPath>actuatorsDriver/asyncLED.h</itemPath>
-        <itemPath>actuatorsDriver/asyncMOTOR.c</itemPath>
-        <itemPath>actuatorsDriver/asyncMOTOR.h</itemPath>
-        <itemPath>actuatorsDriver/asyncPWM.c</itemPath>
-        <itemPath>actuatorsDriver/asyncPWM.h</itemPath>
-        <itemPath>actuatorsDriver/asyncSERVO.c</itemPath>
-        <itemPath>actuatorsDriver/asyncSERVO.h</itemPath>
-        <itemPath>actuatorsDriver/asyncSTEPPER.c</itemPath>
-        <itemPath>actuatorsDriver/asyncSTEPPER.h</itemPath>
-        <itemPath>actuatorsDriver/asyncTools.c</itemPath>
-        <itemPath>actuatorsDriver/asyncTools.h</itemPath>
+      <logicalFolder name="actuators" displayName="actuators" projectFiles="true">
+        <itemPath>actuators/asyncLED.c</itemPath>
+        <itemPath>actuators/asyncLED.h</itemPath>
+        <itemPath>actuators/asyncMOTOR.c</itemPath>
+        <itemPath>actuators/asyncMOTOR.h</itemPath>
+        <itemPath>actuators/asyncPWM.c</itemPath>
+        <itemPath>actuators/asyncPWM.h</itemPath>
+        <itemPath>actuators/asyncSERVO.c</itemPath>
+        <itemPath>actuators/asyncSERVO.h</itemPath>
+        <itemPath>actuators/asyncSTEPPER.c</itemPath>
+        <itemPath>actuators/asyncSTEPPER.h</itemPath>
+        <itemPath>actuators/asyncTools.c</itemPath>
+        <itemPath>actuators/asyncTools.h</itemPath>
       </logicalFolder>
       <logicalFolder name="hwControl" displayName="hwControl" projectFiles="true">
         <logicalFolder name="libs" displayName="libs" projectFiles="true">
@@ -135,9 +134,8 @@
   </logicalFolder>
   <sourceRootList>
     <Elem>hwControl</Elem>
-    <Elem>asyncTools</Elem>
     <Elem>kehopsCom</Elem>
-    <Elem>actuatorsDriver</Elem>
+    <Elem>actuators</Elem>
   </sourceRootList>
   <projectmakefile>Makefile</projectmakefile>
   <confs>
@@ -153,11 +151,10 @@
             <pElem>hwControl/libs/i2c</pElem>
             <pElem>hwControl/libs/onion-debug</pElem>
             <pElem>hwControl</pElem>
+            <pElem>actuators</pElem>
             <pElem>kehopsCom</pElem>
-            <pElem>kehopsCom/libs</pElem>
             <pElem>kehopsCom/libs/lib_json</pElem>
             <pElem>kehopsCom/libs/lib_mqtt</pElem>
-            <pElem>actuatorsDriver</pElem>
           </incDir>
           <incFile>
             <pElem>buildNumber.h</pElem>
@@ -165,35 +162,37 @@
           <commandLine>-pthread -lm</commandLine>
         </cTool>
         <linkerTool>
-          <output>${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/kehops_onionomega</output>
+          <output>${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/kehops</output>
           <commandLine>-pthread -lm</commandLine>
         </linkerTool>
       </compileType>
       <item path="AlgoidCom/type.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="actuatorsDriver/asnycLED.c" ex="false" tool="0" flavor2="0">
+      <item path="AlgoidCom/typeNew.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="actuatorsDriver/asyncLED.h" ex="false" tool="3" flavor2="0">
+      <item path="actuators/asyncLED.c" ex="false" tool="0" flavor2="0">
       </item>
-      <item path="actuatorsDriver/asyncMOTOR.c" ex="false" tool="0" flavor2="0">
+      <item path="actuators/asyncLED.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="actuatorsDriver/asyncMOTOR.h" ex="false" tool="3" flavor2="0">
+      <item path="actuators/asyncMOTOR.c" ex="false" tool="0" flavor2="0">
       </item>
-      <item path="actuatorsDriver/asyncPWM.c" ex="false" tool="0" flavor2="0">
+      <item path="actuators/asyncMOTOR.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="actuatorsDriver/asyncPWM.h" ex="false" tool="3" flavor2="0">
+      <item path="actuators/asyncPWM.c" ex="false" tool="0" flavor2="0">
       </item>
-      <item path="actuatorsDriver/asyncSERVO.c" ex="false" tool="0" flavor2="0">
+      <item path="actuators/asyncPWM.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="actuatorsDriver/asyncSERVO.h" ex="false" tool="3" flavor2="0">
+      <item path="actuators/asyncSERVO.c" ex="false" tool="0" flavor2="0">
       </item>
-      <item path="actuatorsDriver/asyncSTEPPER.c" ex="false" tool="0" flavor2="0">
+      <item path="actuators/asyncSERVO.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="actuatorsDriver/asyncSTEPPER.h" ex="false" tool="3" flavor2="0">
+      <item path="actuators/asyncSTEPPER.c" ex="false" tool="0" flavor2="0">
       </item>
-      <item path="actuatorsDriver/asyncTools.c" ex="false" tool="0" flavor2="0">
+      <item path="actuators/asyncSTEPPER.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="actuatorsDriver/asyncTools.h" ex="false" tool="3" flavor2="0">
+      <item path="actuators/asyncTools.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="actuators/asyncTools.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="algobotManager.sh.h" ex="false" tool="3" flavor2="0">
       </item>
@@ -436,11 +435,11 @@
           <incDir>
             <pElem>hwControl/libs/i2c</pElem>
             <pElem>hwControl/libs/onion-debug</pElem>
-            <pElem>AlgoidCom/libs/lib_json</pElem>
-            <pElem>AlgoidCom/libs/lib_mqtt</pElem>
-            <pElem>AlgoidCom</pElem>
             <pElem>hwControl</pElem>
-            <pElem>asyncTools</pElem>
+            <pElem>actuators</pElem>
+            <pElem>kehopsCom/libs/lib_json</pElem>
+            <pElem>kehopsCom/libs/lib_mqtt</pElem>
+            <pElem>kehopsCom</pElem>
           </incDir>
           <commandLine>-pthread -lm</commandLine>
         </cTool>
@@ -454,35 +453,37 @@
           <developmentMode>5</developmentMode>
         </asmTool>
         <linkerTool>
-          <output>${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/algobot_onionomega</output>
+          <output>${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/kehops</output>
           <commandLine>-pthread -lm</commandLine>
         </linkerTool>
       </compileType>
       <item path="AlgoidCom/type.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="actuatorsDriver/asnycLED.c" ex="false" tool="0" flavor2="0">
+      <item path="AlgoidCom/typeNew.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="actuatorsDriver/asyncLED.h" ex="false" tool="3" flavor2="0">
+      <item path="actuators/asyncLED.c" ex="false" tool="0" flavor2="0">
       </item>
-      <item path="actuatorsDriver/asyncMOTOR.c" ex="false" tool="0" flavor2="0">
+      <item path="actuators/asyncLED.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="actuatorsDriver/asyncMOTOR.h" ex="false" tool="3" flavor2="0">
+      <item path="actuators/asyncMOTOR.c" ex="false" tool="0" flavor2="0">
       </item>
-      <item path="actuatorsDriver/asyncPWM.c" ex="false" tool="0" flavor2="0">
+      <item path="actuators/asyncMOTOR.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="actuatorsDriver/asyncPWM.h" ex="false" tool="3" flavor2="0">
+      <item path="actuators/asyncPWM.c" ex="false" tool="0" flavor2="0">
       </item>
-      <item path="actuatorsDriver/asyncSERVO.c" ex="false" tool="0" flavor2="0">
+      <item path="actuators/asyncPWM.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="actuatorsDriver/asyncSERVO.h" ex="false" tool="3" flavor2="0">
+      <item path="actuators/asyncSERVO.c" ex="false" tool="0" flavor2="0">
       </item>
-      <item path="actuatorsDriver/asyncSTEPPER.c" ex="false" tool="0" flavor2="0">
+      <item path="actuators/asyncSERVO.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="actuatorsDriver/asyncSTEPPER.h" ex="false" tool="3" flavor2="0">
+      <item path="actuators/asyncSTEPPER.c" ex="false" tool="0" flavor2="0">
       </item>
-      <item path="actuatorsDriver/asyncTools.c" ex="false" tool="0" flavor2="0">
+      <item path="actuators/asyncSTEPPER.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="actuatorsDriver/asyncTools.h" ex="false" tool="3" flavor2="0">
+      <item path="actuators/asyncTools.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="actuators/asyncTools.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="algobotManager.sh.h" ex="false" tool="3" flavor2="0">
       </item>
@@ -724,11 +725,11 @@
           <incDir>
             <pElem>hwControl/libs/i2c</pElem>
             <pElem>hwControl/libs/onion-debug</pElem>
-            <pElem>AlgoidCom/libs/lib_json</pElem>
-            <pElem>AlgoidCom/libs/lib_mqtt</pElem>
-            <pElem>AlgoidCom</pElem>
             <pElem>hwControl</pElem>
-            <pElem>asyncTools</pElem>
+            <pElem>kehopsCom</pElem>
+            <pElem>kehopsCom/libs/lib_json</pElem>
+            <pElem>kehopsCom/libs/lib_mqtt</pElem>
+            <pElem>actuators</pElem>
           </incDir>
           <commandLine>-pthread -lm</commandLine>
           <preprocessorList>
@@ -736,34 +737,37 @@
           </preprocessorList>
         </cTool>
         <linkerTool>
+          <output>${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/kehops_x64</output>
           <commandLine>-pthread -lm</commandLine>
         </linkerTool>
       </compileType>
       <item path="AlgoidCom/type.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="actuatorsDriver/asnycLED.c" ex="false" tool="0" flavor2="0">
+      <item path="AlgoidCom/typeNew.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="actuatorsDriver/asyncLED.h" ex="false" tool="3" flavor2="0">
+      <item path="actuators/asyncLED.c" ex="false" tool="0" flavor2="0">
       </item>
-      <item path="actuatorsDriver/asyncMOTOR.c" ex="false" tool="0" flavor2="0">
+      <item path="actuators/asyncLED.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="actuatorsDriver/asyncMOTOR.h" ex="false" tool="3" flavor2="0">
+      <item path="actuators/asyncMOTOR.c" ex="false" tool="0" flavor2="0">
       </item>
-      <item path="actuatorsDriver/asyncPWM.c" ex="false" tool="0" flavor2="0">
+      <item path="actuators/asyncMOTOR.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="actuatorsDriver/asyncPWM.h" ex="false" tool="3" flavor2="0">
+      <item path="actuators/asyncPWM.c" ex="false" tool="0" flavor2="0">
       </item>
-      <item path="actuatorsDriver/asyncSERVO.c" ex="false" tool="0" flavor2="0">
+      <item path="actuators/asyncPWM.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="actuatorsDriver/asyncSERVO.h" ex="false" tool="3" flavor2="0">
+      <item path="actuators/asyncSERVO.c" ex="false" tool="0" flavor2="0">
       </item>
-      <item path="actuatorsDriver/asyncSTEPPER.c" ex="false" tool="0" flavor2="0">
+      <item path="actuators/asyncSERVO.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="actuatorsDriver/asyncSTEPPER.h" ex="false" tool="3" flavor2="0">
+      <item path="actuators/asyncSTEPPER.c" ex="false" tool="0" flavor2="0">
       </item>
-      <item path="actuatorsDriver/asyncTools.c" ex="false" tool="0" flavor2="0">
+      <item path="actuators/asyncSTEPPER.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="actuatorsDriver/asyncTools.h" ex="false" tool="3" flavor2="0">
+      <item path="actuators/asyncTools.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="actuators/asyncTools.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="algobotManager.sh.h" ex="false" tool="3" flavor2="0">
       </item>
@@ -1006,11 +1010,11 @@
           <incDir>
             <pElem>hwControl/libs/i2c</pElem>
             <pElem>hwControl/libs/onion-debug</pElem>
-            <pElem>AlgoidCom/libs/lib_json</pElem>
-            <pElem>AlgoidCom/libs/lib_mqtt</pElem>
-            <pElem>AlgoidCom</pElem>
             <pElem>hwControl</pElem>
-            <pElem>asyncTools</pElem>
+            <pElem>kehopsCom/libs/lib_json</pElem>
+            <pElem>kehopsCom/libs/lib_mqtt</pElem>
+            <pElem>kehopsCom</pElem>
+            <pElem>actuators</pElem>
           </incDir>
           <commandLine>-pthread -lm</commandLine>
           <preprocessorList>
@@ -1018,35 +1022,37 @@
           </preprocessorList>
         </cTool>
         <linkerTool>
-          <output>${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/algobot_onionomega_x86</output>
+          <output>${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/kehops_x86</output>
           <commandLine>-pthread -lm</commandLine>
         </linkerTool>
       </compileType>
       <item path="AlgoidCom/type.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="actuatorsDriver/asnycLED.c" ex="false" tool="0" flavor2="0">
+      <item path="AlgoidCom/typeNew.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="actuatorsDriver/asyncLED.h" ex="false" tool="3" flavor2="0">
+      <item path="actuators/asyncLED.c" ex="false" tool="0" flavor2="0">
       </item>
-      <item path="actuatorsDriver/asyncMOTOR.c" ex="false" tool="0" flavor2="0">
+      <item path="actuators/asyncLED.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="actuatorsDriver/asyncMOTOR.h" ex="false" tool="3" flavor2="0">
+      <item path="actuators/asyncMOTOR.c" ex="false" tool="0" flavor2="0">
       </item>
-      <item path="actuatorsDriver/asyncPWM.c" ex="false" tool="0" flavor2="0">
+      <item path="actuators/asyncMOTOR.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="actuatorsDriver/asyncPWM.h" ex="false" tool="3" flavor2="0">
+      <item path="actuators/asyncPWM.c" ex="false" tool="0" flavor2="0">
       </item>
-      <item path="actuatorsDriver/asyncSERVO.c" ex="false" tool="0" flavor2="0">
+      <item path="actuators/asyncPWM.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="actuatorsDriver/asyncSERVO.h" ex="false" tool="3" flavor2="0">
+      <item path="actuators/asyncSERVO.c" ex="false" tool="0" flavor2="0">
       </item>
-      <item path="actuatorsDriver/asyncSTEPPER.c" ex="false" tool="0" flavor2="0">
+      <item path="actuators/asyncSERVO.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="actuatorsDriver/asyncSTEPPER.h" ex="false" tool="3" flavor2="0">
+      <item path="actuators/asyncSTEPPER.c" ex="false" tool="0" flavor2="0">
       </item>
-      <item path="actuatorsDriver/asyncTools.c" ex="false" tool="0" flavor2="0">
+      <item path="actuators/asyncSTEPPER.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="actuatorsDriver/asyncTools.h" ex="false" tool="3" flavor2="0">
+      <item path="actuators/asyncTools.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="actuators/asyncTools.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="algobotManager.sh.h" ex="false" tool="3" flavor2="0">
       </item>

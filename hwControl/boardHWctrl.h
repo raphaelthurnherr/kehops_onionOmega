@@ -48,9 +48,9 @@
     #define ENC_CNT0_RESET                      0x28
     #define ENC_CNT0                            0x18
 
-    #define MCW                                 0
+    #define MCW                                 -1
     #define MCCW                                1
-    #define MSTOP                               2
+    #define MSTOP                               0
 
 // Definition des couleurs pour le capteur RGB
     #define RED                                 0

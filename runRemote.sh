@@ -9,24 +9,24 @@ newHeader='#define BUILD_CODE '$((number+1))
 echo $newHeader > buildNumber.h
 echo Build code: \# $((number))       
 
-#md5sum /home/raph-pnp/Documents/dev/embedded_soft/algobot_onion/algobot_onionOmega/dist/Debug/GNU_Omega-Linux/algobot_onionomega | cut -c -32 > dist/Debug/GNU_Omega-Linux/algobot_onionomega.md5
-md5sum /home/raph/NetBeansProjects/algobot_onionOmega/dist/Debug/GNU_Omega-Linux/algobot_onionomega | cut -c -32 > dist/Debug/GNU_Omega-Linux/algobot_onionomega.md5
-echo "Fichier MD5 cr�e: "`cat dist/Debug/GNU_Omega-Linux/algobot_onionomega.md5`
+md5sum /home/raph-pnp/Documents/dev/embedded_soft/kehops_onionOmega/dist/Debug/GNU_Omega-Linux/kehops | cut -c -32 > dist/Debug/GNU_Omega-Linux/kehops_onionomega.md5
+#md5sum /home/raph/NetBeansProjects/kehops_onionOmega/dist/Debug/GNU_Omega-Linux/kehops | cut -c -32 > dist/Debug/GNU_Omega-Linux/kehops_onionomega.md5
+echo "Fichier MD5 cr�e: "`cat dist/Debug/GNU_Omega-Linux/kehops_onionomega.md5`
 
 echo "Transfere des fichiers binaire..."
 
-#rsync -a /home/raph/NetBeansProjects/algobot_onionOmega/dist/Debug/GNU_Omega-Linux/algobot_onionomega  root@192.168.3.1:~/algobot
-rsync -a /home/raph-pnp/Documents/dev/embedded_soft/algobot_onion/algobot_onionOmega/dist/Debug/GNU_Omega-Linux/algobot_onionomega  root@192.168.3.1:~/algobot
-#rsync -a /home/raph/NetBeansProjects/algobot_onionOmega/dist/Debug/GNU_Omega-Linux/algobot_onionomega  root@192.168.1.145:~/algobot
+#rsync -a /home/raph/NetBeansProjects/kehops_onionOmega/dist/Debug/GNU_Omega-Linux/kehops  root@192.168.3.1:~/kehops
+rsync -a /home/raph-pnp/Documents/dev/embedded_soft/kehops_onionOmega/dist/Debug/GNU_Omega-Linux/kehops  root@192.168.3.1:~/kehops
+#rsync -a /home/raph/NetBeansProjects/kehops_onionOmega/dist/Debug/GNU_Omega-Linux/kehops  root@192.168.1.145:~/kehops
 
 echo "Transfere du fichier MD5 du binaire..."
-#rsync -a /home/raph-pnp/Documents/dev/embedded_soft/algobot_onion/algobot_onionOmega/dist/Debug/GNU_Omega-Linux/algobot_onionomega.md5  root@192.168.3.1:~/algobot
+#rsync -a /home/raph-pnp/Documents/dev/embedded_soft/kehops_onionOmega/dist/Debug/GNU_Omega-Linux/kehops_onionomega.md5  root@192.168.3.1:~/kehops
 
 #echo "Transfere du script de mise à jour"
-#rsync -a /home/raph-pnp/Documents/dev/embedded_soft/algobot_onion/algobot_onionOmega/dist/Debug/GNU_Omega-Linux/algobotManager.sh  root@192.168.3.1:~
+#rsync -a /home/raph-pnp/Documents/dev/embedded_soft/kehops_onionOmega/dist/Debug/GNU_Omega-Linux/kehopsManager.sh  root@192.168.3.1:~
         
 #echo "Lancement de l'application via SSH...\n"
-#sshpass -p onioneer ssh root@192.168.3.1 "~/algobot/./algobot_onionomega"
+#sshpass -p onioneer ssh root@192.168.3.1 "~/kehops/./kehops_onionomega"
  
 echo "Fermeture du tunnel SSH"
 
