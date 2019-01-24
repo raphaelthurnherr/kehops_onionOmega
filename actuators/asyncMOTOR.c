@@ -41,7 +41,7 @@ int setAsyncMotorAction(int actionNumber, int motorNb, int veloc, char unit, int
 	int endOfTask;  
         
 	if(veloc == 0){
-                kehops.dcWheel[motorNb].motor->direction = BUGGY_STOP;
+                kehops.dcWheel[motorNb].motor.direction = BUGGY_STOP;
 	}
 
 
@@ -80,7 +80,7 @@ int setAsyncMotorAction(int actionNumber, int motorNb, int veloc, char unit, int
 		}
                 
 		// Défini le "nouveau" sens de rotation à applique au moteur ainsi que la consigne de vitesse
-		if(setMotorDirection(motorNb, kehops.dcWheel[motorNb].motor->direction)){                                                            // Sens de rotation
+		if(setMotorDirection(motorNb, kehops.dcWheel[motorNb].motor.direction)){                                                            // Sens de rotation
                     //printf("\n----  SET DIRECTION: %d  \n", robot.motor[motorNb].direction);
                         //motorPWM = RPMToPercent(motorNb, veloc);                                                   // Mise à l'échelle d'un % "utilisateur" en PWM % utilisable par le moteur
                         //motorSpeedSetpoint(motorNb, motorPWM);                                                          // Vitesse
@@ -116,8 +116,8 @@ int endWheelAction(int actionNumber, int motorNb){
 	// Stop le moteur
 	//setMotorSpeed(motorNb, 0);
         //motorSpeedSetpoint(motorNb, 0);
-        kehops.dcWheel[motorNb].motor->speed = 0;
-        kehops.dcWheel[motorNb].motor->direction = BUGGY_STOP;
+        kehops.dcWheel[motorNb].motor.speed = 0;
+        kehops.dcWheel[motorNb].motor.direction = BUGGY_STOP;
         
 	// Retire l'action de la table et v�rification si toute les actions sont effectu�es
 	// Pour la t�che en cours donn�e par le message ALGOID
@@ -220,7 +220,7 @@ void checkDCmotorPower(void){
             // Converti la consigne donnée en % en consigne  CM/SEC
             
             //userSetpoint=(float)(robot.motor[i].velocity);
-            userSetpoint=(float)(kehops.dcWheel[i].motor->speed);
+            userSetpoint=(float)(kehops.dcWheel[i].motor.speed);
             
             //actualRpmInPercent = rpmToPercent(i, robot.motor[i].speed_rpm);
             actualRpmInPercent = rpmToPercent(i, kehops.dcWheel[i].measure.rpm);
@@ -237,15 +237,15 @@ void checkDCmotorPower(void){
                     pidSetpoint = PID_speedControl(i, actualRpmInPercent, normalizeSetpoint);
                     
                     //if(pidSetpoint < sysConfig.motor[i].minPWM)
-                    if(pidSetpoint < kehops.dcWheel[i].config.motor->powerMin)
-                        pidSetpoint = kehops.dcWheel[i].config.motor->powerMin;
+                    if(pidSetpoint < kehops.dcWheel[i].config.motor.powerMin)
+                        pidSetpoint = kehops.dcWheel[i].config.motor.powerMin;
                     newSetpoint = pidSetpoint;  
               
                     
                 }else{                    
                     
                     // Crée une consigne avec le PWM minimum pour entretenir le moteur et ajoute la consigne utilisateur
-                    fixedSetpoint = kehops.dcWheel[i].config.motor->powerMin + ((100 - (float)kehops.dcWheel[i].config.motor->powerMin) / 100) * userSetpoint;
+                    fixedSetpoint = kehops.dcWheel[i].config.motor.powerMin + ((100 - (float)kehops.dcWheel[i].config.motor.powerMin) / 100) * userSetpoint;
                     
                     //Ajoute 30% de consigne pour le démarrage moteur si RPM trop bas
                     if(actualRpmInPercent < kehops.dcWheel[i].config.rpmMin){
@@ -253,8 +253,8 @@ void checkDCmotorPower(void){
                     }
                         
                     //printf("\n*** MOTOR #%d  USER setpoint [pc]:   %d     Normalized setpoint [pc]:   %.2f       \n",0, robot.motor[0].velocity, userSetpoint);
-                    if(fixedSetpoint < kehops.dcWheel[i].config.motor->powerMin){
-                        newSetpoint = kehops.dcWheel[i].config.motor->powerMin;
+                    if(fixedSetpoint < kehops.dcWheel[i].config.motor.powerMin){
+                        newSetpoint = kehops.dcWheel[i].config.motor.powerMin;
                     }else
                         newSetpoint = fixedSetpoint;
                     
@@ -263,7 +263,7 @@ void checkDCmotorPower(void){
                 
                 //Ajoute 30% de consigne pour le démarrage moteur si RPM trop bas (20% < RPMmin)
                 if(kehops.dcWheel[i].measure.rpm < kehops.dcWheel[i].config.rpmMin - (kehops.dcWheel[i].config.rpmMin / 100 * 50)){
-                    newSetpoint += ((float)kehops.dcWheel[i].config.motor->powerMin / 100) * 25;
+                    newSetpoint += ((float)kehops.dcWheel[i].config.motor.powerMin / 100) * 25;
                     printf("\n !!!!!!! KICK START !!!!!\n");
                 }
                 

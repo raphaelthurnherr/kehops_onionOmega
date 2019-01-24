@@ -13,6 +13,7 @@
 #include "linux_json.h"
 #include "../kehops_main.h"
 #include "asyncTools.h"
+#include "../hwControl/hwManager.h"
 
 char reportBuffer[256];
 
@@ -36,22 +37,22 @@ int setAsyncStepperAction(int actionNumber, int motorNb, int veloc, char unit, i
         
 	if(veloc == 0){
 		myDirection=BUGGY_STOP;
-                kehops.stepperWheel[motorNb].motor->direction = 0;
+                kehops.stepperWheel[motorNb].motor.direction = 0;
 	}else
         {
             if(veloc < 0){
                 // Check if motor inversion requiered and modify if necessary
-                if(!kehops.stepperWheel[motorNb].config.motor->inverted)
+                if(!kehops.stepperWheel[motorNb].config.motor.inverted)
                     myDirection=BUGGY_FORWARD;
                 else myDirection=BUGGY_BACK;
-                kehops.stepperWheel[motorNb].motor->direction = -1;
+                kehops.stepperWheel[motorNb].motor.direction = -1;
                 veloc *=-1;					// Convertion en valeur positive
             }else{      
                 // Check if motor inversion requiered and modify if necessary
-                if(!kehops.stepperWheel[motorNb].motor->direction)
+                if(!kehops.stepperWheel[motorNb].motor.direction)
                     myDirection=BUGGY_BACK;
                 else myDirection=BUGGY_FORWARD;
-                kehops.stepperWheel[motorNb].motor->direction = 1;
+                kehops.stepperWheel[motorNb].motor.direction = 1;
             }            
         }
 
@@ -67,12 +68,12 @@ int setAsyncStepperAction(int actionNumber, int motorNb, int veloc, char unit, i
                              
                 case  ANGLE:        setTimerResult=setTimer(100, &checkStepperStatus, actionNumber, motorNb, STEPMOTOR);
                                     // Conversion de l'angle donné par l'utilisateur en nombre de pas
-                                    double resolution = 360.0 / (kehops.stepperWheel[motorNb].config.motor->ratio * kehops.stepperWheel[motorNb].config.motor->steps);
+                                    double resolution = 360.0 / (kehops.stepperWheel[motorNb].config.motor.ratio * kehops.stepperWheel[motorNb].config.motor.steps);
                                     steps = value / resolution; break;
                               
 		case  ROTATION:     setTimerResult=setTimer(100, &checkStepperStatus, actionNumber, motorNb, STEPMOTOR);
                                     // Conversion du nombre de tours donné par l'utilisateur en nombre de pas
-                                    steps = value * kehops.stepperWheel[motorNb].config.motor->ratio * kehops.stepperWheel[motorNb].config.motor->steps; break;
+                                    steps = value * kehops.stepperWheel[motorNb].config.motor.ratio * kehops.stepperWheel[motorNb].config.motor.steps; break;
 
                 case  INFINITE:     setTimerResult=setTimer(100, &dummyStepperAction, actionNumber, motorNb, STEPMOTOR);
                                     steps = -1;
@@ -135,7 +136,7 @@ int endStepperAction(int actionNumber, int motorNb){
 	// Stop le moteur
 //	setMotorSpeed(motorNb, 0);
         setStepperStepAction(motorNb, BUGGY_STOP, NULL);
-        kehops.stepperWheel[motorNb].motor->direction = BUGGY_STOP;
+        kehops.stepperWheel[motorNb].motor.direction = BUGGY_STOP;
 	// Retire l'action de la table et v�rification si toute les actions sont effectu�es
 	// Pour la t�che en cours donn�e par le message ALGOID
 

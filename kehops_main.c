@@ -80,7 +80,6 @@ void assignMotorWheel(void);        // Assign a motor for each wheel
 char reportBuffer[256];
 int ActionTable[10][3];
 
-t_device device;            // Device structure with actuator & sensor     
 robot_kehops kehops;
 t_sysApp sysApp;
 t_sysConf sysConf;
@@ -413,16 +412,16 @@ int processAlgoidCommand(void){
                                         if(AlgoidCommand.Config.motor[i].id >= 0 && AlgoidCommand.Config.motor[i].id <NBMOTOR){
                                             // Save config for motor inversion
                                             if(!strcmp(AlgoidCommand.Config.motor[i].inverted, "on")){
-                                                kehops.dcWheel[AlgoidCommand.Config.motor[i].id].config.motor->inverted = 1;
+                                                kehops.dcWheel[AlgoidCommand.Config.motor[i].id].config.motor.inverted = 1;
                                                 strcpy(AlgoidResponse[valCnt].CONFIGresponse.motor[i].inverted, "on");
                                             }
                                             else if(!strcmp(AlgoidCommand.Config.motor[i].inverted, "off")){
-                                                    kehops.dcWheel[AlgoidCommand.Config.motor[i].id].config.motor->inverted = 0;
+                                                    kehops.dcWheel[AlgoidCommand.Config.motor[i].id].config.motor.inverted = 0;
                                                     strcpy(AlgoidResponse[valCnt].CONFIGresponse.motor[i].inverted, "off");
                                             }
 
                                             // Save config for motor Min PWM for run
-                                            kehops.dcWheel[AlgoidCommand.Config.motor[i].id].config.motor->powerMin = AlgoidCommand.Config.motor[i].minPWM;
+                                            kehops.dcWheel[AlgoidCommand.Config.motor[i].id].config.motor.powerMin = AlgoidCommand.Config.motor[i].minPWM;
                                             
                                             // Save config for motor Min Max RPM
                                             kehops.dcWheel[AlgoidCommand.Config.motor[i].id].config.rpmMin = AlgoidCommand.Config.motor[i].minRPM;
@@ -476,16 +475,16 @@ int processAlgoidCommand(void){
                                         if(AlgoidCommand.Config.stepper[i].id >= 0 && AlgoidCommand.Config.stepper[i].id < NBSTEPPER){
                                             // Save config for motor inversion
                                             if(!strcmp(AlgoidCommand.Config.stepper[i].inverted, "on")){
-                                                kehops.stepperWheel[AlgoidCommand.Config.stepper[i].id].config.motor->inverted = 1;
+                                                kehops.stepperWheel[AlgoidCommand.Config.stepper[i].id].config.motor.inverted = 1;
                                                 strcpy(AlgoidResponse[valCnt].CONFIGresponse.stepper[i].inverted, "on");
                                             }
                                             else if(!strcmp(AlgoidCommand.Config.stepper[i].inverted, "off")){
-                                                kehops.stepperWheel[AlgoidCommand.Config.stepper[i].id].config.motor->inverted = 0;
+                                                kehops.stepperWheel[AlgoidCommand.Config.stepper[i].id].config.motor.inverted = 0;
                                                     strcpy(AlgoidResponse[valCnt].CONFIGresponse.stepper[i].inverted, "off");
                                             }
                                             
-                                            kehops.stepperWheel[AlgoidCommand.Config.stepper[i].id].config.motor->ratio = AlgoidCommand.Config.stepper[i].ratio;
-                                            kehops.stepperWheel[AlgoidCommand.Config.stepper[i].id].config.motor->steps = AlgoidCommand.Config.stepper[i].stepsPerRot;
+                                            kehops.stepperWheel[AlgoidCommand.Config.stepper[i].id].config.motor.ratio = AlgoidCommand.Config.stepper[i].ratio;
+                                            kehops.stepperWheel[AlgoidCommand.Config.stepper[i].id].config.motor.steps = AlgoidCommand.Config.stepper[i].stepsPerRot;
                                             AlgoidResponse[valCnt].CONFIGresponse.stepper[i].id = AlgoidCommand.Config.stepper[i].id;
                                         }
                                         else
@@ -663,7 +662,7 @@ int runMotorAction(void){
             ptrData=getWDvalue(i);
             if(ptrData>=0){
                 actionCount++;
-                        kehops.dcWheel[i].motor->speed = AlgoidCommand.DCmotor[ptrData].velocity;
+                        kehops.dcWheel[i].motor.speed = AlgoidCommand.DCmotor[ptrData].velocity;
                         kehops.dcWheel[i].target.distanceCM = AlgoidCommand.DCmotor[ptrData].cm;
                         kehops.dcWheel[i].target.time = AlgoidCommand.DCmotor[ptrData].time;
             }
@@ -699,7 +698,7 @@ int runMotorAction(void){
 
                                 printf(reportBuffer);                                                             // Affichage du message dans le shell
                                 sendMqttReport(AlgoidCommand.msgID, reportBuffer);				      // Envoie le message sur le canal MQTT "Report"     
-                                setAsyncMotorAction(myTaskId, ID, kehops.dcWheel[ID].motor->speed, INFINITE, NULL);
+                                setAsyncMotorAction(myTaskId, ID, kehops.dcWheel[ID].motor.speed, INFINITE, NULL);
 
                                 // Défini l'état de laction comme "en cours" pour message de réponse
                                 AlgoidResponse[0].responseType = EVENT_ACTION_RUN;
@@ -708,9 +707,9 @@ int runMotorAction(void){
                             }else
                             {
                                 if(kehops.dcWheel[ID].target.distanceCM > 0)
-                                        setAsyncMotorAction(myTaskId, ID, kehops.dcWheel[ID].motor->speed, CENTIMETER, kehops.dcWheel[ID].target.distanceCM);
+                                        setAsyncMotorAction(myTaskId, ID, kehops.dcWheel[ID].motor.speed, CENTIMETER, kehops.dcWheel[ID].target.distanceCM);
                                 else{
-                                        setAsyncMotorAction(myTaskId, ID, kehops.dcWheel[ID].motor->speed, MILLISECOND, kehops.dcWheel[ID].target.time);                                        
+                                        setAsyncMotorAction(myTaskId, ID, kehops.dcWheel[ID].motor.speed, MILLISECOND, kehops.dcWheel[ID].target.time);                                        
                                 }
                             }
                         }
@@ -750,7 +749,7 @@ int runStepperAction(void){
             ptrData=getStepperValue(i);
             if(ptrData>=0){
                 actionCount++;
-                        kehops.stepperWheel[i].motor->speed = AlgoidCommand.StepperMotor[ptrData].velocity;
+                        kehops.stepperWheel[i].motor.speed = AlgoidCommand.StepperMotor[ptrData].velocity;
                         kehops.stepperWheel[i].target.time = AlgoidCommand.StepperMotor[ptrData].time;
                         kehops.stepperWheel[i].target.steps = AlgoidCommand.StepperMotor[ptrData].step;
                         kehops.stepperWheel[i].target.angle = AlgoidCommand.StepperMotor[ptrData].angle;
@@ -788,7 +787,7 @@ int runStepperAction(void){
 
                                 printf(reportBuffer);                                                             // Affichage du message dans le shell
                                 sendMqttReport(AlgoidCommand.msgID, reportBuffer);				      // Envoie le message sur le canal MQTT "Report"     
-                                setAsyncStepperAction(myTaskId, ID, kehops.stepperWheel[ID].motor->speed, INFINITE, NULL);
+                                setAsyncStepperAction(myTaskId, ID, kehops.stepperWheel[ID].motor.speed, INFINITE, NULL);
 
                                 // Défini l'état de laction comme "en cours" pour message de réponse
                                 AlgoidResponse[0].responseType = EVENT_ACTION_RUN;
@@ -797,18 +796,18 @@ int runStepperAction(void){
                             }else
                             {
                                 if(kehops.stepperWheel[ID].target.steps > 0){
-                                    setAsyncStepperAction(myTaskId, ID, kehops.stepperWheel[ID].motor->speed, STEP, kehops.stepperWheel[ID].motor->steps);
+                                    setAsyncStepperAction(myTaskId, ID, kehops.stepperWheel[ID].motor.speed, STEP, kehops.stepperWheel[ID].motor.steps);
                                 }
                                 else{
                                     if(kehops.stepperWheel[ID].target.angle > 0){
-                                       setAsyncStepperAction(myTaskId, ID, kehops.stepperWheel[ID].motor->speed, ANGLE, kehops.stepperWheel[ID].target.angle);
+                                       setAsyncStepperAction(myTaskId, ID, kehops.stepperWheel[ID].motor.speed, ANGLE, kehops.stepperWheel[ID].target.angle);
                                     }else
                                     {
                                         if(kehops.stepperWheel[ID].target.rotation > 0){
-                                            setAsyncStepperAction(myTaskId, ID, kehops.stepperWheel[ID].motor->speed, ROTATION, kehops.stepperWheel[ID].target.rotation);
+                                            setAsyncStepperAction(myTaskId, ID, kehops.stepperWheel[ID].motor.speed, ROTATION, kehops.stepperWheel[ID].target.rotation);
                                         }else{
                                             if(kehops.stepperWheel[ID].target.time > 0){
-                                                setAsyncStepperAction(myTaskId, ID, kehops.stepperWheel[ID].motor->speed, MILLISECOND, kehops.stepperWheel[ID].target.time);
+                                                setAsyncStepperAction(myTaskId, ID, kehops.stepperWheel[ID].motor.speed, MILLISECOND, kehops.stepperWheel[ID].target.time);
                                             }
                                         }
                                     }
@@ -871,7 +870,7 @@ int runLedAction(void){
                 
                 // R�cup�ration des consignes dans le message (si disponible)
                 if(AlgoidCommand.LEDarray[ptrData].powerPercent > 0)
-                    kehops.led[i].pwm->power = AlgoidCommand.LEDarray[ptrData].powerPercent;
+                    kehops.led[i].power = AlgoidCommand.LEDarray[ptrData].powerPercent;
                 
                 if(AlgoidCommand.LEDarray[ptrData].time > 0)
                     kehops.led[i].action.blinkTime = AlgoidCommand.LEDarray[ptrData].time;
@@ -1002,7 +1001,7 @@ int runPwmAction(void){
                 
                 // Recuperation des consignes dans le message (si disponible)
                 if(AlgoidCommand.PWMarray[ptrData].powerPercent >= 0)
-                    kehops.pwm[i].pwm->power = AlgoidCommand.PWMarray[ptrData].powerPercent;
+                    kehops.pwm[i].power = AlgoidCommand.PWMarray[ptrData].powerPercent;
             }
         }
 
@@ -1292,7 +1291,7 @@ int makeStatusRequest(int msgType){
                 AlgoidResponse[ptrData].MOTresponse.cm = rpmToPercent(i, kehops.dcWheel[i].measure.rpm);
                 // !!! RESPONSE VELOCITY TO CHECK...
                 //AlgoidResponse[ptrData].MOTresponse.velocity = rpmToPercent(0,sysConfig.motor[0].minRPM) + robot.motor[i].velocity;
-                AlgoidResponse[ptrData].MOTresponse.velocity = rpmToPercent(0,kehops.dcWheel[i].config.rpmMin) + kehops.dcWheel[i].motor->speed;
+                AlgoidResponse[ptrData].MOTresponse.velocity = rpmToPercent(0,kehops.dcWheel[i].config.rpmMin) + kehops.dcWheel[i].motor.speed;
 		ptrData++;
 	}
         
@@ -1312,7 +1311,7 @@ int makeStatusRequest(int msgType){
                 AlgoidResponse[ptrData].RGBresponse.blue.value = kehops.rgb[i].color.blue.measure.value;
                 AlgoidResponse[ptrData].RGBresponse.clear.value = kehops.rgb[i].color.clear.measure.value;
                 
-                if(kehops.rgb[i].event.enable) strcpy(AlgoidResponse[ptrData].RGBresponse.event_state, "on");
+                if(kehops.rgb[i].config.event.enable) strcpy(AlgoidResponse[ptrData].RGBresponse.event_state, "on");
                 else strcpy(AlgoidResponse[ptrData].RGBresponse.event_state, "off");
                 
 		ptrData++;
@@ -1321,7 +1320,7 @@ int makeStatusRequest(int msgType){
         for(i=0;i<NBLED;i++){       
 		AlgoidResponse[ptrData].LEDresponse.id = i;
                 AlgoidResponse[ptrData].value = kehops.led[i].state;
-                AlgoidResponse[ptrData].LEDresponse.powerPercent = kehops.led[i].pwm->power;
+                AlgoidResponse[ptrData].LEDresponse.powerPercent = kehops.led[i].power;
 		ptrData++;
 	}
       
@@ -1329,7 +1328,7 @@ int makeStatusRequest(int msgType){
         for(i=0;i<NBPWM;i++){        
 		AlgoidResponse[ptrData].PWMresponse.id = i;
 		AlgoidResponse[ptrData].value = kehops.pwm[i].state;
-                AlgoidResponse[ptrData].PWMresponse.powerPercent = kehops.pwm[i].pwm->power;
+                AlgoidResponse[ptrData].PWMresponse.powerPercent = kehops.pwm[i].power;
 		ptrData++;
 	}
         
@@ -1518,11 +1517,11 @@ int makeRgbRequest(void){
 
 					// PARAMETRAGE DE L'ENVOIE DES MESSAGES SUR EVENEMENTS.
 					if(!strcmp(AlgoidCommand.RGBsens[i].event_state, "on")){
-                                            kehops.rgb[AlgoidCommand.RGBsens[i].id].event.enable = 1;
+                                            kehops.rgb[AlgoidCommand.RGBsens[i].id].config.event.enable = 1;
                                             saveSenderOfMsgId(AlgoidCommand.msgID, AlgoidMessageRX.msgFrom);
 					}
 					else if(!strcmp(AlgoidCommand.RGBsens[i].event_state, "off")){
-                                            kehops.rgb[AlgoidCommand.RGBsens[i].id].event.enable = 0;
+                                            kehops.rgb[AlgoidCommand.RGBsens[i].id].config.event.enable = 0;
                                             removeSenderOfMsgId(AlgoidCommand.msgID);
 					}
 
@@ -1573,7 +1572,7 @@ int makeRgbRequest(void){
                         AlgoidResponse[i].RGBresponse.clear.value=kehops.rgb[temp].color.clear.measure.value;
 
                         // Copie de l'etat de l'evenement
-			if(kehops.rgb[i].event.enable)strcpy(AlgoidResponse[i].RGBresponse.event_state, "on");
+			if(kehops.rgb[i].config.event.enable)strcpy(AlgoidResponse[i].RGBresponse.event_state, "on");
 			else strcpy(AlgoidResponse[i].RGBresponse.event_state, "off");
                         
                         // Copie des param�tres �venements haut/bas pour le ROUGE
@@ -1691,7 +1690,7 @@ int makeMotorRequest(void){
 		// Contr�le que le moteur soit pris en charge
 		if(AlgoidCommand.DCmotor[i].motor < NBMOTOR){
                     
-                        AlgoidResponse[i].MOTresponse.speed = kehops.dcWheel[temp].motor->speed;
+                        AlgoidResponse[i].MOTresponse.speed = kehops.dcWheel[temp].motor.speed;
                         AlgoidResponse[i].MOTresponse.cm = kehops.dcWheel[temp].target.distanceCM;
                         AlgoidResponse[i].MOTresponse.time = kehops.dcWheel[temp].target.time;
                         AlgoidResponse[i].responseType=RESP_STD_MESSAGE;
@@ -1932,7 +1931,7 @@ void COLOREventCheck(void){
 	unsigned char i;
 
 	for(i=0;i<NBRGBC;i++){
-            if(kehops.rgb[i].event.enable){
+            if(kehops.rgb[i].config.event.enable){
 
                 int red_event_low_disable, red_event_high_disable;                     
                 int redLowDetected, redHighDetected;
@@ -2142,7 +2141,6 @@ int runCloudTestCommand(void){
 
 void resetConfig(void){
     int i;
-      
     	// Init robot membre
 	for(i=0;i<NBAIN;i++){
             kehops.battery[i].event.enable = DEFAULT_EVENT_STATE;
@@ -2158,12 +2156,12 @@ void resetConfig(void){
             kehops.button[i].event.enable=DEFAULT_EVENT_STATE;
 	}
         
+          printf("\n ********** DEBUG ***************\n");
+    
         for(i=0;i<NBMOTOR;i++){
-            device.actuator.motor[i].config.inverted = 0;
-      
+            kehops.dcWheel[i].config.motor.inverted = 0;
             kehops.dcWheel[i].target.distanceCM = 0;
-            
-            kehops.dcWheel[i].motor->speed = 0;
+
             kehops.dcWheel[i].target.time = 0;
        
             kehops.dcWheel[i].config.rpmMin = 20;
@@ -2175,15 +2173,14 @@ void resetConfig(void){
 	}  
 
         for(i=0;i<NBSTEPPER;i++){
-            device.actuator.stepperMotor[i].config.inverted = 0;
-            device.actuator.stepperMotor[i].config.ratio = 64;
-            device.actuator.stepperMotor[i].config.steps = 32;
+            kehops.stepperWheel[i].config.motor.inverted = 0;
+            kehops.stepperWheel[i].config.motor.ratio = 64;
+            kehops.stepperWheel[i].config.motor.steps = 32;
             
             kehops.stepperWheel[i].target.angle = 0;
             kehops.stepperWheel[i].target.rotation = 0;
             kehops.stepperWheel[i].target.steps = 0;
             kehops.stepperWheel[i].target.time = 0;
-            kehops.stepperWheel[i].motor->speed = 0;
 	}
 
         for(i=0;i<NBSONAR;i++){
@@ -2222,6 +2219,7 @@ void resetConfig(void){
 
         // ------------ Initialisation de la configuration systeme
         
+    
         // Initialisation configuration de flux de donn�es periodique
         sysConf.communication.mqtt.stream.state  = ON;
         sysConf.communication.mqtt.stream.time_ms = 500;
@@ -2253,7 +2251,7 @@ int getStartupArg(int count, char *arg[]){
 
 
 void assignMotorWheel(void){
-        
+        /*
         kehops.dcWheel[0].motor = &device.actuator.motor[0].setpoint;      
         kehops.dcWheel[0].config.motor = &device.actuator.motor[0].config;
         
@@ -2265,8 +2263,8 @@ void assignMotorWheel(void){
 
         kehops.stepperWheel[1].motor = &device.actuator.stepperMotor[1].setpoint;
         kehops.stepperWheel[1].config.motor =  &device.actuator.stepperMotor[1].config;
-
-        
+        */
+        /*
         kehops.led[0].pwm = &device.actuator.digitalOutput[0].setpoint;
         kehops.led[1].pwm = &device.actuator.digitalOutput[1].setpoint;
         kehops.led[2].pwm = &device.actuator.digitalOutput[2].setpoint;
@@ -2281,26 +2279,26 @@ void assignMotorWheel(void){
         kehops.pwm[7].pwm = &device.actuator.digitalOutput[7].setpoint;
         kehops.pwm[8].pwm = &device.actuator.digitalOutput[8].setpoint;
         kehops.pwm[9].pwm = &device.actuator.digitalOutput[9].setpoint;
-        
+       */
         /*
         device.actuator.motor[0].setpoint.speed=50;
         device.actuator.motor[1].setpoint.speed=60;
                 
         printf("\nMa vitesse moteur device[0]: %d", device.actuator.motor[0].setpoint.speed);
         printf("\nMa vitesse moteur device[1]: %d", device.actuator.motor[1].setpoint.speed);
-        printf("\nMa  kehops.dcWheel[0].motor->speed %d\n",  kehops.dcWheel[0].motor->speed);    
-        printf("\nMa  kehops.dcWheel[0].motor->speed %d\n",  kehops.dcWheel[1].motor->speed);  
+        printf("\nMa  kehops.dcWheel[0].motor.speed %d\n",  kehops.dcWheel[0].motor.speed);    
+        printf("\nMa  kehops.dcWheel[0].motor.speed %d\n",  kehops.dcWheel[1].motor.speed);  
         
-         kehops.dcWheel[1].motor->speed = 66;
+         kehops.dcWheel[1].motor.speed = 66;
         
-       //printf("-----\nMa wheel.motorAlias %d\n", wheel[1].motor->speed);  
+       //printf("-----\nMa wheel.motorAlias %d\n", wheel[1].motor.speed);  
        //printf("\nMa wheel.motorAlias %d\n", device.actuator.motor[1].speed);       
        printf("\nMa vitesse moteur [device.actuator.motor[1].speed]: %d", device.actuator.motor[1].setpoint.speed);
-       printf("\nMa vitesse moteur [kehops.dcWheel[1].motor->speed] %d\n", kehops.dcWheel[1].motor->speed);
+       printf("\nMa vitesse moteur [kehops.dcWheel[1].motor.speed] %d\n", kehops.dcWheel[1].motor.speed);
       
-       kehops.dcWheel[1].motor->speed= 55;
+       kehops.dcWheel[1].motor.speed= 55;
        
        printf("\n--------------\nMa vitesse moteur [device.actuator.motor[0].speed]: %d", device.actuator.motor[0].setpoint.speed);
-       printf("\nMa vitesse moteur [kehops.dcWheel[0].motor->speed] %d\n", kehops.dcWheel[0].motor->speed);  
+       printf("\nMa vitesse moteur [kehops.dcWheel[0].motor.speed] %d\n", kehops.dcWheel[0].motor.speed);  
 */
 }   

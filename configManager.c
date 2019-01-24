@@ -46,6 +46,7 @@
 #include "jRead.h"
 #include "jWrite.h"
 #include "kehops_main.h"
+#include "hwControl/hwManager.h"
 
 char * OpenConfigFromFile(char *filename);
 char LoadConfig(char * fileName);
@@ -141,7 +142,7 @@ char LoadConfig(char * fileName){
     // EXTRACT MOTOR SETTINGS FROM CONFIG    
             // Reset motor data config before reading
             for(i=0;i<NBMOTOR;i++){
-              device.actuator.motor[i].config.inverted = 0;
+              kehops.dcWheel[i].config.motor.inverted = 0;
               kehops.dcWheel[i].config.rpmMin = 20;
               kehops.dcWheel[i].config.rpmMax = 200;
             }
@@ -161,13 +162,13 @@ char LoadConfig(char * fileName){
                     if(deviceId >= 0 && deviceId < NBMOTOR){
                         kehops.dcWheel[deviceId].config.rpmMin = jRead_int((char *)srcDataBuffer, FILE_KEY_CONFIG_MOTOR_MINRPM, &i); 
                         kehops.dcWheel[deviceId].config.rpmMax = jRead_int((char *)srcDataBuffer, FILE_KEY_CONFIG_MOTOR_MAXRPM, &i); 
-                         device.actuator.motor[deviceId].config.powerMin = jRead_int((char *)srcDataBuffer, FILE_KEY_CONFIG_MOTOR_MINPWM, &i); 
+                         kehops.dcWheel[deviceId].config.motor.powerMin = jRead_int((char *)srcDataBuffer, FILE_KEY_CONFIG_MOTOR_MINPWM, &i); 
                         jRead_string((char *)srcDataBuffer, FILE_KEY_CONFIG_MOTOR_INVERT, dataValue, 15, &i );
                         if(!strcmp(dataValue, "on")){
-                            device.actuator.motor[deviceId].config.inverted = 1;
+                            kehops.dcWheel[deviceId].config.motor.inverted = 1;
                         }else
                             if(!strcmp(dataValue, "off")){
-                                device.actuator.motor[deviceId].config.inverted = 0;
+                                kehops.dcWheel[deviceId].config.motor.inverted = 0;
                             }
                         // RECUPERATION DES PARAMETRE DU REGULATOR PID
                         jRead_string((char *)srcDataBuffer, FILE_KEY_CONFIG_MOTOR_PIDEN, dataValue, 15, &i );
@@ -216,9 +217,9 @@ char LoadConfig(char * fileName){
         
             // Reset motor data config before reading
         for(i=0;i<NBSTEPPER;i++){
-          device.actuator.stepperMotor[i].config.inverted = -1;
-          device.actuator.stepperMotor[i].config.ratio = -1;
-          device.actuator.stepperMotor[i].config.steps = -1;
+          kehops.stepperWheel[i].config.motor.inverted = -1;
+          kehops.stepperWheel[i].config.motor.ratio = -1;
+          kehops.stepperWheel[i].config.motor.steps = -1;
         }
             
         // Stepper motor Settings
@@ -236,13 +237,13 @@ char LoadConfig(char * fileName){
                     if(deviceId >= 0 && deviceId < NBSTEPPER){
                         jRead_string((char *)srcDataBuffer, FILE_KEY_CONFIG_STEPPER_INVERT, dataValue, 15, &i );
                         if(!strcmp(dataValue, "on")){
-                           device.actuator.stepperMotor[deviceId].config.inverted = 1;
+                           kehops.stepperWheel[deviceId].config.motor.inverted = 1;
                         }else
                             if(!strcmp(dataValue, "off")){
-                                device.actuator.stepperMotor[deviceId].config.inverted = 0;
+                                kehops.stepperWheel[deviceId].config.motor.inverted = 0;
                             }
-                        device.actuator.stepperMotor[deviceId].config.ratio = jRead_long((char *)srcDataBuffer, FILE_KEY_CONFIG_STEPPER_RATIO, &i); 
-                        device.actuator.stepperMotor[deviceId].config.steps = jRead_long((char *)srcDataBuffer, FILE_KEY_CONFIG_STEPPER_STEPS, &i); 
+                        kehops.stepperWheel[deviceId].config.motor.ratio = jRead_long((char *)srcDataBuffer, FILE_KEY_CONFIG_STEPPER_RATIO, &i); 
+                        kehops.stepperWheel[deviceId].config.motor.steps = jRead_long((char *)srcDataBuffer, FILE_KEY_CONFIG_STEPPER_STEPS, &i); 
                     }
                 }
             }            
@@ -325,12 +326,12 @@ char SaveConfig(char * fileName){
                 for(i=0;i<NBMOTOR;i++){
                     jwArr_object();
                         jwObj_int( "motor", i);
-                        if(device.actuator.motor[i].config.inverted == 0)
+                        if(kehops.dcWheel[i].config.motor.inverted == 0)
                             jwObj_string("inverted", "off");
                         else 
-                            if(device.actuator.motor[i].config.inverted == 1)
+                            if(kehops.dcWheel[i].config.motor.inverted == 1)
                                 jwObj_string("inverted", "on");
-                        jwObj_int( "pwmMin", device.actuator.motor[i].config.powerMin);
+                        jwObj_int( "pwmMin", kehops.dcWheel[i].config.motor.powerMin);
                         jwObj_int( "rpmMin", kehops.dcWheel[i].config.rpmMin);
                         jwObj_int( "rpmMax", kehops.dcWheel[i].config.rpmMax);
                         jwObj_object("rpmRegulator");
@@ -363,13 +364,13 @@ char SaveConfig(char * fileName){
                 for(i=0;i<NBSTEPPER;i++){
                     jwArr_object();
                         jwObj_int( "motor", i);
-                        if(device.actuator.stepperMotor[i].config.inverted == 0)
+                        if(kehops.stepperWheel[i].config.motor.inverted == 0)
                             jwObj_string("inverted", "off");
                         else 
-                            if(device.actuator.stepperMotor[i].config.inverted == 1)
+                            if(kehops.stepperWheel[i].config.motor.inverted == 1)
                                 jwObj_string("inverted", "on");
-                        jwObj_int( "ratio", device.actuator.stepperMotor[i].config.ratio);
-                        jwObj_int( "steps", device.actuator.stepperMotor[i].config.steps);
+                        jwObj_int( "ratio", kehops.stepperWheel[i].config.motor.ratio);
+                        jwObj_int( "steps", kehops.stepperWheel[i].config.motor.steps);
                     jwEnd();
                 } 
             jwEnd();            

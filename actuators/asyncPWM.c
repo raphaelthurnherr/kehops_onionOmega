@@ -13,6 +13,7 @@
 #include "linux_json.h"
 #include "../kehops_main.h"
 #include "asyncTools.h"
+#include "../hwControl/hwManager.h"
 
 
 char reportBuffer[256];
@@ -40,7 +41,7 @@ int setAsyncPwmAction(int actionNumber, int pwmName, int mode, int time, int cou
         }
         else{
             if(mode==ON)
-                setPwmPower(pwmName, kehops.pwm[pwmName].pwm->power); 
+                setPwmPower(pwmName, kehops.pwm[pwmName].power); 
             
             else
                 if(mode==OFF)
@@ -99,12 +100,12 @@ int checkBlinkPwmCount(int actionNumber, int pwmName){
                 PWMtoggleState[pwmName]=0;
             }else
             {
-                setPwmPower(pwmName, kehops.pwm[pwmName].pwm->power);
+                setPwmPower(pwmName, kehops.pwm[pwmName].power);
                 PWMtoggleState[pwmName]=1;
             }
            
             // Consigned de clignotement atteinte ?
-            if(blinkCount >= kehops.pwm[pwmName].pwm->power-1){
+            if(blinkCount >= kehops.pwm[pwmName].power-1){
                 kehops.pwm[pwmName].state = PWMtoggleState[pwmName];      // Update the actual state of pPWM
                 endPwmAction(actionNumber, pwmName);
                 blinkCount=0;                                   // Reset le compteur

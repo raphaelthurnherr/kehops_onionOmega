@@ -27,7 +27,7 @@ extern t_sysConfig sysConfig;
 */
 extern t_system sysInfo;
 
-extern t_device device;            // Device structure with actuator & sensor     
+//extern t_device device;            // Device structure with actuator & sensor     
 extern robot_kehops kehops;
 extern t_sysConf sysConf;
 

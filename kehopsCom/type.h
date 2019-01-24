@@ -45,121 +45,6 @@ struct s_eventBool{
 };
 
 
-// -------------------------------------
-// DEFINITION DES TYPE DE CAPTEURS
-// -------------------------------------
-struct s_color{
-	int value;
-};
-
-struct s_din{
-	int value;
-};
-
-struct s_ain{
-	int value;
-};
-
-struct s_rgb_config{ 
-    int rgbID;   
-};
-
-struct s_rgbc{
-        struct s_color measure;
-        struct s_eventAnalog event;
-};
-
-struct s_counter{
-	int frequency;
-        int counter;
-};
-
-
-// -------------------------------------
-// DEFINITION DES TYPE DE SORTIE
-// -------------------------------------
-
-
-// --------------------------------------
-// MOTEURS
-// --------------------------------------
-struct s_motor_sp{
-    int speed;
-    int direction;    
-};
-
-struct s_motor_config{
-    char inverted;   
-    int powerMin;   
-};
-
-struct actuator_motor{
-    struct s_motor_sp setpoint;
-    struct s_motor_config config;
-};
-
-// --------------------------------------
-// STEP MOTOR
-// --------------------------------------
-
-struct s_stepper_sp{
-    int speed;
-    int direction;    
-    int steps;  
-};
-
-struct s_stepper_config{
-    char inverted;   
-    int steps;   
-    int ratio;
-};
-
-struct actuator_stepper{
-    struct s_stepper_sp setpoint;
-    struct s_stepper_config config;
-};
-
-// --------------------------------------
-// DOUT
-// --------------------------------------
-
-struct s_dout_sp{
-    int  power;  
-};
-
-struct s_dout_config{   
-    char isServo;   
-};
-
-struct actuator_dout{
-    struct s_dout_sp setpoint;
-    struct s_dout_config config;
-};
-
-
-struct t_actuator{
-    struct actuator_motor motor[NBMOTOR];
-    struct actuator_stepper stepperMotor[NBSTEPPER];
-    struct actuator_dout digitalOutput[NBPWM+NBLED+NBSERVO];
-};
-
-struct t_sensor{
-	struct s_din din[NBDIN];
-        struct s_ain ain[NBAIN];
-	struct s_counter counter[NBMOTOR];
-	struct s_rgbc rgbc[NBRGBC];
-
-};
-
-// --------------------------------------
-// HIGH LEVEL
-// --------------------------------------
-
-typedef struct t_device{
-    struct t_sensor sensor;
-    struct t_actuator actuator;
-}t_device;
-
 // --------------------------------------
 // HIGH LEVEL
 // --------------------------------------
@@ -187,13 +72,10 @@ struct dc_wheel_data{
     float stopValue;
 };
 
-// --------------------------------------
-struct stepwheel_settarget{
-    int steps;
-    int time;
-    int distanceCM;
-    int angle;
-    int rotation;
+struct s_motor_config{
+    int motorID;
+    char inverted;   
+    int powerMin;   
 };
 
 struct dcwheel_settarget{
@@ -203,10 +85,18 @@ struct dcwheel_settarget{
     int rotation;
 };
 
+// --------------------------------------
+struct stepwheel_settarget{
+    int steps;
+    int time;
+    int distanceCM;
+    int angle;
+    int rotation;
+};
+
 struct dc_wheel_config{
     struct s_pid pidReg;
-    struct s_motor_config *motor;
-    int motorID;
+    struct s_motor_config motor;
     int counterID;
     int diameter;           // Config of wheel diameter in mm
     int pulsesPerRot;       // Config number of pulses per rotation of encoder
@@ -214,17 +104,35 @@ struct dc_wheel_config{
     int rpmMin;             // Config min supported RPM of Wheel (motor)
 };
 
+struct s_stepper_config{
+    int motorID;
+    char inverted;   
+    int steps;   
+    int ratio;
+};
+
+
+struct robot_stepper_sp{
+    int speed;
+    int direction;    
+    int steps;  
+};
+
+struct robot_motor_sp{
+    int speed;
+    int direction;    
+};
+
 struct stepper_wheel_config{
     struct s_pid pidReg;
-    struct s_stepper_config *motor;
-    int motorID;
+    struct s_stepper_config motor;
     int diameter;           // Config of wheel diameter in mm
     int rpmMax;             // Config max supperted RPM of Wheel (motor)
     int rpmMin;             // Config min supported RPM of Wheel (motor)
 };
 
 typedef struct robotDCWheel{
-    struct s_motor_sp *motor;
+    struct robot_motor_sp motor;
     struct dcwheel_settarget target;
     struct dc_wheel_config config;
     struct s_wheel_meas measure;
@@ -233,7 +141,7 @@ typedef struct robotDCWheel{
 
 typedef struct robotStepperWheel{
     struct stepwheel_settarget target;
-    struct s_stepper_sp *motor;
+    struct robot_stepper_sp motor;
     struct stepper_wheel_config config;
     struct s_wheel_meas measure;
 }robot_stepperwheel;
@@ -282,11 +190,25 @@ struct s_button_meas{
     int  state;
 };
 
+struct s_color_meas{
+    int  value;
+};
+
+struct s_color_data{
+        struct s_color_meas measure;
+        struct s_eventAnalog event;
+};
+
+struct s_rgb_config{ 
+    int rgbID;
+    struct s_eventBool event;
+};
+
 struct s_rgb_meas{
-    struct s_rgbc red;
-    struct s_rgbc green;
-    struct s_rgbc blue;
-    struct s_rgbc clear;
+    struct s_color_data red;
+    struct s_color_data green;
+    struct s_color_data blue;
+    struct s_color_data clear;
 };
 
 struct s_prox_meas{
@@ -354,21 +276,17 @@ struct s_pwm_config{
     int  defaultState;
 };
 
-
 typedef struct robotPwm{
     int state;
-    struct s_dout_sp * pwm;
+    int power;
     struct s_pwm_config config;
     struct s_pwm_action action;
 }robot_pwm;
 
-typedef struct robotColor{
-    struct s_eventBool event;
+typedef struct robotRgb{
     struct s_rgb_meas color;
     struct s_rgb_config config;
-}robot_color;
-
-
+}robot_rgb;
 
 
 typedef struct robotKehops{
@@ -381,7 +299,7 @@ typedef struct robotKehops{
     robot_pwm servo[NBSERVO];
     robot_prox proximity[NBDIN];
     robot_sonar sonar[NBSONAR];
-    robot_color rgb[NBRGBC];
+    robot_rgb rgb[NBRGBC];
 }robot_kehops;
 
 

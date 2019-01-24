@@ -37,7 +37,7 @@ int setAsyncServoAction(int actionNumber, int pwmName, int mode, int time){
 	// Valeur en retour >0 signifie que l'action "en retour" � �t� �cras�e
 
         if(mode==ON)
-            setServoPosition(pwmName, kehops.servo[pwmName].pwm->power); 
+            setServoPosition(pwmName, kehops.servo[pwmName].power); 
         else
             if(mode==OFF)
             setServoPosition(pwmName, -1);
@@ -108,7 +108,7 @@ int checkBlinkServoCount(int actionNumber, int pwmName){
                 PWMtoggleState[pwmName]=0;
             }else
             {
-                setPwmPower(pwmName, kehops.pwm[pwmName].pwm->power);
+                setPwmPower(pwmName, kehops.pwm[pwmName].power);
                 PWMtoggleState[pwmName]=1;
             }
         }

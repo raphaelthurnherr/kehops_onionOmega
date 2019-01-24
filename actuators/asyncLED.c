@@ -40,7 +40,7 @@ int setAsyncLedAction(int actionNumber, int ledName, int mode, int time, int cou
         }
         else{
             if(mode==ON)
-                setLedPower(ledName, kehops.led[ledName].pwm->power);
+                setLedPower(ledName, kehops.led[ledName].power);
             else
                 if(mode==OFF)
                     setLedPower(ledName, 0);
@@ -129,7 +129,7 @@ int checkBlinkLedCount(int actionNumber, int ledName){
                 LEDtoggleState[ledName]=0;
             }else
             {
-                setLedPower(ledName, kehops.led[ledName].pwm->power);
+                setLedPower(ledName, kehops.led[ledName].power);
                 LEDtoggleState[ledName]=1;
             }
            

@@ -27,45 +27,132 @@
 #include "../buggy_descriptor.h"
 #include "../kehopsCom/type.h"
 
-// Thread Messager
-pthread_t th_hwManager;
-
-struct s_encoder{
-	int pulseFromStartup;
-	int frequency;
+// -------------------------------------
+// DEFINITION DES TYPE DE CAPTEURS
+// -------------------------------------
+struct s_color{
+	int value;
 };
 
-struct s_colorSensor{
-	int red;
-	int green;
+struct s_i2c_colorReg{
+    int red;
+    int green;
+    int blue;
+    int clear;
+};
+struct s_rgbConfig{
+	int I2CdeviceAddress;
+        struct s_i2c_colorReg I2CcolorAddress;
+};
+
+struct s_din{
+	int value;
+};
+
+struct s_ain{
+	int value;
+};
+
+struct s_rgbc{
+        int red;
+        int green;
         int blue;
         int clear;
+        struct s_rgbConfig config;
 };
 
-struct s_stepper{
-	unsigned char isRunning;
+struct s_counter{
+	int frequency;
+        int counter;
 };
 
-typedef struct tmeasures{
-	unsigned char din[NBDIN];
-	int ain[NBAIN];
-	struct s_encoder counter[NBCOUNTER];
-	int pwm[NBPWM];
-        unsigned char btn[NBBTN];
-        struct s_colorSensor RGBC[NBRGBC];
-}t_measure;
+
+// -------------------------------------
+// DEFINITION DES TYPE DE SORTIE
+// -------------------------------------
+
+// --------------------------------------
+// MOTEURS
+// --------------------------------------
+struct s_motor_sp{
+    int speed;
+    int direction;    
+};
+
+
+struct actuator_motor{
+    struct s_motor_sp setpoint;
+};
+
+// --------------------------------------
+// STEP MOTOR
+// --------------------------------------
+
+struct s_stepper_sp{
+    int speed;
+    int direction;    
+    int steps;  
+};
+
+
+struct actuator_stepper{
+    int isRunning;
+    struct s_stepper_sp setpoint;
+};
+
+// --------------------------------------
+// DOUT
+// --------------------------------------
+
+struct s_dout_sp{
+    int  power;  
+};
+
+struct s_dout_config{   
+    char isServo;   
+};
+
+struct actuator_dout{
+    struct s_dout_sp setpoint;
+    struct s_dout_config config;
+};
+
+
+struct t_actuator{
+    struct actuator_motor motor[NBMOTOR];
+    struct actuator_stepper stepperMotor[NBSTEPPER];
+    struct actuator_dout digitalOutput[NBPWM+NBLED+NBSERVO];
+};
+
+struct t_sensor{
+	struct s_din din[NBDIN];
+        struct s_ain ain[NBAIN];
+	struct s_counter counter[NBMOTOR];
+	struct s_rgbc rgbc[NBRGBC];
+
+};
+
+// --------------------------------------
+// HIGH LEVEL
+// --------------------------------------
+
+typedef struct t_device{
+    struct t_sensor sensor;
+    struct t_actuator actuator;
+}t_device;
+
+
+t_device device;            // Device structure with actuator & sensor
+
+
+// Thread Messager
+pthread_t th_hwManager;
 
 typedef struct tHWversion{
         int mcuVersion;
         int HWrevision;
 }t_HWversion;
 
-typedef struct motors{
-	struct s_stepper stepper[NBSTEPPER];
-}t_motors;
-
-t_measure sensor;
-t_motors motor;
 t_HWversion BoardInfo;
 
 int i2c_command_queuing[50][3];
@@ -87,8 +174,8 @@ int setMotorDirection(int motorName, int direction);
 
 int setStepperStepAction(int motorNumber, int direction, int stepCount);      // Effectue une action sur le moteur pas à pas (direction, nombre de pas)
 int setStepperSpeed(int motorNumber, int speed);                              // Configuration de la vitesse du moteur pas à pas
-int getStepperState(int motorNumber);                              // Récupère l'état actuel du moteur pas à pas (run/off)
 
+int getStepperState(int motorNumber);                                         // Récupère l'état actuel du moteur pas à pas (run/off)
 
 void setServoPosition(unsigned char smName, char position);
 void setLedPower(unsigned char ledID, unsigned char power);
@@ -127,61 +214,62 @@ void *hwTask (void * arg){
                 // de 250mS
 		switch(timeCount_ms){
 
-                        case 5	: sensor.counter[MOTOR_ENCODER_LEFT].pulseFromStartup = EFM8BB_readPulseCounter(MOTOR_ENCODER_LEFT);
-                                  sensor.counter[MOTOR_ENCODER_RIGHT].pulseFromStartup = EFM8BB_readPulseCounter(MOTOR_ENCODER_RIGHT);
+                        case 5	: device.sensor.counter[MOTOR_ENCODER_LEFT].counter = EFM8BB_readPulseCounter(MOTOR_ENCODER_LEFT);
+                                  device.sensor.counter[MOTOR_ENCODER_RIGHT].counter = EFM8BB_readPulseCounter(MOTOR_ENCODER_RIGHT);
                                 //printf("Pulses left: %d - ",sensor.counter[MOTOR_ENCODER_LEFT].pulseFromStartup);
                                 //printf("Pulses right: %d\n\n",sensor.counter[MOTOR_ENCODER_RIGHT].pulseFromStartup);
                                 break;
 			case 10	: 
-                                sensor.counter[MOTOR_ENCODER_LEFT].frequency = EFM8BB_readFrequency(MOTOR_ENCODER_LEFT); 
-                                sensor.counter[MOTOR_ENCODER_RIGHT].frequency = EFM8BB_readFrequency(MOTOR_ENCODER_RIGHT);
+                                //sensor.counter[MOTOR_ENCODER_LEFT].frequency = EFM8BB_readFrequency(MOTOR_ENCODER_LEFT); 
+                                device.sensor.counter[MOTOR_ENCODER_LEFT].frequency = EFM8BB_readFrequency(MOTOR_ENCODER_LEFT); 
+                                device.sensor.counter[MOTOR_ENCODER_RIGHT].frequency = EFM8BB_readFrequency(MOTOR_ENCODER_RIGHT); 
                                 //printf("Speed left [cm/s]: %d - ",sensor.counter[MOTOR_ENCODER_LEFT].frequency) ;
                                 //printf("Speed right [cm/s]: %d\n\n",sensor.counter[MOTOR_ENCODER_RIGHT].frequency);
                                 break;
                                           
 			case 15	:   dinState = EFM8BB_readDigitalInput(0);              // Param�tre transmis non utilis� par la fonction...
-                                    if(dinState & 0x01) sensor.din[DIN_0] = 1;
-                                    else sensor.din[DIN_0]=0;
+                                    if(dinState & 0x01) device.sensor.din[DIN_0].value = 1;
+                                    else device.sensor.din[DIN_0].value=0;
                         
-                                    if(dinState & 0x02) sensor.din[DIN_1] = 1;
-                                    else sensor.din[DIN_1]=0;
+                                    if(dinState & 0x02) device.sensor.din[DIN_1].value = 1;
+                                    else device.sensor.din[DIN_1].value=0;
                         
-                                    if(dinState & 0x04) sensor.din[DIN_2] = 1;
-                                    else sensor.din[DIN_2]=0;
+                                    if(dinState & 0x04) device.sensor.din[DIN_2].value = 1;
+                                    else device.sensor.din[DIN_2].value=0;
                         
-                                    if(dinState & 0x08) sensor.din[DIN_3] = 1;
-                                    else sensor.din[DIN_3]=0;
+                                    if(dinState & 0x08) device.sensor.din[DIN_3].value = 1;
+                                    else device.sensor.din[DIN_3].value=0;
                                     break;
-			case 20	: sensor.pwm[SONAR_0] = EFM8BB_readSonarDistance()/10;        // Conversion de distance mm en cm
+
+                        case 20	: device.sensor.ain[1].value = EFM8BB_readSonarDistance()/10;        // Conversion de distance mm en cm
                                     //printf("Dist cm: %d - ",sensor.pwm[SONAR_0]);
                                     break;
                                     
-			case 25	: sensor.ain[BATT_0] = EFM8BB_readBatteryVoltage(); 
+			case 25	: device.sensor.ain[0].value = EFM8BB_readBatteryVoltage(); 
                                   //printf("Battery: %d\n",sensor.ain[BATT_0]);
                                 break;
                         
-                        case 30	: sensor.btn[BTN_0] = MCP2308_ReadGPIO(BTN_0);
-                                  sensor.btn[BTN_1] = MCP2308_ReadGPIO(BTN_1); 
+                        case 30	: device.sensor.din[DIN_0].value = MCP2308_ReadGPIO(BTN_0);
+                                  device.sensor.din[DIN_1].value = MCP2308_ReadGPIO(BTN_1);
                                   break;
 
-                        case 35	: sensor.RGBC[RGBC_SENS_0].red = BH1745_getRGBvalue(RGBC_SENS_0, RED) ;
-                                  sensor.RGBC[RGBC_SENS_0].green = BH1745_getRGBvalue(RGBC_SENS_0, GREEN) ;
-                                  sensor.RGBC[RGBC_SENS_0].blue = BH1745_getRGBvalue(RGBC_SENS_0,BLUE) ;
-                                  sensor.RGBC[RGBC_SENS_0].clear = BH1745_getRGBvalue(RGBC_SENS_0,CLEAR) ; break;
+                        //case 35	: sensor.RGBC[RGBC_SENS_0].red = BH1745_getRGBvalue(RGBC_SENS_0, RED) ;
+                        case 35 : device.sensor.rgbc[RGBC_SENS_0].red = BH1745_getRGBvalue(RGBC_SENS_0, RED) ;
+                                  device.sensor.rgbc[RGBC_SENS_0].green = BH1745_getRGBvalue(RGBC_SENS_0, GREEN) ;
+                                  device.sensor.rgbc[RGBC_SENS_0].blue = BH1745_getRGBvalue(RGBC_SENS_0,BLUE) ;
+                                  device.sensor.rgbc[RGBC_SENS_0].clear = BH1745_getRGBvalue(RGBC_SENS_0,CLEAR) ; break;
  
-                        case 36 : sensor.RGBC[RGBC_SENS_1].red = BH1745_getRGBvalue(RGBC_SENS_1, RED) ;
-                                  sensor.RGBC[RGBC_SENS_1].green = BH1745_getRGBvalue(RGBC_SENS_1, GREEN) ;
-                                  sensor.RGBC[RGBC_SENS_1].blue = BH1745_getRGBvalue(RGBC_SENS_1, BLUE) ;
-                                  sensor.RGBC[RGBC_SENS_1].clear = BH1745_getRGBvalue(RGBC_SENS_1, CLEAR) ; break;
+                        case 36 : device.sensor.rgbc[RGBC_SENS_1].red = BH1745_getRGBvalue(RGBC_SENS_1, RED) ;
+                                  device.sensor.rgbc[RGBC_SENS_1].green = BH1745_getRGBvalue(RGBC_SENS_1, GREEN) ;
+                                  device.sensor.rgbc[RGBC_SENS_1].blue = BH1745_getRGBvalue(RGBC_SENS_1, BLUE) ;
+                                  device.sensor.rgbc[RGBC_SENS_1].clear = BH1745_getRGBvalue(RGBC_SENS_1, CLEAR) ; break;
                         
-                        case 40 : motor.stepper[STEPPER_0].isRunning = PCA9629_ReadMotorState(STEPPER_0) & 0x80; break;
+//                        case 40 : motor.stepper[STEPPER_0].isRunning = PCA9629_ReadMotorState(STEPPER_0) & 0x80; break;
+                        case 40 : device.actuator.stepperMotor[STEPPER_0].isRunning = PCA9629_ReadMotorState(STEPPER_0) & 0x80; break;
                                 
 			default: 
                             if(i2c_command_queuing[0][CALLBACK]!=0)processCommandQueue(); break;
 		}
-                
-//                printf("\n LEFT: %d   RIGHT: %d", sensor.counter[MOTOR_ENCODER_LEFT].pulseFromStartup, sensor.counter[MOTOR_ENCODER_RIGHT].pulseFromStartup);
-
 
 		// Reset le compteur au bout de 50mS
 		if(timeCount_ms<50)
@@ -227,7 +315,7 @@ int CloseHwManager(void){
 int getMotorPulses(unsigned char motorName){
 	int pulses;
 
-	pulses = sensor.counter[motorName].pulseFromStartup;
+        pulses = device.sensor.counter[motorName].counter;
 	/*
 	switch(motorName){
 		case MOTOR_0: pulses = buggySensor.left_encoder.pulseFromStartup; break;
@@ -241,7 +329,7 @@ int getMotorPulses(unsigned char motorName){
 char getDigitalInput(unsigned char inputNumber){
 	char inputState=0;
 
-	inputState = sensor.din[inputNumber];
+        inputState = device.sensor.din[inputNumber].value;
 //        printf("DIG %d: %d\n",inputNumber, inputState);
 	return inputState;
 }
@@ -249,14 +337,15 @@ char getDigitalInput(unsigned char inputNumber){
 char getButtonInput(unsigned char buttonNumber){
 	char inputState=0;
 
-	inputState = sensor.btn[buttonNumber];
+	//inputState = sensor.btn[buttonNumber];
+        inputState = device.sensor.din[buttonNumber].value;
 	return inputState;
 }
 
 int getMotorFrequency(unsigned char motorNb){
 	int freq;
         
-	freq = sensor.counter[motorNb].frequency;
+        freq = device.sensor.counter[motorNb].frequency;
         //printf("\n----- FREQ #%d: %d -----\n",motorNb, freq);
 	return freq;
 }
@@ -265,14 +354,16 @@ int getMotorFrequency(unsigned char motorNb){
 int getSonarDistance(void){
 	int sonarCm=0;
 
-	sonarCm = sensor.pwm[SONAR_0];
+	//sonarCm = sensor.pwm[SONAR_0];
+        sonarCm = device.sensor.ain[SONAR_0].value;
 	//sonarCm= buggySensor.usonic;
 	return sonarCm;
 }
 
 int getBatteryVoltage(void){
 	int voltage=0;
-	voltage = sensor.ain[BATT_0];
+	//voltage = sensor.ain[BATT_0];
+        voltage = device.sensor.ain[BATT_0].value;
 	//voltage = buggySensor.battery;
 	return voltage;
 }
@@ -281,10 +372,10 @@ int getColorValue(unsigned char sensorID, unsigned char color){
     int colorValue;
     
     switch(color){
-        case RED : colorValue= sensor.RGBC[sensorID].red; break;
-        case GREEN : colorValue=sensor.RGBC[sensorID].green; break;
-        case BLUE : colorValue=sensor.RGBC[sensorID].blue; break;
-        case CLEAR : colorValue=sensor.RGBC[sensorID].clear; break;
+        case RED : colorValue= device.sensor.rgbc[sensorID].red; break;
+        case GREEN : colorValue=device.sensor.rgbc[sensorID].green; break;
+        case BLUE : device.sensor.rgbc[sensorID].blue; break;
+        case CLEAR : device.sensor.rgbc[sensorID].clear; break;
         default : colorValue = -1; break;
     }
 /*    
@@ -305,7 +396,7 @@ int setMotorDirection(int motorName, int direction){
 	unsigned char motorAdress;
 
         // Check if motor inversion requiered and modify if necessary
-        if(kehops.dcWheel[motorName].config.motor->inverted)
+        if(kehops.dcWheel[motorName].config.motor.inverted)
             direction *= -1;
 
 
@@ -407,7 +498,7 @@ int setStepperSpeed(int motorNumber, int speed){
 // - Numéro de moteur
 // -------------------------------------------------------------------
 int getStepperState(int motorNumber){
-    return motor.stepper[motorNumber].isRunning;
+    return device.actuator.stepperMotor[motorNumber].isRunning;
 }                              
 
 // ---------------------------------------------------------------------------

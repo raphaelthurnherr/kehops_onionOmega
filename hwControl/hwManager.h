@@ -14,6 +14,7 @@
     #define BLUE                                2
     #define CLEAR                               3
 
+       
 int InitHwManager(void);						// Ouverture du thread Timer
 int CloseHwManager(void);						// Fermeture du thread Timer
 
