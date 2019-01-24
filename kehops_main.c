@@ -80,8 +80,6 @@ void assignMotorWheel(void);        // Assign a motor for each wheel
 char reportBuffer[256];
 int ActionTable[10][3];
 
-t_system sysInfo;
-
 t_device device;            // Device structure with actuator & sensor     
 robot_kehops kehops;
 t_sysApp sysApp;
@@ -1244,16 +1242,16 @@ int removeBuggyTask(int actionNumber){
 // Envoie une message ALGOID de type "response" avec l'�tat des entr�es DIN, tension batterie, distance sonar, vitesse et distance des roues
 // -------------------------------------------------------------------
 int makeStatusRequest(int msgType){
-	unsigned char i;
-	unsigned char ptrData=0;
-        
+	int i;
+	int ptrData=0;
+
 	AlgoidCommand.msgValueCnt=0;
 	AlgoidCommand.msgValueCnt = NBDIN + NBBTN + NBMOTOR + NBSONAR + NBRGBC + NBLED + NBPWM +1 ; // Nombre de VALEUR � transmettre + 1 pour le SystemStatus
      
         // Preparation du message de reponse pour le status systeme
         strcpy(AlgoidResponse[ptrData].SYSresponse.name, ClientID);
-        AlgoidResponse[ptrData].SYSresponse.startUpTime=sysInfo.startUpTime;
-        AlgoidResponse[ptrData].SYSresponse.wan_online=sysInfo.wan_online;
+        AlgoidResponse[ptrData].SYSresponse.startUpTime=sysApp.info.startUpTime;
+        AlgoidResponse[ptrData].SYSresponse.wan_online=sysApp.info.startUpTime;
         AlgoidResponse[ptrData].SYSresponse.rx_message=msg_stats.messageRX;
         AlgoidResponse[ptrData].SYSresponse.tx_message=msg_stats.messageTX;
         
@@ -1269,7 +1267,7 @@ int makeStatusRequest(int msgType){
         AlgoidResponse[ptrData].SYSresponse.battVoltage = kehops.battery[0].measure.voltage_mV;
         AlgoidResponse[ptrData].SYSresponse.battPercent = kehops.battery[0].measure.capacity;
         ptrData++;
-        
+
 	for(i=0;i<NBDIN;i++){
 		AlgoidResponse[ptrData].DINresponse.id=i;
                 AlgoidResponse[ptrData].value = kehops.proximity[i].measure.state;
@@ -1297,7 +1295,7 @@ int makeStatusRequest(int msgType){
                 AlgoidResponse[ptrData].MOTresponse.velocity = rpmToPercent(0,kehops.dcWheel[i].config.rpmMin) + kehops.dcWheel[i].motor->speed;
 		ptrData++;
 	}
-
+        
         for(i=0;i<NBSONAR;i++){
                 AlgoidResponse[ptrData].DISTresponse.id=i;
                 AlgoidResponse[ptrData].value = kehops.sonar[i].measure.distance_cm;
@@ -1320,20 +1318,21 @@ int makeStatusRequest(int msgType){
 		ptrData++;
 	}
 
-        for(i=0;i<NBLED;i++){
-		AlgoidResponse[ptrData].LEDresponse.id=i;
+        for(i=0;i<NBLED;i++){       
+		AlgoidResponse[ptrData].LEDresponse.id = i;
                 AlgoidResponse[ptrData].value = kehops.led[i].state;
-                AlgoidResponse[ptrData].LEDresponse.powerPercent=kehops.led[i].pwm;
+                AlgoidResponse[ptrData].LEDresponse.powerPercent = kehops.led[i].pwm->power;
 		ptrData++;
 	}
-
-        for(i=0;i<NBPWM;i++){
-		AlgoidResponse[ptrData].PWMresponse.id=i;
+      
+        
+        for(i=0;i<NBPWM;i++){        
+		AlgoidResponse[ptrData].PWMresponse.id = i;
 		AlgoidResponse[ptrData].value = kehops.pwm[i].state;
                 AlgoidResponse[ptrData].PWMresponse.powerPercent = kehops.pwm[i].pwm->power;
 		ptrData++;
 	}
-
+        
 	// Envoie de la r�ponse MQTT
 	sendResponse(AlgoidCommand.msgID, AlgoidCommand.msgFrom, msgType, STATUS, AlgoidCommand.msgValueCnt);
 	return (1);
@@ -2134,10 +2133,11 @@ int runCloudTestCommand(void){
         status=system("ping -q -c 2 -t 1000 vps596769.ovh.net");
         printf("------------- ping status on vps596769.ovh.net: %d\n", status);
         if(status != 0)
-            sysInfo.wan_online = 0;
-        else sysInfo.wan_online = 1;
+            sysApp.info.wan_online = 1;
+        else 
+            sysApp.info.wan_online = 0;
    
-    return sysInfo.wan_online;
+    return sysApp.info.wan_online;
 }
 
 void resetConfig(void){
@@ -2270,6 +2270,17 @@ void assignMotorWheel(void){
         kehops.led[0].pwm = &device.actuator.digitalOutput[0].setpoint;
         kehops.led[1].pwm = &device.actuator.digitalOutput[1].setpoint;
         kehops.led[2].pwm = &device.actuator.digitalOutput[2].setpoint;
+        
+        kehops.pwm[0].pwm = &device.actuator.digitalOutput[0].setpoint;
+        kehops.pwm[1].pwm = &device.actuator.digitalOutput[1].setpoint;
+        kehops.pwm[2].pwm = &device.actuator.digitalOutput[2].setpoint;
+        kehops.pwm[3].pwm = &device.actuator.digitalOutput[3].setpoint;
+        kehops.pwm[4].pwm = &device.actuator.digitalOutput[4].setpoint;
+        kehops.pwm[5].pwm = &device.actuator.digitalOutput[5].setpoint;
+        kehops.pwm[6].pwm = &device.actuator.digitalOutput[6].setpoint;
+        kehops.pwm[7].pwm = &device.actuator.digitalOutput[7].setpoint;
+        kehops.pwm[8].pwm = &device.actuator.digitalOutput[8].setpoint;
+        kehops.pwm[9].pwm = &device.actuator.digitalOutput[9].setpoint;
         
         /*
         device.actuator.motor[0].setpoint.speed=50;

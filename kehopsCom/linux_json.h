@@ -250,7 +250,7 @@ ALGOID AlgoidMessageRX;
 ALGOID AlgoidMsgRXStack[10];
 
 // Buffer de sortie pour les msgValue[
-ALGOID_RESPONSE AlgoidResponse[50];
+ALGOID_RESPONSE AlgoidResponse[100];
 
 //extern t_sysConfig sysConfig;
 
