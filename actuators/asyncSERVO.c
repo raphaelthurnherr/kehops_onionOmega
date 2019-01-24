@@ -61,8 +61,8 @@ int setAsyncServoAction(int actionNumber, int pwmName, int mode, int time){
                                 // Libere la memorisation de l'expediteur
                                 removeSenderOfMsgId(endOfTask);
                                 
-                                AlgoidResponse[0].responseType=EVENT_ACTION_ABORT;
-                                sendResponse(endOfTask, AlgoidCommand.msgFrom, EVENT, pSERVO, 1);		// Envoie un message ALGOID de fin de t�che pour l'action �cras�
+                                messageResponse[0].responseType=EVENT_ACTION_ABORT;
+                                sendResponse(endOfTask, message.msgFrom, EVENT, pSERVO, 1);		// Envoie un message ALGOID de fin de t�che pour l'action �cras�
                                 printf(reportBuffer);                                                   // Affichage du message dans le shell
                                 sendMqttReport(endOfTask, reportBuffer);				// Envoie le message sur le canal MQTT "Report"
                         }
@@ -142,7 +142,7 @@ int endServoAction(int actionNumber, int pwmNumber){
                 strcpy(msgTo, msgEventHeader[ptr].msgFrom);
                 // Lib�re la memorisation de l'expediteur
                 removeSenderOfMsgId(endOfTask);
-                AlgoidResponse[0].responseType=EVENT_ACTION_END;
+                messageResponse[0].responseType=EVENT_ACTION_END;
                 sendResponse(endOfTask, msgTo, EVENT, pPWM, 1);			// Envoie un message ALGOID de fin de t�che pour l'action �cras�
                 printf(reportBuffer);									// Affichage du message dans le shell
                 sendMqttReport(endOfTask, reportBuffer);				// Envoie le message sur le canal MQTT "Report"

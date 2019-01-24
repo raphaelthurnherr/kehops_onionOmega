@@ -9,9 +9,9 @@
 #include "string.h"
 
 #include "pthread.h"
+#include "linux_json.h"
 #include "messagesManager.h"
 #include "mqttProtocol.h"
-#include "linux_json.h"
 #include "udpPublish.h"
 #include "../buggy_descriptor.h"
 
@@ -42,7 +42,7 @@ char msgReportBuffer[2048];
 
 STATISTICS msg_stats;
 
-
+ALGOID AlgoidMessageRX;
 
 // Initialisation principale du system de messagerie
 void *MessagerTask (void * arg){
@@ -103,7 +103,7 @@ void *MessagerTask (void * arg){
 	    // Verification de l'arriv�e d'un message MQTT
 	    if(mqttDataReady){
 	    // RECEPTION DES DONNES UTILES
-                if(GetAlgoidMsg(AlgoidMessageRX, MqttDataBuffer)>0){
+                if(GetAlgoidMsg(&AlgoidMessageRX, MqttDataBuffer)>0){
                         // Contr�le du destinataire
 //                        if(!strncmp(AlgoidMessageRX.msgTo, ClientID) || !strcmp(AlgoidMessageRX.msgTo, BroadcastID)){
                         // Accept messages if destination differe of "algo_"  (is brodcast) or if client ID is Exactly the same
@@ -173,19 +173,18 @@ int pushMsgStack(void){
 
 int pullMsgStack(unsigned char ptrStack){
 		int i;
-		unsigned char result;
-
+                
 		if(AlgoidMsgRXStack[ptrStack].msgType!=-1){
-			AlgoidCommand=AlgoidMsgRXStack[ptrStack];
+			message = AlgoidMsgRXStack[ptrStack];
 
 			// Contr�le le ID, FROM, TO du message et creation g�n�rique si inexistant
-			if(AlgoidCommand.msgID <= 0){
-				AlgoidCommand.msgID = rand() & 0xFFFFFF;
+			if(message.msgID <= 0){
+				message.msgID = rand() & 0xFFFFFF;
 			}
 
 
-			if(!strcmp(AlgoidCommand.msgFrom, "")){
-				strcpy(AlgoidCommand.msgFrom,"unknown");
+			if(!strcmp(message.msgFrom, "")){
+				strcpy(message.msgFrom,"unknown");
 			}
 
 			// D�place les elements de la pile
@@ -349,7 +348,7 @@ void sendResponse(int msgId, char * msgTo, unsigned char msgType, unsigned char 
 		default : strcpy(ackParam, "unknown"); break;
 	}
 
-	ackToJSON(MQTTbuf, msgId, msgTo, ClientID, ackType, ackParam, msgParam, valCnt);
+	jsonBuilder(MQTTbuf, msgId, msgTo, ClientID, ackType, ackParam, msgParam, valCnt);
 	mqttPutMessage(&topic, MQTTbuf, strlen(MQTTbuf));
 }
 

@@ -72,8 +72,8 @@ int setAsyncMotorAction(int actionNumber, int motorNb, int veloc, char unit, int
 				// Lib�re la memorisation de l'expediteur
 				removeSenderOfMsgId(endOfTask);
 
-				AlgoidResponse[0].responseType=EVENT_ACTION_ABORT;
-				sendResponse(endOfTask, AlgoidCommand.msgFrom, EVENT, MOTORS, 1);			// Envoie un message ALGOID de fin de t�che pour l'action �cras�
+				messageResponse[0].responseType=EVENT_ACTION_ABORT;
+				sendResponse(endOfTask, message.msgFrom, EVENT, MOTORS, 1);			// Envoie un message ALGOID de fin de t�che pour l'action �cras�
 				printf(reportBuffer);									// Affichage du message dans le shell
 				sendMqttReport(endOfTask, reportBuffer);                                                // Envoie le message sur le canal MQTT "Report"
 			}
@@ -134,7 +134,7 @@ int endWheelAction(int actionNumber, int motorNb){
 		// Lib�re la memorisation de l'expediteur
 		removeSenderOfMsgId(endOfTask);
 
-		AlgoidResponse[0].responseType=EVENT_ACTION_END;
+		messageResponse[0].responseType=EVENT_ACTION_END;
 
 		sendResponse(endOfTask, msgTo, EVENT, MOTORS, 1);
 		sprintf(reportBuffer, "FIN DES ACTIONS \"WHEEL\" pour la tache #%d\n", endOfTask);

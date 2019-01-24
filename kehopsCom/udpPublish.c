@@ -24,7 +24,6 @@
 struct sockaddr_in si_other;
 static int s, slen=sizeof(si_other);
 char buf[UDPBUFLEN];
-char message[UDPBUFLEN];
 
 // Get MAC Adresse function
 char* getMACaddr(void);

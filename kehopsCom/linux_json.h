@@ -245,15 +245,14 @@ typedef struct JsonResponse{
 	// UNION ???
 }ALGOID_RESPONSE;
 
-ALGOID AlgoidCommand;    // Utilis� par main.c
-ALGOID AlgoidMessageRX;
+ALGOID message;    // Utilis� par main.c
 ALGOID AlgoidMsgRXStack[10];
 
 // Buffer de sortie pour les msgValue[
-ALGOID_RESPONSE AlgoidResponse[100];
+ALGOID_RESPONSE messageResponse[100];
 
 //extern t_sysConfig sysConfig;
 
-extern char GetAlgoidMsg(ALGOID DestReceiveMessage,char *srcDataBuffer);
+extern char GetAlgoidMsg(ALGOID *DestReceiveMessage,char *srcDataBuffer);
 
-void ackToJSON(char * buffer, int msgId, char* to, char * from, char * msgType,char * msgParam, unsigned char value, unsigned char count);
+void jsonBuilder(char * buffer, int msgId, char* to, char * from, char * msgType,char * msgParam, unsigned char value, unsigned char count);

@@ -62,15 +62,12 @@ int setAsyncLedAction(int actionNumber, int ledName, int mode, int time, int cou
                                 // Lib�re la memorisation de l'expediteur
                                 removeSenderOfMsgId(endOfTask);
                                 
-                                AlgoidResponse[0].responseType=EVENT_ACTION_ABORT;
-                                sendResponse(endOfTask, AlgoidCommand.msgFrom, EVENT, pLED, 1);		// Envoie un message ALGOID de fin de t�che pour l'action �cras�
+                                messageResponse[0].responseType=EVENT_ACTION_ABORT;
+                                sendResponse(endOfTask, message.msgFrom, EVENT, pLED, 1);		// Envoie un message ALGOID de fin de t�che pour l'action �cras�
                                 printf(reportBuffer);                                                   // Affichage du message dans le shell
                                 sendMqttReport(endOfTask, reportBuffer);				// Envoie le message sur le canal MQTT "Report"
                         }
 		}
-                
-                
-                
                 return 0;
 	}
 	else {
@@ -100,7 +97,7 @@ int endLedAction(int actionNumber, int LedNumber){
                 strcpy(msgTo, msgEventHeader[ptr].msgFrom);
                 // Lib�re la memorisation de l'expediteur
                 removeSenderOfMsgId(endOfTask);
-                AlgoidResponse[0].responseType=EVENT_ACTION_END;
+                messageResponse[0].responseType=EVENT_ACTION_END;
                 sendResponse(endOfTask, msgTo, EVENT, pLED, 1);			// Envoie un message ALGOID de fin de t�che pour l'action �cras�
                 printf(reportBuffer);									// Affichage du message dans le shell
                 sendMqttReport(endOfTask, reportBuffer);				// Envoie le message sur le canal MQTT "Report"

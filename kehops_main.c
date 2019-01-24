@@ -42,7 +42,7 @@ void BUTTONEventCheck(void);
 void COLOREventCheck(void);
 
 // Traitement du message algoid recu
-int processAlgoidCommand(void);
+int processmessage(void);
 int processAlgoidRequest(void);
 
 int makeSensorsRequest(void);
@@ -79,6 +79,7 @@ void assignMotorWheel(void);        // Assign a motor for each wheel
 
 char reportBuffer[256];
 int ActionTable[10][3];
+
 
 robot_kehops kehops;
 t_sysApp sysApp;
@@ -171,9 +172,10 @@ int main(int argc, char *argv[]) {
 
         // Contr�le de la messagerie, recherche d'�ventuels messages ALGOID et effectue les traitements n�c�ssaire
         // selon le type du message [COMMAND, REQUEST, NEGOCIATION, ACK, REPONSE, ERROR, etc...]
+
         if(pullMsgStack(0)){
-            switch(AlgoidCommand.msgType){
-                    case COMMAND : processAlgoidCommand(); break;						// Traitement du message de type "COMMAND"
+            switch(message.msgType){
+                    case COMMAND : processmessage(); break;						// Traitement du message de type "COMMAND"
                     case REQUEST : processAlgoidRequest(); break;						// Traitement du message de type "REQUEST"
                     default : ; break;
             }
@@ -260,331 +262,329 @@ int main(int argc, char *argv[]) {
 // PROCESSCOMMAND
 // S�l�ctionne et traite le param�tre de commande recue [LL2WD, BACK, FORWARD, STOP, SPIN, etc...]
 // -------------------------------------------------------------------
-int processAlgoidCommand(void){
+int processmessage(void){
     int i, valCnt;
     int updateResult;
-	switch(AlgoidCommand.msgParam){
+	switch(message.msgParam){
 		case MOTORS : 	
-                                for(i=0;i<AlgoidCommand.msgValueCnt;i++){
+                                for(i=0;i<message.msgValueCnt;i++){
                                    
                                     // Controle que le moteur existe...
-                                    if(AlgoidCommand.DCmotor[i].motor >= 0 && AlgoidCommand.DCmotor[i].motor <NBMOTOR)
-                                        AlgoidResponse[i].MOTresponse.motor=AlgoidCommand.DCmotor[i].motor;
+                                    if(message.DCmotor[i].motor >= 0 && message.DCmotor[i].motor <NBMOTOR)
+                                        messageResponse[i].MOTresponse.motor=message.DCmotor[i].motor;
                                     else
-                                        AlgoidResponse[i].MOTresponse.motor=-1;
+                                        messageResponse[i].MOTresponse.motor=-1;
                                             
                                     // Récupération des paramètes de commandes
                                     
                                     // Retourne un message ALGOID si velocit� hors tol�rences
-                                    if((AlgoidCommand.DCmotor[i].velocity < -100) ||(AlgoidCommand.DCmotor[i].velocity > 100)){
-                                            AlgoidCommand.DCmotor[i].velocity=0;
-                                            AlgoidResponse[i].MOTresponse.velocity=-1;
+                                    if((message.DCmotor[i].velocity < -100) ||(message.DCmotor[i].velocity > 100)){
+                                            message.DCmotor[i].velocity=0;
+                                            messageResponse[i].MOTresponse.velocity=-1;
                                     }else
-                                        AlgoidResponse[i].MOTresponse.velocity=AlgoidCommand.DCmotor[i].velocity;
+                                        messageResponse[i].MOTresponse.velocity=message.DCmotor[i].velocity;
                                     
-                                    AlgoidResponse[i].MOTresponse.cm=AlgoidCommand.DCmotor[i].cm;
-                                    AlgoidResponse[i].MOTresponse.time=AlgoidCommand.DCmotor[i].time;
-                                    AlgoidResponse[i].responseType = RESP_STD_MESSAGE;
+                                    messageResponse[i].MOTresponse.cm=message.DCmotor[i].cm;
+                                    messageResponse[i].MOTresponse.time=message.DCmotor[i].time;
+                                    messageResponse[i].responseType = RESP_STD_MESSAGE;
                                 }
                                 // Retourne en r�ponse le message v�rifi�
-                                sendResponse(AlgoidCommand.msgID, AlgoidMessageRX.msgFrom, RESPONSE, MOTORS, AlgoidCommand.msgValueCnt);  // Retourne une r�ponse d'erreur, (aucun moteur d�fini)
+                                sendResponse(message.msgID, message.msgFrom, RESPONSE, MOTORS, message.msgValueCnt);  // Retourne une r�ponse d'erreur, (aucun moteur d�fini)
                                 
                                 runMotorAction(); break;			// Action avec en param�tre MOTEUR, VELOCITE, ACCELERATION, TEMPS d'action
                                 
 		case STEPPER : 	
-                                for(i=0;i<AlgoidCommand.msgValueCnt;i++){
+                                for(i=0;i<message.msgValueCnt;i++){
                                    
                                     // Controle que le moteur existe...
-                                    if(AlgoidCommand.StepperMotor[i].motor >= 0 && AlgoidCommand.StepperMotor[i].motor < NBSTEPPER)
-                                        AlgoidResponse[i].STEPPERresponse.motor=AlgoidCommand.StepperMotor[i].motor;
+                                    if(message.StepperMotor[i].motor >= 0 && message.StepperMotor[i].motor < NBSTEPPER)
+                                        messageResponse[i].STEPPERresponse.motor=message.StepperMotor[i].motor;
                                     else
-                                        AlgoidResponse[i].STEPPERresponse.motor=-1;
+                                        messageResponse[i].STEPPERresponse.motor=-1;
                                             
                                     // Récupération des paramètes de commandes
                                     
                                     // Retourne un message ALGOID si velocit� hors tol�rences
-                                    if((AlgoidCommand.StepperMotor[i].velocity < -100) ||(AlgoidCommand.StepperMotor[i].velocity > 100)){
-                                            AlgoidCommand.StepperMotor[i].velocity=0;
-                                            AlgoidResponse[i].STEPPERresponse.velocity=-1;
+                                    if((message.StepperMotor[i].velocity < -100) ||(message.StepperMotor[i].velocity > 100)){
+                                            message.StepperMotor[i].velocity=0;
+                                            messageResponse[i].STEPPERresponse.velocity=-1;
                                     }else
-                                        AlgoidResponse[i].STEPPERresponse.velocity=AlgoidCommand.StepperMotor[i].velocity;
+                                        messageResponse[i].STEPPERresponse.velocity=message.StepperMotor[i].velocity;
                                     
-                                    AlgoidResponse[i].STEPPERresponse.step=AlgoidCommand.StepperMotor[i].step;
-                                    AlgoidResponse[i].STEPPERresponse.rotation=AlgoidCommand.StepperMotor[i].rotation;
-                                    AlgoidResponse[i].responseType = RESP_STD_MESSAGE;
+                                    messageResponse[i].STEPPERresponse.step=message.StepperMotor[i].step;
+                                    messageResponse[i].STEPPERresponse.rotation=message.StepperMotor[i].rotation;
+                                    messageResponse[i].responseType = RESP_STD_MESSAGE;
                                 }
                                 // Retourne en r�ponse le message v�rifi�
-                                sendResponse(AlgoidCommand.msgID, AlgoidMessageRX.msgFrom, RESPONSE, STEPPER, AlgoidCommand.msgValueCnt);  // Retourne une r�ponse d'erreur, (aucun moteur d�fini)
+                                sendResponse(message.msgID, message.msgFrom, RESPONSE, STEPPER, message.msgValueCnt);  // Retourne une r�ponse d'erreur, (aucun moteur d�fini)
                                 
                                 runStepperAction(); break;			// Action avec en param�tre MOTEUR, VELOCITE, PAS, ROTATION
                                 
                 case pPWM  :
-                                for(i=0;i<AlgoidCommand.msgValueCnt;i++){
+                                for(i=0;i<message.msgValueCnt;i++){
                                     // Vérification de l'existance de l'index de sortie PWM et défini le mode PWM(FULL)
-                                    if(AlgoidCommand.PWMarray[i].id >= 0 && AlgoidCommand.PWMarray[i].id <NBPWM){
-                                        AlgoidCommand.PWMarray[i].isServoMode=0;
-                                        AlgoidResponse[i].PWMresponse.id=AlgoidCommand.PWMarray[i].id;
+                                    if(message.PWMarray[i].id >= 0 && message.PWMarray[i].id <NBPWM){
+                                        message.PWMarray[i].isServoMode=0;
+                                        messageResponse[i].PWMresponse.id=message.PWMarray[i].id;
                                     }
                                     else
-                                        AlgoidResponse[i].PWMresponse.id=-1;
+                                        messageResponse[i].PWMresponse.id=-1;
                                             
                                     // R�cup�ration des param�tes 
-                                    strcpy(AlgoidResponse[i].PWMresponse.state, AlgoidCommand.PWMarray[i].state);
-                                    AlgoidResponse[i].PWMresponse.powerPercent=AlgoidCommand.PWMarray[i].powerPercent;
-                                    AlgoidResponse[i].PWMresponse.blinkCount=AlgoidCommand.PWMarray[i].blinkCount;
-                                    AlgoidResponse[i].PWMresponse.time=AlgoidCommand.PWMarray[i].time;
-                                    AlgoidResponse[i].responseType = RESP_STD_MESSAGE;
+                                    strcpy(messageResponse[i].PWMresponse.state, message.PWMarray[i].state);
+                                    messageResponse[i].PWMresponse.powerPercent=message.PWMarray[i].powerPercent;
+                                    messageResponse[i].PWMresponse.blinkCount=message.PWMarray[i].blinkCount;
+                                    messageResponse[i].PWMresponse.time=message.PWMarray[i].time;
+                                    messageResponse[i].responseType = RESP_STD_MESSAGE;
                                 }
 
                                 // Retourne en r�ponse le message v�rifi�
-                                sendResponse(AlgoidCommand.msgID, AlgoidMessageRX.msgFrom, RESPONSE, pPWM, AlgoidCommand.msgValueCnt);     
+                                sendResponse(message.msgID, message.msgFrom, RESPONSE, pPWM, message.msgValueCnt);     
                     
                                 runPwmAction();break;
 
                 case pSERVO  : 
-                                for(i=0;i<AlgoidCommand.msgValueCnt;i++){
+                                for(i=0;i<message.msgValueCnt;i++){
                                     // Vérification de l'existance de l'index de sortie PWM et défini le mode SERVO
-                                    if(AlgoidCommand.PWMarray[i].id >= 0 && AlgoidCommand.PWMarray[i].id <NBPWM){
-                                        AlgoidResponse[i].PWMresponse.id=AlgoidCommand.PWMarray[i].id;
-                                        AlgoidCommand.PWMarray[i].isServoMode=1;
+                                    if(message.PWMarray[i].id >= 0 && message.PWMarray[i].id <NBPWM){
+                                        messageResponse[i].PWMresponse.id=message.PWMarray[i].id;
+                                        message.PWMarray[i].isServoMode=1;
                                     }
                                     else
-                                        AlgoidResponse[i].PWMresponse.id=-1;
+                                        messageResponse[i].PWMresponse.id=-1;
                                             
                                     // R�cup�ration des param�tes 
-                                    strcpy(AlgoidResponse[i].PWMresponse.state, AlgoidCommand.PWMarray[i].state);
+                                    strcpy(messageResponse[i].PWMresponse.state, message.PWMarray[i].state);
 
-                                    AlgoidResponse[i].PWMresponse.powerPercent=AlgoidCommand.PWMarray[i].powerPercent;
-                                    AlgoidResponse[i].responseType = RESP_STD_MESSAGE;
+                                    messageResponse[i].PWMresponse.powerPercent=message.PWMarray[i].powerPercent;
+                                    messageResponse[i].responseType = RESP_STD_MESSAGE;
                                 }
                                 // Retourne en r�ponse le message v�rifi�
-                                sendResponse(AlgoidCommand.msgID, AlgoidMessageRX.msgFrom, RESPONSE, pSERVO, AlgoidCommand.msgValueCnt);     
+                                sendResponse(message.msgID, message.msgFrom, RESPONSE, pSERVO, message.msgValueCnt);     
                     
                                 runPwmAction();break;
                                 
 		case pLED  : 	
-                                for(i=0;i<AlgoidCommand.msgValueCnt;i++){
+                                for(i=0;i<message.msgValueCnt;i++){
                                     // Controle que le moteur existe...
-                                    if(AlgoidCommand.LEDarray[i].id >= 0 && AlgoidCommand.LEDarray[i].id <NBLED)
-                                        AlgoidResponse[i].LEDresponse.id=AlgoidCommand.LEDarray[i].id;
+                                    if(message.LEDarray[i].id >= 0 && message.LEDarray[i].id <NBLED)
+                                        messageResponse[i].LEDresponse.id=message.LEDarray[i].id;
                                     else
-                                        AlgoidResponse[i].LEDresponse.id=-1;
+                                        messageResponse[i].LEDresponse.id=-1;
                                             
                                     // R�cup�ration des param�tes 
-                                    strcpy(AlgoidResponse[i].LEDresponse.state, AlgoidCommand.LEDarray[i].state);
-                                    AlgoidResponse[i].LEDresponse.powerPercent=AlgoidCommand.LEDarray[i].powerPercent;
-                                    AlgoidResponse[i].LEDresponse.blinkCount=AlgoidCommand.LEDarray[i].blinkCount;
-                                    AlgoidResponse[i].LEDresponse.time=AlgoidCommand.LEDarray[i].time;
-                                    AlgoidResponse[i].responseType = RESP_STD_MESSAGE;
+                                    strcpy(messageResponse[i].LEDresponse.state, message.LEDarray[i].state);
+                                    messageResponse[i].LEDresponse.powerPercent=message.LEDarray[i].powerPercent;
+                                    messageResponse[i].LEDresponse.blinkCount=message.LEDarray[i].blinkCount;
+                                    messageResponse[i].LEDresponse.time=message.LEDarray[i].time;
+                                    messageResponse[i].responseType = RESP_STD_MESSAGE;
                                 }
                                 // Retourne en r�ponse le message v�rifi�
-                                sendResponse(AlgoidCommand.msgID, AlgoidMessageRX.msgFrom, RESPONSE, pLED, AlgoidCommand.msgValueCnt);               
+                                sendResponse(message.msgID, message.msgFrom, RESPONSE, pLED, message.msgValueCnt);               
                                 
                                 runLedAction();
                                 break;
                                 
             case CONFIG  :
-                                for(valCnt=0;valCnt<AlgoidCommand.msgValueCnt;valCnt++){
+                                for(valCnt=0;valCnt<message.msgValueCnt;valCnt++){
                             // CONFIG COMMAND FOR DATASTREAM
                                     // R�cup�re les parametres eventuelle pour la configuration de l'etat de l'envoie du stream par polling
-                                    if(!strcmp(AlgoidCommand.Config.stream.state, "on"))
+                                    if(!strcmp(message.Config.stream.state, "on"))
                                         sysConf.communication.mqtt.stream.state=1; 			// Activation de l'envoie du datastream
                                     
                                     else
-                                        if(!strcmp(AlgoidCommand.Config.stream.state, "off"))
+                                        if(!strcmp(message.Config.stream.state, "off"))
                                             sysConf.communication.mqtt.stream.state=0; 		// Desactivation de l'envoie du datastream
 
                                     
                                     // R�cup�re les parametres eventuelle pour la configuration de l'etat de l'envoie du stream par evenement
-                                    if(!strcmp(AlgoidCommand.Config.stream.onEvent, "on"))
+                                    if(!strcmp(message.Config.stream.onEvent, "on"))
                                         sysConf.communication.mqtt.stream.onEvent=1; 			// Activation de l'envoie du datastream
                                     else
-                                        if(!strcmp(AlgoidCommand.Config.stream.onEvent, "off"))
+                                        if(!strcmp(message.Config.stream.onEvent, "off"))
                                             sysConf.communication.mqtt.stream.onEvent=0; 		// Desactivation de l'envoie du datastr
                                     
-                                    if(AlgoidCommand.Config.stream.time>0)
-                                        sysConf.communication.mqtt.stream.time_ms=AlgoidCommand.Config.stream.time;
+                                    if(message.Config.stream.time>0)
+                                        sysConf.communication.mqtt.stream.time_ms=message.Config.stream.time;
                                     
                                 // CONFIG COMMAND FOR MOTOR SETTING
-                                    for(i=0;i<AlgoidCommand.Config.motValueCnt; i++){
-                                        AlgoidResponse[valCnt].CONFIGresponse.motValueCnt=AlgoidCommand.Config.motValueCnt;
+                                    for(i=0;i<message.Config.motValueCnt; i++){
+                                        messageResponse[valCnt].CONFIGresponse.motValueCnt=message.Config.motValueCnt;
                                         // Check if motor exist...
-                                        if(AlgoidCommand.Config.motor[i].id >= 0 && AlgoidCommand.Config.motor[i].id <NBMOTOR){
+                                        if(message.Config.motor[i].id >= 0 && message.Config.motor[i].id <NBMOTOR){
                                             // Save config for motor inversion
-                                            if(!strcmp(AlgoidCommand.Config.motor[i].inverted, "on")){
-                                                kehops.dcWheel[AlgoidCommand.Config.motor[i].id].config.motor.inverted = 1;
-                                                strcpy(AlgoidResponse[valCnt].CONFIGresponse.motor[i].inverted, "on");
+                                            if(!strcmp(message.Config.motor[i].inverted, "on")){
+                                                kehops.dcWheel[message.Config.motor[i].id].config.motor.inverted = 1;
+                                                strcpy(messageResponse[valCnt].CONFIGresponse.motor[i].inverted, "on");
                                             }
-                                            else if(!strcmp(AlgoidCommand.Config.motor[i].inverted, "off")){
-                                                    kehops.dcWheel[AlgoidCommand.Config.motor[i].id].config.motor.inverted = 0;
-                                                    strcpy(AlgoidResponse[valCnt].CONFIGresponse.motor[i].inverted, "off");
+                                            else if(!strcmp(message.Config.motor[i].inverted, "off")){
+                                                    kehops.dcWheel[message.Config.motor[i].id].config.motor.inverted = 0;
+                                                    strcpy(messageResponse[valCnt].CONFIGresponse.motor[i].inverted, "off");
                                             }
 
                                             // Save config for motor Min PWM for run
-                                            kehops.dcWheel[AlgoidCommand.Config.motor[i].id].config.motor.powerMin = AlgoidCommand.Config.motor[i].minPWM;
+                                            kehops.dcWheel[message.Config.motor[i].id].config.motor.powerMin = message.Config.motor[i].minPWM;
                                             
                                             // Save config for motor Min Max RPM
-                                            kehops.dcWheel[AlgoidCommand.Config.motor[i].id].config.rpmMin = AlgoidCommand.Config.motor[i].minRPM;
-                                            kehops.dcWheel[AlgoidCommand.Config.motor[i].id].config.rpmMax = AlgoidCommand.Config.motor[i].maxRPM;
+                                            kehops.dcWheel[message.Config.motor[i].id].config.rpmMin = message.Config.motor[i].minRPM;
+                                            kehops.dcWheel[message.Config.motor[i].id].config.rpmMax = message.Config.motor[i].maxRPM;
                                             
                                             // Save config for motor PID regulator
-                                            if(!strcmp(AlgoidCommand.Config.motor[i].rpmRegulator.PIDstate, "on")){
-                                                kehops.dcWheel[AlgoidCommand.Config.motor[i].id].config.pidReg.enable = 1;
-                                                strcpy(AlgoidResponse[valCnt].CONFIGresponse.motor[i].rpmRegulator.PIDstate, "on");
+                                            if(!strcmp(message.Config.motor[i].rpmRegulator.PIDstate, "on")){
+                                                kehops.dcWheel[message.Config.motor[i].id].config.pidReg.enable = 1;
+                                                strcpy(messageResponse[valCnt].CONFIGresponse.motor[i].rpmRegulator.PIDstate, "on");
                                             }
-                                            else if(!strcmp(AlgoidCommand.Config.motor[i].rpmRegulator.PIDstate, "off")){
-                                                kehops.dcWheel[AlgoidCommand.Config.motor[i].id].config.pidReg.enable = 0;
-                                                strcpy(AlgoidResponse[valCnt].CONFIGresponse.motor[i].rpmRegulator.PIDstate, "off");
+                                            else if(!strcmp(message.Config.motor[i].rpmRegulator.PIDstate, "off")){
+                                                kehops.dcWheel[message.Config.motor[i].id].config.pidReg.enable = 0;
+                                                strcpy(messageResponse[valCnt].CONFIGresponse.motor[i].rpmRegulator.PIDstate, "off");
                                             }
                                             
-                                            kehops.dcWheel[AlgoidCommand.Config.motor[i].id].config.pidReg.Kp = AlgoidCommand.Config.motor[i].rpmRegulator.PID_Kp;
-                                            kehops.dcWheel[AlgoidCommand.Config.motor[i].id].config.pidReg.Ki = AlgoidCommand.Config.motor[i].rpmRegulator.PID_Ki;
-                                            kehops.dcWheel[AlgoidCommand.Config.motor[i].id].config.pidReg.Kd = AlgoidCommand.Config.motor[i].rpmRegulator.PID_Kd;                                            
+                                            kehops.dcWheel[message.Config.motor[i].id].config.pidReg.Kp = message.Config.motor[i].rpmRegulator.PID_Kp;
+                                            kehops.dcWheel[message.Config.motor[i].id].config.pidReg.Ki = message.Config.motor[i].rpmRegulator.PID_Ki;
+                                            kehops.dcWheel[message.Config.motor[i].id].config.pidReg.Kd = message.Config.motor[i].rpmRegulator.PID_Kd;                                            
                                             
-                                            AlgoidResponse[valCnt].CONFIGresponse.motor[i].minRPM = AlgoidCommand.Config.motor[i].minRPM;
-                                            AlgoidResponse[valCnt].CONFIGresponse.motor[i].id = AlgoidCommand.Config.motor[i].id;
-                                            AlgoidResponse[valCnt].CONFIGresponse.motor[i].rpmRegulator.PID_Kp = AlgoidCommand.Config.motor[i].rpmRegulator.PID_Kp;
-                                            AlgoidResponse[valCnt].CONFIGresponse.motor[i].rpmRegulator.PID_Ki = AlgoidCommand.Config.motor[i].rpmRegulator.PID_Ki;
-                                            AlgoidResponse[valCnt].CONFIGresponse.motor[i].rpmRegulator.PID_Kd = AlgoidCommand.Config.motor[i].rpmRegulator.PID_Kd;
+                                            messageResponse[valCnt].CONFIGresponse.motor[i].minRPM = message.Config.motor[i].minRPM;
+                                            messageResponse[valCnt].CONFIGresponse.motor[i].id = message.Config.motor[i].id;
+                                            messageResponse[valCnt].CONFIGresponse.motor[i].rpmRegulator.PID_Kp = message.Config.motor[i].rpmRegulator.PID_Kp;
+                                            messageResponse[valCnt].CONFIGresponse.motor[i].rpmRegulator.PID_Ki = message.Config.motor[i].rpmRegulator.PID_Ki;
+                                            messageResponse[valCnt].CONFIGresponse.motor[i].rpmRegulator.PID_Kd = message.Config.motor[i].rpmRegulator.PID_Kd;
                                         }
                                         else
-                                            AlgoidResponse[valCnt].CONFIGresponse.motor[i].id=-1;
+                                            messageResponse[valCnt].CONFIGresponse.motor[i].id=-1;
                                     }
 
                                 // CONFIG COMMAND FOR WHEEL SETTING
-                                    for(i=0;i<AlgoidCommand.Config.wheelValueCnt; i++){
-                                        AlgoidResponse[valCnt].CONFIGresponse.wheelValueCnt=AlgoidCommand.Config.wheelValueCnt;
+                                    for(i=0;i<message.Config.wheelValueCnt; i++){
+                                        messageResponse[valCnt].CONFIGresponse.wheelValueCnt=message.Config.wheelValueCnt;
                                         // Check if motor exist...
-                                        if(AlgoidCommand.Config.wheel[i].id >= 0 && AlgoidCommand.Config.wheel[i].id <NBMOTOR){
+                                        if(message.Config.wheel[i].id >= 0 && message.Config.wheel[i].id <NBMOTOR){
                                             // Save config for motor inversion
-                                                kehops.dcWheel[AlgoidCommand.Config.wheel[i].id].config.diameter = AlgoidCommand.Config.wheel[i].diameter;
-                                                kehops.dcWheel[AlgoidCommand.Config.wheel[i].id].config.pulsesPerRot = AlgoidCommand.Config.wheel[i].pulsesPerRot;
+                                                kehops.dcWheel[message.Config.wheel[i].id].config.diameter = message.Config.wheel[i].diameter;
+                                                kehops.dcWheel[message.Config.wheel[i].id].config.pulsesPerRot = message.Config.wheel[i].pulsesPerRot;
                                                 
                                                 // Calculation of value for centimeter for each pulse
-                                                kehops.dcWheel[AlgoidCommand.Config.wheel[i].id].data._MMPP = (kehops.dcWheel[AlgoidCommand.Config.wheel[i].id].config.diameter * 3.1415926535897932384)/kehops.dcWheel[AlgoidCommand.Config.wheel[i].id].config.pulsesPerRot;
-                                            AlgoidResponse[valCnt].CONFIGresponse.wheel[i].id = AlgoidCommand.Config.wheel[i].id;
+                                                kehops.dcWheel[message.Config.wheel[i].id].data._MMPP = (kehops.dcWheel[message.Config.wheel[i].id].config.diameter * 3.1415926535897932384)/kehops.dcWheel[message.Config.wheel[i].id].config.pulsesPerRot;
+                                            messageResponse[valCnt].CONFIGresponse.wheel[i].id = message.Config.wheel[i].id;
                                         }
                                         else
-                                            AlgoidResponse[valCnt].CONFIGresponse.wheel[i].id=-1;
+                                            messageResponse[valCnt].CONFIGresponse.wheel[i].id=-1;
                                     }                                    
                                     
                                 // CONFIG COMMAND FOR STEPPER SETTING
-                                    for(i=0;i<AlgoidCommand.Config.stepperValueCnt; i++){
-                                        AlgoidResponse[valCnt].CONFIGresponse.stepperValueCnt=AlgoidCommand.Config.stepperValueCnt;
+                                    for(i=0;i<message.Config.stepperValueCnt; i++){
+                                        messageResponse[valCnt].CONFIGresponse.stepperValueCnt=message.Config.stepperValueCnt;
                                         // Check if motor exist...
-                                        if(AlgoidCommand.Config.stepper[i].id >= 0 && AlgoidCommand.Config.stepper[i].id < NBSTEPPER){
+                                        if(message.Config.stepper[i].id >= 0 && message.Config.stepper[i].id < NBSTEPPER){
                                             // Save config for motor inversion
-                                            if(!strcmp(AlgoidCommand.Config.stepper[i].inverted, "on")){
-                                                kehops.stepperWheel[AlgoidCommand.Config.stepper[i].id].config.motor.inverted = 1;
-                                                strcpy(AlgoidResponse[valCnt].CONFIGresponse.stepper[i].inverted, "on");
+                                            if(!strcmp(message.Config.stepper[i].inverted, "on")){
+                                                kehops.stepperWheel[message.Config.stepper[i].id].config.motor.inverted = 1;
+                                                strcpy(messageResponse[valCnt].CONFIGresponse.stepper[i].inverted, "on");
                                             }
-                                            else if(!strcmp(AlgoidCommand.Config.stepper[i].inverted, "off")){
-                                                kehops.stepperWheel[AlgoidCommand.Config.stepper[i].id].config.motor.inverted = 0;
-                                                    strcpy(AlgoidResponse[valCnt].CONFIGresponse.stepper[i].inverted, "off");
+                                            else if(!strcmp(message.Config.stepper[i].inverted, "off")){
+                                                kehops.stepperWheel[message.Config.stepper[i].id].config.motor.inverted = 0;
+                                                    strcpy(messageResponse[valCnt].CONFIGresponse.stepper[i].inverted, "off");
                                             }
                                             
-                                            kehops.stepperWheel[AlgoidCommand.Config.stepper[i].id].config.motor.ratio = AlgoidCommand.Config.stepper[i].ratio;
-                                            kehops.stepperWheel[AlgoidCommand.Config.stepper[i].id].config.motor.steps = AlgoidCommand.Config.stepper[i].stepsPerRot;
-                                            AlgoidResponse[valCnt].CONFIGresponse.stepper[i].id = AlgoidCommand.Config.stepper[i].id;
+                                            kehops.stepperWheel[message.Config.stepper[i].id].config.motor.ratio = message.Config.stepper[i].ratio;
+                                            kehops.stepperWheel[message.Config.stepper[i].id].config.motor.steps = message.Config.stepper[i].stepsPerRot;
+                                            messageResponse[valCnt].CONFIGresponse.stepper[i].id = message.Config.stepper[i].id;
                                         }
                                         else
-                                            AlgoidResponse[valCnt].CONFIGresponse.stepper[i].id=-1;
+                                            messageResponse[valCnt].CONFIGresponse.stepper[i].id=-1;
                                     }                                    
 
                                 // CONFIG COMMAND FOR LED SETTING
-                                    for(i=0;i<AlgoidCommand.Config.ledValueCnt; i++){
-                                        AlgoidResponse[valCnt].CONFIGresponse.ledValueCnt=AlgoidCommand.Config.ledValueCnt;
+                                    for(i=0;i<message.Config.ledValueCnt; i++){
+                                        messageResponse[valCnt].CONFIGresponse.ledValueCnt=message.Config.ledValueCnt;
                                         
                                         // Check if led exist...
-                                        if(AlgoidCommand.Config.led[i].id >= 0 && AlgoidCommand.Config.led[i].id <NBLED){
-                                            kehops.led[AlgoidCommand.Config.led[i].id].config.defaultPower = AlgoidCommand.Config.led[i].power;
-                                            AlgoidResponse[valCnt].CONFIGresponse.led[i].power=AlgoidCommand.Config.led[i].power;
+                                        if(message.Config.led[i].id >= 0 && message.Config.led[i].id <NBLED){
+                                            kehops.led[message.Config.led[i].id].config.defaultPower = message.Config.led[i].power;
+                                            messageResponse[valCnt].CONFIGresponse.led[i].power=message.Config.led[i].power;
                                             // Save config for led inversion
-                                            if(!strcmp(AlgoidCommand.Config.led[i].state, "on")){
-                                                kehops.led[AlgoidCommand.Config.led[i].id].config.defaultState = 1;
-                                                strcpy(AlgoidResponse[valCnt].CONFIGresponse.led[i].state, "on");
+                                            if(!strcmp(message.Config.led[i].state, "on")){
+                                                kehops.led[message.Config.led[i].id].config.defaultState = 1;
+                                                strcpy(messageResponse[valCnt].CONFIGresponse.led[i].state, "on");
                                             }
-                                            else if(!strcmp(AlgoidCommand.Config.led[i].state, "off")){
-                                                kehops.led[AlgoidCommand.Config.led[i].id].config.defaultState = 0;
-                                                strcpy(AlgoidResponse[valCnt].CONFIGresponse.led[i].state, "off");
+                                            else if(!strcmp(message.Config.led[i].state, "off")){
+                                                kehops.led[message.Config.led[i].id].config.defaultState = 0;
+                                                strcpy(messageResponse[valCnt].CONFIGresponse.led[i].state, "off");
                                             }
 
-                                            AlgoidResponse[valCnt].CONFIGresponse.led[i].id = AlgoidCommand.Config.led[i].id;
+                                            messageResponse[valCnt].CONFIGresponse.led[i].id = message.Config.led[i].id;
                                         }
                                         else
-                                            AlgoidResponse[valCnt].CONFIGresponse.led[i].id=-1;
+                                            messageResponse[valCnt].CONFIGresponse.led[i].id=-1;
                                     }
 
                                 // CONFIG COMMAND FOR SAVE
-                                    if(!strcmp(AlgoidCommand.Config.config.save, "true"))
+                                    if(!strcmp(message.Config.config.save, "true"))
                                         SaveConfig("kehops.cfg");
 
                                 // CONFIG COMMAND FOR RESET
-                                    if(!strcmp(AlgoidCommand.Config.config.reset, "true"))
+                                    if(!strcmp(message.Config.config.reset, "true"))
                                         sysApp.kehops.resetConfig = 1;
 
                         // Préparation des valeurs du message de réponse
                                 // GET STREAM CONFIG FOR RESPONSE
-                                    AlgoidResponse[valCnt].CONFIGresponse.stream.time=sysConf.communication.mqtt.stream.time_ms;
+                                    messageResponse[valCnt].CONFIGresponse.stream.time=sysConf.communication.mqtt.stream.time_ms;
                                     
                                     if(sysConf.communication.mqtt.stream.onEvent==0) 
-                                        strcpy(AlgoidResponse[valCnt].CONFIGresponse.stream.onEvent, "off");
-                                    else strcpy(AlgoidResponse[valCnt].CONFIGresponse.stream.onEvent, "on");
+                                        strcpy(messageResponse[valCnt].CONFIGresponse.stream.onEvent, "off");
+                                    else strcpy(messageResponse[valCnt].CONFIGresponse.stream.onEvent, "on");
 
                                     if(sysConf.communication.mqtt.stream.state==0) 
-                                        strcpy(AlgoidResponse[valCnt].CONFIGresponse.stream.state, "off");
-                                    else strcpy(AlgoidResponse[valCnt].CONFIGresponse.stream.state, "on");
+                                        strcpy(messageResponse[valCnt].CONFIGresponse.stream.state, "off");
+                                    else strcpy(messageResponse[valCnt].CONFIGresponse.stream.state, "on");
 
                                     if(sysApp.kehops.resetConfig == 1) 
-                                        strcpy(AlgoidResponse[valCnt].CONFIGresponse.config.reset, "true");
-                                    else strcpy(AlgoidResponse[valCnt].CONFIGresponse.config.reset, "---");
+                                        strcpy(messageResponse[valCnt].CONFIGresponse.config.reset, "true");
+                                    else strcpy(messageResponse[valCnt].CONFIGresponse.config.reset, "---");
                                     
-                                    if(!strcmp(AlgoidCommand.Config.config.save, "true")) 
-                                        strcpy(AlgoidResponse[valCnt].CONFIGresponse.config.save, "true");
-                                    else strcpy(AlgoidResponse[valCnt].CONFIGresponse.config.save, "---");
+                                    if(!strcmp(message.Config.config.save, "true")) 
+                                        strcpy(messageResponse[valCnt].CONFIGresponse.config.save, "true");
+                                    else strcpy(messageResponse[valCnt].CONFIGresponse.config.save, "---");
                                     
-                                    AlgoidResponse[valCnt].responseType = RESP_STD_MESSAGE;
+                                    messageResponse[valCnt].responseType = RESP_STD_MESSAGE;
                                 } 
                                 
-                                //AlgoidResponse[0].responseType = RESP_STD_MESSAGE;                     
+                                //messageResponse[0].responseType = RESP_STD_MESSAGE;                     
                                 // Retourne en r�ponse le message v�rifi�
-                                sendResponse(AlgoidCommand.msgID, AlgoidMessageRX.msgFrom, RESPONSE, CONFIG, AlgoidCommand.msgValueCnt);
+                                sendResponse(message.msgID, message.msgFrom, RESPONSE, CONFIG, message.msgValueCnt);
 
                                 break;
                                 
             case SYSTEM :       
                                 // RECHERCHE DES MISE A JOURS
-                                if(!strcmp(AlgoidCommand.System.application, "check")){
-                                    AlgoidResponse[0].responseType=EVENT_ACTION_BEGIN;                                            
+                                if(!strcmp(message.System.application, "check")){
+                                    messageResponse[0].responseType=EVENT_ACTION_BEGIN;                                            
                                     updateResult = runUpdateCommand(0);
-                                    
-                                    char message[100];
-                                    
+                                                                        
                                     switch(updateResult){
-                                        case 1 :   strcpy(AlgoidResponse[0].SYSCMDresponse.application, "connection error"); break;
-                                        case 10 :  strcpy(AlgoidResponse[0].SYSCMDresponse.application, "update available"); break;
-                                        case 11 :  strcpy(AlgoidResponse[0].SYSCMDresponse.application, "no update"); break;
+                                        case 1 :   strcpy(messageResponse[0].SYSCMDresponse.application, "connection error"); break;
+                                        case 10 :  strcpy(messageResponse[0].SYSCMDresponse.application, "update available"); break;
+                                        case 11 :  strcpy(messageResponse[0].SYSCMDresponse.application, "no update"); break;
                                         default:   
-                                                   sprintf(AlgoidResponse[0].SYSCMDresponse.firmwareUpdate, "error %d", updateResult); break;
+                                                   sprintf(messageResponse[0].SYSCMDresponse.firmwareUpdate, "error %d", updateResult); break;
                                     }
 
-                                    AlgoidResponse[0].responseType = RESP_STD_MESSAGE;
-                                    sendResponse(AlgoidCommand.msgID, AlgoidMessageRX.msgFrom, RESPONSE, SYSTEM, AlgoidCommand.msgValueCnt);
+                                    messageResponse[0].responseType = RESP_STD_MESSAGE;
+                                    sendResponse(message.msgID, message.msgFrom, RESPONSE, SYSTEM, message.msgValueCnt);
                                     // Reset la commande system de type firmware
-                                    strcpy(AlgoidCommand.System.application,"");
+                                    strcpy(message.System.application,"");
                                 }
                                 
                                 // MISE A JOUR DE L'APPLICATION
-                                if(!strcmp(AlgoidCommand.System.application, "update")){
+                                if(!strcmp(message.System.application, "update")){
 
-                                    AlgoidResponse[0].responseType = RESP_STD_MESSAGE;
-                                    sendResponse(AlgoidCommand.msgID, AlgoidMessageRX.msgFrom, RESPONSE, SYSTEM, AlgoidCommand.msgValueCnt);
+                                    messageResponse[0].responseType = RESP_STD_MESSAGE;
+                                    sendResponse(message.msgID, message.msgFrom, RESPONSE, SYSTEM, message.msgValueCnt);
                                     
-                                    strcpy(AlgoidResponse[0].SYSCMDresponse.application, "update");
-                                    AlgoidResponse[0].responseType=EVENT_ACTION_BEGIN;
+                                    strcpy(messageResponse[0].SYSCMDresponse.application, "update");
+                                    messageResponse[0].responseType=EVENT_ACTION_BEGIN;
  
                                     // Retourne en r�ponse le message v�rifi�
-                                    sendResponse(AlgoidCommand.msgID, AlgoidMessageRX.msgFrom, EVENT, SYSTEM, AlgoidCommand.msgValueCnt);
+                                    sendResponse(message.msgID, message.msgFrom, EVENT, SYSTEM, message.msgValueCnt);
                                     
                                     updateResult = runUpdateCommand(1);
                                   
@@ -592,13 +592,13 @@ int processAlgoidCommand(void){
                                 }
                                 
                                 // Restart application
-                                if(!strcmp(AlgoidCommand.System.application, "restart")){
+                                if(!strcmp(message.System.application, "restart")){
                                     
-                                    strcpy(AlgoidResponse[0].SYSCMDresponse.application, "restart");
-                                    AlgoidResponse[0].responseType = RESP_STD_MESSAGE;
-                                    sendResponse(AlgoidCommand.msgID, AlgoidMessageRX.msgFrom, RESPONSE, SYSTEM, AlgoidCommand.msgValueCnt);
+                                    strcpy(messageResponse[0].SYSCMDresponse.application, "restart");
+                                    messageResponse[0].responseType = RESP_STD_MESSAGE;
+                                    sendResponse(message.msgID, message.msgFrom, RESPONSE, SYSTEM, message.msgValueCnt);
                                     
-                                    AlgoidResponse[0].responseType=EVENT_ACTION_BEGIN;
+                                    messageResponse[0].responseType=EVENT_ACTION_BEGIN;
                                     
                                     usleep(1000);
                                     runRestartCommand();
@@ -618,7 +618,7 @@ int processAlgoidCommand(void){
 // S�l�ction et traite le param�tre de requete recu [DISTANCE, TENSION BATTERIE, ENTREE DIGITAL, etc...]
 // -------------------------------------------------------------------
 int processAlgoidRequest(void){
-	switch(AlgoidCommand.msgParam){
+	switch(message.msgParam){
 		case DISTANCE : makeDistanceRequest();					// Requete de distance
 						break;
 
@@ -662,9 +662,9 @@ int runMotorAction(void){
             ptrData=getWDvalue(i);
             if(ptrData>=0){
                 actionCount++;
-                        kehops.dcWheel[i].motor.speed = AlgoidCommand.DCmotor[ptrData].velocity;
-                        kehops.dcWheel[i].target.distanceCM = AlgoidCommand.DCmotor[ptrData].cm;
-                        kehops.dcWheel[i].target.time = AlgoidCommand.DCmotor[ptrData].time;
+                        kehops.dcWheel[i].motor.speed = message.DCmotor[ptrData].velocity;
+                        kehops.dcWheel[i].target.distanceCM = message.DCmotor[ptrData].cm;
+                        kehops.dcWheel[i].target.time = message.DCmotor[ptrData].time;
             }
         }
 
@@ -672,13 +672,13 @@ int runMotorAction(void){
         if(actionCount>0){
             
             // Retoure un message EVENT de type BEGIN 
-            AlgoidResponse[0].responseType = EVENT_ACTION_BEGIN;
+            messageResponse[0].responseType = EVENT_ACTION_BEGIN;
             // Retourne un message event ALGOID 
-            sendResponse(AlgoidCommand.msgID, AlgoidCommand.msgFrom,  EVENT, MOTORS, 1);
+            sendResponse(message.msgID, message.msgFrom,  EVENT, MOTORS, 1);
                     
             // Ouverture d'une t�che pour les toutes les actions du message algoid � effectuer
             // Recois un num�ro de tache en retour
-            myTaskId=createBuggyTask(AlgoidCommand.msgID, actionCount);			// 2 actions pour mouvement 2WD
+            myTaskId=createBuggyTask(message.msgID, actionCount);			// 2 actions pour mouvement 2WD
 
             // D�marrage des actions
             if(myTaskId>0){
@@ -686,10 +686,10 @@ int runMotorAction(void){
 
                     // Sauvegarde du nom de l'emetteur et du ID du message pour la r�ponse
                     // en fin d'�venement
-                    saveSenderOfMsgId(AlgoidCommand.msgID, AlgoidMessageRX.msgFrom);
+                    saveSenderOfMsgId(message.msgID, message.msgFrom);
 
                     for(ptrData=0; action < actionCount && ptrData<10; ptrData++){
-                        ID = AlgoidCommand.DCmotor[ptrData].motor;
+                        ID = message.DCmotor[ptrData].motor;
                         if(ID >= 0){
                             
                             // Effectue l'action sur la roue
@@ -697,13 +697,13 @@ int runMotorAction(void){
                                 sprintf(reportBuffer, "ATTENTION: Action infinie, aucun parametre defini \"time\" ou \"cm\" pour l'action sur le moteur %d\n", ID);
 
                                 printf(reportBuffer);                                                             // Affichage du message dans le shell
-                                sendMqttReport(AlgoidCommand.msgID, reportBuffer);				      // Envoie le message sur le canal MQTT "Report"     
+                                sendMqttReport(message.msgID, reportBuffer);				      // Envoie le message sur le canal MQTT "Report"     
                                 setAsyncMotorAction(myTaskId, ID, kehops.dcWheel[ID].motor.speed, INFINITE, NULL);
 
                                 // Défini l'état de laction comme "en cours" pour message de réponse
-                                AlgoidResponse[0].responseType = EVENT_ACTION_RUN;
+                                messageResponse[0].responseType = EVENT_ACTION_RUN;
                                 // Retourne un message event ALGOID 
-                                sendResponse(AlgoidCommand.msgID, AlgoidCommand.msgFrom,  EVENT, MOTORS, 1);
+                                sendResponse(message.msgID, message.msgFrom,  EVENT, MOTORS, 1);
                             }else
                             {
                                 if(kehops.dcWheel[ID].target.distanceCM > 0)
@@ -723,11 +723,11 @@ int runMotorAction(void){
         // Aucun param�tre trouv� ou moteur inexistant
         else{
             
-            AlgoidResponse[0].responseType = EVENT_ACTION_ERROR;
-            sendResponse(myTaskId, AlgoidMessageRX.msgFrom, EVENT, MOTORS, 1);               // Envoie un message EVENT error
-            sprintf(reportBuffer, "ERREUR: Aucun moteur defini ou inexistant pour le message #%d\n", AlgoidCommand.msgID);
+            messageResponse[0].responseType = EVENT_ACTION_ERROR;
+            sendResponse(myTaskId, message.msgFrom, EVENT, MOTORS, 1);               // Envoie un message EVENT error
+            sprintf(reportBuffer, "ERREUR: Aucun moteur defini ou inexistant pour le message #%d\n", message.msgID);
             printf(reportBuffer);                                                             // Affichage du message dans le shell
-            sendMqttReport(AlgoidCommand.msgID, reportBuffer);				      // Envoie le message sur le canal MQTT "Report"
+            sendMqttReport(message.msgID, reportBuffer);				      // Envoie le message sur le canal MQTT "Report"
         }
 }
 
@@ -749,11 +749,11 @@ int runStepperAction(void){
             ptrData=getStepperValue(i);
             if(ptrData>=0){
                 actionCount++;
-                        kehops.stepperWheel[i].motor.speed = AlgoidCommand.StepperMotor[ptrData].velocity;
-                        kehops.stepperWheel[i].target.time = AlgoidCommand.StepperMotor[ptrData].time;
-                        kehops.stepperWheel[i].target.steps = AlgoidCommand.StepperMotor[ptrData].step;
-                        kehops.stepperWheel[i].target.angle = AlgoidCommand.StepperMotor[ptrData].angle;
-                        kehops.stepperWheel[i].target.rotation = AlgoidCommand.StepperMotor[ptrData].rotation;
+                        kehops.stepperWheel[i].motor.speed = message.StepperMotor[ptrData].velocity;
+                        kehops.stepperWheel[i].target.time = message.StepperMotor[ptrData].time;
+                        kehops.stepperWheel[i].target.steps = message.StepperMotor[ptrData].step;
+                        kehops.stepperWheel[i].target.angle = message.StepperMotor[ptrData].angle;
+                        kehops.stepperWheel[i].target.rotation = message.StepperMotor[ptrData].rotation;
             }
         }
 
@@ -761,13 +761,13 @@ int runStepperAction(void){
         if(actionCount>0){
             
             // Retoure un message EVENT de type BEGIN 
-            AlgoidResponse[0].responseType = EVENT_ACTION_BEGIN;
+            messageResponse[0].responseType = EVENT_ACTION_BEGIN;
             // Retourne un message event ALGOID 
-            sendResponse(AlgoidCommand.msgID, AlgoidCommand.msgFrom,  EVENT, STEPPER, 1);
+            sendResponse(message.msgID, message.msgFrom,  EVENT, STEPPER, 1);
                     
             // Ouverture d'une tâche pour les toutes les actions du message algoid � effectuer
             // Recois un numéro de tache en retour
-            myTaskId=createBuggyTask(AlgoidCommand.msgID, actionCount);			// 2 actions pour mouvement 2WD
+            myTaskId=createBuggyTask(message.msgID, actionCount);			// 2 actions pour mouvement 2WD
 
             // Démarrage des actions
             if(myTaskId>0){
@@ -775,10 +775,10 @@ int runStepperAction(void){
 
                     // Sauvegarde du nom de l'emetteur et du ID du message pour la r�ponse
                     // en fin d'�venement
-                    saveSenderOfMsgId(AlgoidCommand.msgID, AlgoidMessageRX.msgFrom);
+                    saveSenderOfMsgId(message.msgID, message.msgFrom);
 
                     for(ptrData=0; action < actionCount && ptrData<10; ptrData++){
-                        ID = AlgoidCommand.StepperMotor[ptrData].motor;
+                        ID = message.StepperMotor[ptrData].motor;
                         if(ID >= 0){
                             
                             // Effectue l'action sur le moteur pas à pas
@@ -786,13 +786,13 @@ int runStepperAction(void){
                                 sprintf(reportBuffer, "ATTENTION: Action infinie, aucun parametre defini \"time\" ou \"step\" ou \"rotation\" ou \"angle\"pour l'action sur le moteur pas à pas %d\n", ID);
 
                                 printf(reportBuffer);                                                             // Affichage du message dans le shell
-                                sendMqttReport(AlgoidCommand.msgID, reportBuffer);				      // Envoie le message sur le canal MQTT "Report"     
+                                sendMqttReport(message.msgID, reportBuffer);				      // Envoie le message sur le canal MQTT "Report"     
                                 setAsyncStepperAction(myTaskId, ID, kehops.stepperWheel[ID].motor.speed, INFINITE, NULL);
 
                                 // Défini l'état de laction comme "en cours" pour message de réponse
-                                AlgoidResponse[0].responseType = EVENT_ACTION_RUN;
+                                messageResponse[0].responseType = EVENT_ACTION_RUN;
                                 // Retourne un message event ALGOID 
-                                sendResponse(AlgoidCommand.msgID, AlgoidCommand.msgFrom,  EVENT, STEPPER, 1);
+                                sendResponse(message.msgID, message.msgFrom,  EVENT, STEPPER, 1);
                             }else
                             {
                                 if(kehops.stepperWheel[ID].target.steps > 0){
@@ -824,11 +824,11 @@ int runStepperAction(void){
         // Aucun param�tre trouv� ou moteur inexistant
         else{
             
-            AlgoidResponse[0].responseType = EVENT_ACTION_ERROR;
-            sendResponse(myTaskId, AlgoidMessageRX.msgFrom, EVENT, MOTORS, 1);               // Envoie un message EVENT error
-            sprintf(reportBuffer, "ERREUR: Aucun moteur défini ou inexistant pour le message #%d\n", AlgoidCommand.msgID);
+            messageResponse[0].responseType = EVENT_ACTION_ERROR;
+            sendResponse(myTaskId, message.msgFrom, EVENT, MOTORS, 1);               // Envoie un message EVENT error
+            sprintf(reportBuffer, "ERREUR: Aucun moteur défini ou inexistant pour le message #%d\n", message.msgID);
             printf(reportBuffer);                                                             // Affichage du message dans le shell
-            sendMqttReport(AlgoidCommand.msgID, reportBuffer);				      // Envoie le message sur le canal MQTT "Report"
+            sendMqttReport(message.msgID, reportBuffer);				      // Envoie le message sur le canal MQTT "Report"
         }
 }
 
@@ -861,22 +861,22 @@ int runLedAction(void){
                 actionCount++;          // Incr�mente le nombre de param�tres trouv�s = action suppl�mentaire a effectuer
                 
                 // R�cup�ration de commande d'�tat de la led dans le message
-                if(!strcmp(AlgoidCommand.LEDarray[ptrData].state,"off"))
+                if(!strcmp(message.LEDarray[ptrData].state,"off"))
                     kehops.led[i].state = OFF;
-                if(!strcmp(AlgoidCommand.LEDarray[ptrData].state,"on"))
+                if(!strcmp(message.LEDarray[ptrData].state,"on"))
                     kehops.led[i].state = ON;
-                if(!strcmp(AlgoidCommand.LEDarray[ptrData].state,"blink"))
+                if(!strcmp(message.LEDarray[ptrData].state,"blink"))
                     kehops.led[i].state = ON;
                 
                 // R�cup�ration des consignes dans le message (si disponible)
-                if(AlgoidCommand.LEDarray[ptrData].powerPercent > 0)
-                    kehops.led[i].power = AlgoidCommand.LEDarray[ptrData].powerPercent;
+                if(message.LEDarray[ptrData].powerPercent > 0)
+                    kehops.led[i].power = message.LEDarray[ptrData].powerPercent;
                 
-                if(AlgoidCommand.LEDarray[ptrData].time > 0)
-                    kehops.led[i].action.blinkTime = AlgoidCommand.LEDarray[ptrData].time;
+                if(message.LEDarray[ptrData].time > 0)
+                    kehops.led[i].action.blinkTime = message.LEDarray[ptrData].time;
                 
-                if(AlgoidCommand.LEDarray[ptrData].blinkCount > 0)
-                    kehops.led[i].action.blinkCount = AlgoidCommand.LEDarray[ptrData].blinkCount;
+                if(message.LEDarray[ptrData].blinkCount > 0)
+                    kehops.led[i].action.blinkCount = message.LEDarray[ptrData].blinkCount;
             }
         }
 
@@ -885,25 +885,25 @@ int runLedAction(void){
         if(actionCount>0){
             // Ouverture d'une t�che pour les toutes les actions du message algoid � effectuer
             // Recois un num�ro de tache en retour
-            myTaskId=createBuggyTask(AlgoidCommand.msgID, actionCount);			//
+            myTaskId=createBuggyTask(message.msgID, actionCount);			//
 
             // D�marrage des actions
             if(myTaskId>0){
                     printf("Creation de tache LED: #%d avec %d actions\n", myTaskId, actionCount);
 
-                    AlgoidResponse[0].responseType=EVENT_ACTION_BEGIN;
-                    sendResponse(myTaskId, AlgoidMessageRX.msgFrom, EVENT, pLED, 1);                         // Envoie un message ALGOID de fin de t�che pour l'action �cras�
+                    messageResponse[0].responseType=EVENT_ACTION_BEGIN;
+                    sendResponse(myTaskId, message.msgFrom, EVENT, pLED, 1);                         // Envoie un message ALGOID de fin de t�che pour l'action �cras�
                     
                     // Sauvegarde du nom de l'emetteur et du ID du message pour la r�ponse
                     // en fin d'�venement
-                    saveSenderOfMsgId(AlgoidCommand.msgID, AlgoidMessageRX.msgFrom);
+                    saveSenderOfMsgId(message.msgID, message.msgFrom);
                     
                     for(ptrData=0; action < actionCount && ptrData<10; ptrData++){
-                            ID = AlgoidCommand.LEDarray[ptrData].id;
+                            ID = message.LEDarray[ptrData].id;
                             if(ID >= 0){
-                                    power=AlgoidCommand.LEDarray[ptrData].powerPercent;
-                                    Count=AlgoidCommand.LEDarray[ptrData].blinkCount;
-                                    time=AlgoidCommand.LEDarray[ptrData].time;
+                                    power=message.LEDarray[ptrData].powerPercent;
+                                    Count=message.LEDarray[ptrData].blinkCount;
+                                    time=message.LEDarray[ptrData].time;
                                     // Mode blink
                                     if(kehops.led[ID].state == BLINK){
                                         // Verifie la presence de parametres de type "time" et "count", sinon applique des
@@ -913,17 +913,17 @@ int runLedAction(void){
                                             Count=1;
                                             sprintf(reportBuffer, "ATTENTION: Action infinie, aucun parametre defini \"time\" ou \"count\" pour l'action sur la LED %d\n", ID);
                                             printf(reportBuffer);                                                             // Affichage du message dans le shell
-                                            sendMqttReport(AlgoidCommand.msgID, reportBuffer);	
+                                            sendMqttReport(message.msgID, reportBuffer);	
                                             
-                                            AlgoidResponse[0].responseType=EVENT_ACTION_RUN;
-                                            sendResponse(myTaskId, AlgoidMessageRX.msgFrom, EVENT, pLED, 1);                         // Envoie un message ALGOID de fin de t�che pour l'action �cras�
+                                            messageResponse[0].responseType=EVENT_ACTION_RUN;
+                                            sendResponse(myTaskId, message.msgFrom, EVENT, pLED, 1);                         // Envoie un message ALGOID de fin de t�che pour l'action �cras�
                                         }
             /*   BUG SEGFAULT
                                         if(Count<=0){
                                             Count=1;
                                             sprintf(reportBuffer, "ATTENTION: Action infinie, aucun parametre defini \"count\"  pour l'action sur la LED %d\n", ID);
                                             printf(reportBuffer);                                                             // Affichage du message dans le shell
-                                            sendMqttReport(AlgoidCommand.msgID, reportBuffer);				      // Envoie le message sur le canal MQTT "Report"     
+                                            sendMqttReport(message.msgID, reportBuffer);				      // Envoie le message sur le canal MQTT "Report"     
                                         }
             */
                                         // Creation d'un timer effectu� sans erreur, ni ecrasement d'une ancienne action
@@ -945,11 +945,11 @@ int runLedAction(void){
             }            
         }
         else{   
-                sprintf(reportBuffer, "ERREUR: ID LED INEXISTANT pour le message #%d\n", AlgoidCommand.msgID);
-                AlgoidResponse[0].responseType=EVENT_ACTION_ERROR;
-                sendResponse(myTaskId, AlgoidMessageRX.msgFrom, EVENT, pLED, 1);               // Envoie un message EVENT error
+                sprintf(reportBuffer, "ERREUR: ID LED INEXISTANT pour le message #%d\n", message.msgID);
+                messageResponse[0].responseType=EVENT_ACTION_ERROR;
+                sendResponse(myTaskId, message.msgFrom, EVENT, pLED, 1);               // Envoie un message EVENT error
                 printf(reportBuffer);                                                           // Affichage du message dans le shell
-                sendMqttReport(AlgoidCommand.msgID, reportBuffer);				// Envoie le message sur le canal MQTT "Report"
+                sendMqttReport(message.msgID, reportBuffer);				// Envoie le message sur le canal MQTT "Report"
         }
 	return 0;
 }
@@ -983,25 +983,25 @@ int runPwmAction(void){
                 actionCount++;          // Incr�mente le nombre de param�tres trouv�s = action suppl�mentaire a effectuer
                 
                 // R�cup�ration de commande d'�tat pour la sortie PWM
-                if(!strcmp(AlgoidCommand.PWMarray[ptrData].state,"off"))
+                if(!strcmp(message.PWMarray[ptrData].state,"off"))
                     kehops.pwm[i].state = OFF;
-                if(!strcmp(AlgoidCommand.PWMarray[ptrData].state,"on"))
+                if(!strcmp(message.PWMarray[ptrData].state,"on"))
                     kehops.pwm[i].state = ON;
                 
 
                 // Blink mode not available in SERVO MODE
-                if(!AlgoidCommand.PWMarray[ptrData].isServoMode){
-                    if(!strcmp(AlgoidCommand.PWMarray[ptrData].state,"blink"))
+                if(!message.PWMarray[ptrData].isServoMode){
+                    if(!strcmp(message.PWMarray[ptrData].state,"blink"))
                         kehops.pwm[i].state = BLINK;
-                    if(AlgoidCommand.PWMarray[ptrData].time > 0)
-                        kehops.pwm[i].action.blinkTime = AlgoidCommand.PWMarray[ptrData].time;
-                    if(AlgoidCommand.PWMarray[ptrData].blinkCount > 0)
-                        kehops.pwm[i].action.blinkCount = AlgoidCommand.PWMarray[ptrData].blinkCount;
+                    if(message.PWMarray[ptrData].time > 0)
+                        kehops.pwm[i].action.blinkTime = message.PWMarray[ptrData].time;
+                    if(message.PWMarray[ptrData].blinkCount > 0)
+                        kehops.pwm[i].action.blinkCount = message.PWMarray[ptrData].blinkCount;
                 }
                 
                 // Recuperation des consignes dans le message (si disponible)
-                if(AlgoidCommand.PWMarray[ptrData].powerPercent >= 0)
-                    kehops.pwm[i].power = AlgoidCommand.PWMarray[ptrData].powerPercent;
+                if(message.PWMarray[ptrData].powerPercent >= 0)
+                    kehops.pwm[i].power = message.PWMarray[ptrData].powerPercent;
             }
         }
 
@@ -1010,7 +1010,7 @@ int runPwmAction(void){
         if(actionCount>0){
             // Ouverture d'une t�che pour les toutes les actions du message algoid � effectuer
             // Recois un num�ro de tache en retour
-            myTaskId=createBuggyTask(AlgoidCommand.msgID, actionCount);			//
+            myTaskId=createBuggyTask(message.msgID, actionCount);			//
 
             // D�marrage des actions
             if(myTaskId>0){
@@ -1018,17 +1018,17 @@ int runPwmAction(void){
 
                     // Sauvegarde du nom de l'emetteur et du ID du message pour la r�ponse
                     // en fin d'�venement
-                    saveSenderOfMsgId(AlgoidCommand.msgID, AlgoidMessageRX.msgFrom);
+                    saveSenderOfMsgId(message.msgID, message.msgFrom);
                     
                     for(ptrData=0; action < actionCount && ptrData<10; ptrData++){
-                            ID = AlgoidCommand.PWMarray[ptrData].id;
+                            ID = message.PWMarray[ptrData].id;
                             if(ID >= 0){
-                                    power=AlgoidCommand.PWMarray[ptrData].powerPercent;
-                                    Count=AlgoidCommand.PWMarray[ptrData].blinkCount;
-                                    time=AlgoidCommand.PWMarray[ptrData].time;
+                                    power=message.PWMarray[ptrData].powerPercent;
+                                    Count=message.PWMarray[ptrData].blinkCount;
+                                    time=message.PWMarray[ptrData].time;
                                     
                                     // Check if is a servomotor PWM (500uS .. 2.5mS)
-                                    if(!AlgoidCommand.PWMarray[ptrData].isServoMode){
+                                    if(!message.PWMarray[ptrData].isServoMode){
                                         // Mode blink
                                         if(kehops.pwm[i].state== BLINK){
                                             // Verifie la presence de parametres de type "time" et "count", sinon applique des
@@ -1037,13 +1037,13 @@ int runPwmAction(void){
                                                 time=500;
                                                 sprintf(reportBuffer, "ATTENTION: Action infinie, aucun parametre defini \"time\"  pour l'action PWM %d\n", ID);
                                                 printf(reportBuffer);                                                             // Affichage du message dans le shell
-                                                sendMqttReport(AlgoidCommand.msgID, reportBuffer);	
+                                                sendMqttReport(message.msgID, reportBuffer);	
                                             }
 
                                             if(Count<=0){
                                                 sprintf(reportBuffer, "ATTENTION: Action infinie, aucun parametre defini \"count\"  pour l'action PWM %d\n", ID);
                                                 printf(reportBuffer);                                                             // Affichage du message dans le shell
-                                                sendMqttReport(AlgoidCommand.msgID, reportBuffer);				      // Envoie le message sur le canal MQTT "Report"     
+                                                sendMqttReport(message.msgID, reportBuffer);				      // Envoie le message sur le canal MQTT "Report"     
                                             }
 
                                             // Creation d'un timer effectu� sans erreur, ni ecrasement d'une ancienne action
@@ -1069,20 +1069,20 @@ int runPwmAction(void){
                                     action++;
                             }
                     }
-                    AlgoidResponse[0].responseType=EVENT_ACTION_BEGIN;
+                    messageResponse[0].responseType=EVENT_ACTION_BEGIN;
                     
-                    if(!AlgoidCommand.PWMarray[ptrData].isServoMode)
-                        sendResponse(myTaskId, AlgoidMessageRX.msgFrom, EVENT, pPWM, 1);               // Send EVENT message for action begin
+                    if(!message.PWMarray[ptrData].isServoMode)
+                        sendResponse(myTaskId, message.msgFrom, EVENT, pPWM, 1);               // Send EVENT message for action begin
                     else
-                        sendResponse(myTaskId, AlgoidMessageRX.msgFrom, EVENT, pSERVO, 1);             // Send EVENT message for action begin
+                        sendResponse(myTaskId, message.msgFrom, EVENT, pSERVO, 1);             // Send EVENT message for action begin
             }            
         }
         else{   
-                sprintf(reportBuffer, "ERREUR: ID PWM INEXISTANT pour le message #%d\n", AlgoidCommand.msgID);
-                AlgoidResponse[0].responseType=EVENT_ACTION_ERROR;
-                sendResponse(myTaskId, AlgoidMessageRX.msgFrom, EVENT, pPWM, 1);               // Envoie un message EVENT error
+                sprintf(reportBuffer, "ERREUR: ID PWM INEXISTANT pour le message #%d\n", message.msgID);
+                messageResponse[0].responseType=EVENT_ACTION_ERROR;
+                sendResponse(myTaskId, message.msgFrom, EVENT, pPWM, 1);               // Envoie un message EVENT error
                 printf(reportBuffer);							// Affichage du message dans le shell
-                sendMqttReport(AlgoidCommand.msgID, reportBuffer);				// Envoie le message sur le canal MQTT "Report"
+                sendMqttReport(message.msgID, reportBuffer);				// Envoie le message sur le canal MQTT "Report"
         }
 	return 0;
 }
@@ -1099,8 +1099,8 @@ int getWDvalue(int wheelName){
 
 	// V�rifie que le moteur est existant...
 		// Recherche dans les donn�e recues la valeur correspondante au param�tre "wheelName"
-		for(i=0;i<AlgoidCommand.msgValueCnt;i++){
-			if(wheelName == AlgoidCommand.DCmotor[i].motor)
+		for(i=0;i<message.msgValueCnt;i++){
+			if(wheelName == message.DCmotor[i].motor)
 				searchPtr=i;
 		}
 		return searchPtr;
@@ -1117,8 +1117,8 @@ int getStepperValue(int motorName){
 
 	// V�rifie que le moteur est existant...
 		// Recherche dans les donn�e recues la valeur correspondante au param�tre "wheelName"
-		for(i=0;i<AlgoidCommand.msgValueCnt;i++){
-			if(motorName == AlgoidCommand.StepperMotor[i].motor)
+		for(i=0;i<message.msgValueCnt;i++){
+			if(motorName == message.StepperMotor[i].motor)
 				searchPtr=i;
 		}
 		return searchPtr;
@@ -1134,8 +1134,8 @@ int getPwmSetting(int name){
 	int searchPtr = -1;
 
 	// Recherche dans les donn�e recues la valeur correspondante au param�tre "wheelName"
-	for(i=0;i<AlgoidCommand.msgValueCnt;i++){
-		if(name == AlgoidCommand.PWMarray[i].id)
+	for(i=0;i<message.msgValueCnt;i++){
+		if(name == message.PWMarray[i].id)
 		searchPtr=i;
 	}
 	return searchPtr;
@@ -1151,8 +1151,8 @@ int getLedSetting(int name){
 	int searchPtr = -1;
 
 	// Recherche dans les donn�e recues la valeur correspondante au param�tre "name"
-	for(i=0;i<AlgoidCommand.msgValueCnt;i++){
-		if(name == AlgoidCommand.LEDarray[i].id)
+	for(i=0;i<message.msgValueCnt;i++){
+		if(name == message.LEDarray[i].id)
 		searchPtr=i;
 	}
 	return searchPtr;
@@ -1191,7 +1191,7 @@ int createBuggyTask(int MsgId, int actionCount){
 			{  
 				sprintf(reportBuffer, "ERREUR: MessageID / Tache en cours de traitement: #%d\n", actionID);
                                 printf(reportBuffer);
-                                AlgoidResponse[0].responseType=EVENT_ACTION_END;
+                                messageResponse[0].responseType=EVENT_ACTION_END;
                                 ptrSender = getSenderFromMsgId(actionID);
                                 sendResponse(actionID, msgEventHeader[ptrSender].msgFrom, RESPONSE, ERR_HEADER, 0);			// Envoie un message ALGOID de fin de t�che pour l'action �cras�
 				sendMqttReport(actionID, reportBuffer);
@@ -1244,15 +1244,15 @@ int makeStatusRequest(int msgType){
 	int i;
 	int ptrData=0;
 
-	AlgoidCommand.msgValueCnt=0;
-	AlgoidCommand.msgValueCnt = NBDIN + NBBTN + NBMOTOR + NBSONAR + NBRGBC + NBLED + NBPWM +1 ; // Nombre de VALEUR � transmettre + 1 pour le SystemStatus
+	message.msgValueCnt=0;
+	message.msgValueCnt = NBDIN + NBBTN + NBMOTOR + NBSONAR + NBRGBC + NBLED + NBPWM +1 ; // Nombre de VALEUR � transmettre + 1 pour le SystemStatus
      
         // Preparation du message de reponse pour le status systeme
-        strcpy(AlgoidResponse[ptrData].SYSresponse.name, ClientID);
-        AlgoidResponse[ptrData].SYSresponse.startUpTime=sysApp.info.startUpTime;
-        AlgoidResponse[ptrData].SYSresponse.wan_online=sysApp.info.startUpTime;
-        AlgoidResponse[ptrData].SYSresponse.rx_message=msg_stats.messageRX;
-        AlgoidResponse[ptrData].SYSresponse.tx_message=msg_stats.messageTX;
+        strcpy(messageResponse[ptrData].SYSresponse.name, ClientID);
+        messageResponse[ptrData].SYSresponse.startUpTime=sysApp.info.startUpTime;
+        messageResponse[ptrData].SYSresponse.wan_online=sysApp.info.startUpTime;
+        messageResponse[ptrData].SYSresponse.rx_message=msg_stats.messageRX;
+        messageResponse[ptrData].SYSresponse.tx_message=msg_stats.messageTX;
         
         
         char fv[10];
@@ -1260,80 +1260,80 @@ int makeStatusRequest(int msgType){
         char hv[10];
         sprintf(hv, "%d", getMcuHWversion());
         
-        strcpy(AlgoidResponse[ptrData].SYSresponse.firmwareVersion,FIRMWARE_VERSION);
-        strcpy(AlgoidResponse[ptrData].SYSresponse.mcuVersion,fv);
-        strcpy(AlgoidResponse[ptrData].SYSresponse.HWrevision,hv);
-        AlgoidResponse[ptrData].SYSresponse.battVoltage = kehops.battery[0].measure.voltage_mV;
-        AlgoidResponse[ptrData].SYSresponse.battPercent = kehops.battery[0].measure.capacity;
+        strcpy(messageResponse[ptrData].SYSresponse.firmwareVersion,FIRMWARE_VERSION);
+        strcpy(messageResponse[ptrData].SYSresponse.mcuVersion,fv);
+        strcpy(messageResponse[ptrData].SYSresponse.HWrevision,hv);
+        messageResponse[ptrData].SYSresponse.battVoltage = kehops.battery[0].measure.voltage_mV;
+        messageResponse[ptrData].SYSresponse.battPercent = kehops.battery[0].measure.capacity;
         ptrData++;
 
 	for(i=0;i<NBDIN;i++){
-		AlgoidResponse[ptrData].DINresponse.id=i;
-                AlgoidResponse[ptrData].value = kehops.proximity[i].measure.state;
+		messageResponse[ptrData].DINresponse.id=i;
+                messageResponse[ptrData].value = kehops.proximity[i].measure.state;
                 
-                if(kehops.proximity[i].event.enable) strcpy(AlgoidResponse[ptrData].DINresponse.event_state, "on");
-                else strcpy(AlgoidResponse[ptrData].DINresponse.event_state, "off");                
+                if(kehops.proximity[i].event.enable) strcpy(messageResponse[ptrData].DINresponse.event_state, "on");
+                else strcpy(messageResponse[ptrData].DINresponse.event_state, "off");                
 		ptrData++;
 	}
                 
         for(i=0;i<NBBTN;i++){
-                AlgoidResponse[ptrData].BTNresponse.id=i;
-                AlgoidResponse[ptrData].value = kehops.button[i].measure.state;
+                messageResponse[ptrData].BTNresponse.id=i;
+                messageResponse[ptrData].value = kehops.button[i].measure.state;
                 
-                if(kehops.button[i].event.enable) strcpy(AlgoidResponse[ptrData].BTNresponse.event_state, "on");                
-                else strcpy(AlgoidResponse[ptrData].BTNresponse.event_state, "off");
+                if(kehops.button[i].event.enable) strcpy(messageResponse[ptrData].BTNresponse.event_state, "on");                
+                else strcpy(messageResponse[ptrData].BTNresponse.event_state, "off");
                 ptrData++;
 	}
 
 	for(i=0;i<NBMOTOR;i++){
-		AlgoidResponse[ptrData].MOTresponse.motor=i;
-                AlgoidResponse[ptrData].MOTresponse.speed=kehops.dcWheel[i].measure.rpm;
-                AlgoidResponse[ptrData].MOTresponse.cm = rpmToPercent(i, kehops.dcWheel[i].measure.rpm);
+		messageResponse[ptrData].MOTresponse.motor=i;
+                messageResponse[ptrData].MOTresponse.speed=kehops.dcWheel[i].measure.rpm;
+                messageResponse[ptrData].MOTresponse.cm = rpmToPercent(i, kehops.dcWheel[i].measure.rpm);
                 // !!! RESPONSE VELOCITY TO CHECK...
-                //AlgoidResponse[ptrData].MOTresponse.velocity = rpmToPercent(0,sysConfig.motor[0].minRPM) + robot.motor[i].velocity;
-                AlgoidResponse[ptrData].MOTresponse.velocity = rpmToPercent(0,kehops.dcWheel[i].config.rpmMin) + kehops.dcWheel[i].motor.speed;
+                //messageResponse[ptrData].MOTresponse.velocity = rpmToPercent(0,sysConfig.motor[0].minRPM) + robot.motor[i].velocity;
+                messageResponse[ptrData].MOTresponse.velocity = rpmToPercent(0,kehops.dcWheel[i].config.rpmMin) + kehops.dcWheel[i].motor.speed;
 		ptrData++;
 	}
         
         for(i=0;i<NBSONAR;i++){
-                AlgoidResponse[ptrData].DISTresponse.id=i;
-                AlgoidResponse[ptrData].value = kehops.sonar[i].measure.distance_cm;
+                messageResponse[ptrData].DISTresponse.id=i;
+                messageResponse[ptrData].value = kehops.sonar[i].measure.distance_cm;
                 
-                if(kehops.sonar[i].event.enable) strcpy(AlgoidResponse[ptrData].DISTresponse.event_state, "on");
-                else strcpy(AlgoidResponse[ptrData].DISTresponse.event_state, "off");
+                if(kehops.sonar[i].event.enable) strcpy(messageResponse[ptrData].DISTresponse.event_state, "on");
+                else strcpy(messageResponse[ptrData].DISTresponse.event_state, "off");
                 ptrData++;
 	}
 
         for(i=0;i<NBRGBC;i++){
-		AlgoidResponse[ptrData].RGBresponse.id=i;
-                AlgoidResponse[ptrData].RGBresponse.red.value = kehops.rgb[i].color.red.measure.value;
-                AlgoidResponse[ptrData].RGBresponse.green.value = kehops.rgb[i].color.green.measure.value;
-                AlgoidResponse[ptrData].RGBresponse.blue.value = kehops.rgb[i].color.blue.measure.value;
-                AlgoidResponse[ptrData].RGBresponse.clear.value = kehops.rgb[i].color.clear.measure.value;
+		messageResponse[ptrData].RGBresponse.id=i;
+                messageResponse[ptrData].RGBresponse.red.value = kehops.rgb[i].color.red.measure.value;
+                messageResponse[ptrData].RGBresponse.green.value = kehops.rgb[i].color.green.measure.value;
+                messageResponse[ptrData].RGBresponse.blue.value = kehops.rgb[i].color.blue.measure.value;
+                messageResponse[ptrData].RGBresponse.clear.value = kehops.rgb[i].color.clear.measure.value;
                 
-                if(kehops.rgb[i].config.event.enable) strcpy(AlgoidResponse[ptrData].RGBresponse.event_state, "on");
-                else strcpy(AlgoidResponse[ptrData].RGBresponse.event_state, "off");
+                if(kehops.rgb[i].config.event.enable) strcpy(messageResponse[ptrData].RGBresponse.event_state, "on");
+                else strcpy(messageResponse[ptrData].RGBresponse.event_state, "off");
                 
 		ptrData++;
 	}
 
         for(i=0;i<NBLED;i++){       
-		AlgoidResponse[ptrData].LEDresponse.id = i;
-                AlgoidResponse[ptrData].value = kehops.led[i].state;
-                AlgoidResponse[ptrData].LEDresponse.powerPercent = kehops.led[i].power;
+		messageResponse[ptrData].LEDresponse.id = i;
+                messageResponse[ptrData].value = kehops.led[i].state;
+                messageResponse[ptrData].LEDresponse.powerPercent = kehops.led[i].power;
 		ptrData++;
 	}
       
         
         for(i=0;i<NBPWM;i++){        
-		AlgoidResponse[ptrData].PWMresponse.id = i;
-		AlgoidResponse[ptrData].value = kehops.pwm[i].state;
-                AlgoidResponse[ptrData].PWMresponse.powerPercent = kehops.pwm[i].power;
+		messageResponse[ptrData].PWMresponse.id = i;
+		messageResponse[ptrData].value = kehops.pwm[i].state;
+                messageResponse[ptrData].PWMresponse.powerPercent = kehops.pwm[i].power;
 		ptrData++;
 	}
         
 	// Envoie de la r�ponse MQTT
-	sendResponse(AlgoidCommand.msgID, AlgoidCommand.msgFrom, msgType, STATUS, AlgoidCommand.msgValueCnt);
+	sendResponse(message.msgID, message.msgFrom, msgType, STATUS, message.msgValueCnt);
 	return (1);
 }
 
@@ -1347,39 +1347,39 @@ int makeSensorsRequest(void){
 	unsigned char i;
 
 	// Pas de param�tres sp�cifi�s dans le message, retourne l'ensemble des �tats des DIN
-	if(AlgoidCommand.msgValueCnt==0){
-		AlgoidCommand.msgValueCnt=NBDIN;
+	if(message.msgValueCnt==0){
+		message.msgValueCnt=NBDIN;
 		for(i=0;i<NBDIN;i++){
-			AlgoidResponse[i].DINresponse.id=i;
+			messageResponse[i].DINresponse.id=i;
 		}
 	}else
 		// ENREGISTREMENT DES NOUVEAUX PARAMETRES RECUS
-		for(i=0;i<AlgoidCommand.msgValueCnt; i++){
-			AlgoidResponse[i].DINresponse.id = AlgoidCommand.DINsens[i].id;
+		for(i=0;i<message.msgValueCnt; i++){
+			messageResponse[i].DINresponse.id = message.DINsens[i].id;
 			// Contr�le que le capteur soit pris en charge
-			if(AlgoidCommand.DINsens[i].id < NBDIN){
+			if(message.DINsens[i].id < NBDIN){
 				// Recherche de param�tres suppl�mentaires et enregistrement des donn�e en "local"
-                                if(!strcmp(AlgoidCommand.DINsens[i].event_state, "on"))	kehops.proximity[AlgoidCommand.DINsens[i].id].event.enable = 1; 			// Activation de l'envoie de messages sur �venements
-				else if(!strcmp(AlgoidCommand.DINsens[i].event_state, "off"))	kehops.proximity[AlgoidCommand.DINsens[i].id].event.enable = 0;    // D�sactivation de l'envoie de messages sur �venements
+                                if(!strcmp(message.DINsens[i].event_state, "on"))	kehops.proximity[message.DINsens[i].id].event.enable = 1; 			// Activation de l'envoie de messages sur �venements
+				else if(!strcmp(message.DINsens[i].event_state, "off"))	kehops.proximity[message.DINsens[i].id].event.enable = 0;    // D�sactivation de l'envoie de messages sur �venements
 			} else
-				AlgoidResponse[i].value = -1;
+				messageResponse[i].value = -1;
 		};
 
 	// RETOURNE EN REPONSE LES PARAMETRES ENREGISTRES ---
-	for(i=0;i<AlgoidCommand.msgValueCnt;i++){
-		int temp = AlgoidResponse[i].DINresponse.id;
+	for(i=0;i<message.msgValueCnt;i++){
+		int temp = messageResponse[i].DINresponse.id;
 
 		// Contr�le que le capteur soit pris en charge
-		if(AlgoidCommand.DINsens[i].id < NBDIN){
-                        AlgoidResponse[i].value = kehops.proximity[temp].measure.state;
-			if(kehops.proximity[temp].event.enable) strcpy(AlgoidResponse[i].DINresponse.event_state, "on");
-				else strcpy(AlgoidResponse[i].DINresponse.event_state, "off");
+		if(message.DINsens[i].id < NBDIN){
+                        messageResponse[i].value = kehops.proximity[temp].measure.state;
+			if(kehops.proximity[temp].event.enable) strcpy(messageResponse[i].DINresponse.event_state, "on");
+				else strcpy(messageResponse[i].DINresponse.event_state, "off");
 		} else
-			AlgoidResponse[i].value = -1;
+			messageResponse[i].value = -1;
 	//---
 	}
 	// Envoie de la r�ponse MQTT
-	sendResponse(AlgoidCommand.msgID, AlgoidCommand.msgFrom, RESPONSE, DINPUT, AlgoidCommand.msgValueCnt);
+	sendResponse(message.msgID, message.msgFrom, RESPONSE, DINPUT, message.msgValueCnt);
 	return (1);
 }
 
@@ -1393,39 +1393,39 @@ int makeButtonRequest(void){
 	unsigned char i;
         
 	// Pas de param�tres sp�cifi�s dans le message, retourne l'ensemble des �tats des DIN
-	if(AlgoidCommand.msgValueCnt==0){
-		AlgoidCommand.msgValueCnt=NBBTN;
+	if(message.msgValueCnt==0){
+		message.msgValueCnt=NBBTN;
 		for(i=0;i<NBBTN;i++){
-			AlgoidResponse[i].BTNresponse.id=i;
+			messageResponse[i].BTNresponse.id=i;
 		}
 	}else
 		// ENREGISTREMENT DES NOUVEAUX PARAMETRES RECUS
-		for(i=0;i<AlgoidCommand.msgValueCnt; i++){
-			AlgoidResponse[i].BTNresponse.id = AlgoidCommand.BTNsens[i].id;
+		for(i=0;i<message.msgValueCnt; i++){
+			messageResponse[i].BTNresponse.id = message.BTNsens[i].id;
 			// Contr�le que le capteur soit pris en charge
-			if(AlgoidCommand.BTNsens[i].id < NBBTN){
+			if(message.BTNsens[i].id < NBBTN){
 				// Recherche de param�tres suppl�mentaires et enregistrement des donn�e en "local"
-                                if(!strcmp(AlgoidCommand.BTNsens[i].event_state, "on"))	kehops.button[AlgoidCommand.BTNsens[i].id].event.enable = 1; 			// Activation de l'envoie de messages sur �venements
-				else if(!strcmp(AlgoidCommand.BTNsens[i].event_state, "off"))	kehops.button[AlgoidCommand.BTNsens[i].id].event.enable = 0;    // D�sactivation de l'envoie de messages sur �venements
+                                if(!strcmp(message.BTNsens[i].event_state, "on"))	kehops.button[message.BTNsens[i].id].event.enable = 1; 			// Activation de l'envoie de messages sur �venements
+				else if(!strcmp(message.BTNsens[i].event_state, "off"))	kehops.button[message.BTNsens[i].id].event.enable = 0;    // D�sactivation de l'envoie de messages sur �venements
 			} else
-				AlgoidResponse[i].value = -1;
+				messageResponse[i].value = -1;
 		};
 
 	// RETOURNE EN REPONSE LES PARAMETRES ENREGISTRES ---
-	for(i=0;i<AlgoidCommand.msgValueCnt;i++){
-		int temp = AlgoidResponse[i].BTNresponse.id;
+	for(i=0;i<message.msgValueCnt;i++){
+		int temp = messageResponse[i].BTNresponse.id;
 
 		// Contr�le que le capteur soit pris en charge
-		if(AlgoidCommand.BTNsens[i].id < NBBTN){
-                        AlgoidResponse[i].value = kehops.button[temp].measure.state;
-			if(kehops.button[temp].event.enable) strcpy(AlgoidResponse[i].BTNresponse.event_state, "on");
-                        else strcpy(AlgoidResponse[i].BTNresponse.event_state, "off");
+		if(message.BTNsens[i].id < NBBTN){
+                        messageResponse[i].value = kehops.button[temp].measure.state;
+			if(kehops.button[temp].event.enable) strcpy(messageResponse[i].BTNresponse.event_state, "on");
+                        else strcpy(messageResponse[i].BTNresponse.event_state, "off");
 		} else
-			AlgoidResponse[i].value = -1;
+			messageResponse[i].value = -1;
 	//---
 	}
 	// Envoie de la r�ponse MQTT
-	sendResponse(AlgoidCommand.msgID, AlgoidCommand.msgFrom, RESPONSE, BUTTON, AlgoidCommand.msgValueCnt);
+	sendResponse(message.msgID, message.msgFrom, RESPONSE, BUTTON, message.msgValueCnt);
 	return (1);
 }
 
@@ -1439,56 +1439,56 @@ int makeDistanceRequest(void){
 	unsigned char i;
 
 	// Pas de param�tres sp�cifi� dans le message, retourne l'ensemble des distances
-	if(AlgoidCommand.msgValueCnt==0){
-		AlgoidCommand.msgValueCnt=NBSONAR;
+	if(message.msgValueCnt==0){
+		message.msgValueCnt=NBSONAR;
 		for(i=0;i<NBSONAR;i++){
-			AlgoidResponse[i].DISTresponse.id=i;
+			messageResponse[i].DISTresponse.id=i;
 		}
 	}else
 			// ENREGISTREMENT DES NOUVEAUX PARAMETRES RECUS
-			for(i=0;i<AlgoidCommand.msgValueCnt; i++){
-				AlgoidResponse[i].DISTresponse.id=AlgoidCommand.DISTsens[i].id;
+			for(i=0;i<message.msgValueCnt; i++){
+				messageResponse[i].DISTresponse.id=message.DISTsens[i].id;
 
-				if(AlgoidCommand.DISTsens[i].id <NBSONAR){
+				if(message.DISTsens[i].id <NBSONAR){
 
 					// Activation de l'envoie de messages sur �venements
-					if(!strcmp(AlgoidCommand.DISTsens[i].event_state, "on")){
-                                            kehops.sonar[AlgoidCommand.DISTsens[i].id].event.enable = 1;
-                                            saveSenderOfMsgId(AlgoidCommand.msgID, AlgoidMessageRX.msgFrom);
+					if(!strcmp(message.DISTsens[i].event_state, "on")){
+                                            kehops.sonar[message.DISTsens[i].id].event.enable = 1;
+                                            saveSenderOfMsgId(message.msgID, message.msgFrom);
 					}
-					else if(!strcmp(AlgoidCommand.DISTsens[i].event_state, "off")){
-                                            kehops.sonar[AlgoidCommand.DISTsens[i].id].event.enable = 0;
-                                            removeSenderOfMsgId(AlgoidCommand.msgID);
+					else if(!strcmp(message.DISTsens[i].event_state, "off")){
+                                            kehops.sonar[message.DISTsens[i].id].event.enable = 0;
+                                            removeSenderOfMsgId(message.msgID);
 					}
 
 					// Evemenent haut
-					if(AlgoidCommand.DISTsens[i].event_high!=0)
-                                            kehops.sonar[AlgoidCommand.DISTsens[i].id].event.high = AlgoidCommand.DISTsens[i].event_high;
+					if(message.DISTsens[i].event_high!=0)
+                                            kehops.sonar[message.DISTsens[i].id].event.high = message.DISTsens[i].event_high;
 					// Evemenent bas
-					if(AlgoidCommand.DISTsens[i].event_low!=0)
-                                            kehops.sonar[AlgoidCommand.DISTsens[i].id].event.low = AlgoidCommand.DISTsens[i].event_low;
+					if(message.DISTsens[i].event_low!=0)
+                                            kehops.sonar[message.DISTsens[i].id].event.low = message.DISTsens[i].event_low;
 				} else
-					AlgoidResponse[i].value = -1;
+					messageResponse[i].value = -1;
 			};
 
-	for(i=0;i<AlgoidCommand.msgValueCnt; i++){
+	for(i=0;i<message.msgValueCnt; i++){
 		// RETOURNE EN REPONSE LES PARAMETRES ENREGISTRES
 		// R�cup�ration des param�tres actuels et chargement du buffer de r�ponse
-		int temp = AlgoidResponse[i].DISTresponse.id;
+		int temp = messageResponse[i].DISTresponse.id;
 
-		if(AlgoidCommand.DISTsens[i].id <NBSONAR){
-                        AlgoidResponse[i].value=kehops.sonar[temp].measure.distance_cm;
+		if(message.DISTsens[i].id <NBSONAR){
+                        messageResponse[i].value=kehops.sonar[temp].measure.distance_cm;
 
-			if(kehops.sonar[temp].event.enable)strcpy(AlgoidResponse[i].DISTresponse.event_state, "on");
-			else strcpy(AlgoidResponse[i].DISTresponse.event_state, "off");
-			AlgoidResponse[i].DISTresponse.event_high = kehops.sonar[temp].event.high;
-			AlgoidResponse[i].DISTresponse.event_low = kehops.sonar[temp].event.low;
+			if(kehops.sonar[temp].event.enable)strcpy(messageResponse[i].DISTresponse.event_state, "on");
+			else strcpy(messageResponse[i].DISTresponse.event_state, "off");
+			messageResponse[i].DISTresponse.event_high = kehops.sonar[temp].event.high;
+			messageResponse[i].DISTresponse.event_low = kehops.sonar[temp].event.low;
 		} else
-			AlgoidResponse[i].value = -1;
+			messageResponse[i].value = -1;
 	};
 
 	// Envoie de la r�ponse MQTT
-	sendResponse(AlgoidCommand.msgID, AlgoidCommand.msgFrom, RESPONSE, DISTANCE, AlgoidCommand.msgValueCnt);
+	sendResponse(message.msgID, message.msgFrom, RESPONSE, DISTANCE, message.msgValueCnt);
 
 		return 1;
 }
@@ -1503,101 +1503,101 @@ int makeRgbRequest(void){
 	unsigned char i;
 
 	// Pas de param�tres sp�cifi� dans le message, retourne l'ensemble des capteur RGB
-	if(AlgoidCommand.msgValueCnt==0){
-		AlgoidCommand.msgValueCnt=NBRGBC;
+	if(message.msgValueCnt==0){
+		message.msgValueCnt=NBRGBC;
 		for(i=0;i<NBRGBC;i++){
-			AlgoidResponse[i].RGBresponse.id=i;
+			messageResponse[i].RGBresponse.id=i;
 		}
 	}else
 			// ENREGISTREMENT DES NOUVEAUX PARAMETRES RECUS
-			for(i=0;i<AlgoidCommand.msgValueCnt; i++){
-				AlgoidResponse[i].RGBresponse.id=AlgoidCommand.RGBsens[i].id;
+			for(i=0;i<message.msgValueCnt; i++){
+				messageResponse[i].RGBresponse.id=message.RGBsens[i].id;
 
-				if(AlgoidCommand.RGBsens[i].id <NBRGBC){
+				if(message.RGBsens[i].id <NBRGBC){
 
 					// PARAMETRAGE DE L'ENVOIE DES MESSAGES SUR EVENEMENTS.
-					if(!strcmp(AlgoidCommand.RGBsens[i].event_state, "on")){
-                                            kehops.rgb[AlgoidCommand.RGBsens[i].id].config.event.enable = 1;
-                                            saveSenderOfMsgId(AlgoidCommand.msgID, AlgoidMessageRX.msgFrom);
+					if(!strcmp(message.RGBsens[i].event_state, "on")){
+                                            kehops.rgb[message.RGBsens[i].id].config.event.enable = 1;
+                                            saveSenderOfMsgId(message.msgID, message.msgFrom);
 					}
-					else if(!strcmp(AlgoidCommand.RGBsens[i].event_state, "off")){
-                                            kehops.rgb[AlgoidCommand.RGBsens[i].id].config.event.enable = 0;
-                                            removeSenderOfMsgId(AlgoidCommand.msgID);
+					else if(!strcmp(message.RGBsens[i].event_state, "off")){
+                                            kehops.rgb[message.RGBsens[i].id].config.event.enable = 0;
+                                            removeSenderOfMsgId(message.msgID);
 					}
 
                                         // Param�tre capteur ROUGE
 					// Evemenent haut
-					if(AlgoidCommand.RGBsens[i].red.event_high!=0)
-                                            kehops.rgb[AlgoidCommand.RGBsens[i].id].color.red.event.high=AlgoidCommand.RGBsens[i].red.event_high;
+					if(message.RGBsens[i].red.event_high!=0)
+                                            kehops.rgb[message.RGBsens[i].id].color.red.event.high=message.RGBsens[i].red.event_high;
 					// Evemenent bas
-					if(AlgoidCommand.RGBsens[i].red.event_low!=0)
-                                            kehops.rgb[AlgoidCommand.RGBsens[i].id].color.red.event.low=AlgoidCommand.RGBsens[i].red.event_low;
+					if(message.RGBsens[i].red.event_low!=0)
+                                            kehops.rgb[message.RGBsens[i].id].color.red.event.low=message.RGBsens[i].red.event_low;
                                         
                                         // Param�tre capteur VERT
                                         // Evemenent haut
-					if(AlgoidCommand.RGBsens[i].green.event_high!=0)
-                                            kehops.rgb[AlgoidCommand.RGBsens[i].id].color.green.event.high = AlgoidCommand.RGBsens[i].green.event_high;
+					if(message.RGBsens[i].green.event_high!=0)
+                                            kehops.rgb[message.RGBsens[i].id].color.green.event.high = message.RGBsens[i].green.event_high;
 					// Evemenent bas
-					if(AlgoidCommand.RGBsens[i].green.event_low!=0)
-                                            kehops.rgb[AlgoidCommand.RGBsens[i].id].color.green.event.low=AlgoidCommand.RGBsens[i].green.event_low;
+					if(message.RGBsens[i].green.event_low!=0)
+                                            kehops.rgb[message.RGBsens[i].id].color.green.event.low=message.RGBsens[i].green.event_low;
                                         
                                         // Param�tre capteur BLEU
                                         // Evemenent haut
-					if(AlgoidCommand.RGBsens[i].blue.event_high!=0)
-                                            kehops.rgb[AlgoidCommand.RGBsens[i].id].color.blue.event.high=AlgoidCommand.RGBsens[i].blue.event_high;
+					if(message.RGBsens[i].blue.event_high!=0)
+                                            kehops.rgb[message.RGBsens[i].id].color.blue.event.high=message.RGBsens[i].blue.event_high;
 					// Evemenent bas
-					if(AlgoidCommand.RGBsens[i].blue.event_low!=0)
-                                            kehops.rgb[AlgoidCommand.RGBsens[i].id].color.blue.event.low=AlgoidCommand.RGBsens[i].blue.event_low;
+					if(message.RGBsens[i].blue.event_low!=0)
+                                            kehops.rgb[message.RGBsens[i].id].color.blue.event.low=message.RGBsens[i].blue.event_low;
 
                                         // Param�tre capteur CLEAR
                                         // Evemenent haut
-					if(AlgoidCommand.RGBsens[i].clear.event_high!=0)
-                                            kehops.rgb[AlgoidCommand.RGBsens[i].id].color.clear.event.high=AlgoidCommand.RGBsens[i].clear.event_high;
+					if(message.RGBsens[i].clear.event_high!=0)
+                                            kehops.rgb[message.RGBsens[i].id].color.clear.event.high=message.RGBsens[i].clear.event_high;
 					// Evemenent bas
-					if(AlgoidCommand.RGBsens[i].clear.event_low!=0)
-                                            kehops.rgb[AlgoidCommand.RGBsens[i].id].color.clear.event.low = AlgoidCommand.RGBsens[i].clear.event_low;
+					if(message.RGBsens[i].clear.event_low!=0)
+                                            kehops.rgb[message.RGBsens[i].id].color.clear.event.low = message.RGBsens[i].clear.event_low;
 				} else
-					AlgoidResponse[i].value = -1;
+					messageResponse[i].value = -1;
 			};
 
-	for(i=0;i<AlgoidCommand.msgValueCnt; i++){
+	for(i=0;i<message.msgValueCnt; i++){
 		// RETOURNE EN REPONSE LES PARAMETRES ENREGISTRES
 		// R�cup�ration des param�tres actuels et chargement du buffer de r�ponse
-		int temp = AlgoidResponse[i].RGBresponse.id;
+		int temp = messageResponse[i].RGBresponse.id;
 
-		if(AlgoidCommand.RGBsens[i].id <NBRGBC){
-                        AlgoidResponse[i].RGBresponse.red.value=kehops.rgb[temp].color.red.measure.value;
-                        AlgoidResponse[i].RGBresponse.green.value=kehops.rgb[temp].color.green.measure.value;
-                        AlgoidResponse[i].RGBresponse.blue.value=kehops.rgb[temp].color.blue.measure.value;
-                        AlgoidResponse[i].RGBresponse.clear.value=kehops.rgb[temp].color.clear.measure.value;
+		if(message.RGBsens[i].id <NBRGBC){
+                        messageResponse[i].RGBresponse.red.value=kehops.rgb[temp].color.red.measure.value;
+                        messageResponse[i].RGBresponse.green.value=kehops.rgb[temp].color.green.measure.value;
+                        messageResponse[i].RGBresponse.blue.value=kehops.rgb[temp].color.blue.measure.value;
+                        messageResponse[i].RGBresponse.clear.value=kehops.rgb[temp].color.clear.measure.value;
 
                         // Copie de l'etat de l'evenement
-			if(kehops.rgb[i].config.event.enable)strcpy(AlgoidResponse[i].RGBresponse.event_state, "on");
-			else strcpy(AlgoidResponse[i].RGBresponse.event_state, "off");
+			if(kehops.rgb[i].config.event.enable)strcpy(messageResponse[i].RGBresponse.event_state, "on");
+			else strcpy(messageResponse[i].RGBresponse.event_state, "off");
                         
                         // Copie des param�tres �venements haut/bas pour le ROUGE
-                        AlgoidResponse[i].RGBresponse.red.event_high=kehops.rgb[temp].color.red.event.high;
-                        AlgoidResponse[i].RGBresponse.red.event_low=kehops.rgb[temp].color.red.event.low;
+                        messageResponse[i].RGBresponse.red.event_high=kehops.rgb[temp].color.red.event.high;
+                        messageResponse[i].RGBresponse.red.event_low=kehops.rgb[temp].color.red.event.low;
 
                         // Copie des param�tres �venements haut/bas pour le VERT
-                        AlgoidResponse[i].RGBresponse.green.event_high=kehops.rgb[temp].color.green.event.high;
-                        AlgoidResponse[i].RGBresponse.green.event_low=kehops.rgb[temp].color.green.event.low;
+                        messageResponse[i].RGBresponse.green.event_high=kehops.rgb[temp].color.green.event.high;
+                        messageResponse[i].RGBresponse.green.event_low=kehops.rgb[temp].color.green.event.low;
                         
                         // Copie des param�tres �venements haut/bas pour le BLEU
-                        AlgoidResponse[i].RGBresponse.blue.event_high=kehops.rgb[temp].color.blue.event.high;
-                        AlgoidResponse[i].RGBresponse.blue.event_low=kehops.rgb[temp].color.blue.event.low;
+                        messageResponse[i].RGBresponse.blue.event_high=kehops.rgb[temp].color.blue.event.high;
+                        messageResponse[i].RGBresponse.blue.event_low=kehops.rgb[temp].color.blue.event.low;
                         
                         // Copie des param�tres �venements haut/bas pour le CLEAR
-                        AlgoidResponse[i].RGBresponse.clear.event_high=kehops.rgb[temp].color.clear.event.high;
-                        AlgoidResponse[i].RGBresponse.clear.event_low=kehops.rgb[temp].color.clear.event.low;
+                        messageResponse[i].RGBresponse.clear.event_high=kehops.rgb[temp].color.clear.event.high;
+                        messageResponse[i].RGBresponse.clear.event_low=kehops.rgb[temp].color.clear.event.low;
                         
                         
 		} else
-			AlgoidResponse[i].value = -1;
+			messageResponse[i].value = -1;
 	};
 
 	// Envoie de la r�ponse MQTT
-	sendResponse(AlgoidCommand.msgID, AlgoidCommand.msgFrom, RESPONSE, COLORS, AlgoidCommand.msgValueCnt);
+	sendResponse(message.msgID, message.msgFrom, RESPONSE, COLORS, message.msgValueCnt);
 
 		return 1;
 }
@@ -1613,56 +1613,56 @@ int makeBatteryRequest(void){
 	unsigned char i;
 
 	// Pas de param�tres sp�cifi� dans le message, retourne l'ensemble des �tats des batteries
-	if(AlgoidCommand.msgValueCnt==0){
-		AlgoidCommand.msgValueCnt=1;
+	if(message.msgValueCnt==0){
+		message.msgValueCnt=1;
 		for(i=0;i<2;i++){
-			AlgoidResponse[i].BATTesponse.id=i;
+			messageResponse[i].BATTesponse.id=i;
 		}
 	}else
-			for(i=0;i<AlgoidCommand.msgValueCnt; i++){
-				AlgoidResponse[i].BATTesponse.id=AlgoidCommand.BATTsens[i].id;
+			for(i=0;i<message.msgValueCnt; i++){
+				messageResponse[i].BATTesponse.id=message.BATTsens[i].id;
 
-				if(AlgoidCommand.BATTsens[i].id <NBAIN){
+				if(message.BATTsens[i].id <NBAIN){
 					// ENREGISTREMENT DES NOUVEAUX PARAMETRES RECUS
 					// Recherche de param�tres suppl�mentaires
 					// Evenement activ�es
-					if(!strcmp(AlgoidCommand.BATTsens[i].event_state, "on")){
-                                                kehops.battery[AlgoidCommand.BATTsens[i].id].event.enable = 1;
-						saveSenderOfMsgId(AlgoidCommand.msgID, AlgoidMessageRX.msgFrom);
+					if(!strcmp(message.BATTsens[i].event_state, "on")){
+                                                kehops.battery[message.BATTsens[i].id].event.enable = 1;
+						saveSenderOfMsgId(message.msgID, message.msgFrom);
 					}
-					else if(!strcmp(AlgoidCommand.BATTsens[i].event_state, "off")){
-                                                kehops.battery[AlgoidCommand.BATTsens[i].id].event.enable = 0;
-						removeSenderOfMsgId(AlgoidCommand.msgID);
+					else if(!strcmp(message.BATTsens[i].event_state, "off")){
+                                                kehops.battery[message.BATTsens[i].id].event.enable = 0;
+						removeSenderOfMsgId(message.msgID);
 					}
 					// Evemenent haut
-					if(AlgoidCommand.BATTsens[i].event_high!=0) kehops.battery[AlgoidCommand.BATTsens[i].id].event.high = AlgoidCommand.BATTsens[i].event_high;
-					if(AlgoidCommand.BATTsens[i].event_low!=0) kehops.battery[AlgoidCommand.BATTsens[i].id].event.low = AlgoidCommand.BATTsens[i].event_low;
+					if(message.BATTsens[i].event_high!=0) kehops.battery[message.BATTsens[i].id].event.high = message.BATTsens[i].event_high;
+					if(message.BATTsens[i].event_low!=0) kehops.battery[message.BATTsens[i].id].event.low = message.BATTsens[i].event_low;
 				}else
-					AlgoidResponse[i].value = -1;
+					messageResponse[i].value = -1;
 			};
 
-	for(i=0;i<AlgoidCommand.msgValueCnt; i++){
+	for(i=0;i<message.msgValueCnt; i++){
 		// RETOURNE EN REPONSE LES PARAMETRES ENREGISTRES
-		int temp = AlgoidResponse[i].BATTesponse.id;
+		int temp = messageResponse[i].BATTesponse.id;
 
-		if(AlgoidCommand.BATTsens[i].id <NBAIN){
-                        AlgoidResponse[i].value=kehops.battery[temp].measure.voltage_mV;                        
+		if(message.BATTsens[i].id <NBAIN){
+                        messageResponse[i].value=kehops.battery[temp].measure.voltage_mV;                        
 
                         if(kehops.battery[temp].event.enable){
-				strcpy(AlgoidResponse[i].BATTesponse.event_state, "on");
-				saveSenderOfMsgId(AlgoidCommand.msgID, AlgoidMessageRX.msgFrom);
+				strcpy(messageResponse[i].BATTesponse.event_state, "on");
+				saveSenderOfMsgId(message.msgID, message.msgFrom);
 			}
 			else{
-				strcpy(AlgoidResponse[i].BATTesponse.event_state, "off");
-				removeSenderOfMsgId(AlgoidCommand.msgID);
+				strcpy(messageResponse[i].BATTesponse.event_state, "off");
+				removeSenderOfMsgId(message.msgID);
 			}
-                        AlgoidResponse[i].BATTesponse.event_high = kehops.battery[temp].event.high;
-                        AlgoidResponse[i].BATTesponse.event_low = kehops.battery[temp].event.low;
+                        messageResponse[i].BATTesponse.event_high = kehops.battery[temp].event.high;
+                        messageResponse[i].BATTesponse.event_low = kehops.battery[temp].event.low;
 		} else
-			AlgoidResponse[i].value = -1;
+			messageResponse[i].value = -1;
 	};
 	// Envoie de la r�ponse MQTT
-	sendResponse(AlgoidCommand.msgID, AlgoidCommand.msgFrom, RESPONSE, BATTERY, AlgoidCommand.msgValueCnt);
+	sendResponse(message.msgID, message.msgFrom, RESPONSE, BATTERY, message.msgValueCnt);
 		return 1;
 }
 
@@ -1676,32 +1676,32 @@ int makeMotorRequest(void){
 	unsigned char i;
 
 	// Pas de param�tres sp�cifi�s dans le message, retourne l'ensemble des �tats des moteurs
-	if(AlgoidCommand.msgValueCnt==0){
-		AlgoidCommand.msgValueCnt=NBMOTOR;
+	if(message.msgValueCnt==0){
+		message.msgValueCnt=NBMOTOR;
 		for(i=0;i<NBMOTOR;i++){
-			AlgoidResponse[i].MOTresponse.motor=i;
+			messageResponse[i].MOTresponse.motor=i;
 		}
 	}                
 
 	// RETOURNE EN REPONSE LES PARAMETRES ENREGISTRES ---
-	for(i=0;i<AlgoidCommand.msgValueCnt;i++){
-		int temp = AlgoidResponse[i].MOTresponse.motor;
+	for(i=0;i<message.msgValueCnt;i++){
+		int temp = messageResponse[i].MOTresponse.motor;
 
 		// Contr�le que le moteur soit pris en charge
-		if(AlgoidCommand.DCmotor[i].motor < NBMOTOR){
+		if(message.DCmotor[i].motor < NBMOTOR){
                     
-                        AlgoidResponse[i].MOTresponse.speed = kehops.dcWheel[temp].motor.speed;
-                        AlgoidResponse[i].MOTresponse.cm = kehops.dcWheel[temp].target.distanceCM;
-                        AlgoidResponse[i].MOTresponse.time = kehops.dcWheel[temp].target.time;
-                        AlgoidResponse[i].responseType=RESP_STD_MESSAGE;
+                        messageResponse[i].MOTresponse.speed = kehops.dcWheel[temp].motor.speed;
+                        messageResponse[i].MOTresponse.cm = kehops.dcWheel[temp].target.distanceCM;
+                        messageResponse[i].MOTresponse.time = kehops.dcWheel[temp].target.time;
+                        messageResponse[i].responseType=RESP_STD_MESSAGE;
                         
 			
 		} else
-			AlgoidResponse[i].MOTresponse.motor = -1;
+			messageResponse[i].MOTresponse.motor = -1;
 	//---
 	}
 	// Envoie de la r�ponse MQTT
-	sendResponse(AlgoidCommand.msgID, AlgoidCommand.msgFrom, RESPONSE, MOTORS, AlgoidCommand.msgValueCnt);
+	sendResponse(message.msgID, message.msgFrom, RESPONSE, MOTORS, message.msgValueCnt);
 	return (1);
 }
 
@@ -1740,13 +1740,13 @@ void distanceEventCheck(void){
 			// Evaluation des alarmes � envoyer
 			if((distLowDetected && !event_low_disable) || (distHighDetected && !event_high_disable)){		// Mesure de distance hors plage
                             if(distWarningSended[i]==0){													// N'envoie l' event qu'une seule fois
-                                AlgoidResponse[i].DISTresponse.id=i;
-                                AlgoidResponse[i].value=kehops.sonar[i].measure.distance_cm;
+                                messageResponse[i].DISTresponse.id=i;
+                                messageResponse[i].value=kehops.sonar[i].measure.distance_cm;
 
-                                if(kehops.sonar[i].event.enable) strcpy(AlgoidResponse[i].DISTresponse.event_state, "on");
-                                else strcpy(AlgoidResponse[i].DISTresponse.event_state, "off");
+                                if(kehops.sonar[i].event.enable) strcpy(messageResponse[i].DISTresponse.event_state, "on");
+                                else strcpy(messageResponse[i].DISTresponse.event_state, "off");
 
-                                sendResponse(AlgoidCommand.msgID, AlgoidCommand.msgFrom, EVENT, DISTANCE, NBSONAR);
+                                sendResponse(message.msgID, message.msgFrom, EVENT, DISTANCE, NBSONAR);
                                 distWarningSended[i]=1;
 
                                 // Si evenement pour stream activ�, envoie une trame de type status
@@ -1755,13 +1755,13 @@ void distanceEventCheck(void){
                             }
 			}
 			else if (distWarningSended[i]==1){													// Mesure de distance revenu dans la plage
-					AlgoidResponse[i].DISTresponse.id=i;							// Et n'envoie qu'une seule fois le message
-					AlgoidResponse[i].value=kehops.sonar[i].measure.distance_cm;
+					messageResponse[i].DISTresponse.id=i;							// Et n'envoie qu'une seule fois le message
+					messageResponse[i].value=kehops.sonar[i].measure.distance_cm;
 
-                                        if(kehops.sonar[i].event.enable) strcpy(AlgoidResponse[i].DISTresponse.event_state, "on");
-                                        else strcpy(AlgoidResponse[i].DISTresponse.event_state, "off");
+                                        if(kehops.sonar[i].event.enable) strcpy(messageResponse[i].DISTresponse.event_state, "on");
+                                        else strcpy(messageResponse[i].DISTresponse.event_state, "off");
                                         
-					sendResponse(AlgoidCommand.msgID, AlgoidCommand.msgFrom, EVENT, DISTANCE, NBSONAR);
+					sendResponse(message.msgID, message.msgFrom, EVENT, DISTANCE, NBSONAR);
 					distWarningSended[i]=0;
                                         
                                         // Si evenement pour stream activ�, envoie une trame de type status
@@ -1807,9 +1807,9 @@ void batteryEventCheck(void){
 			// Evaluation des alarmes � envoyer
 			if((battLowDetected && !event_low_disable) || (battHighDetected && !event_high_disable)){				// Mesure tension hors plage
                             if(battWarningSended[i]==0){														// N'envoie qu'une seule fois l'EVENT
-                                AlgoidResponse[i].BATTesponse.id=i;
-                                AlgoidResponse[i].value = kehops.battery[i].measure.voltage_mV;
-                                sendResponse(AlgoidCommand.msgID, AlgoidCommand.msgFrom, EVENT, BATTERY, 1);
+                                messageResponse[i].BATTesponse.id=i;
+                                messageResponse[i].value = kehops.battery[i].measure.voltage_mV;
+                                sendResponse(message.msgID, message.msgFrom, EVENT, BATTERY, 1);
                                 battWarningSended[i]=1;
 
                                 // Si evenement pour stream activ�, envoie une trame de type status
@@ -1819,10 +1819,10 @@ void batteryEventCheck(void){
 			}
 			// Envoie un �venement Fin de niveau bas (+50mV Hysterese)
 			else if (battWarningSended[i]==1 && kehops.battery[i].measure.voltage_mV > (kehops.battery[i].event.low + kehops.battery[i].event.hysteresis)){				// Mesure tension dans la plage
-                                AlgoidResponse[i].BATTesponse.id=i;											// n'envoie qu'une seule fois apr�s
-                                AlgoidResponse[i].value = kehops.battery[i].measure.voltage_mV;
+                                messageResponse[i].BATTesponse.id=i;											// n'envoie qu'une seule fois apr�s
+                                messageResponse[i].value = kehops.battery[i].measure.voltage_mV;
                                 // une hysterese de 50mV
-                                sendResponse(AlgoidCommand.msgID, AlgoidCommand.msgFrom, EVENT, BATTERY, 1);
+                                sendResponse(message.msgID, message.msgFrom, EVENT, BATTERY, 1);
                                 battWarningSended[i]=0;
 
                                 // Si evenement pour stream activ�, envoie une trame de type status
@@ -1852,11 +1852,11 @@ void DINEventCheck(void){
 		// V�rifie si un changement a eu lieu sur les entrees et transmet un message
 		// "event" listant les modifications
 		if(kehops.proximity[i].event.enable && (oldDinValue[i] != kehops.proximity[i].measure.state)){
-			AlgoidResponse[ptrBuff].DINresponse.id=i;
-			AlgoidResponse[ptrBuff].value = kehops.proximity[i].measure.state;
+			messageResponse[ptrBuff].DINresponse.id=i;
+			messageResponse[ptrBuff].value = kehops.proximity[i].measure.state;
 
-                        if(kehops.proximity[i].event.enable) strcpy(AlgoidResponse[ptrBuff].DINresponse.event_state, "on");
-                        else strcpy(AlgoidResponse[ptrBuff].DINresponse.event_state, "off");     
+                        if(kehops.proximity[i].event.enable) strcpy(messageResponse[ptrBuff].DINresponse.event_state, "on");
+                        else strcpy(messageResponse[ptrBuff].DINresponse.event_state, "off");     
 
 			ptrBuff++;
 			DINevent++;
@@ -1864,7 +1864,7 @@ void DINEventCheck(void){
 	}
 
 	if(DINevent>0){
-		sendResponse(AlgoidCommand.msgID, AlgoidCommand.msgFrom, EVENT, DINPUT, DINevent);
+		sendResponse(message.msgID, message.msgFrom, EVENT, DINPUT, DINevent);
                 
                 // Si evenement pour stream activ�, envoie une trame de type status
                 if(sysConf.communication.mqtt.stream.onEvent==1)
@@ -1893,11 +1893,11 @@ void BUTTONEventCheck(void){
         // V�rifie si un changement a eu lieu sur les entrees et transmet un message
         // "event" listant les modifications
         if(kehops.button [i].event.enable && (oldBtnValue[i] != kehops.button [i].measure.state)){
-            AlgoidResponse[ptrBuff].BTNresponse.id=i;
-            AlgoidResponse[ptrBuff].value = kehops.button [i].measure.state;
+            messageResponse[ptrBuff].BTNresponse.id=i;
+            messageResponse[ptrBuff].value = kehops.button [i].measure.state;
 
-            if(kehops.button[i].event.enable) strcpy(AlgoidResponse[ptrBuff].BTNresponse.event_state, "on");
-            else strcpy(AlgoidResponse[ptrBuff].BTNresponse.event_state, "off");
+            if(kehops.button[i].event.enable) strcpy(messageResponse[ptrBuff].BTNresponse.event_state, "on");
+            else strcpy(messageResponse[ptrBuff].BTNresponse.event_state, "off");
 
             ptrBuff++;
 //			printf("CHANGEMENT BOUTON %d, ETAT:%d\n", i, robot.button[i].state);
@@ -1906,7 +1906,7 @@ void BUTTONEventCheck(void){
     }
 
     if(BTNevent>0){
-        sendResponse(AlgoidCommand.msgID, AlgoidCommand.msgFrom, EVENT, BUTTON, BTNevent);
+        sendResponse(message.msgID, message.msgFrom, EVENT, BUTTON, BTNevent);
 
         // Si evenement pour stream activ�, envoie une trame de type status
         if(sysConf.communication.mqtt.stream.onEvent == 1)
@@ -1959,11 +1959,11 @@ void COLOREventCheck(void){
                 // Evaluation des alarmes � envoyer
                 if((redLowDetected && !red_event_low_disable) || (redHighDetected && !red_event_high_disable)){				// Mesure tension hors plage
                     if(RGB_red_WarningSended[i]==0){														// N'envoie qu'une seule fois l'EVENT
-                        AlgoidResponse[ptrBuff].RGBresponse.id=i;
-                        AlgoidResponse[ptrBuff].RGBresponse.red.value = kehops.rgb[i].color.red.measure.value;
+                        messageResponse[ptrBuff].RGBresponse.id=i;
+                        messageResponse[ptrBuff].RGBresponse.red.value = kehops.rgb[i].color.red.measure.value;
                         ptrBuff++;
                         RGBevent++;
-                        //sendResponse(AlgoidCommand.msgID, AlgoidCommand.msgFrom, EVENT, COLORS, 1);
+                        //sendResponse(message.msgID, message.msgFrom, EVENT, COLORS, 1);
                         RGB_red_WarningSended[i]=1;
 
                         // Si evenement pour stream activ�, envoie une trame de type status
@@ -1975,11 +1975,11 @@ void COLOREventCheck(void){
 
                 // Envoie un �venement Fin de niveau bas (+50mV Hysterese)
                 else if (RGB_red_WarningSended[i]==1 && kehops.rgb[i].color.red.measure.value > (kehops.rgb[i].color.red.event.low + kehops.rgb[i].color.red.event.hysteresis)){				// Mesure tension dans la plage
-                    AlgoidResponse[ptrBuff].RGBresponse.id=i;											// n'envoie qu'une seule fois apr�s
-                    AlgoidResponse[ptrBuff].RGBresponse.red.value = kehops.rgb[i].color.red.measure.value;											// une hysterese de 50mV
+                    messageResponse[ptrBuff].RGBresponse.id=i;											// n'envoie qu'une seule fois apr�s
+                    messageResponse[ptrBuff].RGBresponse.red.value = kehops.rgb[i].color.red.measure.value;											// une hysterese de 50mV
                     ptrBuff++;
                     RGBevent++;
-                    //sendResponse(AlgoidCommand.msgID, AlgoidCommand.msgFrom, EVENT, COLORS, 1);
+                    //sendResponse(message.msgID, message.msgFrom, EVENT, COLORS, 1);
                     RGB_red_WarningSended[i]=0;
                     // Si evenement pour stream activ�, envoie une trame de type status
                     if(sysConf.communication.mqtt.stream.onEvent==1)
@@ -2004,11 +2004,11 @@ void COLOREventCheck(void){
                 // Evaluation des alarmes � envoyer
                 if((greenLowDetected && !green_event_low_disable) || (greenHighDetected && !green_event_high_disable)){				// Mesure tension hors plage
                     if(RGB_green_WarningSended[i]==0){														// N'envoie qu'une seule fois l'EVENT
-                            AlgoidResponse[ptrBuff].RGBresponse.id=i;
-                            AlgoidResponse[ptrBuff].RGBresponse.green.value = kehops.rgb[i].color.green.measure.value;
+                            messageResponse[ptrBuff].RGBresponse.id=i;
+                            messageResponse[ptrBuff].RGBresponse.green.value = kehops.rgb[i].color.green.measure.value;
                             ptrBuff++;
                             RGBevent++;
-                            //sendResponse(AlgoidCommand.msgID, AlgoidCommand.msgFrom, EVENT, COLORS, 1);
+                            //sendResponse(message.msgID, message.msgFrom, EVENT, COLORS, 1);
                             RGB_green_WarningSended[i]=1;
 
                             // Si evenement pour stream activ�, envoie une trame de type status
@@ -2020,11 +2020,11 @@ void COLOREventCheck(void){
 
                 // Envoie un �venement Fin de niveau bas (+50mV Hysterese)
                 else if (RGB_green_WarningSended[i]==1 && kehops.rgb[i].color.green.measure.value > (kehops.rgb[i].color.green.event.low + kehops.rgb[i].color.green.event.hysteresis)){				// Mesure tension dans la plage
-                    AlgoidResponse[ptrBuff].RGBresponse.id=i;											// n'envoie qu'une seule fois apr�s
-                    AlgoidResponse[ptrBuff].RGBresponse.green.value = kehops.rgb[i].color.green.measure.value;											// une hysterese de 50mV
+                    messageResponse[ptrBuff].RGBresponse.id=i;											// n'envoie qu'une seule fois apr�s
+                    messageResponse[ptrBuff].RGBresponse.green.value = kehops.rgb[i].color.green.measure.value;											// une hysterese de 50mV
                     ptrBuff++;
                     RGBevent++;
-                    //sendResponse(AlgoidCommand.msgID, AlgoidCommand.msgFrom, EVENT, COLORS, 1);
+                    //sendResponse(message.msgID, message.msgFrom, EVENT, COLORS, 1);
                     RGB_green_WarningSended[i]=0;
                     // Si evenement pour stream activ�, envoie une trame de type status
                     if(sysConf.communication.mqtt.stream.onEvent==1)
@@ -2050,11 +2050,11 @@ void COLOREventCheck(void){
                 // Evaluation des alarmes � envoyer
                 if((blueLowDetected && !blue_event_low_disable) || (blueHighDetected && !blue_event_high_disable)){				// Mesure tension hors plage
                     if(RGB_blue_WarningSended[i]==0){														// N'envoie qu'une seule fois l'EVENT
-                        AlgoidResponse[ptrBuff].RGBresponse.id=i;
-                        AlgoidResponse[ptrBuff].RGBresponse.blue.value = kehops.rgb[i].color.blue.measure.value;
+                        messageResponse[ptrBuff].RGBresponse.id=i;
+                        messageResponse[ptrBuff].RGBresponse.blue.value = kehops.rgb[i].color.blue.measure.value;
                         ptrBuff++;
                         RGBevent++;
-                        //sendResponse(AlgoidCommand.msgID, AlgoidCommand.msgFrom, EVENT, COLORS, 1);
+                        //sendResponse(message.msgID, message.msgFrom, EVENT, COLORS, 1);
                         RGB_blue_WarningSended[i]=1;
 
                         // Si evenement pour stream activ�, envoie une trame de type status
@@ -2066,11 +2066,11 @@ void COLOREventCheck(void){
 
                 // Envoie un �venement Fin de niveau bas (+50mV Hysterese)
                 else if (RGB_blue_WarningSended[i]==1 && kehops.rgb[i].color.blue.measure.value > (kehops.rgb[i].color.blue.event.low + kehops.rgb[i].color.blue.event.hysteresis)){				// Mesure tension dans la plage
-                    AlgoidResponse[ptrBuff].RGBresponse.id=i;											// n'envoie qu'une seule fois apr�s
-                    AlgoidResponse[ptrBuff].RGBresponse.blue.value = kehops.rgb[i].color.blue.measure.value;											// une hysterese de 50mV
+                    messageResponse[ptrBuff].RGBresponse.id=i;											// n'envoie qu'une seule fois apr�s
+                    messageResponse[ptrBuff].RGBresponse.blue.value = kehops.rgb[i].color.blue.measure.value;											// une hysterese de 50mV
                     ptrBuff++;
                     RGBevent++;
-                    //sendResponse(AlgoidCommand.msgID, AlgoidCommand.msgFrom, EVENT, COLORS, 1);
+                    //sendResponse(message.msgID, message.msgFrom, EVENT, COLORS, 1);
                     RGB_blue_WarningSended[i]=0;
                     // Si evenement pour stream activ�, envoie une trame de type status
                     if(sysConf.communication.mqtt.stream.onEvent==1)
@@ -2081,7 +2081,7 @@ void COLOREventCheck(void){
 	}
         
         if(RGBevent>0){
-            sendResponse(AlgoidCommand.msgID, AlgoidCommand.msgFrom, EVENT, COLORS, RGBevent);
+            sendResponse(message.msgID, message.msgFrom, EVENT, COLORS, RGBevent);
                 
             // Si evenement pour stream activ�, envoie une trame de type status
             if(sysConf.communication.mqtt.stream.onEvent==1)
@@ -2100,7 +2100,7 @@ int runUpdateCommand(int type){
         status=system("sh /root/algobotManager.sh check");
     
     if(type==1){
-        sendMqttReport(AlgoidCommand.msgID, "WARNING ! APPLICATION IS UPDATING AND WILL RESTART ");// Envoie le message sur le canal MQTT "Report"   
+        sendMqttReport(message.msgID, "WARNING ! APPLICATION IS UPDATING AND WILL RESTART ");// Envoie le message sur le canal MQTT "Report"   
         status=system("sh /root/algobotManager.sh update");
     }
     
@@ -2109,9 +2109,9 @@ int runUpdateCommand(int type){
     printf ("---------- End of bash script ------------\n");
     printf ("Exit bash status: %d\n", updateState);
     
-    char message[100];
-    sprintf(&message[0], "Exit bash status: %d\n", updateState);	 // Formatage du message avec le Nom du client buggy
-    sendMqttReport(AlgoidCommand.msgID, message);                        // Envoie le message sur le canal MQTT "Report"   
+    char dbgMessage[100];
+    sprintf(&dbgMessage[0], "Exit bash status: %d\n", updateState);	 // Formatage du message avec le Nom du client buggy
+    sendMqttReport(message.msgID, dbgMessage);                        // Envoie le message sur le canal MQTT "Report"   
 
     return updateState;
 }
@@ -2121,14 +2121,14 @@ void runRestartCommand(void){
  
      printf ("---------- Launching bash script ------------\n");
 
-        sendMqttReport(AlgoidCommand.msgID, "WARNING ! APPLICATION WILL RESTART ");// Envoie le message sur le canal MQTT "Report"   
+        sendMqttReport(message.msgID, "WARNING ! APPLICATION WILL RESTART ");// Envoie le message sur le canal MQTT "Report"   
         status=system("sh /root/algobotManager.sh restart");
     printf ("---------- End of bash script ------------\n");
 }
 
 int runCloudTestCommand(void){
     int status=0;
-        sendMqttReport(AlgoidCommand.msgID, "Try to ping cloud server on vps596769.ovh.net...");// Envoie le message sur le canal MQTT "Report"   
+        sendMqttReport(message.msgID, "Try to ping cloud server on vps596769.ovh.net...");// Envoie le message sur le canal MQTT "Report"   
         status=system("ping -q -c 2 -t 1000 vps596769.ovh.net");
         printf("------------- ping status on vps596769.ovh.net: %d\n", status);
         if(status != 0)
