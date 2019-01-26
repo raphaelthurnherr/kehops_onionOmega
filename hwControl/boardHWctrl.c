@@ -125,7 +125,7 @@ void PCA9685_DCmotorSetSpeed(unsigned char motorAdr, unsigned char dutyCycle){
 	power = (4095*dutyCycle)/100;
 	PowerLow = power&0x00FF;;
 	PowerHigh = (power&0x0F00) >>8;
-
+        
 	i2c_write(0, PCA9685, motorAdr, PowerLow);
         i2c_write(0, PCA9685, motorAdr+1, PowerHigh);
 }
@@ -136,7 +136,7 @@ void PCA9685_DCmotorSetSpeed(unsigned char motorAdr, unsigned char dutyCycle){
 // D�fini le sense de rottion d'un moteur DC (sens horaire, antihoraire ou stop)
 //================================================================================
 
-void MCP2308_DCmotorSetRotation(unsigned char motorAdr, unsigned char direction){
+void MCP2308_DCmotorSetRotation(unsigned char motorAdr, char direction){
 	int MCP2308_GPIO_STATE;
 
 	// Sélection du chip d'entrée/sortie qui pilote le pont en H

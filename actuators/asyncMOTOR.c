@@ -40,10 +40,6 @@ int setAsyncMotorAction(int actionNumber, int motorNb, int veloc, char unit, int
 	int setTimerResult;
 	int endOfTask;  
         
-	if(veloc == 0){
-                kehops.dcWheel[motorNb].motor.direction = BUGGY_STOP;
-	}
-
 
 	// D�marre de timer d'action sur la roue et sp�cifie la fonction call back � appeler en time-out
 	// Valeur en retour >0 signifie que l'action "en retour" � �t� �cras�e
@@ -81,12 +77,7 @@ int setAsyncMotorAction(int actionNumber, int motorNb, int veloc, char unit, int
                 
 		// Défini le "nouveau" sens de rotation à applique au moteur ainsi que la consigne de vitesse
 		if(setMotorDirection(motorNb, kehops.dcWheel[motorNb].motor.direction)){                                                            // Sens de rotation
-                    //printf("\n----  SET DIRECTION: %d  \n", robot.motor[motorNb].direction);
-                        //motorPWM = RPMToPercent(motorNb, veloc);                                                   // Mise à l'échelle d'un % "utilisateur" en PWM % utilisable par le moteur
-                        //motorSpeedSetpoint(motorNb, motorPWM);                                                          // Vitesse
-                        
-                        //printf("\n[setAsyncMotorAction()] New PWM Setpoint: %d\n", motorPWM );  
-
+                        setMotorSpeed(motorNb, kehops.dcWheel[motorNb].motor.speed);
 
 			// Envoie de message ALGOID et SHELL
 			sprintf(reportBuffer, "Start wheel %d with power %d for time %d\n", motorNb, veloc, value);
@@ -114,7 +105,7 @@ int endWheelAction(int actionNumber, int motorNb){
 	//printf("Action number: %d - End of timer for wheel No: %d\n",actionNumber , motorNb);
 
 	// Stop le moteur
-	//setMotorSpeed(motorNb, 0);
+	setMotorSpeed(motorNb, 0);
         //motorSpeedSetpoint(motorNb, 0);
         kehops.dcWheel[motorNb].motor.speed = 0;
         kehops.dcWheel[motorNb].motor.direction = BUGGY_STOP;

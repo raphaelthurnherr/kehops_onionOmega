@@ -170,7 +170,7 @@ int getColorValue(unsigned char sensorID, unsigned char color);      // Retourne
 unsigned char getOrganI2Cregister(char organType, unsigned char organName); // Retourne l'adresse du registre correspondant au nom de l'organe
 
 int setMotorSpeed(int motorName, int ratio);
-int setMotorDirection(int motorName, int direction);
+int setMotorDirection(char motorName, int direction);
 
 int setStepperStepAction(int motorNumber, int direction, int stepCount);      // Effectue une action sur le moteur pas à pas (direction, nombre de pas)
 int setStepperSpeed(int motorNumber, int speed);                              // Configuration de la vitesse du moteur pas à pas
@@ -392,7 +392,7 @@ int getColorValue(unsigned char sensorID, unsigned char color){
 // SETMOTORDIRECTION
 // !!!!!!!!!!!!! FONCTION A RETRAVAILLER !!!!!!!!!!!!!!!!!!!
 // ---------------------------------------------------------------------------
-int setMotorDirection(int motorName, int direction){
+int setMotorDirection(char motorName, int direction){
 	unsigned char motorAdress;
 
         // Check if motor inversion requiered and modify if necessary
@@ -641,7 +641,6 @@ unsigned char getOrganI2Cregister(char organType, unsigned char organName){
 int resetHardware(t_sysConf * Config){
     int i;
     
-    printf("\n*****\nTRACE\n********\n");
     // Etat initial des moteur
     for(i=0;i<NBMOTOR;i++){
         setMotorSpeed(i, 0);

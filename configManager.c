@@ -305,7 +305,6 @@ char SaveConfig(char * fileName){
 	jwOpen( buffer, buflen, JW_OBJECT, JW_PRETTY );		// start root object  
         // CREATE JSON CONFIG FOR STREAM        
             jwObj_object( "stream" );
-            
             if(sysConf.communication.mqtt.stream.state == 0)
                 jwObj_string("state", "off");
             else 

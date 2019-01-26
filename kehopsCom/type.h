@@ -114,7 +114,7 @@ struct s_stepper_config{
 
 struct robot_stepper_sp{
     int speed;
-    int direction;    
+    char direction;    
     int steps;  
 };
 

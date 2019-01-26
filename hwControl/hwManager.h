@@ -29,7 +29,7 @@ char getButtonInput(unsigned char buttonNumber);
 int getColorValue(unsigned char sensorID, unsigned char color);      // Retourne la valeur de la couleur d�finie sur le capteur d�fini
 
 extern int setMotorSpeed(int motorName, int ratio);
-extern int setMotorDirection(int motorName, int direction);
+extern int setMotorDirection(char motorName, int direction);
 
 extern void setServoPosition(unsigned char smName, char position);
 extern void setLedPower(unsigned char ledID, unsigned char power);

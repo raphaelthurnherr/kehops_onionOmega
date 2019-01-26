@@ -64,7 +64,7 @@ extern unsigned char buggyBoardInit(void);
 extern unsigned char motorDCadr[2];                                             // Valeur de la puissance moteur
 
 extern void MCP2308_DCmotorState(unsigned char state);
-extern void MCP2308_DCmotorSetRotation(unsigned char motorAdr, unsigned char direction);
+extern void MCP2308_DCmotorSetRotation(unsigned char motorAdr, char direction);
 extern char MCP2308_ReadGPIO(unsigned char input);   // Lecture d'un GPIO sur le peripherique 
 extern void PCA9685_DCmotorSetSpeed(unsigned char motorAdr, unsigned char dutyCycle);
 extern void PCA9685_setServoPos(unsigned char smAddr, char position);

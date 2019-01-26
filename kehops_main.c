@@ -1,4 +1,4 @@
-#define FIRMWARE_VERSION "0.1.0"
+#define FIRMWARE_VERSION "0.1.1"
 
 #define DEFAULT_EVENT_STATE 1   
 
@@ -185,7 +185,7 @@ int main(int argc, char *argv[]) {
 	// Gestion de la v�locit� pour une acceleration proggressive
     	// modification de la v�locit� environ chaque 50mS
     	if(checkMotorPowerFlag){
-            checkDCmotorPower();													// Contr�le si la v�locit� correspond � la consigne
+           checkDCmotorPower();													// Contr�le si la v�locit� correspond � la consigne
             checkMotorPowerFlag=0;
     	}
 
@@ -277,7 +277,7 @@ int processmessage(void){
                                             
                                     // Récupération des paramètes de commandes
                                     
-                                    // Retourne un message ALGOID si velocit� hors tol�rences
+                                    // Retourne un message ALGOID si velocité hors tolérences
                                     if((message.DCmotor[i].velocity < -100) ||(message.DCmotor[i].velocity > 100)){
                                             message.DCmotor[i].velocity=0;
                                             messageResponse[i].MOTresponse.velocity=-1;
@@ -659,10 +659,21 @@ int runMotorAction(void){
 	// Comptabilise le nombre de param�tre (moteur) recu dans le message
 	// 
         for(i=0;i<NBMOTOR;i++){
-            ptrData=getWDvalue(i);
+            ptrData = getWDvalue(i);
             if(ptrData>=0){
                 actionCount++;
                         kehops.dcWheel[i].motor.speed = message.DCmotor[ptrData].velocity;
+                        if(kehops.dcWheel[i].motor.speed < 0){
+                            kehops.dcWheel[i].motor.direction = -1;
+                            kehops.dcWheel[i].motor.speed *= -1;                    // Rétabli la consigne sous forme positive
+                        }
+                        else 
+                            if(kehops.dcWheel[i].motor.speed == 0)
+                                kehops.dcWheel[i].motor.direction = 0;
+                            else
+                                if(kehops.dcWheel[i].motor.speed > 0)
+                                    kehops.dcWheel[i].motor.direction = 1;
+                            
                         kehops.dcWheel[i].target.distanceCM = message.DCmotor[ptrData].cm;
                         kehops.dcWheel[i].target.time = message.DCmotor[ptrData].time;
             }
@@ -866,7 +877,7 @@ int runLedAction(void){
                 if(!strcmp(message.LEDarray[ptrData].state,"on"))
                     kehops.led[i].state = ON;
                 if(!strcmp(message.LEDarray[ptrData].state,"blink"))
-                    kehops.led[i].state = ON;
+                    kehops.led[i].state = BLINK;
                 
                 // R�cup�ration des consignes dans le message (si disponible)
                 if(message.LEDarray[ptrData].powerPercent > 0)
@@ -1698,7 +1709,6 @@ int makeMotorRequest(void){
 			
 		} else
 			messageResponse[i].MOTresponse.motor = -1;
-	//---
 	}
 	// Envoie de la r�ponse MQTT
 	sendResponse(message.msgID, message.msgFrom, RESPONSE, MOTORS, message.msgValueCnt);
@@ -2155,8 +2165,6 @@ void resetConfig(void){
         for(i=0;i<NBBTN;i++){
             kehops.button[i].event.enable=DEFAULT_EVENT_STATE;
 	}
-        
-          printf("\n ********** DEBUG ***************\n");
     
         for(i=0;i<NBMOTOR;i++){
             kehops.dcWheel[i].config.motor.inverted = 0;
