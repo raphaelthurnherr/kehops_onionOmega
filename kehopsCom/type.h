@@ -242,7 +242,12 @@ struct mqtt_stream{
     int  topic;
 };
 
+struct mqtt_broker{
+    char address[128];
+};
+
 struct s_mqtt{
+    struct mqtt_broker broker;
     struct mqtt_stream stream;
 };
 

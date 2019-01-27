@@ -116,7 +116,6 @@ int checkBlinkLedCount(int actionNumber, int ledName){
 	static int blinkCount=0;     // Variable de comptage du nombre de clignotements       
         static int LEDtoggleState[NBLED];
 
-         
         // Si mode blink actif, toggle sur LED et comptage
         if(kehops.led[ledName].state == BLINK){
             
@@ -134,7 +133,7 @@ int checkBlinkLedCount(int actionNumber, int ledName){
             if(blinkCount >= kehops.led[ledName].action.blinkCount-1){
                 kehops.led[ledName].state = LEDtoggleState[ledName];      // Update the actual state of led
                 endLedAction(actionNumber, ledName);
-                    blinkCount=0;                                     // Reset le compteur
+                blinkCount=0;                                     // Reset le compteur
             }
             else{
                     setTimer(kehops.led[ledName].action.blinkTime, &checkBlinkLedCount, actionNumber, ledName, LED);                    

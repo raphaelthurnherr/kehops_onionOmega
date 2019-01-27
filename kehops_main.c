@@ -1,4 +1,4 @@
-#define FIRMWARE_VERSION "0.1.1"
+#define FIRMWARE_VERSION "0.2"
 
 #define DEFAULT_EVENT_STATE 1   
 
@@ -75,7 +75,6 @@ void runRestartCommand(void);
 int runCloudTestCommand(void);
 
 void resetConfig(void);
-void assignMotorWheel(void);        // Assign a motor for each wheel
 
 char reportBuffer[256];
 int ActionTable[10][3];
@@ -101,15 +100,12 @@ int main(int argc, char *argv[]) {
         char welcomeMessage[100];
 	system("clear");
         
-        getStartupArg(argc, argv);
+        getStartupArg(argc, argv);          // Récupération des paramètres [NomClient et address brocker] durant l'execution de l'application
         
         sprintf(&welcomeMessage[0], "KEHOPS V%s - %s - build #%d\n", FIRMWARE_VERSION, __DATE__ , BUILD_CODE);		// Formattage du message avec le Nom du client buggy
         printf(welcomeMessage);
         printf ("------------------------------------\n");
-        
-        
-        assignMotorWheel();                   // Set assignement of motors for wheels
-                
+                        
 
 // Cr�ation de la t�che pour la gestion de la messagerie avec ALGOID
 	if(InitMessager()) printf ("#[CORE] Creation t�che messagerie : ERREUR\n");
@@ -148,7 +144,7 @@ int main(int argc, char *argv[]) {
             printf ("#[CORE] Connexion au serveur cloud OK\n");
         else 
             printf ("#[CORE] Connexion au serveur cloud ERREUR !\n");
-                 
+        
 	while(1){
         
         // Check if reset was triggered by user
@@ -324,7 +320,7 @@ int processmessage(void){
                                 for(i=0;i<message.msgValueCnt;i++){
                                     // Vérification de l'existance de l'index de sortie PWM et défini le mode PWM(FULL)
                                     if(message.PWMarray[i].id >= 0 && message.PWMarray[i].id <NBPWM){
-                                        message.PWMarray[i].isServoMode=0;
+                                        kehops.pwm[message.PWMarray[i].id].config.mode = 0;
                                         messageResponse[i].PWMresponse.id=message.PWMarray[i].id;
                                     }
                                     else
@@ -348,7 +344,7 @@ int processmessage(void){
                                     // Vérification de l'existance de l'index de sortie PWM et défini le mode SERVO
                                     if(message.PWMarray[i].id >= 0 && message.PWMarray[i].id <NBPWM){
                                         messageResponse[i].PWMresponse.id=message.PWMarray[i].id;
-                                        message.PWMarray[i].isServoMode=1;
+                                         kehops.pwm[message.PWMarray[i].id].config.mode = 1;
                                     }
                                     else
                                         messageResponse[i].PWMresponse.id=-1;
@@ -388,10 +384,13 @@ int processmessage(void){
             case CONFIG  :
                                 for(valCnt=0;valCnt<message.msgValueCnt;valCnt++){
                             // CONFIG COMMAND FOR DATASTREAM
+                                    
+                                    // R�cup�re les parametres de configuration du broker distant
+                                    strcpy(sysConf.communication.mqtt.broker.address, message.Config.broker.address);                      // Enregistrement du broker distant
+                                    
                                     // R�cup�re les parametres eventuelle pour la configuration de l'etat de l'envoie du stream par polling
                                     if(!strcmp(message.Config.stream.state, "on"))
                                         sysConf.communication.mqtt.stream.state=1; 			// Activation de l'envoie du datastream
-                                    
                                     else
                                         if(!strcmp(message.Config.stream.state, "off"))
                                             sysConf.communication.mqtt.stream.state=0; 		// Desactivation de l'envoie du datastream
@@ -518,12 +517,16 @@ int processmessage(void){
                                     }
 
                                 // CONFIG COMMAND FOR SAVE
-                                    if(!strcmp(message.Config.config.save, "true"))
+                                    if(!strcmp(message.Config.action.save, "true")){
                                         SaveConfig("kehops.cfg");
+                                        printf("\nNew configuration received and saved in kehops.cfg\n");
+                                    }
 
                                 // CONFIG COMMAND FOR RESET
-                                    if(!strcmp(message.Config.config.reset, "true"))
+                                    if(!strcmp(message.Config.action.reset, "true")){
                                         sysApp.kehops.resetConfig = 1;
+                                        printf("\nNew configuration received\n");
+                                    }
 
                         // Préparation des valeurs du message de réponse
                                 // GET STREAM CONFIG FOR RESPONSE
@@ -538,12 +541,12 @@ int processmessage(void){
                                     else strcpy(messageResponse[valCnt].CONFIGresponse.stream.state, "on");
 
                                     if(sysApp.kehops.resetConfig == 1) 
-                                        strcpy(messageResponse[valCnt].CONFIGresponse.config.reset, "true");
-                                    else strcpy(messageResponse[valCnt].CONFIGresponse.config.reset, "---");
+                                        strcpy(messageResponse[valCnt].CONFIGresponse.action.reset, "true");
+                                    else strcpy(messageResponse[valCnt].CONFIGresponse.action.reset, "---");
                                     
-                                    if(!strcmp(message.Config.config.save, "true")) 
-                                        strcpy(messageResponse[valCnt].CONFIGresponse.config.save, "true");
-                                    else strcpy(messageResponse[valCnt].CONFIGresponse.config.save, "---");
+                                    if(!strcmp(message.Config.action.save, "true")) 
+                                        strcpy(messageResponse[valCnt].CONFIGresponse.action.save, "true");
+                                    else strcpy(messageResponse[valCnt].CONFIGresponse.action.save, "---");
                                     
                                     messageResponse[valCnt].responseType = RESP_STD_MESSAGE;
                                 } 
@@ -761,13 +764,25 @@ int runStepperAction(void){
             if(ptrData>=0){
                 actionCount++;
                         kehops.stepperWheel[i].motor.speed = message.StepperMotor[ptrData].velocity;
+                        
+                        if(kehops.stepperWheel[i].motor.speed < 0){
+                            kehops.stepperWheel[i].motor.direction = -1;
+                            kehops.stepperWheel[i].motor.speed *= -1;                    // Rétabli la consigne sous forme positive
+                        }
+                        else 
+                            if(kehops.stepperWheel[i].motor.speed == 0)
+                                kehops.stepperWheel[i].motor.direction = 0;
+                            else
+                                if(kehops.stepperWheel[i].motor.speed > 0)
+                                    kehops.stepperWheel[i].motor.direction = 1;
+                            
                         kehops.stepperWheel[i].target.time = message.StepperMotor[ptrData].time;
                         kehops.stepperWheel[i].target.steps = message.StepperMotor[ptrData].step;
                         kehops.stepperWheel[i].target.angle = message.StepperMotor[ptrData].angle;
                         kehops.stepperWheel[i].target.rotation = message.StepperMotor[ptrData].rotation;
             }
-        }
-
+        }     
+        
         // Au moin une action à effectuer
         if(actionCount>0){
             
@@ -791,7 +806,6 @@ int runStepperAction(void){
                     for(ptrData=0; action < actionCount && ptrData<10; ptrData++){
                         ID = message.StepperMotor[ptrData].motor;
                         if(ID >= 0){
-                            
                             // Effectue l'action sur le moteur pas à pas
                             if(kehops.stepperWheel[ID].target.time <= 0 && kehops.stepperWheel[ID].target.steps <=0 && kehops.stepperWheel[ID].target.rotation <= 0 && kehops.stepperWheel[ID].target.angle <=0){                                
                                 sprintf(reportBuffer, "ATTENTION: Action infinie, aucun parametre defini \"time\" ou \"step\" ou \"rotation\" ou \"angle\"pour l'action sur le moteur pas à pas %d\n", ID);
@@ -807,7 +821,7 @@ int runStepperAction(void){
                             }else
                             {
                                 if(kehops.stepperWheel[ID].target.steps > 0){
-                                    setAsyncStepperAction(myTaskId, ID, kehops.stepperWheel[ID].motor.speed, STEP, kehops.stepperWheel[ID].motor.steps);
+                                    setAsyncStepperAction(myTaskId, ID, kehops.stepperWheel[ID].motor.speed, STEP, kehops.stepperWheel[ID].target.steps);
                                 }
                                 else{
                                     if(kehops.stepperWheel[ID].target.angle > 0){
@@ -929,14 +943,14 @@ int runLedAction(void){
                                             messageResponse[0].responseType=EVENT_ACTION_RUN;
                                             sendResponse(myTaskId, message.msgFrom, EVENT, pLED, 1);                         // Envoie un message ALGOID de fin de t�che pour l'action �cras�
                                         }
-            /*   BUG SEGFAULT
+
                                         if(Count<=0){
                                             Count=1;
                                             sprintf(reportBuffer, "ATTENTION: Action infinie, aucun parametre defini \"count\"  pour l'action sur la LED %d\n", ID);
                                             printf(reportBuffer);                                                             // Affichage du message dans le shell
                                             sendMqttReport(message.msgID, reportBuffer);				      // Envoie le message sur le canal MQTT "Report"     
                                         }
-            */
+                                        
                                         // Creation d'un timer effectu� sans erreur, ni ecrasement d'une ancienne action
                                          setAsyncLedAction(myTaskId, ID, BLINK, time, Count);
                                      }
@@ -998,10 +1012,11 @@ int runPwmAction(void){
                     kehops.pwm[i].state = OFF;
                 if(!strcmp(message.PWMarray[ptrData].state,"on"))
                     kehops.pwm[i].state = ON;
+                if(!strcmp(message.PWMarray[ptrData].state,"blink"))
+                    kehops.pwm[i].state = BLINK;
                 
-
-                // Blink mode not available in SERVO MODE
-                if(!message.PWMarray[ptrData].isServoMode){
+                // Blink mode not available in SERVO MODE (mode 1)
+                if(!kehops.pwm[i].config.mode){
                     if(!strcmp(message.PWMarray[ptrData].state,"blink"))
                         kehops.pwm[i].state = BLINK;
                     if(message.PWMarray[ptrData].time > 0)
@@ -1039,9 +1054,9 @@ int runPwmAction(void){
                                     time=message.PWMarray[ptrData].time;
                                     
                                     // Check if is a servomotor PWM (500uS .. 2.5mS)
-                                    if(!message.PWMarray[ptrData].isServoMode){
+                                    if(!kehops.pwm[ID].config.mode){
                                         // Mode blink
-                                        if(kehops.pwm[i].state== BLINK){
+                                        if(kehops.pwm[ID].state== BLINK){
                                             // Verifie la presence de parametres de type "time" et "count", sinon applique des
                                             // valeurs par defaut
                                             if(time<=0){
@@ -1068,8 +1083,7 @@ int runPwmAction(void){
                                                 setAsyncPwmAction(myTaskId, ID, ON, NULL, NULL);
                                             }
                                     }
-                                    else
-                                        
+                                    else  
                                     {
                                             if(kehops.pwm[ID].state == OFF)
                                                 setAsyncServoAction(myTaskId, ID, OFF, NULL);
@@ -1082,7 +1096,7 @@ int runPwmAction(void){
                     }
                     messageResponse[0].responseType=EVENT_ACTION_BEGIN;
                     
-                    if(!message.PWMarray[ptrData].isServoMode)
+                    if(!kehops.pwm[i].config.mode)
                         sendResponse(myTaskId, message.msgFrom, EVENT, pPWM, 1);               // Send EVENT message for action begin
                     else
                         sendResponse(myTaskId, message.msgFrom, EVENT, pSERVO, 1);             // Send EVENT message for action begin
@@ -1898,7 +1912,7 @@ void BUTTONEventCheck(void){
     for(i=0;i<NBBTN;i++){
         // Mise � jour de l'�tat des E/S
         oldBtnValue[i] = kehops.button [i].measure.state;
-        kehops.button[i].measure.state = getButtonInput(i);
+        kehops.button[i].measure.state = getDigitalInput(4+i);
 
         // V�rifie si un changement a eu lieu sur les entrees et transmet un message
         // "event" listant les modifications
@@ -2138,16 +2152,19 @@ void runRestartCommand(void){
 
 int runCloudTestCommand(void){
     int status=0;
+    char systemCmd[128];
         sendMqttReport(message.msgID, "Try to ping cloud server on vps596769.ovh.net...");// Envoie le message sur le canal MQTT "Report"   
-        status=system("ping -q -c 2 -t 1000 vps596769.ovh.net");
-        printf("------------- ping status on vps596769.ovh.net: %d\n", status);
+        
+        sprintf(&systemCmd, "ping -q -c 2 -t 1000 %s", sysConf.communication.mqtt.broker.address);
+        status=system(systemCmd);
         if(status != 0)
-            sysApp.info.wan_online = 1;
-        else 
             sysApp.info.wan_online = 0;
+        else 
+            sysApp.info.wan_online = 1;
    
     return sysApp.info.wan_online;
 }
+
 
 void resetConfig(void){
     int i;
@@ -2246,67 +2263,11 @@ void resetConfig(void){
 int getStartupArg(int count, char *arg[]){
     unsigned char i;
     
-    for(i=0;i<count;i++){
-        //printf("ARG #%d : %s\n", count, arg[i]);
-        
+    for(i=0;i<count;i++){        
         if(!strcmp(arg[i], "-n"))
             sprintf(&ClientID, "%s", arg[i+1]);
         
         if(!strcmp(arg[i], "-a"))
             sprintf(&ADDRESS, "%s", arg[i+1]);
     }
-}
-
-
-void assignMotorWheel(void){
-        /*
-        kehops.dcWheel[0].motor = &device.actuator.motor[0].setpoint;      
-        kehops.dcWheel[0].config.motor = &device.actuator.motor[0].config;
-        
-        kehops.dcWheel[1].motor = &device.actuator.motor[1].setpoint;
-        kehops.dcWheel[1].config.motor = &device.actuator.motor[1].config;
-
-        kehops.stepperWheel[0].config.motor =  &device.actuator.stepperMotor[0].config;        
-        kehops.stepperWheel[0].motor = &device.actuator.stepperMotor[0].setpoint;
-
-        kehops.stepperWheel[1].motor = &device.actuator.stepperMotor[1].setpoint;
-        kehops.stepperWheel[1].config.motor =  &device.actuator.stepperMotor[1].config;
-        */
-        /*
-        kehops.led[0].pwm = &device.actuator.digitalOutput[0].setpoint;
-        kehops.led[1].pwm = &device.actuator.digitalOutput[1].setpoint;
-        kehops.led[2].pwm = &device.actuator.digitalOutput[2].setpoint;
-        
-        kehops.pwm[0].pwm = &device.actuator.digitalOutput[0].setpoint;
-        kehops.pwm[1].pwm = &device.actuator.digitalOutput[1].setpoint;
-        kehops.pwm[2].pwm = &device.actuator.digitalOutput[2].setpoint;
-        kehops.pwm[3].pwm = &device.actuator.digitalOutput[3].setpoint;
-        kehops.pwm[4].pwm = &device.actuator.digitalOutput[4].setpoint;
-        kehops.pwm[5].pwm = &device.actuator.digitalOutput[5].setpoint;
-        kehops.pwm[6].pwm = &device.actuator.digitalOutput[6].setpoint;
-        kehops.pwm[7].pwm = &device.actuator.digitalOutput[7].setpoint;
-        kehops.pwm[8].pwm = &device.actuator.digitalOutput[8].setpoint;
-        kehops.pwm[9].pwm = &device.actuator.digitalOutput[9].setpoint;
-       */
-        /*
-        device.actuator.motor[0].setpoint.speed=50;
-        device.actuator.motor[1].setpoint.speed=60;
-                
-        printf("\nMa vitesse moteur device[0]: %d", device.actuator.motor[0].setpoint.speed);
-        printf("\nMa vitesse moteur device[1]: %d", device.actuator.motor[1].setpoint.speed);
-        printf("\nMa  kehops.dcWheel[0].motor.speed %d\n",  kehops.dcWheel[0].motor.speed);    
-        printf("\nMa  kehops.dcWheel[0].motor.speed %d\n",  kehops.dcWheel[1].motor.speed);  
-        
-         kehops.dcWheel[1].motor.speed = 66;
-        
-       //printf("-----\nMa wheel.motorAlias %d\n", wheel[1].motor.speed);  
-       //printf("\nMa wheel.motorAlias %d\n", device.actuator.motor[1].speed);       
-       printf("\nMa vitesse moteur [device.actuator.motor[1].speed]: %d", device.actuator.motor[1].setpoint.speed);
-       printf("\nMa vitesse moteur [kehops.dcWheel[1].motor.speed] %d\n", kehops.dcWheel[1].motor.speed);
-      
-       kehops.dcWheel[1].motor.speed= 55;
-       
-       printf("\n--------------\nMa vitesse moteur [device.actuator.motor[0].speed]: %d", device.actuator.motor[0].setpoint.speed);
-       printf("\nMa vitesse moteur [kehops.dcWheel[0].motor.speed] %d\n", kehops.dcWheel[0].motor.speed);  
-*/
 }   

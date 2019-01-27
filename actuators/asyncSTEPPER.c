@@ -30,33 +30,10 @@ int dummyStepperAction(int actionNumber, int motorName);
 // -------------------------------------------------------------------
 
 int setAsyncStepperAction(int actionNumber, int motorNb, int veloc, char unit, int value){
-	int myDirection;
         int steps=0;
 	int setTimerResult;
 	int endOfTask;           
-        
-	if(veloc == 0){
-		myDirection=BUGGY_STOP;
-                kehops.stepperWheel[motorNb].motor.direction = 0;
-	}else
-        {
-            if(veloc < 0){
-                // Check if motor inversion requiered and modify if necessary
-                if(!kehops.stepperWheel[motorNb].config.motor.inverted)
-                    myDirection=BUGGY_FORWARD;
-                else myDirection=BUGGY_BACK;
-                kehops.stepperWheel[motorNb].motor.direction = -1;
-                veloc *=-1;					// Convertion en valeur positive
-            }else{      
-                // Check if motor inversion requiered and modify if necessary
-                if(!kehops.stepperWheel[motorNb].motor.direction)
-                    myDirection=BUGGY_BACK;
-                else myDirection=BUGGY_FORWARD;
-                kehops.stepperWheel[motorNb].motor.direction = 1;
-            }            
-        }
-
-
+      
 	// D�marre de timer d'action sur la roue et sp�cifie la fonction call back � appeler en time-out
 	// Valeur en retour >0 signifie que l'action "en retour" � �t� �cras�e
 	switch(unit){                                          
@@ -82,6 +59,7 @@ int setAsyncStepperAction(int actionNumber, int motorNb, int veloc, char unit, i
 		default: printf("\n!!! ERROR Function [setAsyncStepperAction] -> unknown mode");break;
 	}
 
+
 	if(setTimerResult!=0){						// Timer pret, action effectuée ()
 		if(setTimerResult>1){					// Le timer est écrasé par la nouvelle action en retour car sur la même roue
 			endOfTask=removeBuggyTask(setTimerResult);	// Supprime l'ancienne tâche qui est écrasée par la nouvelle action
@@ -105,11 +83,10 @@ int setAsyncStepperAction(int actionNumber, int motorNb, int veloc, char unit, i
                 
 		// Défini le "nouveau" sens de rotation, applique au moteur ainsi que la consigne de vitesse
 		if(setStepperSpeed(motorNb, veloc)){
-//			setMotorSpeed(motorNb, veloc);									// Vitesse
-                        setStepperStepAction(motorNb, myDirection, steps);
+                        setStepperStepAction(motorNb, kehops.stepperWheel[motorNb].motor.direction, steps);
                                 
 			// Envoie de message ALGOID et SHELL
-			sprintf(reportBuffer, "Start step motor %d with velocity %d for time %d\n", motorNb, veloc, value);
+			sprintf(reportBuffer, "Start stepper motor %d with velocity %d for steps  %d\n", motorNb, veloc, steps);
 			printf(reportBuffer);
 			sendMqttReport(actionNumber, reportBuffer);
 		}
@@ -176,7 +153,7 @@ int checkStepperStatus(int actionNumber, int motorName){
         endStepperAction(actionNumber, motorName);
     }
     else{
-        setTimer(50, &checkStepperStatus, actionNumber, motorName, STEPMOTOR);
+        setTimer(100, &checkStepperStatus, actionNumber, motorName, STEPMOTOR);
     }
 	return 0;
 }

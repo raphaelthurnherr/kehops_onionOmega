@@ -249,8 +249,8 @@ void *hwTask (void * arg){
                                   //printf("Battery: %d\n",sensor.ain[BATT_0]);
                                 break;
                         
-                        case 30	: device.sensor.din[DIN_0].value = MCP2308_ReadGPIO(BTN_0);
-                                  device.sensor.din[DIN_1].value = MCP2308_ReadGPIO(BTN_1);
+                        case 30	: device.sensor.din[DIN_4].value = MCP2308_ReadGPIO(BTN_0);
+                                  device.sensor.din[DIN_5].value = MCP2308_ReadGPIO(BTN_1);
                                   break;
 
                         //case 35	: sensor.RGBC[RGBC_SENS_0].red = BH1745_getRGBvalue(RGBC_SENS_0, RED) ;
@@ -355,7 +355,7 @@ int getSonarDistance(void){
 	int sonarCm=0;
 
 	//sonarCm = sensor.pwm[SONAR_0];
-        sonarCm = device.sensor.ain[SONAR_0].value;
+        sonarCm = device.sensor.ain[1].value;
 	//sonarCm= buggySensor.usonic;
 	return sonarCm;
 }
@@ -363,7 +363,7 @@ int getSonarDistance(void){
 int getBatteryVoltage(void){
 	int voltage=0;
 	//voltage = sensor.ain[BATT_0];
-        voltage = device.sensor.ain[BATT_0].value;
+        voltage = device.sensor.ain[0].value;
 	//voltage = buggySensor.battery;
 	return voltage;
 }
@@ -436,6 +436,11 @@ int setStepperStepAction(int motorNumber, int direction, int stepCount){
     unsigned char ctrlData = 0;
     unsigned char PMAmode = 0;
         
+
+        // Check if motor inversion requiered and modify if necessary
+    if(kehops.stepperWheel[motorNumber].config.motor.inverted)
+        direction *= -1;
+
     switch(direction){
             case BUGGY_FORWARD :	ctrlData = 0x80; break;
             case BUGGY_BACK :           ctrlData = 0x81; break;
@@ -443,7 +448,7 @@ int setStepperStepAction(int motorNumber, int direction, int stepCount){
             case BUGGY_STOP : 		ctrlData = 0x20; break;
             default :		     	break;
     }
-
+        
     if(stepCount<=0)
         // Configuration du driver pour une rotation continue
        PMAmode = 0x00;

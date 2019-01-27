@@ -36,13 +36,12 @@ int setAsyncPwmAction(int actionNumber, int pwmName, int mode, int time, int cou
 
 	// D�marre un timer d'action sur le PWM et sp�cifie la fonction call back � appeler en time-out
 	// Valeur en retour >0 signifie que l'action "en retour" � �t� �cras�e
-        if(mode==INFINITE){
+        if(mode==BLINK){
             setTimerResult=setTimer(time, &checkBlinkPwmCount, actionNumber, pwmName, PWM);
         }
         else{
             if(mode==ON)
                 setPwmPower(pwmName, kehops.pwm[pwmName].power); 
-            
             else
                 if(mode==OFF)
                     setPwmPower(pwmName, 0);
@@ -70,9 +69,6 @@ int setAsyncPwmAction(int actionNumber, int pwmName, int mode, int time, int cou
                                 sendMqttReport(endOfTask, reportBuffer);				// Envoie le message sur le canal MQTT "Report"
                         }
 		}
-                
-                
-                
                 return 0;
 	}
 	else {
@@ -105,7 +101,7 @@ int checkBlinkPwmCount(int actionNumber, int pwmName){
             }
            
             // Consigned de clignotement atteinte ?
-            if(blinkCount >= kehops.pwm[pwmName].power-1){
+            if(blinkCount >= kehops.pwm[pwmName].action.blinkCount-1){
                 kehops.pwm[pwmName].state = PWMtoggleState[pwmName];      // Update the actual state of pPWM
                 endPwmAction(actionNumber, pwmName);
                 blinkCount=0;                                   // Reset le compteur

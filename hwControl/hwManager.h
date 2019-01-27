@@ -43,4 +43,7 @@ extern int resetHardware(t_sysConf * Config);                         // Reset l
 //extern char getOrganNumber(int organName);		// Retourne le num�ro du moteur 0..xx selon le nom d'organe sp�cifi�
 
 extern int getHWInfo(char* MCUversion, char* HWtype); // Get the hardware/software version
+extern int getMcuFirmware(void);                              // Get the hardware/software version
+extern int getMcuHWversion(void);                              // Get the hardware/software version
+
 #endif /* HWMANAGER_H_ */

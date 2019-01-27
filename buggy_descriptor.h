@@ -28,6 +28,8 @@ typedef enum o_din{
 	DIN_1,
         DIN_2,
         DIN_3,
+        DIN_4,
+        DIN_5,
 	NBDIN
 }t_din;
 

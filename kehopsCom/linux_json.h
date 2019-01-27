@@ -67,6 +67,10 @@ struct mDin{
 	char event_state[25];
 };
 
+struct mBroker{
+	char address[128];
+};
+
 struct mStream{
 	char state[25];
         char onEvent[25];
@@ -120,7 +124,8 @@ struct mConfig{
         int stepperValueCnt;
         int wheelValueCnt;
 	struct mStream stream;
-        struct mAppConf config;
+        struct mBroker broker;
+        struct mAppConf action;
         struct mMotConfig motor[10];
         struct mWheelConfig wheel[10];
         struct mStepperConfig stepper[10];
@@ -155,7 +160,7 @@ struct mLed{
 	int powerPercent;
         int time;
         int blinkCount;
-        char isServoMode;
+//        char isServoMode;
 };
 
 

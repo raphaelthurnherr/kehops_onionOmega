@@ -6,9 +6,11 @@
 
 #define MAX_MQTT_BUFF 4096
 
-#define FILE_KEY_CONFIG_STREAM_STATE "{'stream'{'state'"
-#define FILE_KEY_CONFIG_STREAM_TIME "{'stream'{'time'"
-#define FILE_KEY_CONFIG_STREAM_ONEVENT "{'stream'{'onEvent'"
+#define FILE_KEY_CONFIG_MQTT "{'mqtt'"
+#define FILE_KEY_CONFIG_MQTT_BROKER_ADDRESS  "{'mqtt'{'broker'{'address'"
+#define FILE_KEY_CONFIG_MQTT_STREAM_STATE "{'mqtt'{'stream'{'state'"
+#define FILE_KEY_CONFIG_MQTT_STREAM_TIME "{'mqtt'{'stream'{'time'"
+#define FILE_KEY_CONFIG_MQTT_STREAM_ONEVENT "{'mqtt'{'stream'{'onEvent'"
 
 #define FILE_KEY_CONFIG_LED "{'led'"
 #define FILE_KEY_CONFIG_LED_ID "{'led'[*{'led'"
@@ -105,7 +107,7 @@ char * OpenConfigFromFile(char *filename){
 // -----------------------------------------------------------------------------
 
 char LoadConfig(char * fileName){
-	struct jReadElement cfg_devices_list;
+	struct jReadElement cfg_devices_list, cfg_mqtt_list;
         int nbOfDeviceInConf, deviceId;
 	int i;
         char * srcDataBuffer;
@@ -115,12 +117,20 @@ char LoadConfig(char * fileName){
         
         
         if(srcDataBuffer != NULL){
-    // EXTRACT STREAM SETTINGS FROM CONFIG
-            // Load data for stream TIME
-            sysConf.communication.mqtt.stream.time_ms= jRead_int((char *) srcDataBuffer, FILE_KEY_CONFIG_STREAM_TIME, &i);
+    // EXTRACT MQTT SETTINGS FROM CONFIG        
+            jRead((char *)srcDataBuffer, FILE_KEY_CONFIG_MQTT, &cfg_mqtt_list );
+            // RECHERCHE DATA DE TYPE OBJ
+            if(cfg_mqtt_list.dataType == JREAD_OBJECT ){
+                
+        // EXTRACT BROKER SETTINGS FROM CONFIG
+            jRead_string((char *)srcDataBuffer, FILE_KEY_CONFIG_MQTT_BROKER_ADDRESS, sysConf.communication.mqtt.broker.address, 100, &i);
 
+        // EXTRACT STREAM SETTINGS FROM CONFIG            
+            // Load data for stream TIME
+            sysConf.communication.mqtt.stream.time_ms = jRead_int((char *) srcDataBuffer, FILE_KEY_CONFIG_MQTT_STREAM_TIME, &i);
+        
             // Load data for stream STATE
-            jRead_string((char *)srcDataBuffer, FILE_KEY_CONFIG_STREAM_STATE, dataValue, 15, &i );
+            jRead_string((char *)srcDataBuffer, FILE_KEY_CONFIG_MQTT_STREAM_STATE, dataValue, 15, &i );
 
             if(!strcmp(dataValue, "on")){
                 sysConf.communication.mqtt.stream.state = 1;
@@ -131,13 +141,15 @@ char LoadConfig(char * fileName){
                 }
 
             // Load data for stream ONEVENT
-            jRead_string((char *)srcDataBuffer, FILE_KEY_CONFIG_STREAM_ONEVENT, dataValue, 15, &i );
+            jRead_string((char *)srcDataBuffer, FILE_KEY_CONFIG_MQTT_STREAM_ONEVENT, dataValue, 15, &i );
             if(!strcmp(dataValue, "on")){
                 sysConf.communication.mqtt.stream.onEvent = 1;
             }else
                 if(!strcmp(dataValue, "off")){
                     sysConf.communication.mqtt.stream.onEvent = 0;
-                }
+                }                 
+            }
+
 
     // EXTRACT MOTOR SETTINGS FROM CONFIG    
             // Reset motor data config before reading
@@ -304,20 +316,25 @@ char SaveConfig(char * fileName){
     // CREATE JSON STRING FOR CONFIGURATION
 	jwOpen( buffer, buflen, JW_OBJECT, JW_PRETTY );		// start root object  
         // CREATE JSON CONFIG FOR STREAM        
-            jwObj_object( "stream" );
-            if(sysConf.communication.mqtt.stream.state == 0)
-                jwObj_string("state", "off");
-            else 
-                if(sysConf.communication.mqtt.stream.state == 1)
-                    jwObj_string("state", "on");
+            jwObj_object( "mqtt" );
+                jwObj_object( "broker" );
+                    jwObj_string("address", sysConf.communication.mqtt.broker.address);
+                jwEnd();
+                jwObj_object( "stream" );
+                if(sysConf.communication.mqtt.stream.state == 0)
+                    jwObj_string("state", "off");
+                else 
+                    if(sysConf.communication.mqtt.stream.state == 1)
+                        jwObj_string("state", "on");
 
-                jwObj_int( "time", sysConf.communication.mqtt.stream.time_ms);
-                
-            if(sysConf.communication.mqtt.stream.onEvent == 0)
-                jwObj_string("onEvent", "off");
-            else 
-                if(sysConf.communication.mqtt.stream.onEvent == 1)
-                    jwObj_string("onEvent", "on");                
+                    jwObj_int( "time", sysConf.communication.mqtt.stream.time_ms);
+
+                if(sysConf.communication.mqtt.stream.onEvent == 0)
+                    jwObj_string("onEvent", "off");
+                else 
+                    if(sysConf.communication.mqtt.stream.onEvent == 1)
+                        jwObj_string("onEvent", "on");                
+                jwEnd();
             jwEnd();
 
         // CREATE JSON CONFIG FOR MOTOR            
@@ -396,7 +413,7 @@ char SaveConfig(char * fileName){
 
         fp=fopen(fileName, "w");
         if(fp == NULL)
-            printf("Error during config file open");
+            printf("Error during config file save");
         
         fprintf(fp, buffer);
         fclose(fp);

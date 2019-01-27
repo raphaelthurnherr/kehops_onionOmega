@@ -55,9 +55,10 @@
 #define KEY_MESSAGE_VALUE_CFG_RESET "{'MsgData'{'MsgValue'[*{'config'{'reset'"
 #define KEY_MESSAGE_VALUE_CFG_SAVE "{'MsgData'{'MsgValue'[*{'config'{'save'"
 
-#define KEY_MESSAGE_VALUE_CFG_STREAM_STATE "{'MsgData'{'MsgValue'[*{'stream'{'state'"
-#define KEY_MESSAGE_VALUE_CFG_STREAM_TIME "{'MsgData'{'MsgValue'[*{'stream'{'time'"
-#define KEY_MESSAGE_VALUE_CFG_STREAM_ONEVENT "{'MsgData'{'MsgValue'[*{'stream'{'onEvent'"
+#define KEY_MESSAGE_VALUE_CFG_BROKER_ADDR "{'MsgData'{'MsgValue'[*{'mqtt'{'broker'{'address'"
+#define KEY_MESSAGE_VALUE_CFG_STREAM_STATE "{'MsgData'{'MsgValue'[*{'mqtt'{'stream'{'state'"
+#define KEY_MESSAGE_VALUE_CFG_STREAM_TIME  "{'MsgData'{'MsgValue'[*{'mqtt'{'stream'{'time'"
+#define KEY_MESSAGE_VALUE_CFG_STREAM_ONEVENT "{'MsgData'{'MsgValue'[*{'mqtt'{'stream'{'onEvent'"
 
 #define KEY_MESSAGE_VALUE_CFG_MOTOR "{'MsgData'{'MsgValue'[*{'motor'"
 #define KEY_MESSAGE_VALUE_CFG_MOTOR_ID "{'MsgData'{'MsgValue'[{'motor'[*{'motor'"
@@ -290,6 +291,8 @@ char GetAlgoidMsg(ALGOID *destMessage, char *srcBuffer){
                                                 destMessage->Config.motor[i_dev].id=-1;
                                               }
                                               
+                                            // broker
+                                            jRead_string((char *)srcBuffer, KEY_MESSAGE_VALUE_CFG_BROKER_ADDR, destMessage->Config.broker.address, 100, &i );
                                             // Stream settings
                                                   jRead_string((char *)srcBuffer, KEY_MESSAGE_VALUE_CFG_STREAM_STATE, destMessage->Config.stream.state, 15, &i );
                                                   destMessage->Config.stream.time= jRead_long((char *)srcBuffer, KEY_MESSAGE_VALUE_CFG_STREAM_TIME, &i);
@@ -368,9 +371,9 @@ char GetAlgoidMsg(ALGOID *destMessage, char *srcBuffer){
                                                 }                                                
                                                 
                                             // Reset settings
-                                                jRead_string((char *)srcBuffer, KEY_MESSAGE_VALUE_CFG_RESET, destMessage->Config.config.reset, 15, &i );
+                                                jRead_string((char *)srcBuffer, KEY_MESSAGE_VALUE_CFG_RESET, destMessage->Config.action.reset, 15, &i );
                                             // Save settings
-                                                jRead_string((char *)srcBuffer, KEY_MESSAGE_VALUE_CFG_SAVE, destMessage->Config.config.save, 15, &i );
+                                                jRead_string((char *)srcBuffer, KEY_MESSAGE_VALUE_CFG_SAVE, destMessage->Config.action.save, 15, &i );
 				    	  }
                                           
                                         // SYSTEM                                          
@@ -748,8 +751,8 @@ void jsonBuilder(char * buffer, int msgId, char* to, char* from, char* msgType, 
                                                                                 case EVENT_ACTION_ABORT : jwObj_string("action", "abort"); break;
                                                                                 case RESP_STD_MESSAGE   :   
                                                                                                             jwObj_object( "config" );                                                                                 
-                                                                                                                jwObj_string("reset", messageResponse[i].CONFIGresponse.config.reset);       
-                                                                                                                jwObj_string("save", messageResponse[i].CONFIGresponse.config.save);                                                                                                                       
+                                                                                                                jwObj_string("reset", messageResponse[i].CONFIGresponse.action.reset);       
+                                                                                                                jwObj_string("save", messageResponse[i].CONFIGresponse.action.save);                                                                                                                       
                                                                                                             jwEnd();  
                                                                                                             
                                                                                                             jwObj_object( "stream" );                                                                                 
