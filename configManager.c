@@ -23,15 +23,16 @@
 #define FILE_KEY_CONFIG_MOTOR_MINPWM "{'motor'[*{'pwmMin'"
 #define FILE_KEY_CONFIG_MOTOR_MINRPM "{'motor'[*{'rpmMin'"
 #define FILE_KEY_CONFIG_MOTOR_MAXRPM "{'motor'[*{'rpmMax'"
-#define FILE_KEY_CONFIG_MOTOR_PIDEN  "{'motor'[*{'rpmRegulator'{'state'"
-#define FILE_KEY_CONFIG_MOTOR_PIDkp  "{'motor'[*{'rpmRegulator'{'PID_Kp'"
-#define FILE_KEY_CONFIG_MOTOR_PIDki  "{'motor'[*{'rpmRegulator'{'PID_Ki'"
-#define FILE_KEY_CONFIG_MOTOR_PIDkd  "{'motor'[*{'rpmRegulator'{'PID_Kd'"
+
 
 #define FILE_KEY_CONFIG_WHEEL "{'wheel'"
 #define FILE_KEY_CONFIG_WHEEL_ID "{'wheel'[*{'wheel'"
 #define FILE_KEY_CONFIG_WHEEL_PULSES "{'wheel'[*{'pulses'"
 #define FILE_KEY_CONFIG_WHEEL_DIAMETER "{'wheel'[*{'diameter'"
+#define FILE_KEY_CONFIG_WHEEL_PIDEN  "{'wheel'[*{'rpmRegulator'{'state'"
+#define FILE_KEY_CONFIG_WHEEL_PIDkp  "{'wheel'[*{'rpmRegulator'{'PID_Kp'"
+#define FILE_KEY_CONFIG_WHEEL_PIDki  "{'wheel'[*{'rpmRegulator'{'PID_Ki'"
+#define FILE_KEY_CONFIG_WHEEL_PIDkd  "{'wheel'[*{'rpmRegulator'{'PID_Kd'"
 
 #define FILE_KEY_CONFIG_STEPPER "{'stepper'"
 #define FILE_KEY_CONFIG_STEPPER_ID "{'stepper'[*{'motor'"
@@ -183,16 +184,16 @@ char LoadConfig(char * fileName){
                                 kehops.dcWheel[deviceId].config.motor.inverted = 0;
                             }
                         // RECUPERATION DES PARAMETRE DU REGULATOR PID
-                        jRead_string((char *)srcDataBuffer, FILE_KEY_CONFIG_MOTOR_PIDEN, dataValue, 15, &i );
+                        jRead_string((char *)srcDataBuffer, FILE_KEY_CONFIG_WHEEL_PIDEN, dataValue, 15, &i );
                         if(!strcmp(dataValue, "on")){
                             kehops.dcWheel[deviceId].config.pidReg.enable = 1;
                         }else
                             if(!strcmp(dataValue, "off")){
                                 kehops.dcWheel[deviceId].config.pidReg.enable = 0;
                             }                        
-                        kehops.dcWheel[deviceId].config.pidReg.Kp = jRead_double((char *)srcDataBuffer, FILE_KEY_CONFIG_MOTOR_PIDkp, &i); 
-                        kehops.dcWheel[deviceId].config.pidReg.Ki = jRead_double((char *)srcDataBuffer, FILE_KEY_CONFIG_MOTOR_PIDki, &i); 
-                        kehops.dcWheel[deviceId].config.pidReg.Kd = jRead_double((char *)srcDataBuffer, FILE_KEY_CONFIG_MOTOR_PIDkd, &i); 
+                        kehops.dcWheel[deviceId].config.pidReg.Kp = jRead_double((char *)srcDataBuffer, FILE_KEY_CONFIG_WHEEL_PIDkp, &i); 
+                        kehops.dcWheel[deviceId].config.pidReg.Ki = jRead_double((char *)srcDataBuffer, FILE_KEY_CONFIG_WHEEL_PIDki, &i); 
+                        kehops.dcWheel[deviceId].config.pidReg.Kd = jRead_double((char *)srcDataBuffer, FILE_KEY_CONFIG_WHEEL_PIDkd, &i); 
                     }
                 }
             }
@@ -350,16 +351,6 @@ char SaveConfig(char * fileName){
                         jwObj_int( "pwmMin", kehops.dcWheel[i].config.motor.powerMin);
                         jwObj_int( "rpmMin", kehops.dcWheel[i].config.rpmMin);
                         jwObj_int( "rpmMax", kehops.dcWheel[i].config.rpmMax);
-                        jwObj_object("rpmRegulator");
-                            if(kehops.dcWheel[i].config.pidReg.enable == 0)
-                                jwObj_string("state", "off");
-                            else 
-                                if(kehops.dcWheel[i].config.pidReg.enable == 1)
-                                    jwObj_string("state", "on");
-                                    jwObj_double( "PID_Kp", kehops.dcWheel[i].config.pidReg.Kp);
-                                    jwObj_double( "PID_Ki", kehops.dcWheel[i].config.pidReg.Ki);
-                                    jwObj_double( "PID_Kd", kehops.dcWheel[i].config.pidReg.Kd);
-                        jwEnd();
                     jwEnd();
                 } 
             jwEnd();
@@ -371,6 +362,16 @@ char SaveConfig(char * fileName){
                         jwObj_int( "wheel", i);
                         jwObj_int( "diameter", kehops.dcWheel[i].config.diameter);
                         jwObj_int( "pulses", kehops.dcWheel[i].config.pulsesPerRot);
+                        jwObj_object("rpmRegulator");
+                            if(kehops.dcWheel[i].config.pidReg.enable == 0)
+                                jwObj_string("state", "off");
+                            else 
+                                if(kehops.dcWheel[i].config.pidReg.enable == 1)
+                                    jwObj_string("state", "on");
+                                    jwObj_double( "PID_Kp", kehops.dcWheel[i].config.pidReg.Kp);
+                                    jwObj_double( "PID_Ki", kehops.dcWheel[i].config.pidReg.Ki);
+                                    jwObj_double( "PID_Kd", kehops.dcWheel[i].config.pidReg.Kd);
+                        jwEnd();
                     jwEnd();
                 } 
             jwEnd();            

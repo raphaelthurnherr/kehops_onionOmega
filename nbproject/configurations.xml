@@ -115,6 +115,8 @@
       <itemPath>configManager.c</itemPath>
       <itemPath>configManager.h</itemPath>
       <itemPath>kehops_main.c</itemPath>
+      <itemPath>hwControl/networkManager.c</itemPath>
+      <itemPath>hwControl/networkManager.h</itemPath>
       <itemPath>timerManager.c</itemPath>
       <itemPath>tools.c</itemPath>
     </logicalFolder>
@@ -235,6 +237,10 @@
             ex="false"
             tool="3"
             flavor2="0">
+      </item>
+      <item path="hwControl/networkManager.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="hwControl/networkManager.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="kehopsCom/libs/lib_json/jRead.c" ex="false" tool="0" flavor2="0">
       </item>
@@ -527,6 +533,10 @@
             tool="3"
             flavor2="0">
       </item>
+      <item path="hwControl/networkManager.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="hwControl/networkManager.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="kehopsCom/libs/lib_json/jRead.c" ex="false" tool="0" flavor2="0">
       </item>
       <item path="kehopsCom/libs/lib_json/jRead.h" ex="false" tool="3" flavor2="0">
@@ -810,6 +820,10 @@
             ex="false"
             tool="3"
             flavor2="0">
+      </item>
+      <item path="hwControl/networkManager.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="hwControl/networkManager.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="kehopsCom/libs/lib_json/jRead.c" ex="false" tool="0" flavor2="0">
       </item>
@@ -1095,6 +1109,10 @@
             ex="false"
             tool="3"
             flavor2="0">
+      </item>
+      <item path="hwControl/networkManager.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="hwControl/networkManager.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="kehopsCom/libs/lib_json/jRead.c" ex="false" tool="0" flavor2="0">
       </item>

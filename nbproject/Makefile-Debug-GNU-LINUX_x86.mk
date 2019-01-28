@@ -47,6 +47,7 @@ OBJECTFILES= \
 	${OBJECTDIR}/hwControl/hwManager.o \
 	${OBJECTDIR}/hwControl/libs/i2c/onion-i2c.o \
 	${OBJECTDIR}/hwControl/libs/onion-debug/onion-debug.o \
+	${OBJECTDIR}/hwControl/networkManager.o \
 	${OBJECTDIR}/kehopsCom/libs/lib_json/jRead.o \
 	${OBJECTDIR}/kehopsCom/libs/lib_json/jWrite.o \
 	${OBJECTDIR}/kehopsCom/libs/lib_mqtt/Clients.o \
@@ -160,6 +161,11 @@ ${OBJECTDIR}/hwControl/libs/onion-debug/onion-debug.o: hwControl/libs/onion-debu
 	${MKDIR} -p ${OBJECTDIR}/hwControl/libs/onion-debug
 	${RM} "$@.d"
 	$(COMPILE.c) -g -DI2CSIMU -IhwControl/libs/i2c -IhwControl/libs/onion-debug -IhwControl -IkehopsCom/libs/lib_json -IkehopsCom/libs/lib_mqtt -IkehopsCom -Iactuators -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/hwControl/libs/onion-debug/onion-debug.o hwControl/libs/onion-debug/onion-debug.c
+
+${OBJECTDIR}/hwControl/networkManager.o: hwControl/networkManager.c
+	${MKDIR} -p ${OBJECTDIR}/hwControl
+	${RM} "$@.d"
+	$(COMPILE.c) -g -DI2CSIMU -IhwControl/libs/i2c -IhwControl/libs/onion-debug -IhwControl -IkehopsCom/libs/lib_json -IkehopsCom/libs/lib_mqtt -IkehopsCom -Iactuators -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/hwControl/networkManager.o hwControl/networkManager.c
 
 ${OBJECTDIR}/kehopsCom/libs/lib_json/jRead.o: kehopsCom/libs/lib_json/jRead.c
 	${MKDIR} -p ${OBJECTDIR}/kehopsCom/libs/lib_json

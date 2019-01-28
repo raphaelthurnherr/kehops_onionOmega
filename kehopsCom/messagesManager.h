@@ -12,10 +12,10 @@ extern char ClientID[50];
 extern char ADDRESS[25];
 
 // D�finition des topic de r�ponses MQTT
-#define TOPIC_COMMAND "Command"					// Topic d'�coute de l'hote
+#define TOPIC_COMMAND "Command"                                         // Topic d'�coute de l'hote
 #define TOPIC_RESPONSE "Response"					// Topic de r�ponse � l'hote
 #define TOPIC_EVENT "Event"						// Topic d'envoie des evenements � l'hote
-#define TOPIC_ACK "Ack"					// Topic de r�ponse ack du gestionnaire de message
+#define TOPIC_ACK "Ack"                                                 // Topic de r�ponse ack du gestionnaire de message
 #define TOPIC_DEBUG "Debug"
 #define TOPIC_DATAFLOW "Stream"
 

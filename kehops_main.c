@@ -15,8 +15,8 @@
 
 #include "buggy_descriptor.h"
 #include "kehopsCom/messagesManager.h"
+#include "networkManager.h"
 #include "linux_json.h"
-#include "udpPublish.h"
 #include "tools.h"
 #include "kehops_main.h"
 #include "timerManager.h"
@@ -72,7 +72,6 @@ int getLedSetting(int name);
 
 int runUpdateCommand(int type);
 void runRestartCommand(void);
-int runCloudTestCommand(void);
 
 void resetConfig(void);
 
@@ -83,7 +82,6 @@ int ActionTable[10][3];
 robot_kehops kehops;
 t_sysApp sysApp;
 t_sysConf sysConf;
-
 
 // -------------------------------------------------------------------
 // MAIN APPLICATION
@@ -105,8 +103,13 @@ int main(int argc, char *argv[]) {
         sprintf(&welcomeMessage[0], "KEHOPS V%s - %s - build #%d\n", FIRMWARE_VERSION, __DATE__ , BUILD_CODE);		// Formattage du message avec le Nom du client buggy
         printf(welcomeMessage);
         printf ("------------------------------------\n");
-                        
-
+        
+// Cr�ation de la t�che pour la gestion réseau
+	if(InitNetworkManager(&sysApp.info.wan_online, &sysConf.communication.mqtt.broker.address)) printf ("#[CORE] Creation tâche réseau : ERREUR\n");
+        else {
+            printf ("#[CORE] Demarrage tâche réseau: OK\n");            
+        }
+        
 // Cr�ation de la t�che pour la gestion de la messagerie avec ALGOID
 	if(InitMessager()) printf ("#[CORE] Creation t�che messagerie : ERREUR\n");
 	else printf ("#[CORE] Demarrage tache Messager: OK\n");
@@ -121,9 +124,6 @@ int main(int argc, char *argv[]) {
         else {
             printf ("#[CORE] Demarrage tâche hardware: OK\n");
         }
-
-// Initialisation UDP pour broadcast IP Adresse
-	initUDP();
         
 // --------------------------------------------------------------------
 // BOUCLE DU PROGRAMME PRINCIPAL
@@ -137,13 +137,7 @@ int main(int argc, char *argv[]) {
 	// ----------- DEBUT DE LA BOUCLE PRINCIPALE ----------
 
         resetConfig();
-        resetHardware(&sysConf);            // Reset les peripheriques hardware selon configuration initiale                   
-
-        // Check internet connectivity
-        if(runCloudTestCommand())
-            printf ("#[CORE] Connexion au serveur cloud OK\n");
-        else 
-            printf ("#[CORE] Connexion au serveur cloud ERREUR !\n");
+        resetHardware(&sysConf);            // Reset les peripheriques hardware selon configuration initiale
         
 	while(1){
         
@@ -171,7 +165,7 @@ int main(int argc, char *argv[]) {
 
         if(pullMsgStack(0)){
             switch(message.msgType){
-                    case COMMAND : processmessage(); break;						// Traitement du message de type "COMMAND"
+                     case COMMAND : processmessage(); break;						// Traitement du message de type "COMMAND"
                     case REQUEST : processAlgoidRequest(); break;						// Traitement du message de type "REQUEST"
                     default : ; break;
             }
@@ -187,12 +181,7 @@ int main(int argc, char *argv[]) {
 
         // Contr�le du TIMER 10seconde
     	if(t10secFlag){
-    		// Envoie un message UDP sur le r�seau, sur port 53530 (CF udpPublish.h)
-    		// Avec le ID du buggy (fourni par le gestionnaire de messagerie)
-    		char udpMessage[50];
-    		sprintf(&udpMessage[0], "[ %s ] I'm here",ClientID);		// Formattage du message avec le Nom du client buggy
-    		sendUDPHeartBit(udpMessage);								// Envoie du message
-//		printf("\n Send UDP: %s", udpMessage);
+
     		t10secFlag=0;
     	}
                 
@@ -1275,7 +1264,7 @@ int makeStatusRequest(int msgType){
         // Preparation du message de reponse pour le status systeme
         strcpy(messageResponse[ptrData].SYSresponse.name, ClientID);
         messageResponse[ptrData].SYSresponse.startUpTime=sysApp.info.startUpTime;
-        messageResponse[ptrData].SYSresponse.wan_online=sysApp.info.startUpTime;
+        messageResponse[ptrData].SYSresponse.wan_online=sysApp.info.wan_online;
         messageResponse[ptrData].SYSresponse.rx_message=msg_stats.messageRX;
         messageResponse[ptrData].SYSresponse.tx_message=msg_stats.messageTX;
         
@@ -2150,22 +2139,6 @@ void runRestartCommand(void){
     printf ("---------- End of bash script ------------\n");
 }
 
-int runCloudTestCommand(void){
-    int status=0;
-    char systemCmd[128];
-        sendMqttReport(message.msgID, "Try to ping cloud server on vps596769.ovh.net...");// Envoie le message sur le canal MQTT "Report"   
-        
-        sprintf(&systemCmd, "ping -q -c 2 -t 1000 %s", sysConf.communication.mqtt.broker.address);
-        status=system(systemCmd);
-        if(status != 0)
-            sysApp.info.wan_online = 0;
-        else 
-            sysApp.info.wan_online = 1;
-   
-    return sysApp.info.wan_online;
-}
-
-
 void resetConfig(void){
     int i;
     	// Init robot membre
@@ -2248,6 +2221,7 @@ void resetConfig(void){
         // Initialisation configuration de flux de donn�es periodique
         sysConf.communication.mqtt.stream.state  = ON;
         sysConf.communication.mqtt.stream.time_ms = 500;
+        sysApp.info.wan_online = 0;    
         sysApp.kehops.resetConfig = 0;
         
         // Load config data
