@@ -19,7 +19,6 @@ MQTTClient client;
 void delivered(void *context, MQTTClient_deliveryToken dt);
 void connlost(void *context, char *cause);
 
-//int mqtt_init(const char *IPaddress, const char *clientID, MQTTClient_messageArrived* msgarr);
 int mqtt_init(const char *IPaddress, const char *clientID, MQTTClient_messageArrived* msgarr, MQTTClient_connectionLost *connLost_callback);
 char mqttAddRXChannel(char * topicName);
 char mqttRemoveRXChannel(char * topicName);
@@ -29,7 +28,6 @@ int mqttPutMessage(char *topic, char *data, unsigned short lenght);
 // INITIALISATION DE LA CONNEXION AU BROCKER MQTT
 // -------------------------------------------------------------------
 int mqtt_init(const char *IPaddress, const char *clientID, MQTTClient_messageArrived* msgarrFunc, MQTTClient_connectionLost *connLost_callback){
-//int mqtt_init(const char *IPaddress, const char *clientID, MQTTClient_messageArrived* msgarrFunc){
 		int rc;
 
 		MQTTClient_connectOptions conn_opts = MQTTClient_connectOptions_initializer;

@@ -14,8 +14,9 @@
 #ifndef NETWORKMANAGER_H
 #define NETWORKMANAGER_H
 
-int InitNetworkManager(int *wanState, char *address);						// Ouverture du thread Timer
+int InitNetworkManager(int *wanState, char *address, char *name, char *group);						// Ouverture du thread Timer
 int CloseNetworkManager(void);					// Fermeture du thread Timer
+int runCloudTestCommand(void);
 
 extern unsigned char t10secFlag;				// Flag 10S scrut� par le programme principal
 extern unsigned char t60secFlag;				// Flag 60Sec scrut� par le programme principal

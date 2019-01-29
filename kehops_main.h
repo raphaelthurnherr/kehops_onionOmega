@@ -30,6 +30,7 @@ extern t_system sysInfo;
 //extern t_device device;            // Device structure with actuator & sensor     
 extern robot_kehops kehops;
 extern t_sysConf sysConf;
+extern t_sysApp sysApp;
 
 int removeBuggyTask(int actionNumber);
 #endif /* ALGOID_2WD_BUGGY_H_ */

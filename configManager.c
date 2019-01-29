@@ -6,6 +6,10 @@
 
 #define MAX_MQTT_BUFF 4096
 
+#define FILE_KEY_CONFIG_ROBOT "{'robot'"
+#define FILE_KEY_CONFIG_ROBOT_NAME  "{'robot'{'name'"
+#define FILE_KEY_CONFIG_ROBOT_GROUP  "{'robot'{'group'"
+
 #define FILE_KEY_CONFIG_MQTT "{'mqtt'"
 #define FILE_KEY_CONFIG_MQTT_BROKER_ADDRESS  "{'mqtt'{'broker'{'address'"
 #define FILE_KEY_CONFIG_MQTT_STREAM_STATE "{'mqtt'{'stream'{'state'"
@@ -123,6 +127,10 @@ char LoadConfig(char * fileName){
             // RECHERCHE DATA DE TYPE OBJ
             if(cfg_mqtt_list.dataType == JREAD_OBJECT ){
                 
+        // EXTRACT ROBOR NAME AND GROUP
+            jRead_string((char *)srcDataBuffer, FILE_KEY_CONFIG_ROBOT_NAME, sysApp.info.name, 32, &i);                
+            jRead_string((char *)srcDataBuffer, FILE_KEY_CONFIG_ROBOT_GROUP, sysApp.info.group, 32, &i);
+            
         // EXTRACT BROKER SETTINGS FROM CONFIG
             jRead_string((char *)srcDataBuffer, FILE_KEY_CONFIG_MQTT_BROKER_ADDRESS, sysConf.communication.mqtt.broker.address, 100, &i);
 
@@ -316,7 +324,14 @@ char SaveConfig(char * fileName){
     int i;
     // CREATE JSON STRING FOR CONFIGURATION
 	jwOpen( buffer, buflen, JW_OBJECT, JW_PRETTY );		// start root object  
-        // CREATE JSON CONFIG FOR STREAM        
+
+        // CREATE JSON CONFIG FOR MQTT        
+            jwObj_object( "robot" );        
+                jwObj_string("name", sysApp.info.name);
+                jwObj_string("group", sysApp.info.group);
+            jwEnd();
+            
+        // CREATE JSON CONFIG FOR MQTT        
             jwObj_object( "mqtt" );
                 jwObj_object( "broker" );
                     jwObj_string("address", sysConf.communication.mqtt.broker.address);

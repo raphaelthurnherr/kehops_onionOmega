@@ -1,4 +1,4 @@
-#define FIRMWARE_VERSION "0.2"
+#define FIRMWARE_VERSION "0.3"
 
 #define DEFAULT_EVENT_STATE 1   
 
@@ -72,10 +72,11 @@ int getLedSetting(int name);
 
 int runUpdateCommand(int type);
 void runRestartCommand(void);
+void runWifiCommand(void);
 
 void resetConfig(void);
 
-char reportBuffer[256];
+char reportBuffer[512];
 int ActionTable[10][3];
 
 
@@ -98,20 +99,28 @@ int main(int argc, char *argv[]) {
         char welcomeMessage[100];
 	system("clear");
         
-        getStartupArg(argc, argv);          // Récupération des paramètres [NomClient et address brocker] durant l'execution de l'application
+        resetConfig();
+                
+        // Creation d'un id unique avec l'adresse mac si non defini au demarrage
+	if(!strcmp(sysApp.info.name, ""))
+            strcpy(&sysApp.info.name, getMACaddr());
+
+        // Récupération des paramètres [NomClient et address brocker] durant l'execution de l'application
+        getStartupArg(argc, argv);
         
         sprintf(&welcomeMessage[0], "KEHOPS V%s - %s - build #%d\n", FIRMWARE_VERSION, __DATE__ , BUILD_CODE);		// Formattage du message avec le Nom du client buggy
         printf(welcomeMessage);
         printf ("------------------------------------\n");
         
 // Cr�ation de la t�che pour la gestion réseau
-	if(InitNetworkManager(&sysApp.info.wan_online, &sysConf.communication.mqtt.broker.address)) printf ("#[CORE] Creation tâche réseau : ERREUR\n");
+	if(InitNetworkManager(&sysApp.info.wan_online, &sysConf.communication.mqtt.broker.address, &sysApp.info.name, &sysApp.info.group)) printf ("#[CORE] Creation tâche réseau : ERREUR\n");
         else {
             printf ("#[CORE] Demarrage tâche réseau: OK\n");            
         }
         
 // Cr�ation de la t�che pour la gestion de la messagerie avec ALGOID
-	if(InitMessager()) printf ("#[CORE] Creation t�che messagerie : ERREUR\n");
+
+	if(InitMessager(&sysApp.info.name, &sysApp.info.group)) printf ("#[CORE] Creation t�che messagerie : ERREUR\n");
 	else printf ("#[CORE] Demarrage tache Messager: OK\n");
 
         
@@ -122,6 +131,7 @@ int main(int argc, char *argv[]) {
 // Cr�ation de la t�che pour la gestion hardware
 	if(InitHwManager()) printf ("#[CORE] Creation tâche hardware : ERREUR\n");
         else {
+            resetHardware(&sysConf);            // Reset les peripheriques hardware selon configuration initiale
             printf ("#[CORE] Demarrage tâche hardware: OK\n");
         }
         
@@ -133,11 +143,8 @@ int main(int argc, char *argv[]) {
 // - Mesure sur les capteurs de distance, DIN et batterie
 // - Gestion des �venements provoqu�s par les capteurs
 // --------------------------------------------------------------------
-
-	// ----------- DEBUT DE LA BOUCLE PRINCIPALE ----------
-
-        resetConfig();
-        resetHardware(&sysConf);            // Reset les peripheriques hardware selon configuration initiale
+        
+        printf("\n------------- NAME: %s    GROUP: %s\n", sysApp.info.name, sysApp.info.group);
         
 	while(1){
         
@@ -175,7 +182,7 @@ int main(int argc, char *argv[]) {
 	// Gestion de la v�locit� pour une acceleration proggressive
     	// modification de la v�locit� environ chaque 50mS
     	if(checkMotorPowerFlag){
-           checkDCmotorPower();													// Contr�le si la v�locit� correspond � la consigne
+//           checkDCmotorPower();													// Contr�le si la v�locit� correspond � la consigne
             checkMotorPowerFlag=0;
     	}
 
@@ -373,6 +380,11 @@ int processmessage(void){
             case CONFIG  :
                                 for(valCnt=0;valCnt<message.msgValueCnt;valCnt++){
                             // CONFIG COMMAND FOR DATASTREAM
+
+                                    // R�cup�re les parametres de configuration du nom du robot
+                                    strcpy(sysApp.info.name, message.Config.robot.name);                      // Enregistrement du broker distant
+                                    // R�cup�re les parametres de configuration du group du robot
+                                    strcpy(sysApp.info.group, message.Config.robot.group);                      // Enregistrement du broker distant
                                     
                                     // R�cup�re les parametres de configuration du broker distant
                                     strcpy(sysConf.communication.mqtt.broker.address, message.Config.broker.address);                      // Enregistrement du broker distant
@@ -595,9 +607,23 @@ int processmessage(void){
                                     usleep(1000);
                                     runRestartCommand();
 
-                                    // FIN DE L'APPLICATION DES CE MOMENT!!!!
-                                            
+                                    // FIN DE L'APPLICATION DES CE MOMENT!!!!    
                                 }
+                                
+                                // wifiSetup
+                                if(!strcmp(message.System.application, "wifiSetup")){
+                                    
+                                    strcpy(messageResponse[0].SYSCMDresponse.application, "wifiSetup");
+                                    messageResponse[0].responseType = RESP_STD_MESSAGE;
+                                    sendResponse(message.msgID, message.msgFrom, RESPONSE, SYSTEM, message.msgValueCnt);
+                                    
+                                    messageResponse[0].responseType=EVENT_ACTION_BEGIN;
+                                    
+                                    usleep(1000);
+                                    runWifiCommand();
+
+                                    // FIN DE L'APPLICATION DES CE MOMENT!!!!    
+                                }                                
                                 
                                 break;
 		default : break;
@@ -1262,7 +1288,7 @@ int makeStatusRequest(int msgType){
 	message.msgValueCnt = NBDIN + NBBTN + NBMOTOR + NBSONAR + NBRGBC + NBLED + NBPWM +1 ; // Nombre de VALEUR � transmettre + 1 pour le SystemStatus
      
         // Preparation du message de reponse pour le status systeme
-        strcpy(messageResponse[ptrData].SYSresponse.name, ClientID);
+        strcpy(messageResponse[ptrData].SYSresponse.name, sysApp.info.name);
         messageResponse[ptrData].SYSresponse.startUpTime=sysApp.info.startUpTime;
         messageResponse[ptrData].SYSresponse.wan_online=sysApp.info.wan_online;
         messageResponse[ptrData].SYSresponse.rx_message=msg_stats.messageRX;
@@ -2139,6 +2165,17 @@ void runRestartCommand(void){
     printf ("---------- End of bash script ------------\n");
 }
 
+void runWifiCommand(void){
+    int status=0;
+ 
+     printf ("---------- Launching bash script ------------\n");
+
+        sendMqttReport(message.msgID, "WARNING ! WIFISETUP ");// Envoie le message sur le canal MQTT "Report"   
+        status=system("sh wifiTest/wifiSetup.sh");
+    printf ("---------- End of bash script ------------\n");
+}
+
+
 void resetConfig(void){
     int i;
     	// Init robot membre
@@ -2193,26 +2230,26 @@ void resetConfig(void){
 
         for(i=0;i<NBRGBC;i++){
 
-                kehops.rgb[i].color.red.event.enable = DEFAULT_EVENT_STATE;
-                kehops.rgb[i].color.green.event.enable = DEFAULT_EVENT_STATE;
-                kehops.rgb[i].color.blue.event.enable = DEFAULT_EVENT_STATE;
-                kehops.rgb[i].color.clear.event.enable = DEFAULT_EVENT_STATE;
-                
-                kehops.rgb[i].color.red.measure.value = -1;
-                kehops.rgb[i].color.red.event.low = 0;
-                kehops.rgb[i].color.red.event.high = 65535;
-	                
-                kehops.rgb[i].color.green.measure.value = -1;
-                kehops.rgb[i].color.green.event.low = 0;
-                kehops.rgb[i].color.green.event.high = 65535;
-                
-                kehops.rgb[i].color.blue.measure.value = -1;
-                kehops.rgb[i].color.blue.event.low = 0;
-                kehops.rgb[i].color.blue.event.high = 65535;
-                
-                kehops.rgb[i].color.clear.measure.value = -1;
-                kehops.rgb[i].color.clear.event.low = 0;
-                kehops.rgb[i].color.clear.event.high = 65535;
+            kehops.rgb[i].color.red.event.enable = DEFAULT_EVENT_STATE;
+            kehops.rgb[i].color.green.event.enable = DEFAULT_EVENT_STATE;
+            kehops.rgb[i].color.blue.event.enable = DEFAULT_EVENT_STATE;
+            kehops.rgb[i].color.clear.event.enable = DEFAULT_EVENT_STATE;
+
+            kehops.rgb[i].color.red.measure.value = -1;
+            kehops.rgb[i].color.red.event.low = 0;
+            kehops.rgb[i].color.red.event.high = 65535;
+
+            kehops.rgb[i].color.green.measure.value = -1;
+            kehops.rgb[i].color.green.event.low = 0;
+            kehops.rgb[i].color.green.event.high = 65535;
+
+            kehops.rgb[i].color.blue.measure.value = -1;
+            kehops.rgb[i].color.blue.event.low = 0;
+            kehops.rgb[i].color.blue.event.high = 65535;
+
+            kehops.rgb[i].color.clear.measure.value = -1;
+            kehops.rgb[i].color.clear.event.low = 0;
+            kehops.rgb[i].color.clear.event.high = 65535;
 	}
 
         // ------------ Initialisation de la configuration systeme
@@ -2221,8 +2258,11 @@ void resetConfig(void){
         // Initialisation configuration de flux de donn�es periodique
         sysConf.communication.mqtt.stream.state  = ON;
         sysConf.communication.mqtt.stream.time_ms = 500;
-        sysApp.info.wan_online = 0;    
+        sysApp.info.wan_online = 0;  
         sysApp.kehops.resetConfig = 0;
+        
+        strcpy(sysApp.info.name, "");
+        strcpy(sysApp.info.group, "");
         
         // Load config data
         int configStatus = LoadConfig("kehops.cfg");
@@ -2239,7 +2279,7 @@ int getStartupArg(int count, char *arg[]){
     
     for(i=0;i<count;i++){        
         if(!strcmp(arg[i], "-n"))
-            sprintf(&ClientID, "%s", arg[i+1]);
+            sprintf(&sysApp.info.name, "%s", arg[i+1]);
         
         if(!strcmp(arg[i], "-a"))
             sprintf(&ADDRESS, "%s", arg[i+1]);

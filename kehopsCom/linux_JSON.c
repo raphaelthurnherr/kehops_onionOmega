@@ -55,6 +55,9 @@
 #define KEY_MESSAGE_VALUE_CFG_RESET "{'MsgData'{'MsgValue'[*{'config'{'reset'"
 #define KEY_MESSAGE_VALUE_CFG_SAVE "{'MsgData'{'MsgValue'[*{'config'{'save'"
 
+#define KEY_MESSAGE_VALUE_CFG_NAME "{'MsgData'{'MsgValue'[*{'robot'{'name'"
+#define KEY_MESSAGE_VALUE_CFG_GROUP "{'MsgData'{'MsgValue'[*{'robot'{'group'"
+
 #define KEY_MESSAGE_VALUE_CFG_BROKER_ADDR "{'MsgData'{'MsgValue'[*{'mqtt'{'broker'{'address'"
 #define KEY_MESSAGE_VALUE_CFG_STREAM_STATE "{'MsgData'{'MsgValue'[*{'mqtt'{'stream'{'state'"
 #define KEY_MESSAGE_VALUE_CFG_STREAM_TIME  "{'MsgData'{'MsgValue'[*{'mqtt'{'stream'{'time'"
@@ -123,7 +126,6 @@ char GetAlgoidMsg(ALGOID *destMessage, char *srcBuffer){
 	int i;
         ALGOID myMessage;
         //myMessage = &destMessage;
-        
 	// ENTETE DE MESSAGE
 		jRead_string((char *)srcBuffer, KEY_TO, destMessage->msgTo, 15, NULL );
 		jRead_string((char *)srcBuffer, KEY_FROM, destMessage->msgFrom, 15, NULL );
@@ -369,6 +371,11 @@ char GetAlgoidMsg(ALGOID *destMessage, char *srcBuffer){
                                                         jRead_string((char *)srcBuffer, KEY_MESSAGE_VALUE_CFG_LED_STATE, destMessage->Config.led[i_dev].state, 15, &i_dev ); 
                                                     }
                                                 }                                                
+
+                                            // Get the name
+                                                jRead_string((char *)srcBuffer, KEY_MESSAGE_VALUE_CFG_NAME, destMessage->Config.robot.name, 15, &i );
+                                            // Get the group
+                                                jRead_string((char *)srcBuffer, KEY_MESSAGE_VALUE_CFG_GROUP, destMessage->Config.robot.group, 15, &i );
                                                 
                                             // Reset settings
                                                 jRead_string((char *)srcBuffer, KEY_MESSAGE_VALUE_CFG_RESET, destMessage->Config.action.reset, 15, &i );

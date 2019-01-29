@@ -82,6 +82,12 @@ struct mAppConf{
         char save[25];
 };
 
+struct mInfoID{
+	char name[25];
+        char group[25];
+};
+
+
 struct mPIDConfig{
         char PIDstate[25];
         float PID_Ki;
@@ -126,6 +132,7 @@ struct mConfig{
 	struct mStream stream;
         struct mBroker broker;
         struct mAppConf action;
+        struct mInfoID robot;
         struct mMotConfig motor[10];
         struct mWheelConfig wheel[10];
         struct mStepperConfig stepper[10];

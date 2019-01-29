@@ -310,6 +310,7 @@ typedef struct robotKehops{
 
 struct tInfosys{
 	char name[32];
+        char group[32];
         long startUpTime;
         char firmwareVersion[32];
         char mcuVersion[32];

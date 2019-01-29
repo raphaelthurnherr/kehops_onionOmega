@@ -84,7 +84,7 @@ void sendUDPHeartBit(char * udpMsg);
                            time_t current_time;
                            current_time = time(NULL);
                            
-                           sprintf(&myMAC[0], "sim%d", current_time % 9999); 
+                           sprintf(&myMAC[0], "sim%d", current_time % 999); 
                         #else
                             int fd;
 			    struct ifreq ifr;

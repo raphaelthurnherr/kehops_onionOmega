@@ -8,7 +8,6 @@
 #ifndef MESSAGESMANAGER_H_
 #define MESSAGESMANAGER_H_
 
-extern char ClientID[50];
 extern char ADDRESS[25];
 
 // D�finition des topic de r�ponses MQTT
@@ -20,7 +19,7 @@ extern char ADDRESS[25];
 #define TOPIC_DATAFLOW "Stream"
 
 // Initialisation de la messagerie system (JSON<->MQTT)
-int InitMessager(void);
+int InitMessager(char *RobotName, char *RobotGroup);
 int pullMsgStack(unsigned char ptrStack);
 int CloseMessager(void);
 void sendMqttReport(int msgId, char * msg);

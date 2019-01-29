@@ -20,8 +20,9 @@ pthread_t th_messager;
 
 char ADDRESS[25] = "localhost";
 
-char BroadcastID[50]="algo_";
-char ClientID[50]="algo_";
+char *ptr_ClientID;
+char *ptr_GroupID;
+
 
 void sendMqttReport(int msgId, char * msg);
 
@@ -37,8 +38,8 @@ char clearMsgStack(unsigned char ptrStack);
 unsigned char mqttDataReady=0;
 int mqttStatus;
 
-char MqttDataBuffer[2048];
-char msgReportBuffer[2048];
+char MqttDataBuffer[4096];
+char msgReportBuffer[4096];
 
 STATISTICS msg_stats;
 
@@ -53,19 +54,15 @@ void *MessagerTask (void * arg){
 	// Initialisation de la pile de reception de message
 	for(i=0;i<10;i++)
 		clearMsgStack(i);
-
-	// Creation d'un id unique avec l'adresse mac si non defini au demarrage
-	if(!strcmp(ClientID, "algo_"))
-            sprintf(&ClientID[5], "%s", getMACaddr());
         
         // Creation de l'adresse de connexion au brocker
         sprintf(&ADDRESS[strlen(ADDRESS)], "%s", PORT);
         
 	// Connexion au broker MQTT
-	mqttStatus=mqtt_init(ADDRESS, ClientID, mqttMsgArrived, mqttConnectionLost);
+	mqttStatus=mqtt_init(ADDRESS, ptr_ClientID, mqttMsgArrived, mqttConnectionLost);
 
 	if(mqttStatus==0){
-		printf("#[MSG MANAGER] Connection au broker MQTT (%s): OK -> ID: \"%s\"\n", ADDRESS, ClientID   );
+		printf("#[MSG MANAGER] Connection au broker MQTT (%s): OK -> ID: \"%s\"\n", ADDRESS, ptr_ClientID   );
 		if(!mqttAddRXChannel(TOPIC_COMMAND)){
 			printf("#[MSG MANAGER] Inscription au topic: OK\n");
                         sendMqttReport(-1, "IS NOW ONLINE");
@@ -83,10 +80,10 @@ void *MessagerTask (void * arg){
             // Vérification de la connexion au brocker
             if(mqttStatus<0){
                 // Connexion au broker MQTT
-                mqttStatus=mqtt_init(ADDRESS, ClientID, mqttMsgArrived, mqttConnectionLost);
+                mqttStatus=mqtt_init(ADDRESS, ptr_ClientID, mqttMsgArrived, mqttConnectionLost);
 
                 if(mqttStatus==0){
-                        printf("#[MSG MANAGER] Connection au broker MQTT (%s): OK -> ID: \"%s\"\n", ADDRESS, ClientID   );
+                        printf("#[MSG MANAGER] Connection au broker MQTT (%s): OK -> ID: \"%s\"\n", ADDRESS, ptr_ClientID   );
                         if(!mqttAddRXChannel(TOPIC_COMMAND)){
                                 printf("#[MSG MANAGER] Inscription au topic: OK\n");
                                 sendMqttReport(-1, "IS NOW ONLINE");
@@ -104,10 +101,16 @@ void *MessagerTask (void * arg){
 	    if(mqttDataReady){
 	    // RECEPTION DES DONNES UTILES
                 if(GetAlgoidMsg(&AlgoidMessageRX, MqttDataBuffer)>0){
+                    
                         // Contr�le du destinataire
 //                        if(!strncmp(AlgoidMessageRX.msgTo, ClientID) || !strcmp(AlgoidMessageRX.msgTo, BroadcastID)){
-                        // Accept messages if destination differe of "algo_"  (is brodcast) or if client ID is Exactly the same
-                        if(strncmp(AlgoidMessageRX.msgTo, ClientID, 5) || !strcmp(AlgoidMessageRX.msgTo, ClientID)){
+                        // Accept messages if destination differe of "kehops_"  (is brodcast) or if client ID is Exactly the same
+                        //if(strncmp(AlgoidMessageRX.msgTo, ptr_ClientID, 7) || !strcmp(AlgoidMessageRX.msgTo, ptr_ClientID)){
+                    
+                        char GroupAndName[50], Group[50];
+                        sprintf(GroupAndName, "%s/%s",ptr_GroupID, ptr_ClientID);
+                        sprintf(Group, "%s/", ptr_GroupID);
+                        if(!strcmp(AlgoidMessageRX.msgTo, Group) || !strcmp(AlgoidMessageRX.msgTo, ptr_ClientID) || !strcmp(AlgoidMessageRX.msgTo, GroupAndName)){
                             // Enregistrement du message dans la pile
                                 lastMessage=pushMsgStack();
                                 if(lastMessage>=0){
@@ -116,7 +119,7 @@ void *MessagerTask (void * arg){
                                         
                                         // Retourne un ack a l'expediteur
                                         sendResponse(AlgoidMessageRX.msgID, AlgoidMessageRX.msgFrom, ACK, AlgoidMessageRX.msgParam, 0);
-                                        sprintf(msgReportBuffer, "%s", ClientID);
+                                        sprintf(msgReportBuffer, "%s", ptr_ClientID);
                                         sendMqttReport(-1, "New message received");
                                 }
                                 else{
@@ -135,7 +138,7 @@ void *MessagerTask (void * arg){
                         // Retourne une erreur a l'expediteur
                         sendResponse(AlgoidMessageRX.msgID, AlgoidMessageRX.msgFrom, AlgoidMessageRX.msgType, AlgoidMessageRX.msgParam, 0);
                         printf("\nERROR: Incorrect message format\n");
-                        sprintf(msgReportBuffer, "%s", ClientID);
+                        sprintf(msgReportBuffer, "%s", ptr_ClientID);
                         sprintf(&msgReportBuffer[8], " -> %s", "ERROR: Incorrect message format");
                         sendMqttReport(AlgoidMessageRX.msgID, msgReportBuffer);
                         
@@ -239,11 +242,14 @@ char clearMsgStack(unsigned char ptrStack){
 // - Demarrage thread messager
 // -
 // ------------------------------------------------------------------------------------
-int InitMessager(void){
+int InitMessager(char *RobotName, char *RobotGroup){
+    
+        ptr_ClientID =  RobotName;
+        ptr_GroupID =  RobotGroup;
+                
 	// CREATION DU THREAD DE MESSAGERIE (Tache "MessagerTask")
 	  if (pthread_create (&th_messager, NULL, MessagerTask, NULL)!= 0) {
-		  //Connexion au brocker MQTT
-
+		  //Connexion au brocker MQTT              
 		return (1);
 	  }else return (0);
 
@@ -288,6 +294,7 @@ int mqttMsgArrived(void *context, char *topicName, int topicLen, MQTTClient_mess
 
     MQTTClient_freeMessage(&message);
     MQTTClient_free(topicName);
+    
     return 1;
 }
 
@@ -348,7 +355,7 @@ void sendResponse(int msgId, char * msgTo, unsigned char msgType, unsigned char 
 		default : strcpy(ackParam, "unknown"); break;
 	}
 
-	jsonBuilder(MQTTbuf, msgId, msgTo, ClientID, ackType, ackParam, msgParam, valCnt);
+	jsonBuilder(MQTTbuf, msgId, msgTo, ptr_ClientID, ackType, ackParam, msgParam, valCnt);
 	mqttPutMessage(&topic, MQTTbuf, strlen(MQTTbuf));
 }
 
@@ -361,6 +368,6 @@ void sendMqttReport(int msgId, char * msg){
 	char MQTTbuf[1024];
 
 	// Creation d'un id unique avec l'adresse mac
-	sprintf(&MQTTbuf[0], "%s -> Message ID: %d -> %s", ClientID, msgId, msg);
+	sprintf(&MQTTbuf[0], "%s -> Message ID: %d -> %s", ptr_ClientID, msgId, msg);
 	mqttPutMessage(TOPIC_DEBUG, MQTTbuf, strlen(MQTTbuf));
 }

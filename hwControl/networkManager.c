@@ -19,6 +19,8 @@ pthread_t th_network;
 
 int *ptr_wanOnline;
 char *ptr_pingAddress;
+char *ptr_robotName;
+char *ptr_robotGroup;
 
 int runCloudTestCommand(void);
 
@@ -49,7 +51,7 @@ void *networkTask (void * arg){
                     // Envoie un message UDP sur le r�seau, sur port 53530 (CF udpPublish.h)
                     // Avec le ID du buggy (fourni par le gestionnaire de messagerie)
                     char udpMessage[50];
-                    sprintf(&udpMessage[0], "[ %s ] I'm here", ClientID);		// Formattage du message avec le Nom du client buggy
+                    sprintf(&udpMessage[0], "[ %s ] I'm here", ptr_robotName);		// Formattage du message avec le Nom du client buggy
                     sendUDPHeartBit(udpMessage);								// Envoie du message
     //		printf("\n Send UDP: %s", udpMessage);                
                     t10secFlag=0;
@@ -79,12 +81,14 @@ void *networkTask (void * arg){
 // INITNETWORKMANAGER: Initialisation du gestionnaire réseau
 // - D�marre le thread
 // ------------------------------------------------------------------------------------
-int InitNetworkManager(int *wanState, char *address){
+int InitNetworkManager(int *wanState, char *address, char *name, char *group){
     
         // Récupération des variable de destination pour le status internet 
         // et IP du broker;
         ptr_wanOnline = wanState;
         ptr_pingAddress = address;
+        ptr_robotName = name;
+        ptr_robotGroup = group;
 
 	// CREATION DU THREAD DE TIMER
 	  if (pthread_create (&th_network, NULL, networkTask, NULL)!=0) {
