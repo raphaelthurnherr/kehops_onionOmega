@@ -11,6 +11,7 @@
       <itemPath>asyncTools/asyncTools.h</itemPath>
       <itemPath>AlgoidCom/type.h</itemPath>
       <itemPath>AlgoidCom/typeNew.h</itemPath>
+      <itemPath>hwControl/wifi_json.h</itemPath>
     </logicalFolder>
     <logicalFolder name="ResourceFiles"
                    displayName="Resource Files"
@@ -119,6 +120,7 @@
       <itemPath>hwControl/networkManager.h</itemPath>
       <itemPath>timerManager.c</itemPath>
       <itemPath>tools.c</itemPath>
+      <itemPath>hwControl/wifi_json.c</itemPath>
     </logicalFolder>
     <logicalFolder name="TestFiles"
                    displayName="Test Files"
@@ -133,6 +135,7 @@
     </logicalFolder>
     <itemPath>hwControl/changeLog.txt</itemPath>
     <itemPath>toDo</itemPath>
+    <itemPath>dist/Debug/GNU_Omega-Linux/wifi</itemPath>
   </logicalFolder>
   <sourceRootList>
     <Elem>hwControl</Elem>
@@ -210,6 +213,8 @@
       </item>
       <item path="configManager.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="dist/Debug/GNU_Omega-Linux/wifi" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="hwControl/boardHWctrl.c" ex="false" tool="0" flavor2="0">
       </item>
       <item path="hwControl/boardHWctrl.h" ex="false" tool="3" flavor2="0">
@@ -241,6 +246,10 @@
       <item path="hwControl/networkManager.c" ex="false" tool="0" flavor2="0">
       </item>
       <item path="hwControl/networkManager.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="hwControl/wifi_json.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="hwControl/wifi_json.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="kehopsCom/libs/lib_json/jRead.c" ex="false" tool="0" flavor2="0">
       </item>
@@ -505,6 +514,8 @@
       </item>
       <item path="configManager.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="dist/Debug/GNU_Omega-Linux/wifi" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="hwControl/boardHWctrl.c" ex="false" tool="0" flavor2="0">
       </item>
       <item path="hwControl/boardHWctrl.h" ex="false" tool="3" flavor2="0">
@@ -536,6 +547,10 @@
       <item path="hwControl/networkManager.c" ex="false" tool="0" flavor2="0">
       </item>
       <item path="hwControl/networkManager.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="hwControl/wifi_json.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="hwControl/wifi_json.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="kehopsCom/libs/lib_json/jRead.c" ex="false" tool="0" flavor2="0">
       </item>
@@ -793,6 +808,8 @@
       </item>
       <item path="configManager.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="dist/Debug/GNU_Omega-Linux/wifi" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="hwControl/boardHWctrl.c" ex="false" tool="0" flavor2="0">
       </item>
       <item path="hwControl/boardHWctrl.h" ex="false" tool="3" flavor2="0">
@@ -824,6 +841,10 @@
       <item path="hwControl/networkManager.c" ex="false" tool="0" flavor2="0">
       </item>
       <item path="hwControl/networkManager.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="hwControl/wifi_json.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="hwControl/wifi_json.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="kehopsCom/libs/lib_json/jRead.c" ex="false" tool="0" flavor2="0">
       </item>
@@ -1082,6 +1103,8 @@
       </item>
       <item path="configManager.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="dist/Debug/GNU_Omega-Linux/wifi" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="hwControl/boardHWctrl.c" ex="false" tool="0" flavor2="9">
       </item>
       <item path="hwControl/boardHWctrl.h" ex="false" tool="3" flavor2="0">
@@ -1113,6 +1136,10 @@
       <item path="hwControl/networkManager.c" ex="false" tool="0" flavor2="0">
       </item>
       <item path="hwControl/networkManager.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="hwControl/wifi_json.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="hwControl/wifi_json.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="kehopsCom/libs/lib_json/jRead.c" ex="false" tool="0" flavor2="0">
       </item>

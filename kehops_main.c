@@ -29,6 +29,7 @@
 #include "asyncSTEPPER.h"
 #include "configManager.h"
 #include "type.h"
+#include "wifi_json.h"
 
 int getStartupArg(int count, char *arg[]);
 
@@ -72,17 +73,19 @@ int getLedSetting(int name);
 
 int runUpdateCommand(int type);
 void runRestartCommand(void);
-void runWifiCommand(void);
 
 void resetConfig(void);
 
 char reportBuffer[512];
 int ActionTable[10][3];
 
+int wifiScanDone=0;
+int wifiRequestMessageID=0;
 
 robot_kehops kehops;
 t_sysApp sysApp;
 t_sysConf sysConf;
+APDATA myWifiList[25];
 
 // -------------------------------------------------------------------
 // MAIN APPLICATION
@@ -143,10 +146,19 @@ int main(int argc, char *argv[]) {
 // - Mesure sur les capteurs de distance, DIN et batterie
 // - Gestion des �venements provoqu�s par les capteurs
 // --------------------------------------------------------------------
-        
-        printf("\n------------- NAME: %s    GROUP: %s\n", sysApp.info.name, sysApp.info.group);
-        
+               
 	while(1){
+            
+        // CHeck if WifiScanResult is available
+            if(wifiScanDone){
+                printf("\n ..... FIN DE DETECTION WIFI .......\n");
+                for(i=0;i<5;i++){
+                    printf("WIFI #%d    SSID: %s\n",i, myWifiList[i].ssid);
+                }
+                getSenderFromMsgId(wifiRequestMessageID);
+                
+                wifiScanDone = 0;
+            }
         
         // Check if reset was triggered by user
         if(sysApp.kehops.resetConfig>0){
@@ -154,7 +166,7 @@ int main(int argc, char *argv[]) {
             resetConfig();
             resetHardware(&sysConf);
             systemDataStreamCounter=0;
-            runCloudTestCommand();
+            runBashPing();
         }
             
         // Controle periodique de l'envoie du flux de donnees des capteurs (status)
@@ -172,7 +184,7 @@ int main(int argc, char *argv[]) {
 
         if(pullMsgStack(0)){
             switch(message.msgType){
-                     case COMMAND : processmessage(); break;						// Traitement du message de type "COMMAND"
+                    case COMMAND : processmessage(); break;						// Traitement du message de type "COMMAND"
                     case REQUEST : processAlgoidRequest(); break;						// Traitement du message de type "REQUEST"
                     default : ; break;
             }
@@ -585,9 +597,8 @@ int processmessage(void){
                                     sendResponse(message.msgID, message.msgFrom, RESPONSE, SYSTEM, message.msgValueCnt);
                                     
                                     strcpy(messageResponse[0].SYSCMDresponse.application, "update");
+                                    
                                     messageResponse[0].responseType=EVENT_ACTION_BEGIN;
- 
-                                    // Retourne en r�ponse le message v�rifi�
                                     sendResponse(message.msgID, message.msgFrom, EVENT, SYSTEM, message.msgValueCnt);
                                     
                                     updateResult = runUpdateCommand(1);
@@ -603,6 +614,7 @@ int processmessage(void){
                                     sendResponse(message.msgID, message.msgFrom, RESPONSE, SYSTEM, message.msgValueCnt);
                                     
                                     messageResponse[0].responseType=EVENT_ACTION_BEGIN;
+                                    sendResponse(message.msgID, message.msgFrom, EVENT, SYSTEM, message.msgValueCnt);
                                     
                                     usleep(1000);
                                     runRestartCommand();
@@ -611,19 +623,30 @@ int processmessage(void){
                                 }
                                 
                                 // wifiSetup
-                                if(!strcmp(message.System.application, "wifiSetup")){
+                                if(!strcmp(message.System.wifiCmd, "scan")){
                                     
-                                    strcpy(messageResponse[0].SYSCMDresponse.application, "wifiSetup");
+                                    strcpy(messageResponse[0].SYSCMDresponse.application, "scan");
                                     messageResponse[0].responseType = RESP_STD_MESSAGE;
                                     sendResponse(message.msgID, message.msgFrom, RESPONSE, SYSTEM, message.msgValueCnt);
                                     
                                     messageResponse[0].responseType=EVENT_ACTION_BEGIN;
+                                    sendResponse(message.msgID, message.msgFrom, EVENT, SYSTEM, message.msgValueCnt);                                    
                                     
-                                    usleep(1000);
-                                    runWifiCommand();
-
-                                    // FIN DE L'APPLICATION DES CE MOMENT!!!!    
-                                }                                
+                                    wifiNetworkScan(&wifiScanDone, &myWifiList);
+                                    saveSenderOfMsgId(message.msgID, message.msgFrom);
+                                    wifiRequestMessageID = message.msgID;
+                                    
+                                }
+                                
+                                if(!strcmp(message.System.wifiCmd, "config")){
+                                    strcpy(messageResponse[0].SYSCMDresponse.application, "WiFiconfig");
+                                    messageResponse[0].responseType = RESP_STD_MESSAGE;
+                                    sendResponse(message.msgID, message.msgFrom, RESPONSE, SYSTEM, message.msgValueCnt);
+                                    
+                                    printf("--- SSID: %s   PASS:%s\n",message.System.wifiData.ssid, message.System.wifiData.key );
+                                    wifiNetworkConfig(message.System.wifiData.ssid, message.System.wifiData.key);
+                                }
+                                
                                 
                                 break;
 		default : break;
@@ -1239,7 +1262,6 @@ int createBuggyTask(int MsgId, int actionCount){
                         }
 		}
 	}
-
 	sprintf(reportBuffer, "ERREUR: Table de tâches pleine\n");
         printf(reportBuffer);
 	sendMqttReport(actionID, reportBuffer);
@@ -2158,23 +2180,12 @@ int runUpdateCommand(int type){
 void runRestartCommand(void){
     int status=0;
  
-     printf ("---------- Launching bash script ------------\n");
+     printf ("---------- Launching bash script for restart ------------\n");
 
         sendMqttReport(message.msgID, "WARNING ! APPLICATION WILL RESTART ");// Envoie le message sur le canal MQTT "Report"   
         status=system("sh /root/algobotManager.sh restart");
     printf ("---------- End of bash script ------------\n");
 }
-
-void runWifiCommand(void){
-    int status=0;
- 
-     printf ("---------- Launching bash script ------------\n");
-
-        sendMqttReport(message.msgID, "WARNING ! WIFISETUP ");// Envoie le message sur le canal MQTT "Report"   
-        status=system("sh wifiTest/wifiSetup.sh");
-    printf ("---------- End of bash script ------------\n");
-}
-
 
 void resetConfig(void){
     int i;

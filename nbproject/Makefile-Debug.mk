@@ -48,6 +48,7 @@ OBJECTFILES= \
 	${OBJECTDIR}/hwControl/libs/i2c/onion-i2c.o \
 	${OBJECTDIR}/hwControl/libs/onion-debug/onion-debug.o \
 	${OBJECTDIR}/hwControl/networkManager.o \
+	${OBJECTDIR}/hwControl/wifi_json.o \
 	${OBJECTDIR}/kehopsCom/libs/lib_json/jRead.o \
 	${OBJECTDIR}/kehopsCom/libs/lib_json/jWrite.o \
 	${OBJECTDIR}/kehopsCom/libs/lib_mqtt/Clients.o \
@@ -166,6 +167,11 @@ ${OBJECTDIR}/hwControl/networkManager.o: hwControl/networkManager.c
 	${MKDIR} -p ${OBJECTDIR}/hwControl
 	${RM} "$@.d"
 	$(COMPILE.c) -g -IhwControl/libs/i2c -IhwControl/libs/onion-debug -IhwControl -Iactuators -IkehopsCom -IkehopsCom/libs/lib_json -IkehopsCom/libs/lib_mqtt -include buildNumber.h -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/hwControl/networkManager.o hwControl/networkManager.c
+
+${OBJECTDIR}/hwControl/wifi_json.o: hwControl/wifi_json.c
+	${MKDIR} -p ${OBJECTDIR}/hwControl
+	${RM} "$@.d"
+	$(COMPILE.c) -g -IhwControl/libs/i2c -IhwControl/libs/onion-debug -IhwControl -Iactuators -IkehopsCom -IkehopsCom/libs/lib_json -IkehopsCom/libs/lib_mqtt -include buildNumber.h -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/hwControl/wifi_json.o hwControl/wifi_json.c
 
 ${OBJECTDIR}/kehopsCom/libs/lib_json/jRead.o: kehopsCom/libs/lib_json/jRead.c
 	${MKDIR} -p ${OBJECTDIR}/kehopsCom/libs/lib_json

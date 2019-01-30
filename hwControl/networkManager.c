@@ -10,9 +10,12 @@
 #include "pthread.h"
 #include <unistd.h>
 #include <stdio.h>
+#include "string.h"
+#include "wifi_json.h"
 #include "networkManager.h"
 #include "udpPublish.h"
 #include "messagesManager.h"
+
 
 // Thread Messager
 pthread_t th_network;
@@ -22,7 +25,15 @@ char *ptr_pingAddress;
 char *ptr_robotName;
 char *ptr_robotGroup;
 
-int runCloudTestCommand(void);
+int  wifiScanRequest=0;
+int *ptr_wifiScanDone;
+APDATA *ptr_wifiData;
+
+int runBashPing(void);
+void runBashWifiScan(void);
+void wifiNetworkScan(int *ptrResult, APDATA *ptrData);
+int wifiNetworkConfig(char *ssid, char * password);         // Démarre une procédure de configuration du WiFi
+
 
 // ------------------------------------------
 // Programme principale TIMER
@@ -41,7 +52,7 @@ void *networkTask (void * arg){
 // - Ping du broker pour test connexion internet
 // --------------------------------------------------------------------
 
-        runCloudTestCommand();             
+        runBashPing();             
         
 	while(1){
             
@@ -64,11 +75,18 @@ void *networkTask (void * arg){
 		if(cyclicTimer60sec>=60000){
 
                     // Check internet connectivity
-                    runCloudTestCommand();             
+                    runBashPing();             
                     t60secFlag=0;  
 
                     cyclicTimer60sec=0;				// Reset le compteur 10secondes
 		}
+                
+                
+                if(wifiScanRequest){
+                    runBashWifiScan();
+                    wifiScanRequest = 0;
+                }
+                        
             
 		cyclicTimer10sec++;				// Reset le compteur 10secondes
                 cyclicTimer60sec++;
@@ -110,7 +128,7 @@ int CloseNetworkManager(void){
 	return (result);
 }
 
-int runCloudTestCommand(void){
+int runBashPing(void){
     int status=0;
     char systemCmd[128];
  //       sendMqttReport(message.msgID, "Try to ping cloud server on vps596769.ovh.net...");// Envoie le message sur le canal MQTT "Report"   
@@ -124,4 +142,64 @@ int runCloudTestCommand(void){
             *ptr_wanOnline = 1;
    
     return ptr_wanOnline;
+}
+
+void runBashWifiScan(void){
+    int i;
+    char data[10000];
+    FILE *echoVal;
+    printf("\n---------- Launching bash script for wifiscan ------------\n");
+
+    echoVal = popen("sh wifi.sh -scan", "r");
+
+    /* Read the output a line at a time - output it. */
+    while (fgets(data, sizeof(data)-1, echoVal) != NULL);
+     
+    printf ("\n---------- End of bash script for wifi------------\n");
+    
+    int wifiCnt = GetWifiScanJsonResults(&wifilist ,data);
+    
+    if(wifiCnt){
+        printf("NOMBRE DE WIFI DETECTE: %d\n***************\n", wifiCnt);
+        for (i=0;i<wifiCnt;i++){
+            //printf("SSID [%d]: %s    AUTH ENABLE: %s     MODE: %s\n",i, wifilist[i].ssid, wifilist[i].encryption.enable,  wifilist[i].authentification[0].mode);
+            strcpy(ptr_wifiData[i].ssid, wifilist[i].ssid);
+            strcpy(ptr_wifiData[i].encryption.enable, wifilist[i].encryption.enable);
+        }
+        *ptr_wifiScanDone = 1;
+    }
+    
+    else
+        printf("\n\n\n***********\nNO WIFI DETECTED\n***************\n\n\n");
+    pclose(echoVal);
+}
+
+// ------------------------------------------------------------------------------------
+// WIFINETWORKSCAN: Demarre le scan des acces point wifi
+// ------------------------------------------------------------------------------------
+void wifiNetworkScan(int *ptrResult, APDATA *ptrData){
+    wifiScanRequest = 1;
+    ptr_wifiScanDone = ptrResult;
+    ptr_wifiData = ptrData;
+}
+
+// ------------------------------------------------------------------------------------
+// WIFINETWORKCONFIG: Démarre une procédure de configuration du WiFi
+// 
+// ------------------------------------------------------------------------------------
+int wifiNetworkConfig(char *ssid, char *password){
+    int i=0;
+    int wifiUserValid=0;
+    
+    for(i=0;i<25;i++){
+        if(!strcmp(wifilist[i].ssid, ssid)){
+            wifiUserValid=1;
+        }
+    }
+    
+    if(wifiUserValid){
+        printf("WIFI VALIDE NAME: %s   PASS: %s\n", ssid, password);
+    }
+    else
+        printf("NO WIFI VALIDE SELECTED\n");
 }

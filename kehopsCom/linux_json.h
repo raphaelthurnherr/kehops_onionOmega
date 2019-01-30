@@ -190,10 +190,16 @@ struct mSystem{
         int rx_message;   
 };
 
+struct dwifi{
+    char ssid[32];
+    char key[64];
+};
 struct mSystemCmd{
         char application[32];
         char firmwareUpdate[32];
         char webAppUpdate[32];
+        char wifiCmd[32];
+        struct dwifi wifiData;
 };
 
 struct mColor{

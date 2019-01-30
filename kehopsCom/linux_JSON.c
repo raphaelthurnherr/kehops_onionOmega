@@ -93,6 +93,9 @@
 #define KEY_MESSAGE_VALUE_SYS_APP "{'MsgData'{'MsgValue'[*{'application'"
 #define KEY_MESSAGE_VALUE_SYS_FIRMWARE "{'MsgData'{'MsgValue'[*{'firmware'"
 #define KEY_MESSAGE_VALUE_SYS_WEBAPP "{'MsgData'{'MsgValue'[*{'webAppUpdate'"
+#define KEY_MESSAGE_VALUE_SYS_WIFI "{'MsgData'{'MsgValue'[*{'wifi'"
+#define KEY_MESSAGE_VALUE_SYS_SSID "{'MsgData'{'MsgValue'[*{'ssid'"
+#define KEY_MESSAGE_VALUE_SYS_PASS "{'MsgData'{'MsgValue'[*{'key'"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -387,6 +390,11 @@ char GetAlgoidMsg(ALGOID *destMessage, char *srcBuffer){
                                           if(destMessage->msgParam == SYSTEM){
                                                   jRead_string((char *)srcBuffer, KEY_MESSAGE_VALUE_SYS_FIRMWARE, destMessage->System.firmwareUpdate, 15, &i );
                                                   jRead_string((char *)srcBuffer, KEY_MESSAGE_VALUE_SYS_APP, destMessage->System.application, 15, &i );
+
+                                                  jRead_string((char *)srcBuffer, KEY_MESSAGE_VALUE_SYS_WIFI, destMessage->System.wifiCmd, 15, &i );
+                                                  jRead_string((char *)srcBuffer, KEY_MESSAGE_VALUE_SYS_PASS, destMessage->System.wifiData.key, 32, &i );
+                                                  jRead_string((char *)srcBuffer, KEY_MESSAGE_VALUE_SYS_SSID, destMessage->System.wifiData.ssid, 64, &i );
+                                                  
 				    	  }
 				    }
 				  }
@@ -835,7 +843,7 @@ void jsonBuilder(char * buffer, int msgId, char* to, char* from, char* msgType, 
                                                                                 case EVENT_ACTION_BEGIN : jwObj_string("action", "begin"); break;
                                                                                 case EVENT_ACTION_ABORT : jwObj_string("action", "abort"); break;
                                                                                 case RESP_STD_MESSAGE   :                                                                                    
-                                                                                                            jwObj_string("application", messageResponse[i].SYSCMDresponse.application);
+                                                                                                          jwObj_string("application", messageResponse[i].SYSCMDresponse.application);
                                                                                                           ; break;
                                                                                 default : jwObj_string("error", "unknown"); break;
                                                                             }		// add object key:value pairs
