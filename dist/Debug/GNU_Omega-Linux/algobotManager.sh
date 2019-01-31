@@ -207,6 +207,7 @@ updateApp(){
 	# TRY TO DOWNLOAD BINARY FROM SERVER                                                                                                                                                  
         	echo "Start download binary firmware from server..."                                                 
                 CMD=`wget -P /root/update/ -q https://raw.githubusercontent.com/raphaelthurnherr/kehops_onionOmega/master/dist/Debug/GNU_Omega-Linux/wifi.sh`
+                CMD=`wget -P /root/update/ -q https://raw.githubusercontent.com/raphaelthurnherr/kehops_onionOmega/master/dist/Debug/GNU_Omega-Linux/kehops.cfg`
 	        CMD=`wget -P /root/update/ -q https://raw.githubusercontent.com/raphaelthurnherr/kehops_onionOmega/master/dist/Debug/GNU_Omega-Linux/kehops`
                 
 		if [ $? -eq 0 ];
