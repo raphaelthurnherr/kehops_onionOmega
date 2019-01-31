@@ -90,12 +90,11 @@
 #define KEY_MESSAGE_VALUE_CFG_LED_STATE "{'MsgData'{'MsgValue'[{'led'[*{'state'"
 #define KEY_MESSAGE_VALUE_CFG_LED_POWER "{'MsgData'{'MsgValue'[{'led'[*{'power'"
 
-#define KEY_MESSAGE_VALUE_SYS_APP "{'MsgData'{'MsgValue'[*{'application'"
 #define KEY_MESSAGE_VALUE_SYS_FIRMWARE "{'MsgData'{'MsgValue'[*{'firmware'"
-#define KEY_MESSAGE_VALUE_SYS_WEBAPP "{'MsgData'{'MsgValue'[*{'webAppUpdate'"
+#define KEY_MESSAGE_VALUE_SYS_DASH "{'MsgData'{'MsgValue'[*{'dashboard'"
 #define KEY_MESSAGE_VALUE_SYS_WIFI "{'MsgData'{'MsgValue'[*{'wifi'"
-#define KEY_MESSAGE_VALUE_SYS_SSID "{'MsgData'{'MsgValue'[*{'ssid'"
-#define KEY_MESSAGE_VALUE_SYS_PASS "{'MsgData'{'MsgValue'[*{'key'"
+#define KEY_MESSAGE_VALUE_SYS_WIFI_SSID "{'MsgData'{'MsgValue'[*{'wifi'{'ssid'"
+#define KEY_MESSAGE_VALUE_SYS_WIFI_KEY "{'MsgData'{'MsgValue'[*{'wifi'{'key'"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -103,7 +102,7 @@
 #include <time.h>
 #include <math.h>
 
-#include "type.h"
+#include "../type.h"
 #include "../buggy_descriptor.h"
 #include "linux_json.h"
 #include "libs/lib_json/jRead.h"
@@ -125,7 +124,7 @@ ALGOID myReplyMessage;
 // -----------------------------------------------------------------------------
 
 char GetAlgoidMsg(ALGOID *destMessage, char *srcBuffer){
-	struct jReadElement element, cfg_device_list;
+	struct jReadElement element, cfg_device_list, sysWifiCommand;
 	int i;
         ALGOID myMessage;
         //myMessage = &destMessage;
@@ -388,13 +387,20 @@ char GetAlgoidMsg(ALGOID *destMessage, char *srcBuffer){
                                           
                                         // SYSTEM                                          
                                           if(destMessage->msgParam == SYSTEM){
-                                                  jRead_string((char *)srcBuffer, KEY_MESSAGE_VALUE_SYS_FIRMWARE, destMessage->System.firmwareUpdate, 15, &i );
-                                                  jRead_string((char *)srcBuffer, KEY_MESSAGE_VALUE_SYS_APP, destMessage->System.application, 15, &i );
-
-                                                  jRead_string((char *)srcBuffer, KEY_MESSAGE_VALUE_SYS_WIFI, destMessage->System.wifiCmd, 15, &i );
-                                                  jRead_string((char *)srcBuffer, KEY_MESSAGE_VALUE_SYS_PASS, destMessage->System.wifiData.key, 32, &i );
-                                                  jRead_string((char *)srcBuffer, KEY_MESSAGE_VALUE_SYS_SSID, destMessage->System.wifiData.ssid, 64, &i );
+                                                jRead_string((char *)srcBuffer, KEY_MESSAGE_VALUE_SYS_FIRMWARE, destMessage->System.firmwareCommand, 15, &i );
+                                                jRead_string((char *)srcBuffer, KEY_MESSAGE_VALUE_SYS_DASH, destMessage->System.dashboardCommand, 15, &i );
                                                   
+                                                jRead((char *)srcBuffer, KEY_MESSAGE_VALUE_SYS_WIFI, &sysWifiCommand );
+                                                
+                                                if(sysWifiCommand.dataType == JREAD_STRING){
+                                                    jRead_string((char *)srcBuffer, KEY_MESSAGE_VALUE_SYS_WIFI, destMessage->System.wifi.command.name, 15, &i );
+                                                }
+                                                else
+                                                    if(sysWifiCommand.dataType == JREAD_OBJECT){
+                                                        strcpy(destMessage->System.wifi.command.name,"config");
+                                                        jRead_string((char *)srcBuffer, KEY_MESSAGE_VALUE_SYS_WIFI_SSID, destMessage->System.wifi.command.config.ssid, 32, &i );
+                                                        jRead_string((char *)srcBuffer, KEY_MESSAGE_VALUE_SYS_WIFI_KEY, destMessage->System.wifi.command.config.key, 64, &i );
+                                                    }
 				    	  }
 				    }
 				  }
@@ -842,15 +848,34 @@ void jsonBuilder(char * buffer, int msgId, char* to, char* from, char* msgType, 
                                                                                 case EVENT_ACTION_END :   jwObj_string("action", "end"); break;
                                                                                 case EVENT_ACTION_BEGIN : jwObj_string("action", "begin"); break;
                                                                                 case EVENT_ACTION_ABORT : jwObj_string("action", "abort"); break;
-                                                                                case RESP_STD_MESSAGE   :                                                                                    
-                                                                                                          jwObj_string("application", messageResponse[i].SYSCMDresponse.application);
-                                                                                                          ; break;
+                                                                                case RESP_FIRMWARE   :                                                                                    
+                                                                                                        jwObj_string("firmware", messageResponse[i].SYSCMDresponse.firmwareCommand); break;
+                                                                                case RESP_WIFI_COMMAND  :                                                                                    
+                                                                                                        jwObj_string("wifi", messageResponse[i].SYSCMDresponse.wifi.command.name); break;
+                                                                                case RESP_WIFI_DATA   :                                                                                    
+                                                                                                        jwObj_object("wifi");
+                                                                                                            jwObj_string("ssid", messageResponse[i].SYSCMDresponse.wifi.command.config.ssid);
+                                                                                                            jwObj_string("key", messageResponse[i].SYSCMDresponse.wifi.command.config.key);
+                                                                                                        jwEnd();
+                                                                                                        break;
+                                                                                case RESP_WIFI_SCAN   : 
+                                                                                                        jwObj_object("wifi");
+                                                                                                            jwObj_array("results");
+                                                                                                                for(j=0;j<messageResponse[i].SYSCMDresponse.wifi.scanResult.wifiDetected;j++){
+                                                                                                                    jwArr_object();
+                                                                                                                        jwObj_string("ssid", messageResponse[i].SYSCMDresponse.wifi.scanResult.list[j].ssid);
+                                                                                                                        jwObj_string("encryption", messageResponse[i].SYSCMDresponse.wifi.scanResult.list[j].encryption.enable);
+                                                                                                                    jwEnd();
+                                                                                                                } 
+                                                                                                            jwEnd();
+                                                                                                        jwEnd();
+                                                                                                        break;
                                                                                 default : jwObj_string("error", "unknown"); break;
                                                                             }		// add object key:value pairs
-
+                                                                            jwObj_string("message", messageResponse[0].returnMessage);
                                                                             break;                                                                                
                                                                                    
-							default:                break;
+							default:            break;
 
 						}
                                     if(orgType!=STATUS)

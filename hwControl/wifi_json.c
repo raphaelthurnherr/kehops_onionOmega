@@ -32,14 +32,14 @@ int GetWifiScanJsonResults(APDATA *destMessage, char *srcBuffer){
         if(element.dataType == JREAD_ARRAY ){
           for(i=0; i<element.elements; i++ )    // loop for no. of elements in JSON
           {
-                  jRead_string((char *)srcBuffer, KEY_RESULTS_SSID, destMessage[i].ssid, 32, &i);
-                  jRead_string((char *)srcBuffer, KEY_RESULTS_ENCRYPT_ENABLE, destMessage[i].encryption.enable, 15, &i);
+                  jRead_string((char *)srcBuffer, KEY_RESULTS_SSID, destMessage->list[i].ssid, 32, &i);
+                  jRead_string((char *)srcBuffer, KEY_RESULTS_ENCRYPT_ENABLE, destMessage->list[i].encryption.enable, 15, &i);
                   
                   jRead((char *)srcBuffer, KEY_RESULTS_ENCRYPT_AUTH, &auth_list );
                   if(auth_list.dataType == JREAD_ARRAY ){
                     int nbOfauth=auth_list.elements;
                     for(j=0;j<nbOfauth;j++){
-                        jRead_string((char *)srcBuffer, KEY_RESULTS_ENCRYPT_AUTH_MODE, destMessage[i].authentification[j].mode, 15, &j);        
+                        jRead_string((char *)srcBuffer, KEY_RESULTS_ENCRYPT_AUTH_MODE, destMessage->list[i].authentification[j].mode, 15, &j);        
                     }
                   }
  

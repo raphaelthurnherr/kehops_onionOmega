@@ -12,7 +12,6 @@
 #include "pthread.h"
 #include <unistd.h>
 #include <stdio.h>
-#include "type.h"
 #include "hwManager.h"
 #include "../kehops_main.h"
 
@@ -25,7 +24,7 @@
 #endif
 
 #include "../buggy_descriptor.h"
-#include "../kehopsCom/type.h"
+#include "../type.h"
 
 // -------------------------------------
 // DEFINITION DES TYPE DE CAPTEURS

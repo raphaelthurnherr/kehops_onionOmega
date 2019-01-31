@@ -329,8 +329,30 @@ typedef struct systemApp{
     struct tInfosys info;
 }t_sysApp;
 
+
+struct wifiEncrypt{
+    char enable[15];
+};
+
+struct authList{
+    char mode [15];   // Encryption PSK, WEP, ETC
+};
+
+
+struct accesspoint_data{
+    char ssid[32];          // Nom du réseau
+    struct wifiEncrypt encryption;    //  Encryption activée ON/OFF
+    struct authList authentification[10];
+};  
+
+typedef struct wifiData{
+    int wifiDetected;
+    struct accesspoint_data list[25];
+}APDATA;
+        
 typedef struct systemConf{
     struct sys_comm communication;
+    APDATA wifi;
 }t_sysConf;
 
 #ifdef __cplusplus

@@ -28,6 +28,7 @@ char *ptr_robotGroup;
 int  wifiScanRequest=0;
 int *ptr_wifiScanDone;
 APDATA *ptr_wifiData;
+APDATA wifi_hotspot; 
 
 int runBashPing(void);
 void runBashWifiScan(void);
@@ -157,14 +158,16 @@ void runBashWifiScan(void){
      
     printf ("\n---------- End of bash script for wifi------------\n");
     
-    int wifiCnt = GetWifiScanJsonResults(&wifilist ,data);
+    int wifiCnt = GetWifiScanJsonResults(&wifi_hotspot ,data);
     
+    ptr_wifiData->wifiDetected = wifiCnt;
+   
     if(wifiCnt){
-        printf("NOMBRE DE WIFI DETECTE: %d\n***************\n", wifiCnt);
+        //printf("NOMBRE DE WIFI DETECTE: %d\n***************\n", wifiCnt);
         for (i=0;i<wifiCnt;i++){
-            //printf("SSID [%d]: %s    AUTH ENABLE: %s     MODE: %s\n",i, wifilist[i].ssid, wifilist[i].encryption.enable,  wifilist[i].authentification[0].mode);
-            strcpy(ptr_wifiData[i].ssid, wifilist[i].ssid);
-            strcpy(ptr_wifiData[i].encryption.enable, wifilist[i].encryption.enable);
+            printf("SSID [%d]: %s    AUTH ENABLE: %s     MODE: %s\n",i, wifi_hotspot.list[i].ssid, wifi_hotspot.list[i].encryption.enable,  wifi_hotspot.list[i].authentification[0].mode);
+            strcpy(ptr_wifiData->list[i].ssid, wifi_hotspot.list[i].ssid);
+            strcpy(ptr_wifiData->list[i].encryption.enable, wifi_hotspot.list[i].encryption.enable);
         }
         *ptr_wifiScanDone = 1;
     }
@@ -190,16 +193,22 @@ void wifiNetworkScan(int *ptrResult, APDATA *ptrData){
 int wifiNetworkConfig(char *ssid, char *password){
     int i=0;
     int wifiUserValid=0;
+    int wifiSSIDresult;
     
     for(i=0;i<25;i++){
-        if(!strcmp(wifilist[i].ssid, ssid)){
+        //if(!strcmp(wifi_hotspot.ssid, ssid)){
+        if(!strcmp(wifi_hotspot.list[i].ssid, ssid)){
             wifiUserValid=1;
         }
     }
     
     if(wifiUserValid){
         printf("WIFI VALIDE NAME: %s   PASS: %s\n", ssid, password);
+        wifiSSIDresult = 0;
     }
-    else
+    else{
         printf("NO WIFI VALIDE SELECTED\n");
+        wifiSSIDresult=1;
+    }
+    return wifiSSIDresult;
 }

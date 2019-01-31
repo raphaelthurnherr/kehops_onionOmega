@@ -17,24 +17,11 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+    
+#include "../type.h"
 
-struct wifiEncrypt{
-    char enable[15];
-};
-
-struct authList{
-    char mode [15];   // Encryption PSK, WEP, ETC
-};
-
-typedef struct accesspoint_data{
-    char ssid[32];          // Nom du réseau
-    struct wifiEncrypt encryption;    //  Encryption activée ON/OFF
-    struct authList authentification[10];
-}APDATA;    
 
 extern int GetWifiScanJsonResults(APDATA *destMessage, char *srcDataBuffer);    
-
-APDATA wifilist[25]; 
 
 
 #ifdef __cplusplus

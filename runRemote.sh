@@ -15,8 +15,8 @@ echo "Fichier MD5 cr�e: "`cat dist/Release/GNU_Omega-Linux/kehops_onionomega.m
 
 echo "Transfere des fichiers binaire..."
 
-#rsync -a /home/raph/NetBeansProjects/kehops_onionOmega/dist/Debug/GNU_Omega-Linux/kehops  root@192.168.3.1:~/kehops
-rsync -a /home/raph-pnp/Documents/dev/embedded_soft/kehops_onionOmega/dist/Debug/GNU_Omega-Linux/kehops  root@192.168.3.1:~/kehops
+rsync -a /home/raph/NetBeansProjects/kehops_onionOmega/dist/Debug/GNU_Omega-Linux/kehops  root@192.168.3.1:~/kehops
+#rsync -a /home/raph-pnp/Documents/dev/embedded_soft/kehops_onionOmega/dist/Debug/GNU_Omega-Linux/kehops  root@192.168.3.1:~/kehops
 #rsync -a /home/raph/NetBeansProjects/kehops_onionOmega/dist/Debug/GNU_Omega-Linux/kehops  root@192.168.1.145:~/kehops
 
 echo "Transfere du fichier MD5 du binaire..."

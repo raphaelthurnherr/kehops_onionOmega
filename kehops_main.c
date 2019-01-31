@@ -1,4 +1,4 @@
-#define FIRMWARE_VERSION "0.3"
+#define FIRMWARE_VERSION "0.4"
 
 #define DEFAULT_EVENT_STATE 1   
 
@@ -85,7 +85,6 @@ int wifiRequestMessageID=0;
 robot_kehops kehops;
 t_sysApp sysApp;
 t_sysConf sysConf;
-APDATA myWifiList[25];
 
 // -------------------------------------------------------------------
 // MAIN APPLICATION
@@ -151,12 +150,30 @@ int main(int argc, char *argv[]) {
             
         // CHeck if WifiScanResult is available
             if(wifiScanDone){
-                printf("\n ..... FIN DE DETECTION WIFI .......\n");
-                for(i=0;i<5;i++){
-                    printf("WIFI #%d    SSID: %s\n",i, myWifiList[i].ssid);
-                }
-                getSenderFromMsgId(wifiRequestMessageID);
+                printf("\n ..... FIN DE DETECTION WIFI, %d TROUVES.......\n", sysConf.wifi.wifiDetected);
                 
+                strcpy(messageResponse[0].SYSCMDresponse.wifi.command.name, "scan");
+                
+                // Retourne le message sur topic "EVENT"                                    
+                messageResponse[0].responseType=EVENT_ACTION_END;
+                sendResponse(message.msgID, message.msgFrom, EVENT, SYSTEM, 1);
+                
+                for(i=0;i<sysConf.wifi.wifiDetected;i++){
+                    printf("WIFI #%d    SSID: %s\n",i, sysConf.wifi.list[i].ssid);
+                    strcpy(messageResponse[0].SYSCMDresponse.wifi.scanResult.list[i].ssid, sysConf.wifi.list[i].ssid);
+                    strcpy(messageResponse[0].SYSCMDresponse.wifi.scanResult.list[i].encryption.enable, sysConf.wifi.list[i].encryption.enable);
+                }
+                messageResponse[0].SYSCMDresponse.wifi.scanResult.wifiDetected = sysConf.wifi.wifiDetected;
+ 
+                //getSenderFromMsgId(wifiRequestMessageID);
+
+                char msg[50];
+                sprintf(msg, "Scan result: %d hotspot detected", sysConf.wifi.wifiDetected);
+                
+                messageResponse[0].responseType = RESP_WIFI_SCAN;
+                strcpy(messageResponse[0].returnMessage, msg);
+                sendResponse(message.msgID, message.msgFrom, RESPONSE, SYSTEM, 1);
+                                                    
                 wifiScanDone = 0;
             }
         
@@ -186,7 +203,7 @@ int main(int argc, char *argv[]) {
             switch(message.msgType){
                     case COMMAND : processmessage(); break;						// Traitement du message de type "COMMAND"
                     case REQUEST : processAlgoidRequest(); break;						// Traitement du message de type "REQUEST"
-                    default : ; break;
+                    default : break;
             }
         }
 
@@ -572,32 +589,38 @@ int processmessage(void){
                                 
             case SYSTEM :       
                                 // RECHERCHE DES MISE A JOURS
-                                if(!strcmp(message.System.application, "check")){
+                                if(!strcmp(message.System.firmwareCommand, "check")){
                                     messageResponse[0].responseType=EVENT_ACTION_BEGIN;                                            
                                     updateResult = runUpdateCommand(0);
-                                                                        
+                                                               
                                     switch(updateResult){
-                                        case 1 :   strcpy(messageResponse[0].SYSCMDresponse.application, "connection error"); break;
-                                        case 10 :  strcpy(messageResponse[0].SYSCMDresponse.application, "update available"); break;
-                                        case 11 :  strcpy(messageResponse[0].SYSCMDresponse.application, "no update"); break;
+                                        case 1 :   strcpy(messageResponse[0].returnMessage, "connection error");
+                                                   strcpy(messageResponse[0].returnMessage, "connection error"); break;
+                                        case 10 :  strcpy(messageResponse[0].returnMessage, "update available"); break;
+                                        case 11 :  strcpy(messageResponse[0].returnMessage, "no update"); break;
                                         default:   
-                                                   sprintf(messageResponse[0].SYSCMDresponse.firmwareUpdate, "error %d", updateResult); break;
+                                                   sprintf(messageResponse[0].returnMessage, "error %d", updateResult); break;
                                     }
+                                    
+                                    strcpy(messageResponse[0].SYSCMDresponse.firmwareCommand, "check");
 
-                                    messageResponse[0].responseType = RESP_STD_MESSAGE;
+                                    messageResponse[0].responseType = RESP_FIRMWARE;
                                     sendResponse(message.msgID, message.msgFrom, RESPONSE, SYSTEM, message.msgValueCnt);
+                                    
                                     // Reset la commande system de type firmware
-                                    strcpy(message.System.application,"");
+                                    strcpy(message.System.firmwareCommand,"");
                                 }
                                 
                                 // MISE A JOUR DE L'APPLICATION
-                                if(!strcmp(message.System.application, "update")){
-
-                                    messageResponse[0].responseType = RESP_STD_MESSAGE;
+                                if(!strcmp(message.System.firmwareCommand, "update")){
+                                    
+                                    // Retourne le message en réponse sur topic "RESPONSE"
+                                    messageResponse[0].responseType = RESP_FIRMWARE;
+                                    strcpy(messageResponse[0].SYSCMDresponse.firmwareCommand, "update");
+                                    strcpy(messageResponse[0].returnMessage, "updating... ");
                                     sendResponse(message.msgID, message.msgFrom, RESPONSE, SYSTEM, message.msgValueCnt);
-                                    
-                                    strcpy(messageResponse[0].SYSCMDresponse.application, "update");
-                                    
+
+                                    // Retourne le message sur topic "EVENT"                                    
                                     messageResponse[0].responseType=EVENT_ACTION_BEGIN;
                                     sendResponse(message.msgID, message.msgFrom, EVENT, SYSTEM, message.msgValueCnt);
                                     
@@ -607,12 +630,15 @@ int processmessage(void){
                                 }
                                 
                                 // Restart application
-                                if(!strcmp(message.System.application, "restart")){
+                                if(!strcmp(message.System.firmwareCommand, "restart")){
                                     
-                                    strcpy(messageResponse[0].SYSCMDresponse.application, "restart");
-                                    messageResponse[0].responseType = RESP_STD_MESSAGE;
+                                    // Retourne le message en réponse sur topic "RESPONSE"               
+                                    messageResponse[0].responseType = RESP_FIRMWARE;
+                                    strcpy(messageResponse[0].SYSCMDresponse.firmwareCommand, "restart");
+                                    strcpy(messageResponse[0].returnMessage, "restarting... ");
                                     sendResponse(message.msgID, message.msgFrom, RESPONSE, SYSTEM, message.msgValueCnt);
                                     
+                                    // Retourne le message sur topic "EVENT"    
                                     messageResponse[0].responseType=EVENT_ACTION_BEGIN;
                                     sendResponse(message.msgID, message.msgFrom, EVENT, SYSTEM, message.msgValueCnt);
                                     
@@ -623,28 +649,48 @@ int processmessage(void){
                                 }
                                 
                                 // wifiSetup
-                                if(!strcmp(message.System.wifiCmd, "scan")){
+                                if(!strcmp(message.System.wifi.command.name, "scan")){
                                     
-                                    strcpy(messageResponse[0].SYSCMDresponse.application, "scan");
-                                    messageResponse[0].responseType = RESP_STD_MESSAGE;
+                                    strcpy(messageResponse[0].SYSCMDresponse.wifi.command.name, "scan");
+                                    messageResponse[0].responseType = RESP_WIFI_COMMAND;
+                                    strcpy(messageResponse[0].returnMessage, "scanning for wifi... ");
                                     sendResponse(message.msgID, message.msgFrom, RESPONSE, SYSTEM, message.msgValueCnt);
                                     
                                     messageResponse[0].responseType=EVENT_ACTION_BEGIN;
                                     sendResponse(message.msgID, message.msgFrom, EVENT, SYSTEM, message.msgValueCnt);                                    
                                     
-                                    wifiNetworkScan(&wifiScanDone, &myWifiList);
+                                    wifiNetworkScan(&wifiScanDone, &sysConf.wifi);
+                                    
                                     saveSenderOfMsgId(message.msgID, message.msgFrom);
                                     wifiRequestMessageID = message.msgID;
                                     
                                 }
                                 
-                                if(!strcmp(message.System.wifiCmd, "config")){
-                                    strcpy(messageResponse[0].SYSCMDresponse.application, "WiFiconfig");
-                                    messageResponse[0].responseType = RESP_STD_MESSAGE;
-                                    sendResponse(message.msgID, message.msgFrom, RESPONSE, SYSTEM, message.msgValueCnt);
+                                if(!strcmp(message.System.wifi.command.name, "config")){
                                     
-                                    printf("--- SSID: %s   PASS:%s\n",message.System.wifiData.ssid, message.System.wifiData.key );
-                                    wifiNetworkConfig(message.System.wifiData.ssid, message.System.wifiData.key);
+                                    strcpy(messageResponse[0].SYSCMDresponse.wifi.command.config.ssid, message.System.wifi.command.config.ssid);
+                                    strcpy(messageResponse[0].SYSCMDresponse.wifi.command.config.key, message.System.wifi.command.config.key);
+                                    
+                                    char ssidError = wifiNetworkConfig(message.System.wifi.command.config.ssid, message.System.wifi.command.config.key);
+                                    
+                                    if(ssidError){
+                                        strcpy(messageResponse[0].returnMessage, "ERROR: SSID don't exit");                                        
+                                        messageResponse[0].responseType = EVENT_ACTION_ABORT;
+                                        sendResponse(message.msgID, message.msgFrom, EVENT, SYSTEM, message.msgValueCnt);
+                                    
+                                    }
+                                    else{
+                                        strcpy(messageResponse[0].returnMessage, "Configuring wifi...");
+                                        // Retourne le message sur topic "EVENT"                                    
+                                        messageResponse[0].responseType=EVENT_ACTION_BEGIN;
+                                        sendResponse(message.msgID, message.msgFrom, EVENT, SYSTEM, 1);
+                                    }
+
+                                    messageResponse[0].responseType = RESP_WIFI_DATA;
+                                    sendResponse(message.msgID, message.msgFrom, RESPONSE, SYSTEM, message.msgValueCnt);
+
+                                    
+
                                 }
                                 
                                 

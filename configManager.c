@@ -49,7 +49,7 @@
 #include <string.h>
 #include <math.h>
 
-#include "kehopsCom/type.h"
+#include "type.h"
 #include "jRead.h"
 #include "jWrite.h"
 #include "kehops_main.h"

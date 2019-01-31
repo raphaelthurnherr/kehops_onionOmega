@@ -1,6 +1,6 @@
 #define MAX_MQTT_BUFF 4096
 
-#include "type.h"
+#include "../type.h"
 
 // DEFINITION DES TYPES DE MESSAGE
 typedef enum msgformat{
@@ -9,6 +9,11 @@ typedef enum msgformat{
 	EVENT_ACTION_BEGIN,
 	EVENT_ACTION_ABORT,
         EVENT_ACTION_RUN,
+        RESP_FIRMWARE,
+        RESP_WIFI_COMMAND,
+        RESP_WIFI_DATA,
+        RESP_WIFI_SCAN,
+        RESP_DASH,
 	RESP_STD_MESSAGE,
 } t_msgformat;
 
@@ -190,16 +195,28 @@ struct mSystem{
         int rx_message;   
 };
 
-struct dwifi{
+struct wificonfig{
     char ssid[32];
     char key[64];
 };
+
+
+struct wifiCmd{
+    char name[15];
+    struct wificonfig config;   
+};
+
+struct wifiMessage{
+    struct wifiCmd command;
+    int WifiDetected;
+    APDATA scanResult;
+};
+
+
 struct mSystemCmd{
-        char application[32];
-        char firmwareUpdate[32];
-        char webAppUpdate[32];
-        char wifiCmd[32];
-        struct dwifi wifiData;
+        char dashboardCommand[32];
+        char firmwareCommand[32];
+        struct wifiMessage wifi;
 };
 
 struct mColor{
@@ -246,7 +263,6 @@ typedef struct JsonResponse{
 	int value;
 	int responseType;
 
-	// UNION ???
         struct mSystem SYSresponse;
 	struct mDin DINresponse;
 	struct mBattery BATTesponse;
@@ -260,7 +276,7 @@ typedef struct JsonResponse{
         struct mRGB RGBresponse; 
         struct mConfig CONFIGresponse;
         struct mSystemCmd SYSCMDresponse;
-	// UNION ???
+        char returnMessage[100];
 }ALGOID_RESPONSE;
 
 ALGOID message;    // Utilis� par main.c

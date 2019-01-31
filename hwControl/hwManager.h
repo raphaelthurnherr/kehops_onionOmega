@@ -8,6 +8,8 @@
 #ifndef HWMANAGER_H_
 #define HWMANAGER_H_
 
+#include "../type.h"
+
 // Definition des couleurs pour le capteur RGB
     #define RED                                 0
     #define GREEN                               1

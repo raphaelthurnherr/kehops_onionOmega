@@ -5,10 +5,10 @@
  *      Author: raph
  */
 
-#ifndef ALGOID_2WD_BUGGY_H_
-#define ALGOID_2WD_BUGGY_H_
+#ifndef KEHOPS_MAIN_H_
+#define KEHOPS_MAIN_H_
 
-#include "./kehopsCom/type.h"
+#include "type.h"
 
 #define OFF               0
 #define ON                1
