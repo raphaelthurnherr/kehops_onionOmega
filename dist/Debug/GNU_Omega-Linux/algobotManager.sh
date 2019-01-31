@@ -13,7 +13,7 @@
 ##-------------------------------------------------------------
 ## checkApp()
 ## This function will download the MD5 file of application firmware on the server
-## and check (with comparison) if the algobot application firmware is up to date.
+## and check (with comparison) if the kehops application firmware is up to date.
 ## A report is made to the user WITHOUT update !
 ##
 ## RETURN VALUES:
@@ -30,7 +30,7 @@ checkApp(){
 
 # TRY TO DOWNLOAD MD5 FILE FROM SERVER
         echo "Start download application MD5 from server..."
-        CMD=`wget -P /root/update/ -q https://raw.githubusercontent.com/raphaelthurnherr/algobot_onionOmega/master/dist/Debug/GNU_Omega-Linux/algobot_onionomega.md5`
+        CMD=`wget -P /root/update/ -q https://raw.githubusercontent.com/raphaelthurnherr/kehops_onionOmega/master/dist/Debug/GNU_Omega-Linux/kehops_onionomega.md5`
 
         if [ $? -eq 0 ];
 # MD5 FILE OF THE APPLICATION WAS DOWNLOADED SUCCESSFULLY
@@ -39,12 +39,12 @@ checkApp(){
                 
         # COMPARE THE MD5 FILE OF THE LOCAL APPLICATION AND THE MD5 FILE ON THE SERVER
         # IF THE FILES ARE THE SAME, NO UPDATE AVAILABLE
-		cmp  /root/update/algobot_onionomega.md5 /root/algobot/algobot_onionomega.md5 1>/dev/null 2>&1; resultat=$?
+		cmp  /root/update/kehops_onionomega.md5 /root/kehops/kehops_onionomega.md5 1>/dev/null 2>&1; resultat=$?
                                                                                 
        	        if [ $resultat -eq 0 ];                                         
                	then                                                            
                 # MD5 FILE ARE THE SAME, NO UPDATE TO DO
-                       	echo "Algobot application firmware version is last, no update found!"            
+                       	echo "kehops application firmware version is last, no update found!"            
                        	status=11                       
                 elif [ $resultat -eq 1 ];                                       
        	        then                                    
@@ -52,7 +52,7 @@ checkApp(){
                	        echo "New application firmware found !"                            
 			status=10 
                 else                                                            
-       	                echo "Algobot application MD5 file is missing, please update application"
+       	                echo "kehops application MD5 file is missing, please update application"
 			status=12
                	fi                      
         else
@@ -127,14 +127,14 @@ checkManager(){
 install_update_app(){                                                                                                                                                                                                                                                                                                            
     echo "Starting application firmware upgrade... ";   
 # KILL THE APPLICATION PROCESSUS
-    killall algobot_onionomega;                                                                                                                                             
+    killall kehops_onionomega;                                                                                                                                             
     sleep 1;                    
 # REMOVE THE OLD BINARY
-    rm /root/algobot/* 
+    rm /root/kehops/* 
 # COPY THE NEW BINARY FILE
-    cp /root/update/algobot_onion* /root/algobot/                                                                                                                                                    
+    cp /root/update/kehops_onion* /root/kehops/                                                                                                                                                    
 # APPLY THE EXECUTION RIGHTS
-    chmod +x /root/algobot/algobot_onionomega                                                                                                                                     
+    chmod +x /root/kehops/kehops_onionomega                                                                                                                                     
 } 
 
 ##-------------------------------------------------------------
@@ -164,7 +164,7 @@ install_update_manager(){
 ## RETURN VALUES: ------
 ##-------------------------------------------------------------
 restart(){                                                                              
-    killall algobot_onionomega;
+    killall kehops_onionomega;
     killall algobotmanager;
     sleep 2;                                                                            
     echo "Restarting algobot application and manager process... ";
@@ -172,8 +172,8 @@ restart(){
     cd /root/
     ./algobotmanager&
     
-    cd /root/algobot/
-    ./algobot_onionomega&
+    cd /root/kehops/
+    ./kehops_onionomega&
 } 
 
 ##-------------------------------------------------------------
@@ -205,8 +205,10 @@ updateApp(){
                 fi
 
 	# TRY TO DOWNLOAD BINARY FROM SERVER                                                                                                                                                  
-        	echo "Start download binary firmware from server..."                                                                                                                 
-	        CMD=`wget -P /root/update/ -q https://raw.githubusercontent.com/raphaelthurnherr/algobot_onionOmega/master/dist/Debug/GNU_Omega-Linux/algobot_onionomega`
+        	echo "Start download binary firmware from server..."                                                 
+                CMD=`wget -P /root/update/ -q https://raw.githubusercontent.com/raphaelthurnherr/kehops_onionOmega/master/dist/Debug/GNU_Omega-Linux/wifi.sh`
+	        CMD=`wget -P /root/update/ -q https://raw.githubusercontent.com/raphaelthurnherr/kehops_onionOmega/master/dist/Debug/GNU_Omega-Linux/kehops`
+                
 		if [ $? -eq 0 ];
 		then
                 # SUCCESSFULLY DOWNLOAD
@@ -328,7 +330,7 @@ install_npm_ws(){
 
 ##-------------------------------------------------------------
 ## base_install()
-## This function will install the base applications requiered by the Algobot system.
+## This function will install the base applications requiered by the kehops system.
 ## It will also configure the configuration file for an autostart
 ##
 ## Applications to install
@@ -338,7 +340,7 @@ install_npm_ws(){
 ## -- Install the NPM Websocket/TCP bridge
 ## -- Configuring etc/rc.local for launch TCP/WS Bridge and algobotManager.sh (this bashfile file)
 ## - Update the manager application file from SDCARD 
-## - Update the algobot application file from SDCARD
+## - Update the kehops application file from SDCARD
 ## - Update the algobotManager.sh bashfile from SDCARD (This file)
 ## - Configuring / Copying the WEB APP FILE to EEPROM
 ##
@@ -387,14 +389,14 @@ base_install(){
      result=0
     fi
 	echo "Configuring RC launcher file..."	
-		echo "- Download algobotLaucher and Configuring rc.local file"
-		sed -i '3 a # CALL THE ALGOBOT LAUNCHER APPLICATION' /etc/rc.local
+		echo "- Download kehopsLaucher and Configuring rc.local file"
+		sed -i '3 a # CALL THE kehops LAUNCHER APPLICATION' /etc/rc.local
                 sed -i '4 a ws-tcp-bridge --method=ws2tcp --lport=9001 --rhost=127.0.0.1:1883&' /etc/rc.local
                 sed -i '5 a ws-tcp-bridge --method=tcp2ws --lport=1883 --rhost=ws://127.0.0.1:9001&' /etc/rc.local
                 sed -i '6 a sh /root/algobotManager.sh restart >> /root/autostartLog.txt 2>&1' /etc/rc.local
 		$result=$?
     
-    echo "- Adding algobot files to root..."
+    echo "- Adding kehops files to root..."
     # Update the manager bash file from SDCARD
     rm /root/algobotManager.sh  
     cp /tmp/mounts/SD-P1/bin/algobotManager.sh /root/
@@ -406,10 +408,10 @@ base_install(){
     cp /tmp/mounts/SD-P1/bin/algobotmanager.md5 /root/
 
     # Update the algobot application from SDCARD
-    rm /root/algobot/algobot_onionomega.md5
-    rm /root/algobot/algobot_onionomega
-    cp /tmp/mounts/SD-P1/bin/algobot/algobot_onionomega /root/algobot
-    cp /tmp/mounts/SD-P1/bin/algobot/algobot_onionomega.md5 /root/algobot
+    rm /root/kehops/kehops_onionomega.md5
+    rm /root/kehops/kehops_onionomega
+    cp /tmp/mounts/SD-P1/bin/kehops/kehops_onionomega /root/kehops
+    cp /tmp/mounts/SD-P1/bin/kehops/kehops_onionomega.md5 /root/kehops
 
     echo "- Configuring Web App"   
     # Remove files in web directory
@@ -445,27 +447,27 @@ base_install(){
 ## ---> restart
 ##-------------------------------------------------------------       
 
-# Will check the existance of "algobot" directory
-# and the MD5 file of the application firmware in the root/algobot directory
-# IF NOT EXIST, the algobot directory and and generic MD5 file will be create
+# Will check the existance of "kehops" directory
+# and the MD5 file of the application firmware in the root/kehops directory
+# IF NOT EXIST, the kehops directory and and generic MD5 file will be create
 
-if [ -d "/root/algobot" ]; then 
- echo "Algobot directory ok"
- if [ -f /root/algobot/algobot_onionomega.md5 ]; then
+if [ -d "/root/kehops" ]; then 
+ echo "kehops directory ok"
+ if [ -f /root/kehops/kehops_onionomega.md5 ]; then
   echo "MD5 file is present"
  else 
-  touch /root/algobot/algobot_onionomega.md5
+  touch /root/kehops/kehops_onionomega.md5
   echo "MD5 not existing and was created"
  fi
 else 
  echo "Create directory for application" 
- mkdir /root/algobot
- touch /root/algobot/algobot_onionomega.md5
+ mkdir /root/kehops
+ touch /root/kehops/kehops_onionomega.md5
 fi
 
 # Will check the existance of "update" directory for the application firmware
 # and the MD5 file of the manager application in the root directory
-# IF NOT EXIST, the algobot directory and and generic MD5 file will be create
+# IF NOT EXIST, the kehops directory and and generic MD5 file will be create
 
 if [ -d "/root/update" ]; then
  echo "Update directory is present"
@@ -521,6 +523,6 @@ do
         fi
 done
 
-echo "End of installation algobot and dependecies"
+echo "End of installation kehops and dependecies"
 exit $actionResult 
 
