@@ -419,7 +419,7 @@ char GetAlgoidMsg(ALGOID *destMessage, char *srcBuffer){
 // -----------------------------------------------------------------------------
 void jsonBuilder(char * buffer, int msgId, char* to, char* from, char* msgType, char* msgParam, unsigned char orgType, unsigned char count ){
 	unsigned int buflen= MAX_MQTT_BUFF;
-	unsigned char i,j;
+	unsigned char i,j, k;
         
 // Formatage de la réponse en JSON
 	jwOpen( buffer, buflen, JW_OBJECT, JW_PRETTY );		// start root object
@@ -864,7 +864,15 @@ void jsonBuilder(char * buffer, int msgId, char* to, char* from, char* msgType, 
                                                                                                                 for(j=0;j<messageResponse[i].SYSCMDresponse.wifi.scanResult.wifiDetected;j++){
                                                                                                                     jwArr_object();
                                                                                                                         jwObj_string("ssid", messageResponse[i].SYSCMDresponse.wifi.scanResult.list[j].ssid);
-                                                                                                                        jwObj_string("encryption", messageResponse[i].SYSCMDresponse.wifi.scanResult.list[j].encryption.enable);
+                                                                                                                        jwObj_string("authentification", messageResponse[i].SYSCMDresponse.wifi.scanResult.list[j].encryption.enable);
+                                                                                                                        jwObj_array("security");
+                                                                                                                            for(k=0;k<messageResponse[i].SYSCMDresponse.wifi.scanResult.list[j].encryption.authCnt;k++)
+                                                                                                                               jwArr_string(messageResponse[i].SYSCMDresponse.wifi.scanResult.list[j].encryption.authentification[k].mode);
+                                                                                                                         jwEnd();
+                                                                                                                        jwObj_array("wpa");
+                                                                                                                            for(k=0;k<messageResponse[i].SYSCMDresponse.wifi.scanResult.list[j].encryption.wpaCnt;k++)
+                                                                                                                               jwArr_string(messageResponse[i].SYSCMDresponse.wifi.scanResult.list[j].encryption.wpa[k].type);
+                                                                                                                         jwEnd();
                                                                                                                     jwEnd();
                                                                                                                 } 
                                                                                                             jwEnd();

@@ -146,7 +146,7 @@ int runBashPing(void){
 }
 
 void runBashWifiScan(void){
-    int i;
+    int i, j;
     char data[10000];
     FILE *echoVal;
     printf("\n---------- Launching bash script for wifiscan ------------\n");
@@ -165,9 +165,13 @@ void runBashWifiScan(void){
     if(wifiCnt){
         //printf("NOMBRE DE WIFI DETECTE: %d\n***************\n", wifiCnt);
         for (i=0;i<wifiCnt;i++){
-            printf("SSID [%d]: %s    AUTH ENABLE: %s     MODE: %s\n",i, wifi_hotspot.list[i].ssid, wifi_hotspot.list[i].encryption.enable,  wifi_hotspot.list[i].authentification[0].mode);
+            //printf("SSID [%d]: %s    AUTH ENABLE: %s     MODE: %s\n",i, wifi_hotspot.list[i].ssid, wifi_hotspot.list[i].encryption.enable,  wifi_hotspot.list[i].authentification[0].mode);
             strcpy(ptr_wifiData->list[i].ssid, wifi_hotspot.list[i].ssid);
             strcpy(ptr_wifiData->list[i].encryption.enable, wifi_hotspot.list[i].encryption.enable);
+            //for(j=0;j<ptr_wifiData->list[i].encryption.authCnt;j++)
+            strcpy(ptr_wifiData->list[i].encryption.authentification[0].mode, wifi_hotspot.list[i].encryption.authentification[0].mode);
+            //for(j=0;j<ptr_wifiData->list[i].encryption.wpaCnt;j++)
+            strcpy(ptr_wifiData->list[i].encryption.wpa[0].type, wifi_hotspot.list[i].encryption.wpa[0].type);
         }
         *ptr_wifiScanDone = 1;
     }

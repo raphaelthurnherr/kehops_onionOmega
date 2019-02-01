@@ -1,4 +1,4 @@
-#define FIRMWARE_VERSION "0.4"
+#define FIRMWARE_VERSION "0.4.1"
 
 #define DEFAULT_EVENT_STATE 1   
 
@@ -95,7 +95,7 @@ t_sysConf sysConf;
 // -------------------------------------------------------------------
 
 int main(int argc, char *argv[]) {
-	int i;
+	int i, j;
         int systemDataStreamCounter=0;       // Compteur pour l'envoie periodique du flux de donnees des capteur
                                              // si activ�.
         char welcomeMessage[100];
@@ -162,6 +162,11 @@ int main(int argc, char *argv[]) {
                     printf("WIFI #%d    SSID: %s\n",i, sysConf.wifi.list[i].ssid);
                     strcpy(messageResponse[0].SYSCMDresponse.wifi.scanResult.list[i].ssid, sysConf.wifi.list[i].ssid);
                     strcpy(messageResponse[0].SYSCMDresponse.wifi.scanResult.list[i].encryption.enable, sysConf.wifi.list[i].encryption.enable);
+                    
+                    for(j=0;j<sysConf.wifi.list[j].encryption.authCnt;j++)
+                        strcpy(messageResponse[0].SYSCMDresponse.wifi.scanResult.list[i].encryption.authentification[0].mode, sysConf.wifi.list[i].encryption.authentification[0].mode);
+                    //for(j=0;j<sysConf.wifi.list[j].encryption.wpaCnt;j++)
+                    strcpy(messageResponse[0].SYSCMDresponse.wifi.scanResult.list[i].encryption.wpa[0].type, sysConf.wifi.list[i].encryption.wpa[0].type);
                 }
                 messageResponse[0].SYSCMDresponse.wifi.scanResult.wifiDetected = sysConf.wifi.wifiDetected;
  

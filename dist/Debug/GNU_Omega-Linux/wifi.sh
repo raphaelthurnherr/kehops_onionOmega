@@ -1,12 +1,16 @@
 #!/bin/sh
 
 ScanWifi () {
-#        WIFILIST="$(ubus call onion wifi-scan '{"device":"ra0"}')"
         WIFILIST="$(ubus call iwinfo scan '{"device":"ra0"}')"
         echo $WIFILIST
         exit 0
 }
 
+wanCheck () {
+        WIFILIST="$(ubus call iwinfo scan '{"device":"ra0"}')"
+        echo $WIFILIST
+        exit 0
+}
 
 ########################
 ##### Main Program #####

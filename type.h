@@ -330,19 +330,27 @@ typedef struct systemApp{
 }t_sysApp;
 
 
-struct wifiEncrypt{
-    char enable[15];
+struct authType{
+    char mode [15];   // Encryption PSK, PSK2
 };
 
-struct authList{
-    char mode [15];   // Encryption PSK, WEP, ETC
+struct wpaType{
+    char type [15];   // Encryption PSK, PSK2
+};
+
+struct wifiEncrypt{
+    char enable[15];
+    int authCnt;
+    int wpaCnt;
+    struct authType authentification[10];
+    struct wpaType wpa[10];
 };
 
 
 struct accesspoint_data{
     char ssid[32];          // Nom du réseau
     struct wifiEncrypt encryption;    //  Encryption activée ON/OFF
-    struct authList authentification[10];
+    
 };  
 
 typedef struct wifiData{
