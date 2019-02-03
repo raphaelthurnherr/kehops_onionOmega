@@ -39,7 +39,7 @@ struct jReadElement{
 	int elements;		// number of elements (e.g. elements in array or object)
 	int bytelen;		// byte length of element (e.g. length of string, array text "[ ... ]" etc.)
 	void * pValue;		// pointer to value string in JSON text
-	int error;			// error value if dataType == JREAD_ERROR
+	int error;		// error value if dataType == JREAD_ERROR
 };
 
 //------------------------------------------------------

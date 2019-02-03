@@ -866,12 +866,12 @@ void jsonBuilder(char * buffer, int msgId, char* to, char* from, char* msgType, 
                                                                                                                         jwObj_string("ssid", messageResponse[i].SYSCMDresponse.wifi.scanResult.list[j].ssid);
                                                                                                                         jwObj_string("authentification", messageResponse[i].SYSCMDresponse.wifi.scanResult.list[j].encryption.enable);
                                                                                                                         jwObj_array("security");
-                                                                                                                            for(k=0;k<messageResponse[i].SYSCMDresponse.wifi.scanResult.list[j].encryption.authCnt;k++)
-                                                                                                                               jwArr_string(messageResponse[i].SYSCMDresponse.wifi.scanResult.list[j].encryption.authentification[k].mode);
+                                                                                                                            //for(k=0;k<messageResponse[i].SYSCMDresponse.wifi.scanResult.list[j].encryption.authCnt;k++)
+                                                                                                                               jwArr_string(messageResponse[i].SYSCMDresponse.wifi.scanResult.list[j].encryption.authentification[0].mode);
                                                                                                                          jwEnd();
                                                                                                                         jwObj_array("wpa");
-                                                                                                                            for(k=0;k<messageResponse[i].SYSCMDresponse.wifi.scanResult.list[j].encryption.wpaCnt;k++)
-                                                                                                                               jwArr_string(messageResponse[i].SYSCMDresponse.wifi.scanResult.list[j].encryption.wpa[k].type);
+                                                                                                                            //for(k=0;k<messageResponse[i].SYSCMDresponse.wifi.scanResult.list[j].encryption.wpaCnt;k++)
+                                                                                                                               jwArr_string(messageResponse[i].SYSCMDresponse.wifi.scanResult.list[j].encryption.wpa[0].type);
                                                                                                                          jwEnd();
                                                                                                                     jwEnd();
                                                                                                                 } 
