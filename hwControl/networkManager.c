@@ -175,9 +175,6 @@ void runBashWifiScan(void){
         }
         *ptr_wifiScanDone = 1;
     }
-    
-    else
-        printf("\n\n\n***********\nNO WIFI DETECTED\n***************\n\n\n");
     pclose(echoVal);
 }
 
@@ -207,7 +204,7 @@ int wifiNetworkConfig(char *ssid, char *password){
     }
     
     if(wifiUserValid){
-        printf("WIFI VALIDE NAME: %s   PASS: %s\n", ssid, password);
+        printf("WIFI VALIDE NAME: %s   PASS: %s\n", ssid, password) ;
         wifiSSIDresult = 0;
     }
     else{

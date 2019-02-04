@@ -1,0 +1,40 @@
+ADD
+uci add wireless wifi-config > /dev/null
+uci set wireless.@wifi-config[0].key=8051f320
+uci set wireless.@wifi-config[0].ssid=RaphMobileWiFi
+uci set wireless.@wifi-config[0].encryption=psk2
+uci commit wireless
+uci set wireless.sta.disabled=0
+uci commit wireless
+uci set wireless.radio0.device_mode=apsta
+uci commit wireless
+wifi
+
+> Restarting wifimanager for changes to take effect
+
+uci set wireless.@wifi-config[0].key=test12345
+uci set wireless.@wifi-config[0].ssid=RaphTest
+uci set wireless.@wifi-config[0].encryption=psk2
+uci commit wireless
+uci set wireless.sta.disabled=0
+uci commit wireless
+uci set wireless.radio0.device_mode=apsta
+uci commit wireless
+> Restarting wifimanager for changes to take effect
+
+
+CLEAR
+Clearing all stored network entries.
+uci delete wireless.@wifi-config[0]
+uci commit wireless
+uci set wireless.sta.key=yourpassword
+uci set wireless.sta.ssid=yourssid
+uci set wireless.sta.encryption=
+uci commit wireless
+uci set wireless.sta.disabled=1
+uci commit wireless
+Restarting WiFi driver and disconnecting from current network.
+This will end all wireless ssh sessions!
+
+List les reseaux
+uci -q get wireless.\@wifi-config[0]

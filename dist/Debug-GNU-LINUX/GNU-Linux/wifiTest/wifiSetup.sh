@@ -31,8 +31,8 @@ uci commit wireless
 REDEMARRER L'INTERFACE:
 wifi
 
-
-
+LISTER LES CONFIG WIFI!
+wifisetup -list
 
 
 
@@ -41,6 +41,7 @@ uci set wireless.@wifi-iface[1].device="radio0"
 
 //uci set wireless.@wifi-iface[1]="wifi-iface"
 uci set wireless.@wifi-iface[1].mode="sta"
+(uci set wireless.radio0.device_mode="sta"
 uci set wireless.@wifi-iface[1].network="wwan"
 uci set wireless.@wifi-iface[1].ssid="RaphTest"
 uci set wireless.@wifi-iface[1].encryption="psk2"

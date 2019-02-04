@@ -158,15 +158,17 @@ int main(int argc, char *argv[]) {
                 messageResponse[0].responseType=EVENT_ACTION_END;
                 sendResponse(message.msgID, message.msgFrom, EVENT, SYSTEM, 1);
                 
-                for(i=0;i<sysConf.wifi.wifiDetected;i++){
-                    printf("WIFI #%d    SSID: %s\n",i, sysConf.wifi.list[i].ssid);
-                    strcpy(messageResponse[0].SYSCMDresponse.wifi.scanResult.list[i].ssid, sysConf.wifi.list[i].ssid);
-                    strcpy(messageResponse[0].SYSCMDresponse.wifi.scanResult.list[i].encryption.enable, sysConf.wifi.list[i].encryption.enable);
-                    
-                    //for(j=0;j<sysConf.wifi.list[j].encryption.authCnt;j++)
-                    strcpy(messageResponse[0].SYSCMDresponse.wifi.scanResult.list[i].encryption.authentification[0].mode, sysConf.wifi.list[i].encryption.authentification[0].mode);
-                    //for(j=0;j<sysConf.wifi.list[j].encryption.wpaCnt;j++)
-                    strcpy(messageResponse[0].SYSCMDresponse.wifi.scanResult.list[i].encryption.wpa[0].type, sysConf.wifi.list[i].encryption.wpa[0].type);
+                if(sysConf.wifi.wifiDetected>0){
+                    for(i=0;i<sysConf.wifi.wifiDetected;i++){
+                        printf("WIFI #%d    SSID: %s\n",i, sysConf.wifi.list[i].ssid);
+                        strcpy(messageResponse[0].SYSCMDresponse.wifi.scanResult.list[i].ssid, sysConf.wifi.list[i].ssid);
+                        strcpy(messageResponse[0].SYSCMDresponse.wifi.scanResult.list[i].encryption.enable, sysConf.wifi.list[i].encryption.enable);
+
+                        //for(j=0;j<sysConf.wifi.list[j].encryption.authCnt;j++)
+                        strcpy(messageResponse[0].SYSCMDresponse.wifi.scanResult.list[i].encryption.authentification[0].mode, sysConf.wifi.list[i].encryption.authentification[0].mode);
+                        //for(j=0;j<sysConf.wifi.list[j].encryption.wpaCnt;j++)
+                        strcpy(messageResponse[0].SYSCMDresponse.wifi.scanResult.list[i].encryption.wpa[0].type, sysConf.wifi.list[i].encryption.wpa[0].type);
+                    }
                 }
                 messageResponse[0].SYSCMDresponse.wifi.scanResult.wifiDetected = sysConf.wifi.wifiDetected;
  
