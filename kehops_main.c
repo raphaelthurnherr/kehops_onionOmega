@@ -1,4 +1,4 @@
-#define FIRMWARE_VERSION "0.4.1"
+#define FIRMWARE_VERSION "0.4.2"
 
 #define DEFAULT_EVENT_STATE 1   
 
@@ -727,8 +727,7 @@ int processAlgoidRequest(void){
         	case MOTORS :	makeMotorRequest();					// Requete commande moteur
 
                 case COLORS :	makeRgbRequest();					// Requete commande moteur
-                                                break;
-                                                
+                                                break;                            
 
 		default : break;
 	}
@@ -1358,7 +1357,7 @@ int makeStatusRequest(int msgType){
 	int ptrData=0;
 
 	message.msgValueCnt=0;
-	message.msgValueCnt = NBDIN + NBBTN + NBMOTOR + NBSONAR + NBRGBC + NBLED + NBPWM +1 ; // Nombre de VALEUR � transmettre + 1 pour le SystemStatus
+	message.msgValueCnt = NBDIN + NBBTN + NBMOTOR + NBSONAR + NBRGBC + NBLED + NBPWM + NBAIN +1 ; // Nombre de VALEUR � transmettre + 1 pour le SystemStatus
      
         // Preparation du message de reponse pour le status systeme
         strcpy(messageResponse[ptrData].SYSresponse.name, sysApp.info.name);
@@ -1443,6 +1442,15 @@ int makeStatusRequest(int msgType){
 		messageResponse[ptrData].value = kehops.pwm[i].state;
                 messageResponse[ptrData].PWMresponse.powerPercent = kehops.pwm[i].power;
 		ptrData++;
+	}
+        
+        for(i=0;i<NBAIN;i++){
+                messageResponse[ptrData].BATTesponse.id=i;
+                messageResponse[ptrData].value = kehops.battery[i].measure.voltage_mV;
+                
+                if(kehops.battery[i].event.enable) strcpy(messageResponse[ptrData].BATTesponse.event_state, "on");
+                else strcpy(messageResponse[ptrData].BATTesponse.event_state, "off");
+                ptrData++;
 	}
         
 	// Envoie de la r�ponse MQTT

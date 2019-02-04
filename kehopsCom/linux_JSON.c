@@ -705,6 +705,21 @@ void jsonBuilder(char * buffer, int msgId, char* to, char* from, char* msgType, 
                                                                                     }
                                                                                 jwEnd();                                                                                             
                                                                             }
+                                                                            
+                                                                            // ETAT DES BATTERIES                                                                                        // ETAT DES AIN                                                                                       // ETAT DES DIN
+                                                                            if(i>=1+NBDIN+NBBTN+NBMOTOR+NBSONAR+NBRGBC+NBLED+NBPWM && i<1+NBDIN+NBBTN+NBMOTOR+NBSONAR+NBRGBC+NBLED+NBPWM+NBAIN){
+                                                                            //    jwObj_int("sonar",messageResponse[i].DISTresponse.id);		// add object key:value pairs
+                                                                            //    jwObj_int("cm", round((messageResponse[i].value)));
+                                                                                jwObj_array( "battery" );
+                                                                                    for(j=0;j<NBAIN;j++){
+                                                                                        jwArr_object();
+                                                                                            jwObj_int("voltage_mv", round((messageResponse[i].value)));
+                                                                                            jwObj_string("event", messageResponse[i].BATTesponse.event_state);                                                                                            
+                                                                                        jwEnd();           
+                                                                                        i++;
+                                                                                    }
+                                                                                jwEnd(); 
+                                                                            }                                                                            
 
                                                                             break;
                                                                                     
