@@ -1,4 +1,4 @@
-#define FIRMWARE_VERSION "0.4.2"
+#define FIRMWARE_VERSION "0.5.0"
 
 #define DEFAULT_EVENT_STATE 1   
 
@@ -80,6 +80,8 @@ char reportBuffer[512];
 int ActionTable[10][3];
 
 int wifiScanDone=0;
+int wifiListDone=0;
+
 int wifiRequestMessageID=0;
 
 robot_kehops kehops;
@@ -149,40 +151,66 @@ int main(int argc, char *argv[]) {
 	while(1){
             
         // CHeck if WifiScanResult is available
-            if(wifiScanDone){
-                printf("\n ..... FIN DE DETECTION WIFI, %d TROUVES.......\n", sysConf.wifi.wifiDetected);
-                
-                strcpy(messageResponse[0].SYSCMDresponse.wifi.command.name, "scan");
-                
-                // Retourne le message sur topic "EVENT"                                    
-                messageResponse[0].responseType=EVENT_ACTION_END;
-                sendResponse(message.msgID, message.msgFrom, EVENT, SYSTEM, 1);
-                
-                if(sysConf.wifi.wifiDetected>0){
-                    for(i=0;i<sysConf.wifi.wifiDetected;i++){
-                        printf("WIFI #%d    SSID: %s\n",i, sysConf.wifi.list[i].ssid);
-                        strcpy(messageResponse[0].SYSCMDresponse.wifi.scanResult.list[i].ssid, sysConf.wifi.list[i].ssid);
-                        strcpy(messageResponse[0].SYSCMDresponse.wifi.scanResult.list[i].encryption.enable, sysConf.wifi.list[i].encryption.enable);
+        if(wifiScanDone){
+            printf("\n ..... FIN DE DETECTION WIFI, %d TROUVES.......\n", sysConf.wifi.wifiDetected);
+            strcpy(messageResponse[0].SYSCMDresponse.wifi.command.name, "scan");
+            // Retourne le message sur topic "EVENT"                                    
+            messageResponse[0].responseType=EVENT_ACTION_END;
+            sendResponse(message.msgID, message.msgFrom, EVENT, SYSTEM, 1);
 
-                        //for(j=0;j<sysConf.wifi.list[j].encryption.authCnt;j++)
-                        strcpy(messageResponse[0].SYSCMDresponse.wifi.scanResult.list[i].encryption.authentification[0].mode, sysConf.wifi.list[i].encryption.authentification[0].mode);
-                        //for(j=0;j<sysConf.wifi.list[j].encryption.wpaCnt;j++)
-                        strcpy(messageResponse[0].SYSCMDresponse.wifi.scanResult.list[i].encryption.wpa[0].type, sysConf.wifi.list[i].encryption.wpa[0].type);
-                    }
+            if(sysConf.wifi.wifiDetected>0){
+                for(i=0;i<sysConf.wifi.wifiDetected;i++){
+                    printf("WIFI #%d    SSID: %s\n",i, sysConf.wifi.list[i].ssid);
+                    strcpy(messageResponse[0].SYSCMDresponse.wifi.scanResult.list[i].ssid, sysConf.wifi.list[i].ssid);
+                    strcpy(messageResponse[0].SYSCMDresponse.wifi.scanResult.list[i].encryption.enable, sysConf.wifi.list[i].encryption.enable);
+
+                    //for(j=0;j<sysConf.wifi.list[j].encryption.authCnt;j++)
+                    strcpy(messageResponse[0].SYSCMDresponse.wifi.scanResult.list[i].encryption.authentification[0].mode, sysConf.wifi.list[i].encryption.authentification[0].mode);
+                    //for(j=0;j<sysConf.wifi.list[j].encryption.wpaCnt;j++)
+                    strcpy(messageResponse[0].SYSCMDresponse.wifi.scanResult.list[i].encryption.wpa[0].type, sysConf.wifi.list[i].encryption.wpa[0].type);
                 }
-                messageResponse[0].SYSCMDresponse.wifi.scanResult.wifiDetected = sysConf.wifi.wifiDetected;
- 
-                //getSenderFromMsgId(wifiRequestMessageID);
-
-                char msg[50];
-                sprintf(msg, "Scan result: %d hotspot detected", sysConf.wifi.wifiDetected);
-                
-                messageResponse[0].responseType = RESP_WIFI_SCAN;
-                strcpy(messageResponse[0].returnMessage, msg);
-                sendResponse(message.msgID, message.msgFrom, RESPONSE, SYSTEM, 1);
-                                                    
-                wifiScanDone = 0;
             }
+            messageResponse[0].SYSCMDresponse.wifi.scanResult.wifiDetected = sysConf.wifi.wifiDetected;
+            //getSenderFromMsgId(wifiRequestMessageID);
+            char msg[100];
+            sprintf(msg, "Scan result: %d hotspot detected", sysConf.wifi.wifiDetected);
+
+            messageResponse[0].responseType = RESP_WIFI_SCAN;
+            strcpy(messageResponse[0].returnMessage, msg);
+            sendResponse(message.msgID, message.msgFrom, RESPONSE, SYSTEM, 1);                                    
+            wifiScanDone = 0;
+        }
+
+        // CHeck if WifiScanResult is available
+        if(wifiListDone){
+            printf("\n ..... FIN DE RECUPERATION DES WIFI CONFIGURE, %d TROUVES.......\n", sysConf.wifi.wifiDetected);
+            strcpy(messageResponse[0].SYSCMDresponse.wifi.command.name, "list");
+            // Retourne le message sur topic "EVENT"                                    
+            messageResponse[0].responseType=EVENT_ACTION_END;
+            sendResponse(message.msgID, message.msgFrom, EVENT, SYSTEM, 1);
+
+            if(sysConf.wifi.wifiDetected>0){
+                for(i=0;i<sysConf.wifi.wifiDetected;i++){
+                    printf("WIFI #%d    SSID: %s   KEY: %s    SECURITY: %s   ACTIVE: %s\n",i, sysConf.wifi.list[i].ssid, sysConf.wifi.list[i].key, sysConf.wifi.list[i].encryption.authentification[0].mode, sysConf.wifi.list[i].active);
+                    strcpy(messageResponse[0].SYSCMDresponse.wifi.scanResult.list[i].ssid, sysConf.wifi.list[i].ssid);
+                    strcpy(messageResponse[0].SYSCMDresponse.wifi.scanResult.list[i].key, sysConf.wifi.list[i].key);
+                    strcpy(messageResponse[0].SYSCMDresponse.wifi.scanResult.list[i].active, sysConf.wifi.list[i].active);
+                    //for(j=0;j<sysConf.wifi.list[j].encryption.authCnt;j++)
+                    strcpy(messageResponse[0].SYSCMDresponse.wifi.scanResult.list[i].encryption.authentification[0].mode, sysConf.wifi.list[i].encryption.authentification[0].mode);
+                    //for(j=0;j<sysConf.wifi.list[j].encryption.wpaCnt;j++)
+                    //strcpy(messageResponse[0].SYSCMDresponse.wifi.scanResult.list[i].encryption.wpa[0].type, sysConf.wifi.list[i].encryption.wpa[0].type);
+                }
+            }
+            messageResponse[0].SYSCMDresponse.wifi.scanResult.wifiDetected = sysConf.wifi.wifiDetected;
+            //getSenderFromMsgId(wifiRequestMessageID);
+            char msg[100];
+            sprintf(msg, "Config result: %d network known", sysConf.wifi.wifiDetected);
+
+            messageResponse[0].responseType = RESP_WIFI_NETWORK_LIST;
+            strcpy(messageResponse[0].returnMessage, msg);
+            sendResponse(message.msgID, message.msgFrom, RESPONSE, SYSTEM, 1);                                    
+            wifiListDone = 0;
+        }        
         
         // Check if reset was triggered by user
         if(sysApp.kehops.resetConfig>0){
@@ -666,19 +694,40 @@ int processmessage(void){
                                     messageResponse[0].responseType=EVENT_ACTION_BEGIN;
                                     sendResponse(message.msgID, message.msgFrom, EVENT, SYSTEM, message.msgValueCnt);                                    
                                     
+                                    saveSenderOfMsgId(message.msgID, message.msgFrom);
+                                    wifiRequestMessageID = message.msgID;
+                                    
                                     wifiNetworkScan(&wifiScanDone, &sysConf.wifi);
+                                    
+                                }
+                                
+                                // wifilist (get configured network)
+                                if(!strcmp(message.System.wifi.command.name, "list")){
+                                    
+                                    strcpy(messageResponse[0].SYSCMDresponse.wifi.command.name, "list");
+                                    messageResponse[0].responseType = RESP_WIFI_COMMAND;
+                                    strcpy(messageResponse[0].returnMessage, "Get wifi known list... ");
+                                    sendResponse(message.msgID, message.msgFrom, RESPONSE, SYSTEM, message.msgValueCnt);
+                                    
+                                    messageResponse[0].responseType=EVENT_ACTION_BEGIN;
+                                    sendResponse(message.msgID, message.msgFrom, EVENT, SYSTEM, message.msgValueCnt);                                    
                                     
                                     saveSenderOfMsgId(message.msgID, message.msgFrom);
                                     wifiRequestMessageID = message.msgID;
                                     
-                                }
+                                    wifiNetworkKnownList(&wifiListDone, &sysConf.wifi);
+                                }                                
                                 
                                 if(!strcmp(message.System.wifi.command.name, "config")){
-                                    
+                                    messageResponse[0].SYSCMDresponse.wifi.command.index = message.System.wifi.command.index;
+                                    strcpy(messageResponse[0].SYSCMDresponse.wifi.command.config.ssid, message.System.wifi.command.mode);
+                                    strcpy(messageResponse[0].SYSCMDresponse.wifi.command.config.ssid, message.System.wifi.command.mode);
                                     strcpy(messageResponse[0].SYSCMDresponse.wifi.command.config.ssid, message.System.wifi.command.config.ssid);
                                     strcpy(messageResponse[0].SYSCMDresponse.wifi.command.config.key, message.System.wifi.command.config.key);
+                                    strcpy(messageResponse[0].SYSCMDresponse.wifi.command.config.security, message.System.wifi.command.config.security);
                                     
-                                    char ssidError = wifiNetworkConfig(message.System.wifi.command.config.ssid, message.System.wifi.command.config.key);
+                                    //char ssidError = wifiNetworkConfig(message.System.wifi.command.config.ssid, message.System.wifi.command.config.key);
+                                    char ssidError = wifiNetworkConfig(message.System.wifi.command);
                                     
                                     if(ssidError){
                                         strcpy(messageResponse[0].returnMessage, "ERROR: SSID don't exit");                                        
@@ -695,9 +744,6 @@ int processmessage(void){
 
                                     messageResponse[0].responseType = RESP_WIFI_DATA;
                                     sendResponse(message.msgID, message.msgFrom, RESPONSE, SYSTEM, message.msgValueCnt);
-
-                                    
-
                                 }
                                 
                                 

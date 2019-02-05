@@ -95,6 +95,9 @@
 #define KEY_MESSAGE_VALUE_SYS_WIFI "{'MsgData'{'MsgValue'[*{'wifi'"
 #define KEY_MESSAGE_VALUE_SYS_WIFI_SSID "{'MsgData'{'MsgValue'[*{'wifi'{'ssid'"
 #define KEY_MESSAGE_VALUE_SYS_WIFI_KEY "{'MsgData'{'MsgValue'[*{'wifi'{'key'"
+#define KEY_MESSAGE_VALUE_SYS_WIFI_SECURITY "{'MsgData'{'MsgValue'[*{'wifi'{'security'"
+#define KEY_MESSAGE_VALUE_SYS_WIFI_MODE "{'MsgData'{'MsgValue'[*{'wifi'{'mode'"
+#define KEY_MESSAGE_VALUE_SYS_WIFI_INDEX "{'MsgData'{'MsgValue'[*{'wifi'{'id'"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -400,6 +403,10 @@ char GetAlgoidMsg(ALGOID *destMessage, char *srcBuffer){
                                                         strcpy(destMessage->System.wifi.command.name,"config");
                                                         jRead_string((char *)srcBuffer, KEY_MESSAGE_VALUE_SYS_WIFI_SSID, destMessage->System.wifi.command.config.ssid, 32, &i );
                                                         jRead_string((char *)srcBuffer, KEY_MESSAGE_VALUE_SYS_WIFI_KEY, destMessage->System.wifi.command.config.key, 64, &i );
+                                                        jRead_string((char *)srcBuffer, KEY_MESSAGE_VALUE_SYS_WIFI_SECURITY, destMessage->System.wifi.command.config.security, 15, &i );
+                                                        jRead_string((char *)srcBuffer, KEY_MESSAGE_VALUE_SYS_WIFI_MODE, destMessage->System.wifi.command.mode, 15, &i );
+                                                        destMessage->System.wifi.command.index = jRead_long((char *)srcBuffer, KEY_MESSAGE_VALUE_SYS_WIFI_INDEX, &i); 
+                                                           
                                                     }
 				    	  }
 				    }
@@ -869,13 +876,16 @@ void jsonBuilder(char * buffer, int msgId, char* to, char* from, char* msgType, 
                                                                                                         jwObj_string("wifi", messageResponse[i].SYSCMDresponse.wifi.command.name); break;
                                                                                 case RESP_WIFI_DATA   :                                                                                    
                                                                                                         jwObj_object("wifi");
+                                                                                                            jwObj_int("id", messageResponse[i].SYSCMDresponse.wifi.command.index);
+                                                                                                            jwObj_string("mode", messageResponse[i].SYSCMDresponse.wifi.command.mode);
+                                                                                                            jwObj_string("security", messageResponse[i].SYSCMDresponse.wifi.command.config.security);
                                                                                                             jwObj_string("ssid", messageResponse[i].SYSCMDresponse.wifi.command.config.ssid);
                                                                                                             jwObj_string("key", messageResponse[i].SYSCMDresponse.wifi.command.config.key);
                                                                                                         jwEnd();
                                                                                                         break;
                                                                                 case RESP_WIFI_SCAN   : 
                                                                                                         jwObj_object("wifi");
-                                                                                                            jwObj_array("results");
+                                                                                                            jwObj_array("scan");
                                                                                                                 for(j=0;j<messageResponse[i].SYSCMDresponse.wifi.scanResult.wifiDetected;j++){
                                                                                                                     jwArr_object();
                                                                                                                         jwObj_string("ssid", messageResponse[i].SYSCMDresponse.wifi.scanResult.list[j].ssid);
@@ -893,6 +903,22 @@ void jsonBuilder(char * buffer, int msgId, char* to, char* from, char* msgType, 
                                                                                                             jwEnd();
                                                                                                         jwEnd();
                                                                                                         break;
+                                                                                case RESP_WIFI_NETWORK_LIST   : 
+                                                                                                        jwObj_object("wifi");
+                                                                                                            jwObj_array("list");
+                                                                                                                for(j=0;j<messageResponse[i].SYSCMDresponse.wifi.scanResult.wifiDetected;j++){
+                                                                                                                    jwArr_object();
+                                                                                                                        jwObj_string("connected", messageResponse[i].SYSCMDresponse.wifi.scanResult.list[j].active);
+                                                                                                                        jwObj_string("ssid", messageResponse[i].SYSCMDresponse.wifi.scanResult.list[j].ssid);
+                                                                                                                        jwObj_string("key", messageResponse[i].SYSCMDresponse.wifi.scanResult.list[j].key);
+                                                                                                                        jwObj_array("security");
+                                                                                                                               jwArr_string(messageResponse[i].SYSCMDresponse.wifi.scanResult.list[j].encryption.authentification[0].mode);
+                                                                                                                         jwEnd();
+                                                                                                                    jwEnd();
+                                                                                                                } 
+                                                                                                            jwEnd();
+                                                                                                        jwEnd();
+                                                                                                        break;                                                                                                        
                                                                                 default : jwObj_string("error", "unknown"); break;
                                                                             }		// add object key:value pairs
                                                                             jwObj_string("message", messageResponse[0].returnMessage);

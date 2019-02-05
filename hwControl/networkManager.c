@@ -11,6 +11,7 @@
 #include <unistd.h>
 #include <stdio.h>
 #include "string.h"
+#include "linux_json.h"
 #include "wifi_json.h"
 #include "networkManager.h"
 #include "udpPublish.h"
@@ -26,14 +27,19 @@ char *ptr_robotName;
 char *ptr_robotGroup;
 
 int  wifiScanRequest=0;
-int *ptr_wifiScanDone;
+int  wifiListRequest=0;
+
+int *ptr_wifiFlagDone;
+
 APDATA *ptr_wifiData;
 APDATA wifi_hotspot; 
+APDATA wifi_knownNetwork;
 
 int runBashPing(void);
 void runBashWifiScan(void);
 void wifiNetworkScan(int *ptrResult, APDATA *ptrData);
-int wifiNetworkConfig(char *ssid, char * password);         // Démarre une procédure de configuration du WiFi
+void wifiNetworkKnownlist(int *ptrResult, APDATA *ptrData);
+int wifiNetworkConfig(WIFI_SETTING wifi);         // Démarre une procédure de configuration du WiFi
 
 
 // ------------------------------------------
@@ -86,6 +92,11 @@ void *networkTask (void * arg){
                 if(wifiScanRequest){
                     runBashWifiScan();
                     wifiScanRequest = 0;
+                }
+                
+                if(wifiListRequest){
+                    runBashWifiGetNetwork();
+                    wifiListRequest = 0;
                 }
                         
             
@@ -147,7 +158,7 @@ int runBashPing(void){
 
 void runBashWifiScan(void){
     int i, j;
-    char data[10000];
+    char data[8192];
     FILE *echoVal;
     printf("\n---------- Launching bash script for wifiscan ------------\n");
 
@@ -156,7 +167,7 @@ void runBashWifiScan(void){
     /* Read the output a line at a time - output it. */
     while (fgets(data, sizeof(data)-1, echoVal) != NULL);
      
-    printf ("\n---------- End of bash script for wifi------------\n");
+    printf ("\n---------- End of bash script for wifi scan------------\n");
     
     int wifiCnt = GetWifiScanJsonResults(&wifi_hotspot ,data);
     
@@ -173,7 +184,41 @@ void runBashWifiScan(void){
             //for(j=0;j<ptr_wifiData->list[i].encryption.wpaCnt;j++)
             strcpy(ptr_wifiData->list[i].encryption.wpa[0].type, wifi_hotspot.list[i].encryption.wpa[0].type);
         }
-        *ptr_wifiScanDone = 1;
+        *ptr_wifiFlagDone = 1;
+    }
+    pclose(echoVal);
+}
+
+void runBashWifiGetNetwork(void){
+    int i, j;
+    char data[8192];
+    FILE *echoVal;
+    printf("\n---------- Launching bash script for wifi network setting ------------\n");
+
+    echoVal = popen("wifisetup -list", "r");
+
+    /* Read the output a line at a time - output it. */
+    while (fgets(data, sizeof(data)-1, echoVal) != NULL);
+     
+    printf ("\n---------- End of bash script for wifi network setting------------\n");
+    
+    int wifiCnt = GetWifiListJsonResults(&wifi_knownNetwork ,data);
+    
+    ptr_wifiData->wifiDetected = wifiCnt;
+   
+    if(wifiCnt){
+        //printf("NOMBRE DE WIFI DETECTE: %d\n***************\n", wifiCnt);
+        for (i=0;i<wifiCnt;i++){
+            //printf("SSID [%d]: %s    AUTH ENABLE: %s     MODE: %s    KEY:%s\n",i, wifi_knownNetwork.list[i].ssid, wifi_knownNetwork.list[i].encryption.enable,  wifi_knownNetwork.list[i].encryption.authentification[0].mode, wifi_knownNetwork.list[i].key);
+            strcpy(ptr_wifiData->list[i].active, wifi_knownNetwork.list[i].active);
+            strcpy(ptr_wifiData->list[i].ssid, wifi_knownNetwork.list[i].ssid);
+            strcpy(ptr_wifiData->list[i].encryption.authentification[0].mode, wifi_knownNetwork.list[i].encryption.authentification[0].mode);
+            //for(j=0;j<ptr_wifiData->list[i].encryption.authCnt;j++)
+            strcpy(ptr_wifiData->list[i].key, wifi_knownNetwork.list[i].key);
+            //for(j=0;j<ptr_wifiData->list[i].encryption.wpaCnt;j++)
+
+        }
+        *ptr_wifiFlagDone = 1;
     }
     pclose(echoVal);
 }
@@ -183,28 +228,44 @@ void runBashWifiScan(void){
 // ------------------------------------------------------------------------------------
 void wifiNetworkScan(int *ptrResult, APDATA *ptrData){
     wifiScanRequest = 1;
-    ptr_wifiScanDone = ptrResult;
+    ptr_wifiFlagDone = ptrResult;
     ptr_wifiData = ptrData;
 }
+
+// ------------------------------------------------------------------------------------
+// WIFINETWORKKNOWNLIST: Demarre le scan des acces point wifi
+// ------------------------------------------------------------------------------------
+void wifiNetworkKnownList(int *ptrResult, APDATA *ptrData){
+    wifiListRequest = 1;
+    ptr_wifiFlagDone = ptrResult;
+    ptr_wifiData = ptrData;
+}
+
 
 // ------------------------------------------------------------------------------------
 // WIFINETWORKCONFIG: Démarre une procédure de configuration du WiFi
 // 
 // ------------------------------------------------------------------------------------
-int wifiNetworkConfig(char *ssid, char *password){
+//int wifiNetworkConfig(char *ssid, char *password){
+int wifiNetworkConfig(WIFI_SETTING wifi){
+    
     int i=0;
     int wifiUserValid=0;
     int wifiSSIDresult;
     
-    for(i=0;i<25;i++){
-        //if(!strcmp(wifi_hotspot.ssid, ssid)){
-        if(!strcmp(wifi_hotspot.list[i].ssid, ssid)){
-            wifiUserValid=1;
-        }
+    //if(!strcmp(wifi_hotspot.ssid, ssid)){
+    if(!strcmp(wifi_hotspot.list[wifi.index].ssid, wifi.config.ssid)){
+        wifiUserValid=1;
     }
     
     if(wifiUserValid){
-        printf("WIFI VALIDE NAME: %s   PASS: %s\n", ssid, password) ;
+        
+        char shellCmd[100] ;
+//        sprintf(&shellCmd, "sh wifi.sh -add %s %s %s", wifi.config.ssid, wifi.config.key, wifi.config.security);
+        sprintf(&shellCmd, "wifisetup add -ssid %s -encr %s -password %s", wifi.config.ssid, wifi.config.security, wifi.config.key);
+        
+        printf("WIFI VALID: %s\n", shellCmd) ;
+        popen(&shellCmd, "r");
         wifiSSIDresult = 0;
     }
     else{

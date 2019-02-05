@@ -349,6 +349,8 @@ struct wifiEncrypt{
 
 struct accesspoint_data{
     char ssid[32];          // Nom du réseau
+    char key[32];          // mOT DE PASSE
+    char active[15];
     struct wifiEncrypt encryption;    //  Encryption activée ON/OFF
     
 };  

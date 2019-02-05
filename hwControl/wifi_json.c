@@ -1,6 +1,9 @@
 
 #define KEY_RESULTS "{'results'"
 #define KEY_RESULTS_SSID               "{'results'[*{'ssid'"
+#define KEY_RESULTS_KEY               "{'results'[*{'password'"
+#define KEY_RESULTS_ENCRYPT              "{'results'[*{'encryption'"
+#define KEY_RESULTS_ACTIVE               "{'results'[*{'enable'"
 #define KEY_RESULTS_ENCRYPT_ENABLE     "{'results'[*{'encryption'{'enabled'"
 #define KEY_RESULTS_ENCRYPT_WPA        "{'results'[*{'encryption'{'wpa'"
 #define KEY_RESULTS_ENCRYPT_WPA_        "{'results'[*{'encryption'{'wpa'["
@@ -35,8 +38,7 @@ int GetWifiScanJsonResults(APDATA *destMessage, char *srcBuffer){
           // RECHERCHE DATA ARRAY
         if(element.dataType == JREAD_ARRAY ){
           for(i=0; i<element.elements; i++ )    // loop for no. of elements in JSON
-          {
-                
+          {      
                 jRead_string((char *)srcBuffer, KEY_RESULTS_SSID, destMessage->list[i].ssid, 32, &i);
                 jRead_string((char *)srcBuffer, KEY_RESULTS_ENCRYPT_ENABLE, destMessage->list[i].encryption.enable, 15, &i);
                 jRead_string((char *)srcBuffer, KEY_RESULTS_ENCRYPT_AUTH_, destMessage->list[i].encryption.authentification[0].mode, 15, &i);        
@@ -47,6 +49,33 @@ int GetWifiScanJsonResults(APDATA *destMessage, char *srcBuffer){
         }
         else
             return 0;
+        return element.elements;
+}
 
+// -----------------------------------------------------------------------------
+// GetWifiListJsonResults
+// Get message from buffer and set in the message structure
+// -----------------------------------------------------------------------------
+
+int GetWifiListJsonResults(APDATA *destMessage, char *srcBuffer){
+	struct jReadElement element, auth_list;
+	int i, j;
+        char test;
+        jRead((char *)srcBuffer, KEY_RESULTS, &element );
+
+          // RECHERCHE DATA ARRAY
+        if(element.dataType == JREAD_ARRAY ){
+          for(i=0; i<element.elements; i++ )    // loop for no. of elements in JSON
+          {      
+                jRead_string((char *)srcBuffer, KEY_RESULTS_SSID, destMessage->list[i].ssid, 32, &i);
+                jRead_string((char *)srcBuffer, KEY_RESULTS_ENCRYPT, destMessage->list[i].encryption.authentification[0].mode, 15, &i);
+                jRead_string((char *)srcBuffer, KEY_RESULTS_KEY, destMessage->list[i].key, 15, &i);        
+                jRead_string((char *)srcBuffer, KEY_RESULTS_ACTIVE, destMessage->list[i].active, 15, &i);        
+
+                printf("\n");
+          }
+        }
+        else
+            return 0;
         return element.elements;
 }

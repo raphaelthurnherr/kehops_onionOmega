@@ -1,4 +1,4 @@
-#define MAX_MQTT_BUFF 4096
+#define MAX_MQTT_BUFF 8192
 
 #include "../type.h"
 
@@ -13,6 +13,7 @@ typedef enum msgformat{
         RESP_WIFI_COMMAND,
         RESP_WIFI_DATA,
         RESP_WIFI_SCAN,
+        RESP_WIFI_NETWORK_LIST, 
         RESP_DASH,
 	RESP_STD_MESSAGE,
 } t_msgformat;
@@ -198,13 +199,16 @@ struct mSystem{
 struct wificonfig{
     char ssid[32];
     char key[64];
+    char security[32];
 };
 
 
-struct wifiCmd{
+typedef struct wifiCmd{
+    int index;
     char name[15];
+    char mode[15];
     struct wificonfig config;   
-};
+}WIFI_SETTING;
 
 struct wifiMessage{
     struct wifiCmd command;

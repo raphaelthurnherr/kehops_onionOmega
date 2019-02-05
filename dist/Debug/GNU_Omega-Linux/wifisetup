@@ -155,7 +155,6 @@ _FindNumNetworks () {
 
 	# find the first network
 	local network=$(uci -q get wireless.\@wifi-config[$count])
-	echo local network=$(uci -q get wireless.\@wifi-config[$count])
 
 	# loop through all configured networks
 	while [ "$network" == "wifi-config" ]
@@ -165,7 +164,6 @@ _FindNumNetworks () {
 
 		# continue the loop
 		network=$(uci -q get wireless.\@wifi-config[$count])
-		echo network=$(uci -q get wireless.\@wifi-config[$count])
 	done
 
 	# return the count number
