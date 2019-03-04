@@ -53,6 +53,7 @@ int makeStatusRequest(int msgType);
 int makeMotorRequest(void);
 int makeButtonRequest(void);
 int makeRgbRequest(void);
+int makeConfigRequest(void);
 
 int runMotorAction(void);
 int runStepperAction(void);
@@ -403,9 +404,9 @@ int processmessage(void){
                             // CONFIG COMMAND FOR DATASTREAM
 
                                     // R�cup�re les parametres de configuration du nom du robot
-                                    strcpy(sysApp.info.name, message.Config.robot.name);                      // Enregistrement du broker distant
+                                    strcpy(sysApp.info.name, message.Config.robot.name);                      // Enregistrement du nom du system
                                     // R�cup�re les parametres de configuration du group du robot
-                                    strcpy(sysApp.info.group, message.Config.robot.group);                      // Enregistrement du broker distant
+                                    strcpy(sysApp.info.group, message.Config.robot.group);                      // Enregistrement du group
                                     
                                     // R�cup�re les parametres de configuration du broker distant
                                     strcpy(sysConf.communication.mqtt.broker.address, message.Config.broker.address);                      // Enregistrement du broker distant
@@ -551,6 +552,11 @@ int processmessage(void){
                                     }
 
                         // Préparation des valeurs du message de réponse
+                                    
+                                    strcpy(messageResponse[valCnt].CONFIGresponse.robot.name, sysApp.info.name);
+                                    strcpy(messageResponse[valCnt].CONFIGresponse.robot.group, sysApp.info.group);
+                                    strcpy(messageResponse[valCnt].CONFIGresponse.broker.address, sysConf.communication.mqtt.broker.address);
+                                    
                                 // GET STREAM CONFIG FOR RESPONSE
                                     messageResponse[valCnt].CONFIGresponse.stream.time=sysConf.communication.mqtt.stream.time_ms;
                                     
@@ -733,6 +739,8 @@ int processAlgoidRequest(void){
 
                 case COLORS :	makeRgbRequest();					// Requete commande moteur
                                                 break;                            
+                case CONFIG :	makeConfigRequest();					// Requete de la configuration actuelle
+                                                break;                                                                            
 
 		default : break;
 	}
@@ -1364,7 +1372,6 @@ int makeStatusRequest(int msgType){
 	int i;
 	int ptrData=0;
 
-	message.msgValueCnt=0;
 	message.msgValueCnt = NBDIN + NBBTN + NBMOTOR + NBSONAR + NBRGBC + NBLED + NBPWM + NBAIN +1 ; // Nombre de VALEUR � transmettre + 1 pour le SystemStatus
      
         // Preparation du message de reponse pour le status systeme
@@ -2223,11 +2230,12 @@ int runUpdateCommand(int type){
     printf ("---------- Launching bash script ------------\n");
     
     if(type==0)
-        status=system("sh /root/algobotManager.sh check");
+        status=system("sh /root/kehopsInstaller.sh check");
     
     if(type==1){
         sendMqttReport(message.msgID, "WARNING ! APPLICATION IS UPDATING AND WILL RESTART ");// Envoie le message sur le canal MQTT "Report"   
-        status=system("sh /root/algobotManager.sh update");
+        usleep(500000);
+        status=system("sh /root/kehopsInstaller.sh update");
     }
     
     updateState= WEXITSTATUS(status);
@@ -2248,7 +2256,8 @@ void runRestartCommand(void){
      printf ("---------- Launching bash script for restart ------------\n");
 
         sendMqttReport(message.msgID, "WARNING ! APPLICATION WILL RESTART ");// Envoie le message sur le canal MQTT "Report"   
-        status=system("sh /root/algobotManager.sh restart");
+        usleep(500000);
+        status=system("sh /root/kehopsInstaller.sh restart");
     printf ("---------- End of bash script ------------\n");
 }
 
@@ -2301,8 +2310,6 @@ void resetConfig(void){
             kehops.sonar[i].event.hysteresis = 0;
             kehops.sonar[i].measure.distance_cm = -1;
 	}
-        
-      
 
         for(i=0;i<NBRGBC;i++){
 
@@ -2424,4 +2431,28 @@ void wifiSendNetworkList(void){
     messageResponse[0].responseType = RESP_WIFI_NETWORK_LIST;
     strcpy(messageResponse[0].returnMessage, msg);
     sendResponse(message.msgID, message.msgFrom, RESPONSE, SYSTEM, 1);                                    
+}
+
+// -------------------------------------------------------------------
+// MAKECONFIGREQUEST
+// Récupère la configuration actuelle
+// -------------------------------------------------------------------
+
+int makeConfigRequest(void){
+    printf("\nREQUETE DE CONFIGURATION************\n");
+    
+    int i;
+    int ptrData=0;
+    
+    // Preparation du message de reponse pour la configuration du system
+    strcpy(messageResponse[ptrData].CONFIGresponse.robot.name, sysApp.info.name);                       // Récupération du nom du sytem
+    strcpy(messageResponse[ptrData].CONFIGresponse.robot.group, sysApp.info.group);                      // Récupération du group du sytem
+    
+    strcpy(messageResponse[ptrData].CONFIGresponse.broker.address, sysConf.communication.mqtt.broker.address);   // Adresse du broker
+    strcpy(messageResponse[ptrData].CONFIGresponse.stream.state, sysConf.communication.mqtt.stream.state);      // Etat d'activation de la stream
+    strcpy(messageResponse[ptrData].CONFIGresponse.stream.onEvent, sysConf.communication.mqtt.stream.onEvent);   // Envoie de la stream sur evenements
+    strcpy(messageResponse[ptrData].CONFIGresponse.stream.time, sysConf.communication.mqtt.stream.time_ms);      // Interval d'envoie de la stream en mode polling
+    
+    
+    
 }

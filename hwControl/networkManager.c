@@ -162,7 +162,7 @@ void runBashWifiScan(void){
     FILE *echoVal;
     printf("\n---------- Launching bash script for wifiscan ------------\n");
 
-    echoVal = popen("sh wifi.sh -scan", "r");
+    echoVal = popen("sh kehops_wifi.sh -scan", "r");
 
     /* Read the output a line at a time - output it. */
     while (fgets(data, sizeof(data)-1, echoVal) != NULL);

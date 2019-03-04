@@ -299,11 +299,11 @@ char GetAlgoidMsg(ALGOID *destMessage, char *srcBuffer){
                                               }
                                               
                                             // broker
-                                            jRead_string((char *)srcBuffer, KEY_MESSAGE_VALUE_CFG_BROKER_ADDR, destMessage->Config.broker.address, 100, &i );
+                                                jRead_string((char *)srcBuffer, KEY_MESSAGE_VALUE_CFG_BROKER_ADDR, destMessage->Config.broker.address, 100, &i );
                                             // Stream settings
-                                                  jRead_string((char *)srcBuffer, KEY_MESSAGE_VALUE_CFG_STREAM_STATE, destMessage->Config.stream.state, 15, &i );
-                                                  destMessage->Config.stream.time= jRead_long((char *)srcBuffer, KEY_MESSAGE_VALUE_CFG_STREAM_TIME, &i);
-                                                  jRead_string((char *)srcBuffer, KEY_MESSAGE_VALUE_CFG_STREAM_ONEVENT, destMessage->Config.stream.onEvent, 15, &i );
+                                                jRead_string((char *)srcBuffer, KEY_MESSAGE_VALUE_CFG_STREAM_STATE, destMessage->Config.stream.state, 15, &i );
+                                                destMessage->Config.stream.time= jRead_long((char *)srcBuffer, KEY_MESSAGE_VALUE_CFG_STREAM_TIME, &i);
+                                                jRead_string((char *)srcBuffer, KEY_MESSAGE_VALUE_CFG_STREAM_ONEVENT, destMessage->Config.stream.onEvent, 15, &i );
                                                   
                                             // Motor Setting
                                                 jRead((char *)srcBuffer, KEY_MESSAGE_VALUE_CFG_MOTOR, &cfg_device_list );
@@ -797,13 +797,22 @@ void jsonBuilder(char * buffer, int msgId, char* to, char* from, char* msgType, 
                                                                                                                 jwObj_string("reset", messageResponse[i].CONFIGresponse.action.reset);       
                                                                                                                 jwObj_string("save", messageResponse[i].CONFIGresponse.action.save);                                                                                                                       
                                                                                                             jwEnd();  
-                                                                                                            
-                                                                                                            jwObj_object( "stream" );                                                                                 
-                                                                                                                    jwObj_string("state", messageResponse[i].CONFIGresponse.stream.state);
-                                                                                                                    jwObj_int("time", messageResponse[i].CONFIGresponse.stream.time);
-                                                                                                                    jwObj_string("onEvent", messageResponse[i].CONFIGresponse.stream.onEvent);         
+
+                                                                                                            jwObj_object( "robot"); 
+                                                                                                                jwObj_string("name", messageResponse[i].CONFIGresponse.robot.name);
+                                                                                                                jwObj_string("group", messageResponse[i].CONFIGresponse.robot.group);
+                                                                                                            jwEnd();                                                                                                            
+                                                                                                            jwObj_object( "mqtt" );                                                                                 
+                                                                                                                jwObj_object( "broker" ); 
+                                                                                                                    jwObj_string("address", messageResponse[i].CONFIGresponse.broker.address);
+                                                                                                                jwEnd();
+                                                                                                                jwObj_object( "stream" );                                                                                 
+                                                                                                                        jwObj_string("state", messageResponse[i].CONFIGresponse.stream.state);
+                                                                                                                        jwObj_int("time", messageResponse[i].CONFIGresponse.stream.time);
+                                                                                                                        jwObj_string("onEvent", messageResponse[i].CONFIGresponse.stream.onEvent);         
+                                                                                                                jwEnd();
                                                                                                             jwEnd();
-                                                                                                            
+
                                                                                                         // CREATE JSON CONFIG FOR MOTOR  
                                                                                                             if(messageResponse[i].CONFIGresponse.motValueCnt > 0){
                                                                                                                 jwObj_array("motor");

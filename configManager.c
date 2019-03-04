@@ -322,7 +322,7 @@ char SaveConfig(char * fileName){
     char buffer[MAX_MQTT_BUFF];
     unsigned int buflen= MAX_MQTT_BUFF;
     int i;
-    // CREATE JSON STRING FOR CONFIGURATION
+    // CREATE JSON STRING FOR CONFIGURATION FILE
 	jwOpen( buffer, buflen, JW_OBJECT, JW_PRETTY );		// start root object  
 
         // CREATE JSON CONFIG FOR MQTT        
