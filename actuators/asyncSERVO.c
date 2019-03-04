@@ -36,8 +36,9 @@ int setAsyncServoAction(int actionNumber, int pwmName, int mode, int time){
 	// D�marre un timer d'action sur le PWM et sp�cifie la fonction call back � appeler en time-out
 	// Valeur en retour >0 signifie que l'action "en retour" � �t� �cras�e
 
-        if(mode==ON)
-            setServoPosition(pwmName, kehops.servo[pwmName].power); 
+        if(mode==ON){
+            setServoPosition(pwmName, kehops.pwm[pwmName].power); 
+        }
         else
             if(mode==OFF)
             setServoPosition(pwmName, -1);

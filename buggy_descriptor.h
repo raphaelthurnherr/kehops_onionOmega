@@ -66,12 +66,6 @@ typedef enum o_stepper{
         NBSTEPPER
 }t_stepper;
 
-typedef enum o_servo{
-	SERVO_0,
-	SERVO_1,
-	NBSERVO
-}t_servo;
-
 typedef enum o_pwm{
 	PWM_0,
 	PWM_1,

@@ -20,15 +20,15 @@
 int InitHwManager(void);						// Ouverture du thread Timer
 int CloseHwManager(void);						// Fermeture du thread Timer
 
-int set_i2c_command_queue(int (*callback)(char, int),char adr, int cmd); // Ajout la commande I2C dans la file
+extern int set_i2c_command_queue(int (*callback)(char, int),char adr, int cmd); // Ajout la commande I2C dans la file
 
-int getMotorFrequency(unsigned char motorNb);	// Retourne la fr�quence actuelle mesuree sur l'encodeur
-int getMotorPulses(unsigned char motorNb);		// Retourne le nombre d'impulsion d'encodeur moteur depuis le d�marrage
-char getDigitalInput(unsigned char inputNb);	// Retourne l'�tat de l'entr�e num�rique sp�cifi�e
-int getSonarDistance(void);						// Retourne la distance en cm
-int getBatteryVoltage(void);					// Retourne la tension battery en mV
-char getButtonInput(unsigned char buttonNumber);
-int getColorValue(unsigned char sensorID, unsigned char color);      // Retourne la valeur de la couleur d�finie sur le capteur d�fini
+extern int getMotorFrequency(unsigned char motorNb);	// Retourne la fr�quence actuelle mesuree sur l'encodeur
+extern int getMotorPulses(unsigned char motorNb);		// Retourne le nombre d'impulsion d'encodeur moteur depuis le d�marrage
+extern char getDigitalInput(unsigned char inputNb);	// Retourne l'�tat de l'entr�e num�rique sp�cifi�e
+extern int getSonarDistance(void);						// Retourne la distance en cm
+extern int getBatteryVoltage(void);					// Retourne la tension battery en mV
+extern char getButtonInput(unsigned char buttonNumber);
+extern int getColorValue(unsigned char sensorID, unsigned char color);      // Retourne la valeur de la couleur d�finie sur le capteur d�fini
 
 extern int setMotorSpeed(int motorName, int ratio);
 extern int setMotorDirection(char motorName, int direction);

@@ -1,4 +1,4 @@
-#define FIRMWARE_VERSION "0.5.0"
+#define FIRMWARE_VERSION "0.5.1"
 
 #define DEFAULT_EVENT_STATE 1   
 
@@ -75,6 +75,8 @@ int runUpdateCommand(int type);
 void runRestartCommand(void);
 
 void resetConfig(void);
+void wifiSendScanResult(void);
+void wifiSendNetworkList(void);
 
 char reportBuffer[512];
 int ActionTable[10][3];
@@ -117,6 +119,7 @@ int main(int argc, char *argv[]) {
         printf ("------------------------------------\n");
         
 // Cr�ation de la t�che pour la gestion réseau
+        
 	if(InitNetworkManager(&sysApp.info.wan_online, &sysConf.communication.mqtt.broker.address, &sysApp.info.name, &sysApp.info.group)) printf ("#[CORE] Creation tâche réseau : ERREUR\n");
         else {
             printf ("#[CORE] Demarrage tâche réseau: OK\n");            
@@ -152,67 +155,18 @@ int main(int argc, char *argv[]) {
             
         // CHeck if WifiScanResult is available
         if(wifiScanDone){
-            printf("\n ..... FIN DE DETECTION WIFI, %d TROUVES.......\n", sysConf.wifi.wifiDetected);
-            strcpy(messageResponse[0].SYSCMDresponse.wifi.command.name, "scan");
-            // Retourne le message sur topic "EVENT"                                    
-            messageResponse[0].responseType=EVENT_ACTION_END;
-            sendResponse(message.msgID, message.msgFrom, EVENT, SYSTEM, 1);
-
-            if(sysConf.wifi.wifiDetected>0){
-                for(i=0;i<sysConf.wifi.wifiDetected;i++){
-                    printf("WIFI #%d    SSID: %s\n",i, sysConf.wifi.list[i].ssid);
-                    strcpy(messageResponse[0].SYSCMDresponse.wifi.scanResult.list[i].ssid, sysConf.wifi.list[i].ssid);
-                    strcpy(messageResponse[0].SYSCMDresponse.wifi.scanResult.list[i].encryption.enable, sysConf.wifi.list[i].encryption.enable);
-
-                    //for(j=0;j<sysConf.wifi.list[j].encryption.authCnt;j++)
-                    strcpy(messageResponse[0].SYSCMDresponse.wifi.scanResult.list[i].encryption.authentification[0].mode, sysConf.wifi.list[i].encryption.authentification[0].mode);
-                    //for(j=0;j<sysConf.wifi.list[j].encryption.wpaCnt;j++)
-                    strcpy(messageResponse[0].SYSCMDresponse.wifi.scanResult.list[i].encryption.wpa[0].type, sysConf.wifi.list[i].encryption.wpa[0].type);
-                }
-            }
-            messageResponse[0].SYSCMDresponse.wifi.scanResult.wifiDetected = sysConf.wifi.wifiDetected;
-            //getSenderFromMsgId(wifiRequestMessageID);
-            char msg[100];
-            sprintf(msg, "Scan result: %d hotspot detected", sysConf.wifi.wifiDetected);
-
-            messageResponse[0].responseType = RESP_WIFI_SCAN;
-            strcpy(messageResponse[0].returnMessage, msg);
-            sendResponse(message.msgID, message.msgFrom, RESPONSE, SYSTEM, 1);                                    
+            wifiSendScanResult();
             wifiScanDone = 0;
         }
 
-        // CHeck if WifiScanResult is available
+        // Check if WifiNetworkList is available
         if(wifiListDone){
-            printf("\n ..... FIN DE RECUPERATION DES WIFI CONFIGURE, %d TROUVES.......\n", sysConf.wifi.wifiDetected);
-            strcpy(messageResponse[0].SYSCMDresponse.wifi.command.name, "list");
-            // Retourne le message sur topic "EVENT"                                    
-            messageResponse[0].responseType=EVENT_ACTION_END;
-            sendResponse(message.msgID, message.msgFrom, EVENT, SYSTEM, 1);
-
-            if(sysConf.wifi.wifiDetected>0){
-                for(i=0;i<sysConf.wifi.wifiDetected;i++){
-                    printf("WIFI #%d    SSID: %s   KEY: %s    SECURITY: %s   ACTIVE: %s\n",i, sysConf.wifi.list[i].ssid, sysConf.wifi.list[i].key, sysConf.wifi.list[i].encryption.authentification[0].mode, sysConf.wifi.list[i].active);
-                    strcpy(messageResponse[0].SYSCMDresponse.wifi.scanResult.list[i].ssid, sysConf.wifi.list[i].ssid);
-                    strcpy(messageResponse[0].SYSCMDresponse.wifi.scanResult.list[i].key, sysConf.wifi.list[i].key);
-                    strcpy(messageResponse[0].SYSCMDresponse.wifi.scanResult.list[i].active, sysConf.wifi.list[i].active);
-                    //for(j=0;j<sysConf.wifi.list[j].encryption.authCnt;j++)
-                    strcpy(messageResponse[0].SYSCMDresponse.wifi.scanResult.list[i].encryption.authentification[0].mode, sysConf.wifi.list[i].encryption.authentification[0].mode);
-                    //for(j=0;j<sysConf.wifi.list[j].encryption.wpaCnt;j++)
-                    //strcpy(messageResponse[0].SYSCMDresponse.wifi.scanResult.list[i].encryption.wpa[0].type, sysConf.wifi.list[i].encryption.wpa[0].type);
-                }
-            }
-            messageResponse[0].SYSCMDresponse.wifi.scanResult.wifiDetected = sysConf.wifi.wifiDetected;
-            //getSenderFromMsgId(wifiRequestMessageID);
-            char msg[100];
-            sprintf(msg, "Config result: %d network known", sysConf.wifi.wifiDetected);
-
-            messageResponse[0].responseType = RESP_WIFI_NETWORK_LIST;
-            strcpy(messageResponse[0].returnMessage, msg);
-            sendResponse(message.msgID, message.msgFrom, RESPONSE, SYSTEM, 1);                                    
+            wifiSendNetworkList();
             wifiListDone = 0;
         }        
         
         // Check if reset was triggered by user
+        
         if(sysApp.kehops.resetConfig>0){
             // Reset configuration to default value
             resetConfig();
@@ -220,7 +174,7 @@ int main(int argc, char *argv[]) {
             systemDataStreamCounter=0;
             runBashPing();
         }
-            
+           
         // Controle periodique de l'envoie du flux de donnees des capteurs (status)
         if(sysConf.communication.mqtt.stream.state==ON){
             if(systemDataStreamCounter++ >= sysConf.communication.mqtt.stream.time_ms){
@@ -245,35 +199,27 @@ int main(int argc, char *argv[]) {
 
 	// Gestion de la v�locit� pour une acceleration proggressive
     	// modification de la v�locit� environ chaque 50mS
-    	if(checkMotorPowerFlag){
-//           checkDCmotorPower();													// Contr�le si la v�locit� correspond � la consigne
+        
+        if(checkMotorPowerFlag){
+            checkDCmotorPower();													// Contr�le si la v�locit� correspond � la consigne
             checkMotorPowerFlag=0;
-    	}
-
+        }
+         
         // Contr�le du TIMER 10seconde
     	if(t10secFlag){
-
     		t10secFlag=0;
     	}
-                
+               
         if(t60secFlag){
             t60secFlag=0;
         }
 
 
-		// Contr�le du TIMER 100mS
+	// Contr�le du TIMER 100mS
     	// - R�cup�ration de la tension de batterie
     	// - R�cup�ration de la distance mesur�e au sonar
     	// - Gestion des �venements batterie, digital inputs et distance
     	if(t100msFlag){
-                        // R�cup�ration des couleur mesur�e sur les capteurs
-                        for(i=0;i<NBRGBC;i++){
-                            kehops.rgb[i].color.red.measure.value = getColorValue(i,RED);
-                            kehops.rgb[i].color.green.measure.value = getColorValue(i,GREEN);
-                            kehops.rgb[i].color.blue.measure.value = getColorValue(i,BLUE);
-                            kehops.rgb[i].color.clear.measure.value = getColorValue(i,CLEAR);
-                        }			
-
                         for(i=0;i<NBMOTOR;i++){   
                             // Convert millimeter per pulse to centimeter per pulse and calculation of distance
                             kehops.dcWheel[i].measure.speed_cmS = (float)(getMotorFrequency(i)) * (kehops.dcWheel[i].data._MMPP / 10.0);
@@ -281,20 +227,29 @@ int main(int argc, char *argv[]) {
                             kehops.dcWheel[i].measure.distance = (float)(getMotorPulses(i)) * (kehops.dcWheel[i].data._MMPP / 10.0);
                         }
                         
+                        kehops.sonar[0].measure.distance_cm = getSonarDistance()/10;
+			distanceEventCheck();										// Provoque un �venement de type "distance" si la distance mesur�e					// est hors de la plage sp�cifi�e par l'utilisateur
+                        
 			DINEventCheck();										// Cont�le de l'�tat des entr�es num�rique
 															// G�n�re un �venement si changement d'�tat d�tect�
 
                         BUTTONEventCheck();										// Cont�le de l'�tat des entr�es bouton
 															// G�n�re un �venement si changement d'�tat d�tect�
+                                        										// Cont�le les valeur RGB des capteurs
                         
-                        COLOREventCheck();										// Cont�le les valeur RGB des capteurs
-                        
-                        kehops.sonar[0].measure.distance_cm = getSonarDistance();
-			distanceEventCheck();										// Provoque un �venement de type "distance" si la distance mesur�e					// est hors de la plage sp�cifi�e par l'utilisateur
                         kehops.battery[0].measure.voltage_mV = getBatteryVoltage();
                         kehops.battery[0].measure.capacity =(kehops.battery[0].measure.voltage_mV-3500)/((4210-3500)/100);
                         batteryEventCheck();
 
+                                                // R�cup�ration des couleur mesur�e sur les capteurs
+                        for(i=0;i<NBRGBC;i++){
+                            kehops.rgb[i].color.red.measure.value = getColorValue(i,RED);
+                            kehops.rgb[i].color.green.measure.value = getColorValue(i,GREEN);
+                            kehops.rgb[i].color.blue.measure.value = getColorValue(i,BLUE);
+                            kehops.rgb[i].color.clear.measure.value = getColorValue(i,CLEAR);
+                        }
+                        
+                        COLOREventCheck();
 			t100msFlag=0;												// Quittance le flag 100mS
     	}
         
@@ -326,7 +281,7 @@ int processmessage(void){
                                 for(i=0;i<message.msgValueCnt;i++){
                                    
                                     // Controle que le moteur existe...
-                                    if(message.DCmotor[i].motor >= 0 && message.DCmotor[i].motor <NBMOTOR)
+                                    if(message.DCmotor[i].motor >= 0 && message.DCmotor[i].motor<NBMOTOR)
                                         messageResponse[i].MOTresponse.motor=message.DCmotor[i].motor;
                                     else
                                         messageResponse[i].MOTresponse.motor=-1;
@@ -334,19 +289,21 @@ int processmessage(void){
                                     // Récupération des paramètes de commandes
                                     
                                     // Retourne un message ALGOID si velocité hors tolérences
-                                    if((message.DCmotor[i].velocity < -100) ||(message.DCmotor[i].velocity > 100)){
-                                            message.DCmotor[i].velocity=0;
-                                            messageResponse[i].MOTresponse.velocity=-1;
-                                    }else
-                                        messageResponse[i].MOTresponse.velocity=message.DCmotor[i].velocity;
+                                    if((message.DCmotor[i].userSetPoint < -100) ||(message.DCmotor[i].userSetPoint > 100)){
+                                            message.DCmotor[i].userSetPoint=0;
+                                            messageResponse[i].MOTresponse.userSetPoint=-1;
+                                            
+                                    }else{
+                                        messageResponse[i].MOTresponse.userSetPoint=message.DCmotor[i].userSetPoint;
+                                    }
+                                        messageResponse[i].MOTresponse.cm=message.DCmotor[i].cm;
+                                        messageResponse[i].MOTresponse.time=message.DCmotor[i].time;
+                                        messageResponse[i].responseType = RESP_STD_MESSAGE;
                                     
-                                    messageResponse[i].MOTresponse.cm=message.DCmotor[i].cm;
-                                    messageResponse[i].MOTresponse.time=message.DCmotor[i].time;
-                                    messageResponse[i].responseType = RESP_STD_MESSAGE;
+                                        
                                 }
                                 // Retourne en r�ponse le message v�rifi�
                                 sendResponse(message.msgID, message.msgFrom, RESPONSE, MOTORS, message.msgValueCnt);  // Retourne une r�ponse d'erreur, (aucun moteur d�fini)
-                                
                                 runMotorAction(); break;			// Action avec en param�tre MOTEUR, VELOCITE, ACCELERATION, TEMPS d'action
                                 
 		case STEPPER : 	
@@ -361,11 +318,11 @@ int processmessage(void){
                                     // Récupération des paramètes de commandes
                                     
                                     // Retourne un message ALGOID si velocit� hors tol�rences
-                                    if((message.StepperMotor[i].velocity < -100) ||(message.StepperMotor[i].velocity > 100)){
-                                            message.StepperMotor[i].velocity=0;
-                                            messageResponse[i].STEPPERresponse.velocity=-1;
+                                    if((message.StepperMotor[i].userSetPoint < -100) ||(message.StepperMotor[i].userSetPoint > 100)){
+                                            message.StepperMotor[i].userSetPoint=0;
+                                            messageResponse[i].STEPPERresponse.userSetPoint=-1;
                                     }else
-                                        messageResponse[i].STEPPERresponse.velocity=message.StepperMotor[i].velocity;
+                                        messageResponse[i].STEPPERresponse.userSetPoint=message.StepperMotor[i].userSetPoint;
                                     
                                     messageResponse[i].STEPPERresponse.step=message.StepperMotor[i].step;
                                     messageResponse[i].STEPPERresponse.rotation=message.StepperMotor[i].rotation;
@@ -404,14 +361,14 @@ int processmessage(void){
                                     // Vérification de l'existance de l'index de sortie PWM et défini le mode SERVO
                                     if(message.PWMarray[i].id >= 0 && message.PWMarray[i].id <NBPWM){
                                         messageResponse[i].PWMresponse.id=message.PWMarray[i].id;
-                                         kehops.pwm[message.PWMarray[i].id].config.mode = 1;
+                                        kehops.pwm[message.PWMarray[i].id].config.mode = 1;
                                     }
                                     else
                                         messageResponse[i].PWMresponse.id=-1;
                                             
                                     // R�cup�ration des param�tes 
                                     strcpy(messageResponse[i].PWMresponse.state, message.PWMarray[i].state);
-
+                                    
                                     messageResponse[i].PWMresponse.powerPercent=message.PWMarray[i].powerPercent;
                                     messageResponse[i].responseType = RESP_STD_MESSAGE;
                                 }
@@ -801,16 +758,17 @@ int runMotorAction(void){
             ptrData = getWDvalue(i);
             if(ptrData>=0){
                 actionCount++;
-                        kehops.dcWheel[i].motor.speed = message.DCmotor[ptrData].velocity;
-                        if(kehops.dcWheel[i].motor.speed < 0){
+                        kehops.dcWheel[i].motor.userSpeedSetPoint = message.DCmotor[ptrData].userSetPoint;
+                        
+                        if(kehops.dcWheel[i].motor.userSpeedSetPoint < 0){
                             kehops.dcWheel[i].motor.direction = -1;
-                            kehops.dcWheel[i].motor.speed *= -1;                    // Rétabli la consigne sous forme positive
+                            kehops.dcWheel[i].motor.userSpeedSetPoint *= -1;                    // Rétabli la consigne sous forme positive
                         }
                         else 
-                            if(kehops.dcWheel[i].motor.speed == 0)
+                            if(kehops.dcWheel[i].motor.userSpeedSetPoint == 0)
                                 kehops.dcWheel[i].motor.direction = 0;
                             else
-                                if(kehops.dcWheel[i].motor.speed > 0)
+                                if(kehops.dcWheel[i].motor.userSpeedSetPoint > 0)
                                     kehops.dcWheel[i].motor.direction = 1;
                             
                         kehops.dcWheel[i].target.distanceCM = message.DCmotor[ptrData].cm;
@@ -848,7 +806,7 @@ int runMotorAction(void){
 
                                 printf(reportBuffer);                                                             // Affichage du message dans le shell
                                 sendMqttReport(message.msgID, reportBuffer);				      // Envoie le message sur le canal MQTT "Report"     
-                                setAsyncMotorAction(myTaskId, ID, kehops.dcWheel[ID].motor.speed, INFINITE, NULL);
+                                setAsyncMotorAction(myTaskId, ID, kehops.dcWheel[ID].motor.userSpeedSetPoint, INFINITE, NULL);
 
                                 // Défini l'état de laction comme "en cours" pour message de réponse
                                 messageResponse[0].responseType = EVENT_ACTION_RUN;
@@ -857,9 +815,9 @@ int runMotorAction(void){
                             }else
                             {
                                 if(kehops.dcWheel[ID].target.distanceCM > 0)
-                                        setAsyncMotorAction(myTaskId, ID, kehops.dcWheel[ID].motor.speed, CENTIMETER, kehops.dcWheel[ID].target.distanceCM);
+                                        setAsyncMotorAction(myTaskId, ID, kehops.dcWheel[ID].motor.userSpeedSetPoint, CENTIMETER, kehops.dcWheel[ID].target.distanceCM);
                                 else{
-                                        setAsyncMotorAction(myTaskId, ID, kehops.dcWheel[ID].motor.speed, MILLISECOND, kehops.dcWheel[ID].target.time);                                        
+                                        setAsyncMotorAction(myTaskId, ID, kehops.dcWheel[ID].motor.userSpeedSetPoint, MILLISECOND, kehops.dcWheel[ID].target.time);                                        
                                 }
                             }
                         }
@@ -899,17 +857,17 @@ int runStepperAction(void){
             ptrData=getStepperValue(i);
             if(ptrData>=0){
                 actionCount++;
-                        kehops.stepperWheel[i].motor.speed = message.StepperMotor[ptrData].velocity;
+                        kehops.stepperWheel[i].motor.userSpeedSetPoint = message.StepperMotor[ptrData].userSetPoint;
                         
-                        if(kehops.stepperWheel[i].motor.speed < 0){
+                        if(kehops.stepperWheel[i].motor.userSpeedSetPoint < 0){
                             kehops.stepperWheel[i].motor.direction = -1;
-                            kehops.stepperWheel[i].motor.speed *= -1;                    // Rétabli la consigne sous forme positive
+                            kehops.stepperWheel[i].motor.userSpeedSetPoint *= -1;                    // Rétabli la consigne sous forme positive
                         }
                         else 
-                            if(kehops.stepperWheel[i].motor.speed == 0)
+                            if(kehops.stepperWheel[i].motor.userSpeedSetPoint == 0)
                                 kehops.stepperWheel[i].motor.direction = 0;
                             else
-                                if(kehops.stepperWheel[i].motor.speed > 0)
+                                if(kehops.stepperWheel[i].motor.userSpeedSetPoint > 0)
                                     kehops.stepperWheel[i].motor.direction = 1;
                             
                         kehops.stepperWheel[i].target.time = message.StepperMotor[ptrData].time;
@@ -948,7 +906,7 @@ int runStepperAction(void){
 
                                 printf(reportBuffer);                                                             // Affichage du message dans le shell
                                 sendMqttReport(message.msgID, reportBuffer);				      // Envoie le message sur le canal MQTT "Report"     
-                                setAsyncStepperAction(myTaskId, ID, kehops.stepperWheel[ID].motor.speed, INFINITE, NULL);
+                                setAsyncStepperAction(myTaskId, ID, kehops.stepperWheel[ID].motor.userSpeedSetPoint, INFINITE, NULL);
 
                                 // Défini l'état de laction comme "en cours" pour message de réponse
                                 messageResponse[0].responseType = EVENT_ACTION_RUN;
@@ -957,18 +915,18 @@ int runStepperAction(void){
                             }else
                             {
                                 if(kehops.stepperWheel[ID].target.steps > 0){
-                                    setAsyncStepperAction(myTaskId, ID, kehops.stepperWheel[ID].motor.speed, STEP, kehops.stepperWheel[ID].target.steps);
+                                    setAsyncStepperAction(myTaskId, ID, kehops.stepperWheel[ID].motor.userSpeedSetPoint, STEP, kehops.stepperWheel[ID].target.steps);
                                 }
                                 else{
                                     if(kehops.stepperWheel[ID].target.angle > 0){
-                                       setAsyncStepperAction(myTaskId, ID, kehops.stepperWheel[ID].motor.speed, ANGLE, kehops.stepperWheel[ID].target.angle);
+                                       setAsyncStepperAction(myTaskId, ID, kehops.stepperWheel[ID].motor.userSpeedSetPoint, ANGLE, kehops.stepperWheel[ID].target.angle);
                                     }else
                                     {
                                         if(kehops.stepperWheel[ID].target.rotation > 0){
-                                            setAsyncStepperAction(myTaskId, ID, kehops.stepperWheel[ID].motor.speed, ROTATION, kehops.stepperWheel[ID].target.rotation);
+                                            setAsyncStepperAction(myTaskId, ID, kehops.stepperWheel[ID].motor.userSpeedSetPoint, ROTATION, kehops.stepperWheel[ID].target.rotation);
                                         }else{
                                             if(kehops.stepperWheel[ID].target.time > 0){
-                                                setAsyncStepperAction(myTaskId, ID, kehops.stepperWheel[ID].motor.speed, MILLISECOND, kehops.stepperWheel[ID].target.time);
+                                                setAsyncStepperAction(myTaskId, ID, kehops.stepperWheel[ID].motor.userSpeedSetPoint, MILLISECOND, kehops.stepperWheel[ID].target.time);
                                             }
                                         }
                                     }
@@ -1143,7 +1101,7 @@ int runPwmAction(void){
             if(ptrData>=0){
                 actionCount++;          // Incr�mente le nombre de param�tres trouv�s = action suppl�mentaire a effectuer
                 
-                // R�cup�ration de commande d'�tat pour la sortie PWM
+                // R�cup�ration de commande d'état pour la sortie PWM
                 if(!strcmp(message.PWMarray[ptrData].state,"off"))
                     kehops.pwm[i].state = OFF;
                 if(!strcmp(message.PWMarray[ptrData].state,"on"))
@@ -1155,11 +1113,13 @@ int runPwmAction(void){
                 if(!kehops.pwm[i].config.mode){
                     if(!strcmp(message.PWMarray[ptrData].state,"blink"))
                         kehops.pwm[i].state = BLINK;
-                    if(message.PWMarray[ptrData].time > 0)
-                        kehops.pwm[i].action.blinkTime = message.PWMarray[ptrData].time;
-                    if(message.PWMarray[ptrData].blinkCount > 0)
-                        kehops.pwm[i].action.blinkCount = message.PWMarray[ptrData].blinkCount;
+                if(message.PWMarray[ptrData].time > 0)
+                    kehops.pwm[i].action.blinkTime = message.PWMarray[ptrData].time;
+                if(message.PWMarray[ptrData].blinkCount > 0)
+                    kehops.pwm[i].action.blinkCount = message.PWMarray[ptrData].blinkCount;
                 }
+                
+                
                 
                 // Recuperation des consignes dans le message (si disponible)
                 if(message.PWMarray[ptrData].powerPercent >= 0)
@@ -1450,8 +1410,8 @@ int makeStatusRequest(int msgType){
                 messageResponse[ptrData].MOTresponse.speed=kehops.dcWheel[i].measure.rpm;
                 messageResponse[ptrData].MOTresponse.cm = rpmToPercent(i, kehops.dcWheel[i].measure.rpm);
                 // !!! RESPONSE VELOCITY TO CHECK...
-                //messageResponse[ptrData].MOTresponse.velocity = rpmToPercent(0,sysConfig.motor[0].minRPM) + robot.motor[i].velocity;
-                messageResponse[ptrData].MOTresponse.velocity = rpmToPercent(0,kehops.dcWheel[i].config.rpmMin) + kehops.dcWheel[i].motor.speed;
+                //messageResponse[ptrData].MOTresponse.userSetPoint = rpmToPercent(0,sysConfig.motor[0].minRPM) + robot.motor[i].userSetPoint;
+                messageResponse[ptrData].MOTresponse.userSetPoint = kehops.dcWheel[i].motor.userSpeedSetPoint;
 		ptrData++;
 	}
         
@@ -1859,12 +1819,10 @@ int makeMotorRequest(void){
 		// Contr�le que le moteur soit pris en charge
 		if(message.DCmotor[i].motor < NBMOTOR){
                     
-                        messageResponse[i].MOTresponse.speed = kehops.dcWheel[temp].motor.speed;
+                        messageResponse[i].MOTresponse.userSetPoint = kehops.dcWheel[temp].motor.userSpeedSetPoint;
                         messageResponse[i].MOTresponse.cm = kehops.dcWheel[temp].target.distanceCM;
                         messageResponse[i].MOTresponse.time = kehops.dcWheel[temp].target.time;
                         messageResponse[i].responseType=RESP_STD_MESSAGE;
-                        
-			
 		} else
 			messageResponse[i].MOTresponse.motor = -1;
 	}
@@ -2403,3 +2361,67 @@ int getStartupArg(int count, char *arg[]){
             sprintf(&ADDRESS, "%s", arg[i+1]);
     }
 }   
+
+// Récupération de la liste des réseaux wifi detecté
+// et envoie d'un message mqtt
+void wifiSendScanResult(void){
+    int i;
+    
+    printf("\n ..... FIN DE DETECTION WIFI, %d TROUVES.......\n", sysConf.wifi.wifiDetected);
+    strcpy(messageResponse[0].SYSCMDresponse.wifi.command.name, "scan");
+    // Retourne le message sur topic "EVENT"                                    
+    messageResponse[0].responseType=EVENT_ACTION_END;
+    sendResponse(message.msgID, message.msgFrom, EVENT, SYSTEM, 1);
+
+    if(sysConf.wifi.wifiDetected>0){
+        for(i=0;i<sysConf.wifi.wifiDetected;i++){
+            printf("WIFI #%d    SSID: %s\n",i, sysConf.wifi.list[i].ssid);
+            strcpy(messageResponse[0].SYSCMDresponse.wifi.scanResult.list[i].ssid, sysConf.wifi.list[i].ssid);
+            strcpy(messageResponse[0].SYSCMDresponse.wifi.scanResult.list[i].encryption.enable, sysConf.wifi.list[i].encryption.enable);
+
+            //for(j=0;j<sysConf.wifi.list[j].encryption.authCnt;j++)
+            strcpy(messageResponse[0].SYSCMDresponse.wifi.scanResult.list[i].encryption.authentification[0].mode, sysConf.wifi.list[i].encryption.authentification[0].mode);
+            //for(j=0;j<sysConf.wifi.list[j].encryption.wpaCnt;j++)
+            strcpy(messageResponse[0].SYSCMDresponse.wifi.scanResult.list[i].encryption.wpa[0].type, sysConf.wifi.list[i].encryption.wpa[0].type);
+        }
+    }
+    messageResponse[0].SYSCMDresponse.wifi.scanResult.wifiDetected = sysConf.wifi.wifiDetected;
+    //getSenderFromMsgId(wifiRequestMessageID);
+    char msg[100];
+    sprintf(msg, "Scan result: %d hotspot detected", sysConf.wifi.wifiDetected);
+
+    messageResponse[0].responseType = RESP_WIFI_SCAN;
+    strcpy(messageResponse[0].returnMessage, msg);
+    sendResponse(message.msgID, message.msgFrom, RESPONSE, SYSTEM, 1);                                    
+}
+
+
+void wifiSendNetworkList(void){
+    int i;
+    printf("\n ..... FIN DE RECUPERATION DES WIFI CONFIGURE, %d TROUVES.......\n", sysConf.wifi.wifiDetected);
+    strcpy(messageResponse[0].SYSCMDresponse.wifi.command.name, "list");
+    // Retourne le message sur topic "EVENT"                                    
+    messageResponse[0].responseType=EVENT_ACTION_END;
+    sendResponse(message.msgID, message.msgFrom, EVENT, SYSTEM, 1);
+
+    if(sysConf.wifi.wifiDetected>0){
+        for(i=0;i<sysConf.wifi.wifiDetected;i++){
+            printf("WIFI #%d    SSID: %s   KEY: %s    SECURITY: %s   ACTIVE: %s\n",i, sysConf.wifi.list[i].ssid, sysConf.wifi.list[i].key, sysConf.wifi.list[i].encryption.authentification[0].mode, sysConf.wifi.list[i].active);
+            strcpy(messageResponse[0].SYSCMDresponse.wifi.scanResult.list[i].ssid, sysConf.wifi.list[i].ssid);
+            strcpy(messageResponse[0].SYSCMDresponse.wifi.scanResult.list[i].key, sysConf.wifi.list[i].key);
+            strcpy(messageResponse[0].SYSCMDresponse.wifi.scanResult.list[i].active, sysConf.wifi.list[i].active);
+            //for(j=0;j<sysConf.wifi.list[j].encryption.authCnt;j++)
+            strcpy(messageResponse[0].SYSCMDresponse.wifi.scanResult.list[i].encryption.authentification[0].mode, sysConf.wifi.list[i].encryption.authentification[0].mode);
+            //for(j=0;j<sysConf.wifi.list[j].encryption.wpaCnt;j++)
+            //strcpy(messageResponse[0].SYSCMDresponse.wifi.scanResult.list[i].encryption.wpa[0].type, sysConf.wifi.list[i].encryption.wpa[0].type);
+        }
+    }
+    messageResponse[0].SYSCMDresponse.wifi.scanResult.wifiDetected = sysConf.wifi.wifiDetected;
+    //getSenderFromMsgId(wifiRequestMessageID);
+    char msg[100];
+    sprintf(msg, "Config result: %d network known", sysConf.wifi.wifiDetected);
+
+    messageResponse[0].responseType = RESP_WIFI_NETWORK_LIST;
+    strcpy(messageResponse[0].returnMessage, msg);
+    sendResponse(message.msgID, message.msgFrom, RESPONSE, SYSTEM, 1);                                    
+}

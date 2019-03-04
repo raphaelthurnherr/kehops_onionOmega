@@ -54,14 +54,14 @@ typedef enum msgparam{
 struct m2wd{
 	int motor;
 	int speed;
-        int velocity;
+        int userSetPoint;
 	int time;
 	float cm;
 };
 
 struct mStepper{
 	int motor;
-	int velocity;
+	int userSetPoint;
 	int step;
 	int rotation;
         int angle;

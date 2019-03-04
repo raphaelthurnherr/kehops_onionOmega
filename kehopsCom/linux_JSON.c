@@ -185,7 +185,7 @@ char GetAlgoidMsg(ALGOID *destMessage, char *srcBuffer){
 				    		  //jRead_string((char *)srcBuffer, KEY_MESSAGE_VALUE_MOTOR, myDataString, 15, &i );
                                                   destMessage->DCmotor[i].motor= jRead_long((char *)srcBuffer, KEY_MESSAGE_VALUE_MOTOR, &i);
                                                  
-					    	  destMessage->DCmotor[i].velocity= jRead_long((char *)srcBuffer, KEY_MESSAGE_VALUE_VELOCITY, &i);
+					    	  destMessage->DCmotor[i].userSetPoint= jRead_long((char *)srcBuffer, KEY_MESSAGE_VALUE_VELOCITY, &i);
 					    	  destMessage->DCmotor[i].time= jRead_long((char *)srcBuffer, KEY_MESSAGE_VALUE_TIME, &i);
 					    	  destMessage->DCmotor[i].cm= jRead_long((char *)srcBuffer, KEY_MESSAGE_VALUE_CM, &i);
 				    	  }
@@ -195,7 +195,7 @@ char GetAlgoidMsg(ALGOID *destMessage, char *srcBuffer){
                                                 //jRead_string((char *)srcBuffer, KEY_MESSAGE_VALUE_MOTOR, myDataString, 15, &i );
                                                 destMessage->StepperMotor[i].motor= jRead_long((char *)srcBuffer, KEY_MESSAGE_VALUE_MOTOR, &i);
 
-                                                destMessage->StepperMotor[i].velocity= jRead_long((char *)srcBuffer, KEY_MESSAGE_VALUE_VELOCITY, &i);
+                                                destMessage->StepperMotor[i].userSetPoint= jRead_long((char *)srcBuffer, KEY_MESSAGE_VALUE_VELOCITY, &i);
                                                 destMessage->StepperMotor[i].angle= jRead_long((char *)srcBuffer, KEY_MESSAGE_VALUE_ANGLE, &i);
                                                 destMessage->StepperMotor[i].step= jRead_long((char *)srcBuffer, KEY_MESSAGE_VALUE_STEP, &i);
                                                 destMessage->StepperMotor[i].rotation= jRead_long((char *)srcBuffer, KEY_MESSAGE_VALUE_ROTATION, &i);
@@ -281,7 +281,7 @@ char GetAlgoidMsg(ALGOID *destMessage, char *srcBuffer){
 				    		  jRead_string((char *)srcBuffer, KEY_MESSAGE_VALUE_STATE, destMessage->PWMarray[i].state, 15, &i );
 				    		  int pwmId=jRead_long((char *)srcBuffer, KEY_MESSAGE_VALUE_PWM, &i);
 				    		  destMessage->PWMarray[i].id=pwmId;
-				    		  destMessage->PWMarray[i].powerPercent= jRead_long((char *)srcBuffer, KEY_MESSAGE_VALUE_POSPERCENT, &i);                                                                                                   
+				    		  destMessage->PWMarray[i].powerPercent= jRead_long((char *)srcBuffer, KEY_MESSAGE_VALUE_POSPERCENT, &i);      
 				    	  }
 
                                         // STATUS
@@ -464,7 +464,7 @@ void jsonBuilder(char * buffer, int msgId, char* to, char* from, char* msgType, 
                                                                                                                 jwObj_string("motor", "unknown");
                                                                                                             jwObj_int( "cm", messageResponse[i].MOTresponse.cm);				// add object key:value pairs
                                                                                                             jwObj_int( "time", messageResponse[i].MOTresponse.time);				// add object key:value pairs
-                                                                                                            jwObj_int("velocity", round((messageResponse[i].MOTresponse.velocity)));
+                                                                                                            jwObj_int("userSetPoint", round((messageResponse[i].MOTresponse.userSetPoint)));
                                                                                                             ; break;
                                                                                 default : jwObj_string("error", "unknown"); break;
                                                                             }
@@ -483,7 +483,7 @@ void jsonBuilder(char * buffer, int msgId, char* to, char* from, char* msgType, 
                                                                                                                 jwObj_string("motor", "unknown");
                                                                                                             jwObj_int( "step", messageResponse[i].STEPPERresponse.step);				// add object key:value pairs
                                                                                                             jwObj_int( "rotation", messageResponse[i].STEPPERresponse.rotation);				// add object key:value pairs
-                                                                                                            jwObj_int("velocity", round((messageResponse[i].STEPPERresponse.velocity)));
+                                                                                                            jwObj_int("userSetPoint", round((messageResponse[i].STEPPERresponse.userSetPoint)));
                                                                                                             ; break;
                                                                                 default : jwObj_string("error", "unknown"); break;
                                                                             }
@@ -642,13 +642,13 @@ void jsonBuilder(char * buffer, int msgId, char* to, char* from, char* msgType, 
                                                                             if(i>=1+NBDIN+NBBTN && i<1+NBDIN+NBBTN+NBMOTOR){
                                                                             //        jwObj_int("motor",messageResponse[i].PWMresponse.id);		// add object key:value pairs
                                                                             //        jwObj_int("cm", round((messageResponse[i].MOTresponse.cm)));		// add object key:value pairs
-                                                                            //        jwObj_int("speed", round((messageResponse[i].MOTresponse.velocity)));
+                                                                            //        jwObj_int("speed", round((messageResponse[i].MOTresponse.userSetPoint)));
                                                                                 jwObj_array( "motor" );
                                                                                     for(j=0;j<NBMOTOR;j++){
                                                                                         jwArr_object();
                                                                                             jwObj_double("cm",(messageResponse[i].MOTresponse.cm));
                                                                                             jwObj_int("speed",round((messageResponse[i].MOTresponse.speed)));
-                                                                                            jwObj_int("setpoint",messageResponse[i].MOTresponse.velocity);
+                                                                                            jwObj_int("setpoint",messageResponse[i].MOTresponse.userSetPoint);
                                                                                         jwEnd();           
                                                                                         i++;
                                                                                     }

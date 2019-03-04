@@ -18,7 +18,7 @@
 extern "C" {
 #endif
 
-int setAsyncMotorAction(int actionNumber, int motorNb, int veloc, char unit, int value);
+int setAsyncMotorAction(int actionNumber, int motorNb, int usrSetpoint, char unit, int value);
 int endWheelAction(int actionNumber, int motorNb);
 int checkMotorEncoder(int actionNumber, int encoderName);
 int dummyMotorAction(int actionNumber, int motorNb);

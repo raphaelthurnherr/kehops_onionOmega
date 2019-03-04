@@ -101,7 +101,6 @@ void *MessagerTask (void * arg){
 	    if(mqttDataReady){
 	    // RECEPTION DES DONNES UTILES
                 if(GetAlgoidMsg(&AlgoidMessageRX, MqttDataBuffer)>0){
-                    
                         // Contr�le du destinataire
 //                        if(!strncmp(AlgoidMessageRX.msgTo, ClientID) || !strcmp(AlgoidMessageRX.msgTo, BroadcastID)){
                         // Accept messages if destination differe of "kehops_"  (is brodcast) or if client ID is Exactly the same
@@ -229,7 +228,7 @@ char clearMsgStack(unsigned char ptrStack){
 				//strcpy(AlgoidMsgRXStack[ptrStack].DCmotor[i].motor, "");
                                 AlgoidMsgRXStack[ptrStack].DCmotor[i].motor=-1;
 				AlgoidMsgRXStack[ptrStack].DCmotor[i].time=-1;
-				AlgoidMsgRXStack[ptrStack].DCmotor[i].velocity=-1;
+				AlgoidMsgRXStack[ptrStack].DCmotor[i].userSetPoint=-1;
                                 AlgoidMsgRXStack[ptrStack].DCmotor[i].cm=-1;
 			}
 			return 0;

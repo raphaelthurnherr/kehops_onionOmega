@@ -19,7 +19,7 @@
 
 char reportBuffer[256];
 
-int setAsyncMotorAction(int actionNumber, int motorNb, int veloc, char unit, int value);
+int setAsyncMotorAction(int actionNumber, int motorNb, int usrSetpoint, char unit, int value);
 int endWheelAction(int actionNumber, int motorNb);
 int checkMotorEncoder(int actionNumber, int encoderName);
 int dummyMotorAction(int actionNumber, int encoderName);
@@ -36,7 +36,7 @@ void checkDCmotorPower(void);				// Fonction temporaire pour rampe d'acceleratio
 // - V�locit� entre -100 et +100 qui d�fini le sens de rotation du moteur
 // -------------------------------------------------------------------
 
-int setAsyncMotorAction(int actionNumber, int motorNb, int veloc, char unit, int value){
+int setAsyncMotorAction(int actionNumber, int motorNb, int usrSetpoint, char unit, int value){
 	int setTimerResult;
 	int endOfTask;  
         
@@ -59,7 +59,7 @@ int setAsyncMotorAction(int actionNumber, int motorNb, int veloc, char unit, int
 			endOfTask=removeBuggyTask(setTimerResult);	// Supprime l'ancienne t�che qui � �t� �cras�e par la nouvelle action
 			if(endOfTask){
 				sprintf(reportBuffer, "Annulation des actions moteur pour la tache #%d\n", endOfTask);
-
+                                
 				// R�cup�re l'expediteur original du message ayant provoqu�
 				// l'�venement
 				char msgTo[32];
@@ -77,10 +77,14 @@ int setAsyncMotorAction(int actionNumber, int motorNb, int veloc, char unit, int
                 
 		// Défini le "nouveau" sens de rotation à applique au moteur ainsi que la consigne de vitesse
 		if(setMotorDirection(motorNb, kehops.dcWheel[motorNb].motor.direction)){                                                            // Sens de rotation
-                        setMotorSpeed(motorNb, kehops.dcWheel[motorNb].motor.speed);
+                        int powerOut= kehops.dcWheel[motorNb].config.motor.powerMin + ((float)(100-kehops.dcWheel[motorNb].config.motor.powerMin) /100)*kehops.dcWheel[motorNb].motor.userSpeedSetPoint;
+                        ///setMotorSpeed(motorNb, kehops.dcWheel[motorNb].motor.userSpeedSetPoint);
+                        printf("Powerout: %d \n", powerOut);
+                        setMotorSpeed(motorNb, powerOut);
+
 
 			// Envoie de message ALGOID et SHELL
-			sprintf(reportBuffer, "Start wheel %d with power %d for time %d\n", motorNb, veloc, value);
+			sprintf(reportBuffer, "Start wheel %d with power %d for time %d\n", motorNb, kehops.dcWheel[motorNb].motor.userSpeedSetPoint, value);
 			printf(reportBuffer);
 			sendMqttReport(actionNumber, reportBuffer);
 		}
@@ -107,7 +111,7 @@ int endWheelAction(int actionNumber, int motorNb){
 	// Stop le moteur
 	setMotorSpeed(motorNb, 0);
         //motorSpeedSetpoint(motorNb, 0);
-        kehops.dcWheel[motorNb].motor.speed = 0;
+        kehops.dcWheel[motorNb].motor.userSpeedSetPoint = 0;
         kehops.dcWheel[motorNb].motor.direction = BUGGY_STOP;
         
 	// Retire l'action de la table et v�rification si toute les actions sont effectu�es
@@ -149,8 +153,8 @@ int checkMotorEncoder(int actionNumber, int encoderName){
 	distance = getMotorPulses(encoderName);
 
 	if(distance >=0){
-		distance = distance * (kehops.dcWheel[encoderName].data._MMPP / 10);
-    	usleep(2200);
+            distance = distance * (kehops.dcWheel[encoderName].data._MMPP / 10);
+            //usleep(1000);
 	}else  printf("\n ERROR: I2CBUS READ\n");
 	//printf("\n Encodeur #%d -> START %.2f cm  STOP %.2f cm", encoderNumber, startEncoderValue[encoderNumber], stopEncoderValue[encoderNumber]);
 
@@ -182,7 +186,7 @@ float rpmToPercent(int motorName, int rpm){
         float RPMpercent = 0;                 // % minimum pour fonctionnement du moteur 
         int newRatio;
         
-        RPMpercent = (rpm * 100) / (float)(kehops.dcWheel[motorName].config.rpmMax);
+        RPMpercent = (((rpm * 100) / (float)(kehops.dcWheel[motorName].config.rpmMax-kehops.dcWheel[motorName].config.rpmMin)))-kehops.dcWheel[motorName].config.rpmMin;
            
         return RPMpercent;
 }
@@ -210,13 +214,12 @@ void checkDCmotorPower(void){
             
             // Converti la consigne donnée en % en consigne  CM/SEC
             
-            //userSetpoint=(float)(robot.motor[i].velocity);
-            userSetpoint=(float)(kehops.dcWheel[i].motor.speed);
+            userSetpoint=(float)(kehops.dcWheel[i].motor.userSpeedSetPoint);
             
             //actualRpmInPercent = rpmToPercent(i, robot.motor[i].speed_rpm);
             actualRpmInPercent = rpmToPercent(i, kehops.dcWheel[i].measure.rpm);
             
-            if(userSetpoint <= 0){   
+            if(kehops.dcWheel[i].motor.userSpeedSetPoint <= 0){   
                 setMotorSpeed(i, 0);
             }else{
                 
@@ -232,78 +235,28 @@ void checkDCmotorPower(void){
                         pidSetpoint = kehops.dcWheel[i].config.motor.powerMin;
                     newSetpoint = pidSetpoint;  
               
-                    
-                }else{                    
-                    
-                    // Crée une consigne avec le PWM minimum pour entretenir le moteur et ajoute la consigne utilisateur
-                    fixedSetpoint = kehops.dcWheel[i].config.motor.powerMin + ((100 - (float)kehops.dcWheel[i].config.motor.powerMin) / 100) * userSetpoint;
-                    
-                    //Ajoute 30% de consigne pour le démarrage moteur si RPM trop bas
-                    if(actualRpmInPercent < kehops.dcWheel[i].config.rpmMin){
-                        fixedSetpoint += ((float)kehops.dcWheel[i].config.rpmMin / 100) * 30;
+                   
+                    //Ajoute 30% de consigne pour le démarrage moteur si RPM trop bas (20% < RPMmin)
+                    if(kehops.dcWheel[i].measure.rpm < kehops.dcWheel[i].config.rpmMin - (kehops.dcWheel[i].config.rpmMin / 100 * 50)){
+                        newSetpoint += ((float)kehops.dcWheel[i].config.motor.powerMin / 100) * 25;
+                        printf("\n !!!!!!! KICK START !!!!!\n");
                     }
-                        
-                    //printf("\n*** MOTOR #%d  USER setpoint [pc]:   %d     Normalized setpoint [pc]:   %.2f       \n",0, robot.motor[0].velocity, userSetpoint);
-                    if(fixedSetpoint < kehops.dcWheel[i].config.motor.powerMin){
-                        newSetpoint = kehops.dcWheel[i].config.motor.powerMin;
-                    }else
-                        newSetpoint = fixedSetpoint;
-                    
-                    //newSetpoint=userSetpoint;
-                }
-                
-                //Ajoute 30% de consigne pour le démarrage moteur si RPM trop bas (20% < RPMmin)
-                if(kehops.dcWheel[i].measure.rpm < kehops.dcWheel[i].config.rpmMin - (kehops.dcWheel[i].config.rpmMin / 100 * 50)){
-                    newSetpoint += ((float)kehops.dcWheel[i].config.motor.powerMin / 100) * 25;
-                    printf("\n !!!!!!! KICK START !!!!!\n");
-                }
-                
-                if((newSetpoint != oldSetpoint)){
-                    setMotorSpeed(i, newSetpoint); 
 
-                }
-                
-                printf("\n* MOTOR #%d  USER setpoint [pc]: %.2f - Actual speed [pc] : %.2f - New SETPOINT [pc]: %.2f\n",i, normalizeSetpoint, actualRpmInPercent, newSetpoint);
-                                    
-                oldSetpoint = newSetpoint;
+                    if((newSetpoint != oldSetpoint)){
+                        setMotorSpeed(i, newSetpoint); 
+
+                    }
+
+                    printf("\n* MOTOR #%d  USER setpoint [pc]: %.2f - Actual RPM [pc] : %.2f - New SETPOINT [pc]: %.2f\n",i, normalizeSetpoint, actualRpmInPercent, newSetpoint);
+
+                    oldSetpoint = newSetpoint;                    
+                }               
+
             }
 
             //printf("\n--- MOTOR #%d  ACTUAL RPM: %.1f  ACTUAL RPM [percent]: %.1f   USER SETPOINT: %.1f\n",0 , robot.motor[0].speed_rpm, actualSpeedPercent, userSetpoint);
             //pidSetpoint = PID_speedControl(0, actualSpeedPercent, robot.motor[0].velocity);           
             //setpoint = sysConfig.motor[0].minRPM + RPMToPercent(0, setpoint);
-            
-            
-
-            
-            /*
-            //printf("Motor Nb: %d Adr: %2x ActualPower: %d   TargetPower: %d  \n",i, motorDCadr[i], motorDCactualPower[i], motorDCtargetPower[i]);
-            if(motorDCactualPower[i] < motorDCtargetPower[i]){
-                    //PowerToSet=motorDCactualPower[i] + ((motorDCtargetPower[i]-motorDCactualPower[i])/100)*motorDCaccelValue[i];
-                    //printf("Power to set: %d %",PowerToSet);
-
-                    if(motorDCactualPower[i]+motorDCaccelValue[i]<=motorDCtargetPower[i])		// Contr�le que puissance apr�s acceleration ne d�passe pas la consigne
-                            motorDCactualPower[i]+=motorDCaccelValue[i];						// Augmente la puissance moteur
-                    else motorDCactualPower[i]=motorDCtargetPower[i];						// Attribue la puissance de consigne
-
-                    setMotorSpeed(i, motorDCactualPower[i]);
-                    //set_i2c_command_queue(&PCA9685_DCmotorSetSpeed, motorDCadr[i], motorDCactualPower[i]);
-                    //PCA9685_DCmotorSetSpeed(motorDCadr[i], motorDCactualPower[i]);
-            }
-
-            if(motorDCactualPower[i]>motorDCtargetPower[i]){
-                    if(motorDCactualPower[i]-motorDCdecelValue[i]>=motorDCtargetPower[i])		// Contr�le que puissance apr�s acceleration ne d�passe pas la consigne
-                            motorDCactualPower[i]-=motorDCdecelValue[i];						// Diminue la puissance moteur
-                    else motorDCactualPower[i]=motorDCtargetPower[i];						// Attribue la puissance de consigne
-
-                    setMotorSpeed(i, motorDCactualPower[i]);
-                    //set_i2c_command_queue(&PCA9685_DCmotorSetSpeed, motorDCadr[i], motorDCactualPower[i]);
-                    //PCA9685_DCmotorSetSpeed(motorDCadr[i], motorDCactualPower[i]);
-
-                    // Ouvre le pont en h de commande moteur
-                    if(motorDCactualPower[i]==0)
-                            setMotorDirection(i, BUGGY_STOP);
-            }
-                */
 	}
 }
 

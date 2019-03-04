@@ -113,13 +113,13 @@ struct s_stepper_config{
 
 
 struct robot_stepper_sp{
-    int speed;
+    int userSpeedSetPoint;
     char direction;    
     int steps;  
 };
 
 struct robot_motor_sp{
-    int speed;
+    int userSpeedSetPoint;
     int direction;    
 };
 
@@ -301,7 +301,6 @@ typedef struct robotKehops{
     robot_dcwheel dcWheel[NBMOTOR];
     robot_pwm led[NBLED];
     robot_pwm pwm[NBPWM];
-    robot_pwm servo[NBSERVO];
     robot_prox proximity[NBDIN];
     robot_sonar sonar[NBSONAR];
     robot_rgb rgb[NBRGBC];

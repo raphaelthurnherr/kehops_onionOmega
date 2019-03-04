@@ -519,12 +519,10 @@ unsigned char configStepMotorDriver(void){
 // ou -1 si erreur de lecture
 // -------------------------------------------------------------------
 int EFM8BB_readSonarDistance(void){
-	unsigned char err;
-	unsigned int SonarDistance_mm;
-        unsigned int mmMSB;
-        unsigned int mmLSB;
-        
-//	err=i2cSelectSlave(EFM8BB);						
+	char err;
+	int SonarDistance_mm;
+        int mmMSB;
+        int mmLSB;					
 
 	SonarDistance_mm=0;							// RAZ de la variable distance
         
@@ -548,10 +546,10 @@ int EFM8BB_readSonarDistance(void){
 // ou -1 si erreur de lecture
 // -------------------------------------------------------------------
 int EFM8BB_readBatteryVoltage(void){
-	unsigned char err =0;
-	unsigned int batteryVoltage_mV;
-        unsigned int mVMSB;
-        unsigned int mVLSB;
+	char err =0;
+	int batteryVoltage_mV;
+        int mVMSB;
+        int mVLSB;
 
 	batteryVoltage_mV=0;							// RAZ de la variable
 
@@ -559,6 +557,7 @@ int EFM8BB_readBatteryVoltage(void){
         err+=i2c_readByte(0, EFM8BB, VOLT0+1, &mVMSB);
 	if(!err){
                 batteryVoltage_mV=((mVMSB<<8) & 0xFF00) + mVLSB;
+                //printf("                       Battery: %d\n", batteryVoltage_mV);
 		return batteryVoltage_mV;
 	}else{
             printf("EFM8BB_readBatteryVoltage() -> Read error\n");
@@ -572,7 +571,7 @@ int EFM8BB_readBatteryVoltage(void){
 // ou -1 si erreur de lecture
 // -------------------------------------------------------------------
 int EFM8BB_readFrequency(unsigned char wheelNb){
-	unsigned char err = 0, regAddr = 0;
+	char err = 0, regAddr = 0;
 	int freqLSB=0;
         int freqMSB=0;
         int frequency = 0;
@@ -603,7 +602,7 @@ int EFM8BB_readFrequency(unsigned char wheelNb){
 // ou -1 si erreur de lecture
 // -------------------------------------------------------------------
 int EFM8BB_readPulseCounter(unsigned char wheelNb){
-	unsigned char err=0, regAddr=0;
+	char err=0, regAddr=0;
 	int pulseCount;
         int pcMSB=0;
         int pcLSB=0;
@@ -637,7 +636,7 @@ int EFM8BB_readPulseCounter(unsigned char wheelNb){
 // ou -1 si erreur de lecture
 // -------------------------------------------------------------------
 int EFM8BB_clearWheelDistance(unsigned char wheelNb){
-	unsigned char err, regAddr;
+	char err, regAddr;
 	int pulseCount;
 
 	if(wheelNb==0) {
@@ -663,7 +662,7 @@ int EFM8BB_clearWheelDistance(unsigned char wheelNb){
 // Param�tre "InputNr" plus utilis�...
 // -------------------------------------------------------------------
 char EFM8BB_readDigitalInput(unsigned char InputNr){
-	unsigned char err;
+	char err;
 	char inputState=0;
         
         err = i2c_readByte(0, EFM8BB, DIN_REG, &inputState);
@@ -682,7 +681,7 @@ char EFM8BB_readDigitalInput(unsigned char InputNr){
 // RECUPERE LA VERSION FIRMWARE DU MCU
 // -------------------------------------------------------------------
 int EFM8BB_getFirmwareVersion(void){
-	unsigned char err;
+	char err;
 	int value=-1;
         
         err = i2c_readByte(0, EFM8BB, FIRMWARE_REG, &value);
@@ -700,7 +699,7 @@ int EFM8BB_getFirmwareVersion(void){
 // Recupere le type de montage de la carte
 // -------------------------------------------------------------------
 int EFM8BB_getBoardType(void){
-	unsigned char err;
+	char err;
 	int value=-1;
         
         err = i2c_readByte(0, EFM8BB, BOARDTYPE_REG, &value);
@@ -718,7 +717,7 @@ int EFM8BB_getBoardType(void){
 // RED =0, GREEN=1, BLUE=2, CLEAR=3
 // -------------------------------------------------------------------
 int BH1745_getRGBvalue(unsigned char sensorNb, int color){
-	unsigned char err;
+	char err;
 	int value=-1;
         int RGBregAdr = 0x56;  // Registre CLEAR LSB par defaut 
         unsigned char SensorAdr=BH1745_0;
