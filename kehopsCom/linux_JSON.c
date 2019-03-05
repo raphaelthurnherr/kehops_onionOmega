@@ -299,7 +299,7 @@ char GetAlgoidMsg(ALGOID *destMessage, char *srcBuffer){
                                               }
                                               
                                             // broker
-                                                jRead_string((char *)srcBuffer, KEY_MESSAGE_VALUE_CFG_BROKER_ADDR, destMessage->Config.broker.address, 100, &i );
+                                                jRead_string((char *)srcBuffer, KEY_MESSAGE_VALUE_CFG_BROKER_ADDR, destMessage->Config.broker.address, 128, &i );
                                             // Stream settings
                                                 jRead_string((char *)srcBuffer, KEY_MESSAGE_VALUE_CFG_STREAM_STATE, destMessage->Config.stream.state, 15, &i );
                                                 destMessage->Config.stream.time= jRead_long((char *)srcBuffer, KEY_MESSAGE_VALUE_CFG_STREAM_TIME, &i);
@@ -843,7 +843,7 @@ void jsonBuilder(char * buffer, int msgId, char* to, char* from, char* msgType, 
                                                                                                         // CREATE JSON CONFIG FOR STEPPER  
                                                                                                             if(messageResponse[i].CONFIGresponse.stepperValueCnt > 0){
                                                                                                                 jwObj_array("stepper");
-                                                                                                                    for(j=0;j<messageResponse[i].CONFIGresponse.wheelValueCnt;j++){
+                                                                                                                    for(j=0;j<messageResponse[i].CONFIGresponse.stepperValueCnt;j++){
                                                                                                                         jwArr_object();
                                                                                                                             jwObj_int( "motor", messageResponse[i].CONFIGresponse.stepper[j].id);
                                                                                                                             jwObj_string("inverted", messageResponse[i].CONFIGresponse.stepper[j].inverted);

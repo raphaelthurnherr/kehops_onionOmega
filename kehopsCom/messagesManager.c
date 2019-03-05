@@ -109,7 +109,7 @@ void *MessagerTask (void * arg){
                         char GroupAndName[50], Group[50];
                         sprintf(GroupAndName, "%s/%s",ptr_GroupID, ptr_ClientID);
                         sprintf(Group, "%s/", ptr_GroupID);
-                        if(!strcmp(AlgoidMessageRX.msgTo, Group) || !strcmp(AlgoidMessageRX.msgTo, ptr_ClientID) || !strcmp(AlgoidMessageRX.msgTo, GroupAndName)){
+                            if(!strcmp(AlgoidMessageRX.msgTo, Group) || !strcmp(AlgoidMessageRX.msgTo, ptr_ClientID) || !strcmp(AlgoidMessageRX.msgTo, GroupAndName)){
                             // Enregistrement du message dans la pile
                                 lastMessage=pushMsgStack();
                                 if(lastMessage>=0){
@@ -353,7 +353,7 @@ void sendResponse(int msgId, char * msgTo, unsigned char msgType, unsigned char 
                 case ERR_HEADER : strcpy(ackParam, "error header"); break;
 		default : strcpy(ackParam, "unknown"); break;
 	}
-
+        
 	jsonBuilder(MQTTbuf, msgId, msgTo, ptr_ClientID, ackType, ackParam, msgParam, valCnt);
 	mqttPutMessage(&topic, MQTTbuf, strlen(MQTTbuf));
 }

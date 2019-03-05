@@ -1,4 +1,4 @@
-#define FIRMWARE_VERSION "0.5.1"
+#define FIRMWARE_VERSION "0.6"
 
 #define DEFAULT_EVENT_STATE 1   
 
@@ -403,13 +403,17 @@ int processmessage(void){
                                 for(valCnt=0;valCnt<message.msgValueCnt;valCnt++){
                             // CONFIG COMMAND FOR DATASTREAM
 
-                                    // R�cup�re les parametres de configuration du nom du robot
-                                    strcpy(sysApp.info.name, message.Config.robot.name);                      // Enregistrement du nom du system
+                                    // Récupére les parametres de configuration du nom du robot si specifié
+                                    if(strcmp(message.Config.robot.name, ""))
+                                        strcpy(sysApp.info.name, message.Config.robot.name);                      // Enregistrement du nom du system
+                                    
                                     // R�cup�re les parametres de configuration du group du robot
-                                    strcpy(sysApp.info.group, message.Config.robot.group);                      // Enregistrement du group
+                                    if(strcmp(message.Config.robot.group, ""))
+                                        strcpy(sysApp.info.group, message.Config.robot.group);                      // Enregistrement du group
                                     
                                     // R�cup�re les parametres de configuration du broker distant
-                                    strcpy(sysConf.communication.mqtt.broker.address, message.Config.broker.address);                      // Enregistrement du broker distant
+                                    if(strcmp(message.Config.broker.address, ""))
+                                        strcpy(sysConf.communication.mqtt.broker.address, message.Config.broker.address);                      // Enregistrement du broker distant
                                     
                                     // R�cup�re les parametres eventuelle pour la configuration de l'etat de l'envoie du stream par polling
                                     if(!strcmp(message.Config.stream.state, "on"))
@@ -445,11 +449,14 @@ int processmessage(void){
                                             }
 
                                             // Save config for motor Min PWM for run
-                                            kehops.dcWheel[message.Config.motor[i].id].config.motor.powerMin = message.Config.motor[i].minPWM;
+                                            if(message.Config.motor[i].minPWM >=0)
+                                                kehops.dcWheel[message.Config.motor[i].id].config.motor.powerMin = message.Config.motor[i].minPWM;
                                             
                                             // Save config for motor Min Max RPM
-                                            kehops.dcWheel[message.Config.motor[i].id].config.rpmMin = message.Config.motor[i].minRPM;
-                                            kehops.dcWheel[message.Config.motor[i].id].config.rpmMax = message.Config.motor[i].maxRPM;
+                                            if(message.Config.motor[i].minRPM >=0)
+                                                kehops.dcWheel[message.Config.motor[i].id].config.rpmMin = message.Config.motor[i].minRPM;
+                                            if(message.Config.motor[i].maxRPM >=0)
+                                                kehops.dcWheel[message.Config.motor[i].id].config.rpmMax = message.Config.motor[i].maxRPM;
                                             
                                             // Save config for motor PID regulator
                                             if(!strcmp(message.Config.motor[i].rpmRegulator.PIDstate, "on")){
@@ -460,10 +467,13 @@ int processmessage(void){
                                                 kehops.dcWheel[message.Config.motor[i].id].config.pidReg.enable = 0;
                                                 strcpy(messageResponse[valCnt].CONFIGresponse.motor[i].rpmRegulator.PIDstate, "off");
                                             }
+                                            if(message.Config.motor[i].rpmRegulator.PID_Kp >= 0.0)
+                                                kehops.dcWheel[message.Config.motor[i].id].config.pidReg.Kp = message.Config.motor[i].rpmRegulator.PID_Kp;
+                                            if(message.Config.motor[i].rpmRegulator.PID_Ki >= 0.0)
+                                                kehops.dcWheel[message.Config.motor[i].id].config.pidReg.Ki = message.Config.motor[i].rpmRegulator.PID_Ki;
+                                            if(message.Config.motor[i].rpmRegulator.PID_Kd >= 0.0)
+                                                kehops.dcWheel[message.Config.motor[i].id].config.pidReg.Kd = message.Config.motor[i].rpmRegulator.PID_Kd;                                            
                                             
-                                            kehops.dcWheel[message.Config.motor[i].id].config.pidReg.Kp = message.Config.motor[i].rpmRegulator.PID_Kp;
-                                            kehops.dcWheel[message.Config.motor[i].id].config.pidReg.Ki = message.Config.motor[i].rpmRegulator.PID_Ki;
-                                            kehops.dcWheel[message.Config.motor[i].id].config.pidReg.Kd = message.Config.motor[i].rpmRegulator.PID_Kd;                                            
                                             
                                             messageResponse[valCnt].CONFIGresponse.motor[i].minRPM = message.Config.motor[i].minRPM;
                                             messageResponse[valCnt].CONFIGresponse.motor[i].id = message.Config.motor[i].id;
@@ -481,7 +491,9 @@ int processmessage(void){
                                         // Check if motor exist...
                                         if(message.Config.wheel[i].id >= 0 && message.Config.wheel[i].id <NBMOTOR){
                                             // Save config for motor inversion
+                                            if(message.Config.wheel[i].diameter >= 0)
                                                 kehops.dcWheel[message.Config.wheel[i].id].config.diameter = message.Config.wheel[i].diameter;
+                                            if(message.Config.wheel[i].pulsesPerRot)
                                                 kehops.dcWheel[message.Config.wheel[i].id].config.pulsesPerRot = message.Config.wheel[i].pulsesPerRot;
                                                 
                                                 // Calculation of value for centimeter for each pulse
@@ -542,13 +554,14 @@ int processmessage(void){
                                 // CONFIG COMMAND FOR SAVE
                                     if(!strcmp(message.Config.action.save, "true")){
                                         SaveConfig("kehops.cfg");
-                                        printf("\nNew configuration received and saved in kehops.cfg\n");
+                                        sprintf(reportBuffer, "Save KEHOPS configuration for message #%d\n", message.msgID);
+                                        printf(reportBuffer);                                                             // Affichage du message dans le shell
+                                        sendMqttReport(message.msgID, reportBuffer);				      // Envoie le message sur le canal MQTT "Report"
                                     }
 
                                 // CONFIG COMMAND FOR RESET
                                     if(!strcmp(message.Config.action.reset, "true")){
                                         sysApp.kehops.resetConfig = 1;
-                                        printf("\nNew configuration received\n");
                                     }
 
                         // Préparation des valeurs du message de réponse
@@ -582,6 +595,10 @@ int processmessage(void){
                                 //messageResponse[0].responseType = RESP_STD_MESSAGE;                     
                                 // Retourne en r�ponse le message v�rifi�
                                 sendResponse(message.msgID, message.msgFrom, RESPONSE, CONFIG, message.msgValueCnt);
+                                
+                                sprintf(reportBuffer, "Update KEHOPS configuration for message #%d\n", message.msgID);
+                                printf(reportBuffer);                                                             // Affichage du message dans le shell
+                                sendMqttReport(message.msgID, reportBuffer);				      // Envoie le message sur le canal MQTT "Report"
 
                                 break;
                                 
@@ -709,7 +726,9 @@ int processmessage(void){
                                     sendResponse(message.msgID, message.msgFrom, RESPONSE, SYSTEM, message.msgValueCnt);
                                 }
                                 
-                                
+                                sprintf(reportBuffer, "Traitement de la commande système pour le message #%d\n", message.msgID);
+                                printf(reportBuffer);                                                             // Affichage du message dans le shell
+                                sendMqttReport(message.msgID, reportBuffer);				      // Envoie le message sur le canal MQTT "Report"                                
                                 break;
 		default : break;
 	}
@@ -2353,7 +2372,13 @@ void resetConfig(void){
             printf("#[CORE] Load configuration file from \"kehops.cfg\": ERROR\n");
         }else
             printf("#[CORE] Load configuration file from \"kehops.cfg\": OK\n");
-            
+
+        for(i=0;i<NBLED;i++){
+            if(kehops.led[i].config.defaultState==1)
+                setLedPower(i, kehops.led[i].config.defaultPower);
+            else
+                setLedPower(i, 0);
+        }
         sysApp.info.startUpTime = 0;
 }
 
@@ -2438,21 +2463,102 @@ void wifiSendNetworkList(void){
 // Récupère la configuration actuelle
 // -------------------------------------------------------------------
 
-int makeConfigRequest(void){
-    printf("\nREQUETE DE CONFIGURATION************\n");
-    
+int makeConfigRequest(void){   
     int i;
     int ptrData=0;
     
-    // Preparation du message de reponse pour la configuration du system
-    strcpy(messageResponse[ptrData].CONFIGresponse.robot.name, sysApp.info.name);                       // Récupération du nom du sytem
-    strcpy(messageResponse[ptrData].CONFIGresponse.robot.group, sysApp.info.group);                      // Récupération du group du sytem
+    // PREPARATION DU MESSAGE DE REPONSE POUR LA CONFIGURATION DE KEHOPS
     
+    // Récupération du nom et du groupe
+    strcpy(messageResponse[ptrData].CONFIGresponse.robot.name, sysApp.info.name);
+    strcpy(messageResponse[ptrData].CONFIGresponse.robot.group, sysApp.info.group);
+    
+    messageResponse[ptrData].CONFIGresponse.stream.time = sysConf.communication.mqtt.stream.time_ms;      // Interval d'envoie de la stream en mode polling
     strcpy(messageResponse[ptrData].CONFIGresponse.broker.address, sysConf.communication.mqtt.broker.address);   // Adresse du broker
-    strcpy(messageResponse[ptrData].CONFIGresponse.stream.state, sysConf.communication.mqtt.stream.state);      // Etat d'activation de la stream
-    strcpy(messageResponse[ptrData].CONFIGresponse.stream.onEvent, sysConf.communication.mqtt.stream.onEvent);   // Envoie de la stream sur evenements
-    strcpy(messageResponse[ptrData].CONFIGresponse.stream.time, sysConf.communication.mqtt.stream.time_ms);      // Interval d'envoie de la stream en mode polling
+    if(sysConf.communication.mqtt.stream.state)
+        strcpy(messageResponse[ptrData].CONFIGresponse.stream.state, "on");      // Etat d'activation de la stream
+    else 
+        strcpy(messageResponse[ptrData].CONFIGresponse.stream.state, "off");      // Etat d'activation de la stream
+    
+    if(sysConf.communication.mqtt.stream.onEvent)
+        strcpy(messageResponse[ptrData].CONFIGresponse.stream.onEvent, "on");   // Envoie de la stream sur evenements
+    else
+        strcpy(messageResponse[ptrData].CONFIGresponse.stream.onEvent, "off");   // Envoie de la stream sur evenements
     
     
+    // Récupération de la configuration des moteurs DC
+    messageResponse[ptrData].CONFIGresponse.motValueCnt = NBMOTOR;
+    for(i=0;i<NBMOTOR; i++){
+        messageResponse[ptrData].CONFIGresponse.motor[i].id = i;
+        
+        // Inversion moteur
+        if(kehops.dcWheel[i].config.motor.inverted)
+            strcpy(messageResponse[ptrData].CONFIGresponse.motor[i].inverted,"on");
+        else
+            strcpy(messageResponse[ptrData].CONFIGresponse.motor[i].inverted,"off");
+
+        // Puissance min de démarrage
+        messageResponse[ptrData].CONFIGresponse.motor[i].minPWM = kehops.dcWheel[i].config.motor.powerMin;
+
+        // RPM min et max
+        messageResponse[ptrData].CONFIGresponse.motor[i].minRPM = kehops.dcWheel[i].config.rpmMin;
+        messageResponse[ptrData].CONFIGresponse.motor[i].maxRPM = kehops.dcWheel[i].config.rpmMax;
+
+        // Paramètre régulateur PID
+        if(kehops.dcWheel[i].config.pidReg.enable)
+            strcpy(messageResponse[ptrData].CONFIGresponse.motor[i].rpmRegulator.PIDstate, "on");
+        else
+            strcpy(messageResponse[ptrData].CONFIGresponse.motor[i].rpmRegulator.PIDstate, "off");
+        
+        messageResponse[ptrData].CONFIGresponse.motor[i].rpmRegulator.PID_Kp = kehops.dcWheel[i].config.pidReg.Kp;
+        messageResponse[ptrData].CONFIGresponse.motor[i].rpmRegulator.PID_Ki = kehops.dcWheel[i].config.pidReg.Ki;
+        messageResponse[ptrData].CONFIGresponse.motor[i].rpmRegulator.PID_Kd = kehops.dcWheel[i].config.pidReg.Kd;
+
+        // Diamètre et encodeur (Pour le calcule de la vitesse et la distance)
+        messageResponse[ptrData].CONFIGresponse.wheel[i].diameter = kehops.dcWheel[i].config.diameter;
+        messageResponse[ptrData].CONFIGresponse.wheel[i].pulsesPerRot = kehops.dcWheel[i].config.pulsesPerRot;
+    }
     
+    // Récupération de la configuration des moteurs
+    messageResponse[ptrData].CONFIGresponse.stepperValueCnt = NBSTEPPER;
+    for(i=0;i<NBSTEPPER; i++){
+        messageResponse[ptrData].CONFIGresponse.stepper[i].id = i;
+        
+        // Inversion moteur pas-à-pas
+        if(kehops.stepperWheel[i].config.motor.inverted)
+            strcpy(messageResponse[ptrData].CONFIGresponse.stepper[i].inverted,"on");
+        else
+            strcpy(messageResponse[ptrData].CONFIGresponse.stepper[i].inverted,"off");
+
+        // Ratio du réducteur
+        messageResponse[ptrData].CONFIGresponse.stepper[i].ratio = kehops.stepperWheel[i].config.motor.ratio;
+
+        // Nombre de pas
+        messageResponse[ptrData].CONFIGresponse.stepper[i].stepsPerRot = kehops.stepperWheel[i].config.motor.steps;
+    }
+    
+    // Récupération de la config des LEDS
+    messageResponse[ptrData].CONFIGresponse.ledValueCnt = NBLED;
+    for(i=0;i<NBLED; i++){
+        messageResponse[ptrData].CONFIGresponse.led[i].id = i;        
+        messageResponse[ptrData].CONFIGresponse.led[i].power = kehops.led[i].config.defaultPower;        
+        
+        if(kehops.led[i].config.defaultState)
+            strcpy(messageResponse[ptrData].CONFIGresponse.led[i].state, "on");
+        else 
+            strcpy(messageResponse[ptrData].CONFIGresponse.led[i].state, "off");
+            
+        if(kehops.led[i].config.mode)
+            strcpy(messageResponse[ptrData].CONFIGresponse.led[i].isServoMode,"on");
+        else
+            strcpy(messageResponse[ptrData].CONFIGresponse.led[i].isServoMode,"off");
+    }
+ 
+    // Envoie du message de réponse de la configuration
+    messageResponse[ptrData].responseType = RESP_STD_MESSAGE;
+    sendResponse(message.msgID, message.msgFrom, RESPONSE, CONFIG, 1);
+    
+    sprintf(reportBuffer, "Lecture de la configuration KEHOPS pour le message #%d\n", message.msgID);
+    printf(reportBuffer);                                                             // Affichage du message dans le shell
+    sendMqttReport(message.msgID, reportBuffer);				      // Envoie le message sur le canal MQTT "Report"
 }
