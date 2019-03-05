@@ -69,15 +69,15 @@
 #define KEY_MESSAGE_VALUE_CFG_MOTOR_MINPWM "{'MsgData'{'MsgValue'[{'motor'[*{'pwmMin'"
 #define KEY_MESSAGE_VALUE_CFG_MOTOR_MINRPM "{'MsgData'{'MsgValue'[{'motor'[*{'rpmMin'"
 #define KEY_MESSAGE_VALUE_CFG_MOTOR_MAXRPM "{'MsgData'{'MsgValue'[{'motor'[*{'rpmMax'"
-#define KEY_MESSAGE_VALUE_CFG_MOTOR_PIDREG "{'MsgData'{'MsgValue'[{'motor'[*{'rpmRegulator'{'state'"
-#define KEY_MESSAGE_VALUE_CFG_MOTOR_PIDKP "{'MsgData'{'MsgValue'[{'motor'[*{'rpmRegulator'{'PID_Kp'"
-#define KEY_MESSAGE_VALUE_CFG_MOTOR_PIDKI "{'MsgData'{'MsgValue'[{'motor'[*{'rpmRegulator'{'PID_Ki'"
-#define KEY_MESSAGE_VALUE_CFG_MOTOR_PIDKD "{'MsgData'{'MsgValue'[{'motor'[*{'rpmRegulator'{'PID_Kd'"
 
 #define KEY_MESSAGE_VALUE_CFG_WHEEL "{'MsgData'{'MsgValue'[*{'wheel'"
 #define KEY_MESSAGE_VALUE_CFG_WHEEL_ID "{'MsgData'{'MsgValue'[{'wheel'[*{'wheel'"
 #define KEY_MESSAGE_VALUE_CFG_WHEEL_DIAMETER "{'MsgData'{'MsgValue'[{'wheel'[*{'diameter'"
 #define KEY_MESSAGE_VALUE_CFG_WHEEL_PULSES "{'MsgData'{'MsgValue'[{'wheel'[*{'pulses'"
+#define KEY_MESSAGE_VALUE_CFG_WHEEL_PIDREG "{'MsgData'{'MsgValue'[{'wheel'[*{'rpmRegulator'{'state'"
+#define KEY_MESSAGE_VALUE_CFG_WHEEL_PIDKP "{'MsgData'{'MsgValue'[{'wheel'[*{'rpmRegulator'{'PID_Kp'"
+#define KEY_MESSAGE_VALUE_CFG_WHEEL_PIDKI "{'MsgData'{'MsgValue'[{'wheel'[*{'rpmRegulator'{'PID_Ki'"
+#define KEY_MESSAGE_VALUE_CFG_WHEEL_PIDKD "{'MsgData'{'MsgValue'[{'wheel'[*{'rpmRegulator'{'PID_Kd'"
 
 #define KEY_MESSAGE_VALUE_CFG_STEPPER "{'MsgData'{'MsgValue'[*{'stepper'"
 #define KEY_MESSAGE_VALUE_CFG_STEPPER_ID "{'MsgData'{'MsgValue'[{'stepper'[*{'motor'"
@@ -89,6 +89,11 @@
 #define KEY_MESSAGE_VALUE_CFG_LED_ID "{'MsgData'{'MsgValue'[{'led'[*{'led'"
 #define KEY_MESSAGE_VALUE_CFG_LED_STATE "{'MsgData'{'MsgValue'[{'led'[*{'state'"
 #define KEY_MESSAGE_VALUE_CFG_LED_POWER "{'MsgData'{'MsgValue'[{'led'[*{'power'"
+
+#define KEY_MESSAGE_VALUE_CFG_PWM "{'MsgData'{'MsgValue'[*{'pwm'"
+#define KEY_MESSAGE_VALUE_CFG_PWM_ID "{'MsgData'{'MsgValue'[{'pwm'[*{'pwm'"
+#define KEY_MESSAGE_VALUE_CFG_PWM_STATE "{'MsgData'{'MsgValue'[{'pwm'[*{'state'"
+#define KEY_MESSAGE_VALUE_CFG_PWM_POWER "{'MsgData'{'MsgValue'[{'pwm'[*{'power'"
 
 #define KEY_MESSAGE_VALUE_SYS_FIRMWARE "{'MsgData'{'MsgValue'[*{'firmware'"
 #define KEY_MESSAGE_VALUE_SYS_DASH "{'MsgData'{'MsgValue'[*{'dashboard'"
@@ -320,11 +325,6 @@ char GetAlgoidMsg(ALGOID *destMessage, char *srcBuffer){
                                                         destMessage->Config.motor[i_dev].maxRPM=jRead_int((char *)srcBuffer, KEY_MESSAGE_VALUE_CFG_MOTOR_MAXRPM, &i_dev); 
                                                         destMessage->Config.motor[i_dev].minPWM=jRead_int((char *)srcBuffer, KEY_MESSAGE_VALUE_CFG_MOTOR_MINPWM, &i_dev); 
                                                         jRead_string((char *)srcBuffer, KEY_MESSAGE_VALUE_CFG_MOTOR_INVERT, destMessage->Config.motor[i_dev].inverted, 15, &i_dev ); 
-                                                        jRead_string((char *)srcBuffer, KEY_MESSAGE_VALUE_CFG_MOTOR_PIDREG, destMessage->Config.motor[i_dev].rpmRegulator.PIDstate, 15, &i_dev ); 
-                                                        destMessage->Config.motor[i_dev].rpmRegulator.PID_Kp=jRead_double((char *)srcBuffer, KEY_MESSAGE_VALUE_CFG_MOTOR_PIDKP, &i_dev); 
-                                                        destMessage->Config.motor[i_dev].rpmRegulator.PID_Ki=jRead_double((char *)srcBuffer, KEY_MESSAGE_VALUE_CFG_MOTOR_PIDKI, &i_dev); 
-                                                        destMessage->Config.motor[i_dev].rpmRegulator.PID_Kd=jRead_double((char *)srcBuffer, KEY_MESSAGE_VALUE_CFG_MOTOR_PIDKD, &i_dev); 
-                                                        
                                                     }
                                                 }
 
@@ -341,6 +341,10 @@ char GetAlgoidMsg(ALGOID *destMessage, char *srcBuffer){
                                                         destMessage->Config.wheel[i_dev].id=jRead_long((char *)srcBuffer, KEY_MESSAGE_VALUE_CFG_WHEEL_ID, &i_dev); 
                                                         destMessage->Config.wheel[i_dev].diameter=jRead_long((char *)srcBuffer, KEY_MESSAGE_VALUE_CFG_WHEEL_DIAMETER, &i_dev); 
                                                         destMessage->Config.wheel[i_dev].pulsesPerRot=jRead_long((char *)srcBuffer, KEY_MESSAGE_VALUE_CFG_WHEEL_PULSES, &i_dev);
+                                                        jRead_string((char *)srcBuffer, KEY_MESSAGE_VALUE_CFG_WHEEL_PIDREG, destMessage->Config.motor[i_dev].rpmRegulator.PIDstate, 15, &i_dev ); 
+                                                        destMessage->Config.motor[i_dev].rpmRegulator.PID_Kp=jRead_double((char *)srcBuffer, KEY_MESSAGE_VALUE_CFG_WHEEL_PIDKP, &i_dev); 
+                                                        destMessage->Config.motor[i_dev].rpmRegulator.PID_Ki=jRead_double((char *)srcBuffer, KEY_MESSAGE_VALUE_CFG_WHEEL_PIDKI, &i_dev); 
+                                                        destMessage->Config.motor[i_dev].rpmRegulator.PID_Kd=jRead_double((char *)srcBuffer, KEY_MESSAGE_VALUE_CFG_WHEEL_PIDKD, &i_dev); 
                                                     }
                                                 }                                                
                                                 
@@ -363,19 +367,34 @@ char GetAlgoidMsg(ALGOID *destMessage, char *srcBuffer){
                                                 
                                             // LEDS Setting
                                                 jRead((char *)srcBuffer, KEY_MESSAGE_VALUE_CFG_LED, &cfg_device_list );
+                                                // RECHERCHE DATA DE TYPE ARRAY
+                                                if(cfg_device_list.dataType == JREAD_ARRAY ){
+                                                    // Get the number of leds in array
+                                                    nbOfdeviceInConf=cfg_device_list.elements;
+                                                    destMessage->Config.ledValueCnt = nbOfdeviceInConf;
+                                                    
+                                                    for(i_dev=0; i_dev < nbOfdeviceInConf; i_dev++){
+                                                        destMessage->Config.led[i_dev].id = jRead_long((char *)srcBuffer, KEY_MESSAGE_VALUE_CFG_LED_ID, &i_dev); 
+                                                        destMessage->Config.led[i_dev].power = jRead_long((char *)srcBuffer, KEY_MESSAGE_VALUE_CFG_LED_POWER, &i_dev); 
+                                                        jRead_string((char *)srcBuffer, KEY_MESSAGE_VALUE_CFG_LED_STATE, destMessage->Config.led[i_dev].state, 15, &i_dev ); 
+                                                    }
+                                                }                                                
+                                                
+                                                // PWM Setting
+                                                jRead((char *)srcBuffer, KEY_MESSAGE_VALUE_CFG_PWM, &cfg_device_list );
 
                                                 // RECHERCHE DATA DE TYPE ARRAY
                                                 if(cfg_device_list.dataType == JREAD_ARRAY ){
                                                     // Get the number of leds in array
                                                     nbOfdeviceInConf=cfg_device_list.elements;
-                                                    destMessage->Config.ledValueCnt=nbOfdeviceInConf;
+                                                    destMessage->Config.pwmValueCnt = nbOfdeviceInConf;
                                                     
                                                     for(i_dev=0; i_dev < nbOfdeviceInConf; i_dev++){
-                                                        destMessage->Config.led[i_dev].id=jRead_long((char *)srcBuffer, KEY_MESSAGE_VALUE_CFG_LED_ID, &i_dev); 
-                                                        destMessage->Config.led[i_dev].power=jRead_long((char *)srcBuffer, KEY_MESSAGE_VALUE_CFG_LED_POWER, &i_dev); 
-                                                        jRead_string((char *)srcBuffer, KEY_MESSAGE_VALUE_CFG_LED_STATE, destMessage->Config.led[i_dev].state, 15, &i_dev ); 
+                                                        destMessage->Config.pwm[i_dev].id=jRead_long((char *)srcBuffer, KEY_MESSAGE_VALUE_CFG_PWM_ID, &i_dev); 
+                                                        destMessage->Config.pwm[i_dev].power=jRead_long((char *)srcBuffer, KEY_MESSAGE_VALUE_CFG_PWM_POWER, &i_dev); 
+                                                        jRead_string((char *)srcBuffer, KEY_MESSAGE_VALUE_CFG_PWM_STATE, destMessage->Config.pwm[i_dev].state, 15, &i_dev ); 
                                                     }
-                                                }                                                
+                                                } 
 
                                             // Get the name
                                                 jRead_string((char *)srcBuffer, KEY_MESSAGE_VALUE_CFG_NAME, destMessage->Config.robot.name, 15, &i );
@@ -835,6 +854,12 @@ void jsonBuilder(char * buffer, int msgId, char* to, char* from, char* msgType, 
                                                                                                                             jwObj_int( "wheel", messageResponse[i].CONFIGresponse.wheel[j].id);
                                                                                                                             jwObj_int("diameter", messageResponse[i].CONFIGresponse.wheel[j].diameter);
                                                                                                                             jwObj_int("pulses", messageResponse[i].CONFIGresponse.wheel[j].pulsesPerRot);
+                                                                                                                            jwObj_object( "rpmRegulator"); 
+                                                                                                                                jwObj_string("state", messageResponse[i].CONFIGresponse.motor[j].rpmRegulator.PIDstate);
+                                                                                                                                jwObj_double("PID_Kp", messageResponse[i].CONFIGresponse.motor[j].rpmRegulator.PID_Kp);
+                                                                                                                                jwObj_double("PID_Ki", messageResponse[i].CONFIGresponse.motor[j].rpmRegulator.PID_Ki);
+                                                                                                                                jwObj_double("PID_Kd", messageResponse[i].CONFIGresponse.motor[j].rpmRegulator.PID_Kd);
+                                                                                                                            jwEnd();    
                                                                                                                         jwEnd();
                                                                                                                     } 
                                                                                                                 jwEnd();

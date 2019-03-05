@@ -1,4 +1,4 @@
-#define FIRMWARE_VERSION "0.6"
+#define FIRMWARE_VERSION "0.6.2"
 
 #define DEFAULT_EVENT_STATE 1   
 
@@ -475,8 +475,10 @@ int processmessage(void){
                                                 kehops.dcWheel[message.Config.motor[i].id].config.pidReg.Kd = message.Config.motor[i].rpmRegulator.PID_Kd;                                            
                                             
                                             
-                                            messageResponse[valCnt].CONFIGresponse.motor[i].minRPM = message.Config.motor[i].minRPM;
                                             messageResponse[valCnt].CONFIGresponse.motor[i].id = message.Config.motor[i].id;
+                                            messageResponse[valCnt].CONFIGresponse.motor[i].minPWM = message.Config.motor[i].minPWM;
+                                            messageResponse[valCnt].CONFIGresponse.motor[i].minRPM = message.Config.motor[i].minRPM;
+                                            messageResponse[valCnt].CONFIGresponse.motor[i].maxRPM = message.Config.motor[i].maxRPM;
                                             messageResponse[valCnt].CONFIGresponse.motor[i].rpmRegulator.PID_Kp = message.Config.motor[i].rpmRegulator.PID_Kp;
                                             messageResponse[valCnt].CONFIGresponse.motor[i].rpmRegulator.PID_Ki = message.Config.motor[i].rpmRegulator.PID_Ki;
                                             messageResponse[valCnt].CONFIGresponse.motor[i].rpmRegulator.PID_Kd = message.Config.motor[i].rpmRegulator.PID_Kd;
@@ -498,7 +500,12 @@ int processmessage(void){
                                                 
                                                 // Calculation of value for centimeter for each pulse
                                                 kehops.dcWheel[message.Config.wheel[i].id].data._MMPP = (kehops.dcWheel[message.Config.wheel[i].id].config.diameter * 3.1415926535897932384)/kehops.dcWheel[message.Config.wheel[i].id].config.pulsesPerRot;
+                                            
                                             messageResponse[valCnt].CONFIGresponse.wheel[i].id = message.Config.wheel[i].id;
+                                            messageResponse[valCnt].CONFIGresponse.wheel[i].diameter = kehops.dcWheel[message.Config.wheel[i].id].config.diameter;
+                                            messageResponse[valCnt].CONFIGresponse.wheel[i].pulsesPerRot = kehops.dcWheel[message.Config.wheel[i].id].config.pulsesPerRot;
+                                            
+                                            
                                         }
                                         else
                                             messageResponse[valCnt].CONFIGresponse.wheel[i].id=-1;
@@ -521,7 +528,12 @@ int processmessage(void){
                                             
                                             kehops.stepperWheel[message.Config.stepper[i].id].config.motor.ratio = message.Config.stepper[i].ratio;
                                             kehops.stepperWheel[message.Config.stepper[i].id].config.motor.steps = message.Config.stepper[i].stepsPerRot;
+                                            
+                                            
                                             messageResponse[valCnt].CONFIGresponse.stepper[i].id = message.Config.stepper[i].id;
+                                            messageResponse[valCnt].CONFIGresponse.stepper[i].ratio = kehops.stepperWheel[message.Config.stepper[i].id].config.motor.ratio;
+                                            messageResponse[valCnt].CONFIGresponse.stepper[i].stepsPerRot = kehops.stepperWheel[message.Config.stepper[i].id].config.motor.steps;
+                                            
                                         }
                                         else
                                             messageResponse[valCnt].CONFIGresponse.stepper[i].id=-1;
@@ -549,6 +561,30 @@ int processmessage(void){
                                         }
                                         else
                                             messageResponse[valCnt].CONFIGresponse.led[i].id=-1;
+                                    }
+                                    
+                                    // CONFIG COMMAND FOR PWM OUTPUT SETTING
+                                    for(i=0;i<message.Config.pwmValueCnt; i++){
+                                        messageResponse[valCnt].CONFIGresponse.pwmValueCnt=message.Config.pwmValueCnt;
+                                        
+                                        // Check if PWM exist...
+                                        if(message.Config.pwm[i].id >= 0 && message.Config.pwm[i].id <NBPWM){
+                                            kehops.pwm[message.Config.pwm[i].id].config.defaultPower = message.Config.pwm[i].power;
+                                            messageResponse[valCnt].CONFIGresponse.pwm[i].power=message.Config.pwm[i].power;
+                                            // Save config for led inversion
+                                            if(!strcmp(message.Config.pwm[i].state, "on")){
+                                                kehops.pwm[message.Config.pwm[i].id].config.defaultState = 1;
+                                                strcpy(messageResponse[valCnt].CONFIGresponse.pwm[i].state, "on");
+                                            }
+                                            else if(!strcmp(message.Config.pwm[i].state, "off")){
+                                                kehops.pwm[message.Config.pwm[i].id].config.defaultState = 0;
+                                                strcpy(messageResponse[valCnt].CONFIGresponse.pwm[i].state, "off");
+                                            }
+
+                                            messageResponse[valCnt].CONFIGresponse.pwm[i].id = message.Config.pwm[i].id;
+                                        }
+                                        else
+                                            messageResponse[valCnt].CONFIGresponse.pwm[i].id=-1;
                                     }
 
                                 // CONFIG COMMAND FOR SAVE
@@ -2379,6 +2415,14 @@ void resetConfig(void){
             else
                 setLedPower(i, 0);
         }
+        
+        for(i=0;i<NBPWM;i++){
+            if(kehops.pwm[i].config.defaultState==1)
+                setPwmPower(i, kehops.pwm[i].config.defaultPower);
+            else
+                setPwmPower(i, 0);
+        }
+        
         sysApp.info.startUpTime = 0;
 }
 
@@ -2553,6 +2597,23 @@ int makeConfigRequest(void){
         else
             strcpy(messageResponse[ptrData].CONFIGresponse.led[i].isServoMode,"off");
     }
+    
+    // Récupération de la config des PWM
+    messageResponse[ptrData].CONFIGresponse.pwmValueCnt = NBPWM;
+    for(i=0;i<NBPWM; i++){
+        messageResponse[ptrData].CONFIGresponse.pwm[i].id = i;        
+        messageResponse[ptrData].CONFIGresponse.pwm[i].power = kehops.pwm[i].config.defaultPower;        
+        
+        if(kehops.pwm[i].config.defaultState)
+            strcpy(messageResponse[ptrData].CONFIGresponse.pwm[i].state, "on");
+        else 
+            strcpy(messageResponse[ptrData].CONFIGresponse.pwm[i].state, "off");
+            
+        if(kehops.pwm[i].config.mode)
+            strcpy(messageResponse[ptrData].CONFIGresponse.pwm[i].isServoMode,"on");
+        else
+            strcpy(messageResponse[ptrData].CONFIGresponse.pwm[i].isServoMode,"off");
+    }    
  
     // Envoie du message de réponse de la configuration
     messageResponse[ptrData].responseType = RESP_STD_MESSAGE;

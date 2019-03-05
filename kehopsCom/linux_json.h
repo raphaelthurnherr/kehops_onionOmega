@@ -133,6 +133,7 @@ struct mLedConfig{
 struct mConfig{
         int motValueCnt;
         int ledValueCnt;
+        int pwmValueCnt;
         int stepperValueCnt;
         int wheelValueCnt;
 	struct mStream stream;
@@ -143,6 +144,7 @@ struct mConfig{
         struct mWheelConfig wheel[10];
         struct mStepperConfig stepper[10];
         struct mLedConfig led[10];
+        struct mLedConfig pwm[10];
 };
 
 struct mDistance{

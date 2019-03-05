@@ -13,6 +13,8 @@
             <file>file:/home/raph-pnp/Documents/dev/embedded_soft/kehops_onionOmega/kehops_main.c</file>
             <file>file:/home/raph-pnp/Documents/dev/embedded_soft/kehops_onionOmega/kehopsCom/libs/lib_json/jRead.c</file>
             <file>file:/home/raph-pnp/Documents/dev/embedded_soft/kehops_onionOmega/kehopsCom/linux_JSON.c</file>
+            <file>file:/home/raph-pnp/Documents/dev/embedded_soft/kehops_onionOmega/hwControl/hwManager.c</file>
+            <file>file:/home/raph-pnp/Documents/dev/embedded_soft/kehops_onionOmega/kehopsCom/libs/lib_json/jWrite.c</file>
             <file>file:/home/raph-pnp/Documents/dev/embedded_soft/kehops_onionOmega/type.h</file>
         </group>
     </open-files>

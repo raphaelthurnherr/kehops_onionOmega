@@ -21,6 +21,11 @@
 #define FILE_KEY_CONFIG_LED_POWER "{'led'[*{'power'"
 #define FILE_KEY_CONFIG_LED_STATE "{'led'[*{'state'"
 
+#define FILE_KEY_CONFIG_PWM "{'pwm'"
+#define FILE_KEY_CONFIG_PWM_ID "{'pwm'[*{'pwm'"
+#define FILE_KEY_CONFIG_PWM_POWER "{'pwm'[*{'power'"
+#define FILE_KEY_CONFIG_PWM_STATE "{'pwm'[*{'state'"
+
 #define FILE_KEY_CONFIG_MOTOR "{'motor'"
 #define FILE_KEY_CONFIG_MOTOR_ID "{'motor'[*{'motor'"
 #define FILE_KEY_CONFIG_MOTOR_INVERT "{'motor'[*{'inverted'"
@@ -302,6 +307,38 @@ char LoadConfig(char * fileName){
                             }
                     }
                 }
+            }
+
+    // EXTRACT PWM SETTINGS FROM CONFIG    
+          // Reset motor data config before reading
+          for(i=0;i<NBPWM;i++){
+              kehops.pwm[i].config.defaultPower = 0;
+              kehops.pwm[i].config.defaultState = 0;
+              kehops.pwm[i].config.mode = 0;
+          }
+            
+        // PWM Setting
+            jRead((char *)srcDataBuffer, FILE_KEY_CONFIG_PWM, &cfg_devices_list );
+
+            // RECHERCHE DATA DE TYPE ARRAY
+            if(cfg_devices_list.dataType == JREAD_ARRAY ){
+                // Get the number of PWM in array
+                nbOfDeviceInConf = cfg_devices_list.elements;
+                for(i=0; i < nbOfDeviceInConf; i++){ 
+                    deviceId=-1;
+                    deviceId = jRead_long((char *)srcDataBuffer, FILE_KEY_CONFIG_PWM_ID, &i); 
+
+                    kehops.pwm[deviceId].config.defaultPower = jRead_int((char *)srcDataBuffer, FILE_KEY_CONFIG_PWM_POWER, &i);
+                    if(deviceId >= 0 && deviceId < NBLED){
+                        jRead_string((char *)srcDataBuffer, FILE_KEY_CONFIG_PWM_STATE, dataValue, 15, &i );
+                        if(!strcmp(dataValue, "on")){
+                            kehops.pwm[deviceId].config.defaultState = 1;
+                        }else
+                            if(!strcmp(dataValue, "off")){
+                            kehops.pwm[deviceId].config.defaultState = 0;
+                            }
+                    }
+                }
             }            
 
             // Reset settings
@@ -421,7 +458,23 @@ char SaveConfig(char * fileName){
                     jwEnd();
                 } 
             jwEnd();            
-        jwClose();
+
+        // CREATE JSON CONFIG FOR PWM OUTPUT
+            jwObj_array("pwm");
+                for(i=0;i<NBPWM;i++){
+                    jwArr_object();
+                        jwObj_int( "pwm", i);
+                        if(kehops.pwm[i].config.defaultState == 0)
+                            jwObj_string("state", "off");
+                        else 
+                            if(kehops.pwm[i].config.defaultState == 1)
+                                jwObj_string("state", "on");
+                        jwObj_int( "power", kehops.pwm[i].config.defaultPower);
+                    jwEnd();
+                } 
+            jwEnd();  
+            
+        jwClose();        
        
     // CREATE JSON STRING FOR CONFIGURATION   
         FILE *fp;

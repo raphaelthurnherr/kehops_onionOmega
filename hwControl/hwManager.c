@@ -631,8 +631,8 @@ int resetHardware(t_sysConf * Config){
 //            setLedPower(i, 0);
     }
     // Etat initial des sorties PWM LED
-    for(i=0;i<NBPWM;i++){
-        setPwmPower(i,0);
-    }
+//    for(i=0;i<NBPWM;i++){
+  //      setPwmPower(i,0);
+//    }
     return 0;
 }
