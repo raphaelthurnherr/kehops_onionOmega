@@ -26,6 +26,28 @@
 #define FILE_KEY_CONFIG_PWM_POWER "{'pwm'[*{'power'"
 #define FILE_KEY_CONFIG_PWM_STATE "{'pwm'[*{'state'"
 
+#define FILE_KEY_CONFIG_DIN "{'din'"
+#define FILE_KEY_CONFIG_DIN_ID "{'din'[*{'din'"
+#define FILE_KEY_CONFIG_DIN_EVENT_STATE "{'din'[*{'event'"
+
+#define FILE_KEY_CONFIG_BTN "{'button'"
+#define FILE_KEY_CONFIG_BTN_ID "{'button'[*{'btn'"
+#define FILE_KEY_CONFIG_BTN_EVENT_STATE "{'button'[*{'event'"
+
+#define FILE_KEY_CONFIG_SONAR "{'sonar'"
+#define FILE_KEY_CONFIG_SONAR_ID "{'sonar'[*{'sonar'"
+#define FILE_KEY_CONFIG_SONAR_EVENT_STATE "{'sonar'[*{'event'"
+#define FILE_KEY_CONFIG_SONAR_EVENT_LOW "{'sonar'[*{'event_lower'"
+#define FILE_KEY_CONFIG_SONAR_EVENT_HIGH "{'sonar'[*{'event_higher'"
+#define FILE_KEY_CONFIG_SONAR_EVENT_HYST "{'sonar'[*{'event_hysteresis'"
+
+#define FILE_KEY_CONFIG_BATTERY "{'battery'"
+#define FILE_KEY_CONFIG_BATTERY_ID "{'battery'[*{'battery'"
+#define FILE_KEY_CONFIG_BATTERY_EVENT_STATE "{'battery'[*{'event'"
+#define FILE_KEY_CONFIG_BATTERY_EVENT_LOW "{'battery'[*{'event_lower'"
+#define FILE_KEY_CONFIG_BATTERY_EVENT_HIGH "{'battery'[*{'event_higher'"
+#define FILE_KEY_CONFIG_BATTERY_EVENT_HYST "{'battery'[*{'event_hysteresis'"
+
 #define FILE_KEY_CONFIG_MOTOR "{'motor'"
 #define FILE_KEY_CONFIG_MOTOR_ID "{'motor'[*{'motor'"
 #define FILE_KEY_CONFIG_MOTOR_INVERT "{'motor'[*{'inverted'"
@@ -127,7 +149,7 @@ char LoadConfig(char * fileName){
         
         
         if(srcDataBuffer != NULL){
-    // EXTRACT MQTT SETTINGS FROM CONFIG        
+        // EXTRACT MQTT SETTINGS FROM CONFIG        
             jRead((char *)srcDataBuffer, FILE_KEY_CONFIG_MQTT, &cfg_mqtt_list );
             // RECHERCHE DATA DE TYPE OBJ
             if(cfg_mqtt_list.dataType == JREAD_OBJECT ){
@@ -165,7 +187,7 @@ char LoadConfig(char * fileName){
             }
 
 
-    // EXTRACT MOTOR SETTINGS FROM CONFIG    
+        // EXTRACT MOTOR SETTINGS FROM CONFIG    
             // Reset motor data config before reading
             for(i=0;i<NBMOTOR;i++){
               kehops.dcWheel[i].config.motor.inverted = 0;
@@ -173,7 +195,7 @@ char LoadConfig(char * fileName){
               kehops.dcWheel[i].config.rpmMax = 200;
             }
 
-        // Motor Setting
+            // Motor Setting
             jRead((char *)srcDataBuffer, FILE_KEY_CONFIG_MOTOR, &cfg_devices_list );
 
             // RECHERCHE DATA DE TYPE ARRAY
@@ -211,14 +233,14 @@ char LoadConfig(char * fileName){
                 }
             }
             
-    // EXTRACT WHEEL SETTINGS FROM CONFIG    
+        // EXTRACT WHEEL SETTINGS FROM CONFIG    
             // Reset motor data config before reading
             for(i=0;i<NBMOTOR;i++){
               kehops.dcWheel[deviceId].config.diameter = -1;
               kehops.dcWheel[deviceId].config.pulsesPerRot = -1;
             }
 
-        // Wheel Setting
+            // Wheel Setting
             jRead((char *)srcDataBuffer, FILE_KEY_CONFIG_WHEEL, &cfg_devices_list );
 
             // RECHERCHE DATA DE TYPE ARRAY
@@ -239,9 +261,9 @@ char LoadConfig(char * fileName){
                 }
             }
             
-    // EXTRACT STEPPER MOTOR SETTINGS FROM CONFIG
+        // EXTRACT STEPPER MOTOR SETTINGS FROM CONFIG
         
-            // Reset motor data config before reading
+        // Reset motor data config before reading
         for(i=0;i<NBSTEPPER;i++){
           kehops.stepperWheel[i].config.motor.inverted = -1;
           kehops.stepperWheel[i].config.motor.ratio = -1;
@@ -274,7 +296,7 @@ char LoadConfig(char * fileName){
                 }
             }            
 
-    // EXTRACT LED SETTINGS FROM CONFIG    
+        // EXTRACT LED SETTINGS FROM CONFIG    
           // Reset motor data config before reading
           for(i=0;i<NBLED;i++){
               kehops.led[i].config.defaultPower = -1;
@@ -282,7 +304,7 @@ char LoadConfig(char * fileName){
               kehops.led[i].config.mode = -1;
           }
 
-        // Les Setting
+        // LED Setting
             jRead((char *)srcDataBuffer, FILE_KEY_CONFIG_LED, &cfg_devices_list );
 
             // RECHERCHE DATA DE TYPE ARRAY
@@ -309,7 +331,7 @@ char LoadConfig(char * fileName){
                 }
             }
 
-    // EXTRACT PWM SETTINGS FROM CONFIG    
+        // EXTRACT PWM SETTINGS FROM CONFIG    
           // Reset motor data config before reading
           for(i=0;i<NBPWM;i++){
               kehops.pwm[i].config.defaultPower = 0;
@@ -337,6 +359,104 @@ char LoadConfig(char * fileName){
                             if(!strcmp(dataValue, "off")){
                             kehops.pwm[deviceId].config.defaultState = 0;
                             }
+                    }
+                }
+            }
+            
+        // DIN Setting
+            jRead((char *)srcDataBuffer, FILE_KEY_CONFIG_DIN, &cfg_devices_list );
+
+            // RECHERCHE DATA DE TYPE ARRAY
+            if(cfg_devices_list.dataType == JREAD_ARRAY ){
+                // Get the number of DIN in array
+                nbOfDeviceInConf = cfg_devices_list.elements;
+                for(i=0; i < nbOfDeviceInConf; i++){ 
+                    deviceId=-1;
+                    deviceId = jRead_long((char *)srcDataBuffer, FILE_KEY_CONFIG_DIN_ID, &i); 
+
+                    if(deviceId >= 0 && deviceId < NBDIN){
+                        jRead_string((char *)srcDataBuffer, FILE_KEY_CONFIG_DIN_EVENT_STATE, dataValue, 15, &i );
+                        if(!strcmp(dataValue, "on")){
+                            kehops.proximity[deviceId].event.enable = 1;
+                        }else
+                            if(!strcmp(dataValue, "off")){
+                                kehops.proximity[deviceId].event.enable = 0;
+                            }
+                    }
+                }
+            }
+            
+        // BTN Setting
+            jRead((char *)srcDataBuffer, FILE_KEY_CONFIG_BTN, &cfg_devices_list );
+
+            // RECHERCHE DATA DE TYPE ARRAY
+            if(cfg_devices_list.dataType == JREAD_ARRAY ){
+                // Get the number of BTN in array
+                nbOfDeviceInConf = cfg_devices_list.elements;
+                for(i=0; i < nbOfDeviceInConf; i++){ 
+                    deviceId=-1;
+                    deviceId = jRead_long((char *)srcDataBuffer, FILE_KEY_CONFIG_BTN_ID, &i); 
+
+                    if(deviceId >= 0 && deviceId < NBBTN){
+                        jRead_string((char *)srcDataBuffer, FILE_KEY_CONFIG_BTN_EVENT_STATE, dataValue, 15, &i );
+                        if(!strcmp(dataValue, "on")){
+                            kehops.button[deviceId].event.enable = 1;
+                        }else
+                            if(!strcmp(dataValue, "off")){
+                                kehops.button[deviceId].event.enable = 0;
+                            }
+                    }
+                }
+            }
+
+            // SONAR Setting
+            jRead((char *)srcDataBuffer, FILE_KEY_CONFIG_SONAR, &cfg_devices_list );
+
+            // RECHERCHE DATA DE TYPE ARRAY
+            if(cfg_devices_list.dataType == JREAD_ARRAY ){
+                // Get the number of SONAR in array
+                nbOfDeviceInConf = cfg_devices_list.elements;
+                for(i=0; i < nbOfDeviceInConf; i++){ 
+                    deviceId=-1;
+                    deviceId = jRead_long((char *)srcDataBuffer, FILE_KEY_CONFIG_SONAR_ID, &i); 
+
+                    if(deviceId >= 0 && deviceId < NBSONAR){
+                        jRead_string((char *)srcDataBuffer, FILE_KEY_CONFIG_SONAR_EVENT_STATE, dataValue, 15, &i );
+                        if(!strcmp(dataValue, "on")){
+                            kehops.sonar[deviceId].event.enable = 1;
+                        }else
+                            if(!strcmp(dataValue, "off")){
+                                kehops.sonar[deviceId].event.enable = 0;
+                            }
+                        kehops.sonar[deviceId].event.low = jRead_long((char *)srcDataBuffer, FILE_KEY_CONFIG_SONAR_EVENT_LOW, &i); 
+                        kehops.sonar[deviceId].event.high = jRead_long((char *)srcDataBuffer, FILE_KEY_CONFIG_SONAR_EVENT_HIGH, &i); 
+                        kehops.sonar[deviceId].event.hysteresis = jRead_long((char *)srcDataBuffer, FILE_KEY_CONFIG_SONAR_EVENT_HYST, &i); 
+                    }
+                }
+            }
+            
+            // BATTERY Setting
+            jRead((char *)srcDataBuffer, FILE_KEY_CONFIG_BATTERY, &cfg_devices_list );
+
+            // RECHERCHE DATA DE TYPE ARRAY
+            if(cfg_devices_list.dataType == JREAD_ARRAY ){
+                // Get the number of BATTERY in array
+                nbOfDeviceInConf = cfg_devices_list.elements;
+                for(i=0; i < nbOfDeviceInConf; i++){ 
+                    deviceId=-1;
+                    deviceId = jRead_long((char *)srcDataBuffer, FILE_KEY_CONFIG_BATTERY_ID, &i); 
+
+                    if(deviceId >= 0 && deviceId < NBSONAR){
+                        jRead_string((char *)srcDataBuffer, FILE_KEY_CONFIG_BATTERY_EVENT_STATE, dataValue, 15, &i );
+                        if(!strcmp(dataValue, "on")){
+                            kehops.battery[deviceId].event.enable = 1;
+                        }else
+                            if(!strcmp(dataValue, "off")){
+                                kehops.battery[deviceId].event.enable = 0;
+                            }
+                        kehops.battery[deviceId].event.low = jRead_long((char *)srcDataBuffer, FILE_KEY_CONFIG_BATTERY_EVENT_LOW, &i); 
+                        kehops.battery[deviceId].event.high = jRead_long((char *)srcDataBuffer, FILE_KEY_CONFIG_BATTERY_EVENT_HIGH, &i); 
+                        kehops.battery[deviceId].event.hysteresis = jRead_long((char *)srcDataBuffer, FILE_KEY_CONFIG_BATTERY_EVENT_HYST, &i); 
                     }
                 }
             }            
@@ -472,9 +592,71 @@ char SaveConfig(char * fileName){
                         jwObj_int( "power", kehops.pwm[i].config.defaultPower);
                     jwEnd();
                 } 
-            jwEnd();  
+            jwEnd();
             
-        jwClose();        
+        // CREATE JSON CONFIG FOR DIN CONFIG
+            jwObj_array("din");
+                for(i=0;i<NBDIN;i++){
+                    jwArr_object();
+                        jwObj_int( "din", i);
+                        if(kehops.proximity[i].event.enable == 0)
+                            jwObj_string("event", "off");
+                        else 
+                            if(kehops.proximity[i].event.enable == 1)
+                                jwObj_string("event", "on");
+                    jwEnd();
+                } 
+            jwEnd();  
+
+        // CREATE JSON CONFIG FOR BTN CONFIG
+            jwObj_array("button");
+                for(i=0;i<NBBTN;i++){
+                    jwArr_object();
+                        jwObj_int( "btn", i);
+                        if(kehops.button[i].event.enable == 0)
+                            jwObj_string("event", "off");
+                        else 
+                            if(kehops.button[i].event.enable == 1)
+                                jwObj_string("event", "on");
+                    jwEnd();
+                } 
+            jwEnd();
+
+        // CREATE JSON CONFIG FOR SONAR CONFIG
+            jwObj_array("sonar");
+                for(i=0;i<NBSONAR;i++){
+                    jwArr_object();
+                        jwObj_int( "sonar", i);
+                        if(kehops.sonar[i].event.enable == 0)
+                            jwObj_string("event", "off");
+                        else 
+                            if(kehops.sonar[i].event.enable == 1)
+                                jwObj_string("event", "on");
+                        jwObj_int( "event_lower", kehops.sonar[i].event.low);
+                        jwObj_int( "event_higher", kehops.sonar[i].event.high);
+                        jwObj_int( "event_hysteresis", kehops.sonar[i].event.hysteresis);
+                    jwEnd();
+                } 
+            jwEnd(); 
+            
+        // CREATE JSON CONFIG FOR BATTERY CONFIG
+            jwObj_array("battery");
+                for(i=0;i<NBAIN;i++){
+                    jwArr_object();
+                        jwObj_int( "battery", i);
+                        if(kehops.battery[i].event.enable == 0)
+                            jwObj_string("event", "off");
+                        else 
+                            if(kehops.battery[i].event.enable == 1)
+                                jwObj_string("event", "on");
+                        jwObj_int( "event_lower", kehops.battery[i].event.low);
+                        jwObj_int( "event_higher", kehops.battery[i].event.high);
+                        jwObj_int( "event_hysteresis", kehops.battery[i].event.hysteresis);
+                    jwEnd();
+                } 
+            jwEnd();             
+
+        jwClose();          
        
     // CREATE JSON STRING FOR CONFIGURATION   
         FILE *fp;

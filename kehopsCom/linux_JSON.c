@@ -95,6 +95,28 @@
 #define KEY_MESSAGE_VALUE_CFG_PWM_STATE "{'MsgData'{'MsgValue'[{'pwm'[*{'state'"
 #define KEY_MESSAGE_VALUE_CFG_PWM_POWER "{'MsgData'{'MsgValue'[{'pwm'[*{'power'"
 
+#define KEY_MESSAGE_VALUE_CFG_BTN "{'MsgData'{'MsgValue'[*{'button'"
+#define KEY_MESSAGE_VALUE_CFG_BTN_ID "{'MsgData'{'MsgValue'[{'button'[*{'btn'"
+#define KEY_MESSAGE_VALUE_CFG_BTN_EVENT_STATE "{'MsgData'{'MsgValue'[{'button'[*{'event'"
+
+#define KEY_MESSAGE_VALUE_CFG_DIN "{'MsgData'{'MsgValue'[*{'din'"
+#define KEY_MESSAGE_VALUE_CFG_DIN_ID "{'MsgData'{'MsgValue'[{'din'[*{'din'"
+#define KEY_MESSAGE_VALUE_CFG_DIN_EVENT_STATE "{'MsgData'{'MsgValue'[{'din'[*{'event'"
+
+#define KEY_MESSAGE_VALUE_CFG_SONAR "{'MsgData'{'MsgValue'[*{'sonar'"
+#define KEY_MESSAGE_VALUE_CFG_SONAR_ID "{'MsgData'{'MsgValue'[{'sonar'[*{'sonar'"
+#define KEY_MESSAGE_VALUE_CFG_SONAR_EVENT_STATE "{'MsgData'{'MsgValue'[{'sonar'[*{'event'"
+#define KEY_MESSAGE_VALUE_CFG_SONAR_EVENT_LOW "{'MsgData'{'MsgValue'[{'sonar'[*{'event_lower'"
+#define KEY_MESSAGE_VALUE_CFG_SONAR_EVENT_HIGH "{'MsgData'{'MsgValue'[{'sonar'[*{'event_higher'"
+#define KEY_MESSAGE_VALUE_CFG_SONAR_EVENT_HYST "{'MsgData'{'MsgValue'[{'sonar'[*{'event_hysteresis'"
+
+#define KEY_MESSAGE_VALUE_CFG_BATTERY "{'MsgData'{'MsgValue'[*{'battery'"
+#define KEY_MESSAGE_VALUE_CFG_BATT_ID "{'MsgData'{'MsgValue'[{'battery'[*{'battery'"
+#define KEY_MESSAGE_VALUE_CFG_BATT_EVENT_STATE "{'MsgData'{'MsgValue'[{'battery'[*{'event'"
+#define KEY_MESSAGE_VALUE_CFG_BATT_EVENT_LOW "{'MsgData'{'MsgValue'[{'battery'[*{'event_lower'"
+#define KEY_MESSAGE_VALUE_CFG_BATT_EVENT_HIGH "{'MsgData'{'MsgValue'[{'battery'[*{'event_higher'"
+#define KEY_MESSAGE_VALUE_CFG_BATT_EVENT_HYST "{'MsgData'{'MsgValue'[{'battery'[*{'event_hysteresis'"
+
 #define KEY_MESSAGE_VALUE_SYS_FIRMWARE "{'MsgData'{'MsgValue'[*{'firmware'"
 #define KEY_MESSAGE_VALUE_SYS_DASH "{'MsgData'{'MsgValue'[*{'dashboard'"
 #define KEY_MESSAGE_VALUE_SYS_WIFI "{'MsgData'{'MsgValue'[*{'wifi'"
@@ -134,6 +156,7 @@ ALGOID myReplyMessage;
 char GetAlgoidMsg(ALGOID *destMessage, char *srcBuffer){
 	struct jReadElement element, cfg_device_list, sysWifiCommand;
 	int i;
+        char readString[128];
         ALGOID myMessage;
         //myMessage = &destMessage;
 	// ENTETE DE MESSAGE
@@ -187,7 +210,6 @@ char GetAlgoidMsg(ALGOID *destMessage, char *srcBuffer){
 				      {
 				    	  if(destMessage->msgParam == MOTORS){
 				    		  destMessage->DCmotor[i].motor=UNKNOWN;	// Initialisation roue inconnue
-				    		  //jRead_string((char *)srcBuffer, KEY_MESSAGE_VALUE_MOTOR, myDataString, 15, &i );
                                                   destMessage->DCmotor[i].motor= jRead_long((char *)srcBuffer, KEY_MESSAGE_VALUE_MOTOR, &i);
                                                  
 					    	  destMessage->DCmotor[i].userSetPoint= jRead_long((char *)srcBuffer, KEY_MESSAGE_VALUE_VELOCITY, &i);
@@ -395,7 +417,74 @@ char GetAlgoidMsg(ALGOID *destMessage, char *srcBuffer){
                                                         jRead_string((char *)srcBuffer, KEY_MESSAGE_VALUE_CFG_PWM_STATE, destMessage->Config.pwm[i_dev].state, 15, &i_dev ); 
                                                     }
                                                 } 
+                                                
+                                                // DIN Setting
+                                                jRead((char *)srcBuffer, KEY_MESSAGE_VALUE_CFG_DIN, &cfg_device_list );
 
+                                                // RECHERCHE DATA DE TYPE ARRAY
+                                                if(cfg_device_list.dataType == JREAD_ARRAY ){
+                                                    // Get the number of DIN in array
+                                                    nbOfdeviceInConf=cfg_device_list.elements;
+                                                    destMessage->Config.dinValueCnt = nbOfdeviceInConf;
+                                                    
+                                                    for(i_dev=0; i_dev < nbOfdeviceInConf; i_dev++){
+                                                        destMessage->Config.din[i_dev].id=jRead_long((char *)srcBuffer, KEY_MESSAGE_VALUE_CFG_DIN_ID, &i_dev);                                                        
+                                                        strcpy(destMessage->Config.din[i_dev].event_state, "");
+                                                        jRead_string((char *)srcBuffer, KEY_MESSAGE_VALUE_CFG_DIN_EVENT_STATE, destMessage->Config.din[i_dev].event_state, 15, &i_dev );
+                                                    }
+                                                }
+
+                                                // BTN Setting
+                                                jRead((char *)srcBuffer, KEY_MESSAGE_VALUE_CFG_BTN, &cfg_device_list );
+
+                                                // RECHERCHE DATA DE TYPE ARRAY
+                                                if(cfg_device_list.dataType == JREAD_ARRAY ){
+                                                    // Get the number of BTN in array
+                                                    nbOfdeviceInConf=cfg_device_list.elements;
+                                                    destMessage->Config.btnValueCnt = nbOfdeviceInConf;
+                                                    
+                                                    for(i_dev=0; i_dev < nbOfdeviceInConf; i_dev++){
+                                                        destMessage->Config.btn[i_dev].id=jRead_long((char *)srcBuffer, KEY_MESSAGE_VALUE_CFG_BTN_ID, &i_dev); 
+                                                        jRead_string((char *)srcBuffer, KEY_MESSAGE_VALUE_CFG_BTN_EVENT_STATE, destMessage->Config.btn[i_dev].event_state, 15, &i_dev );
+                                                    }
+                                                }
+                                                
+                                                // SONAR Setting
+                                                jRead((char *)srcBuffer, KEY_MESSAGE_VALUE_CFG_SONAR, &cfg_device_list );
+
+                                                // RECHERCHE DATA DE TYPE ARRAY
+                                                if(cfg_device_list.dataType == JREAD_ARRAY ){
+                                                    // Get the number of SONAR in array
+                                                    nbOfdeviceInConf=cfg_device_list.elements;
+                                                    destMessage->Config.sonarValueCnt = nbOfdeviceInConf;
+                                                    
+                                                    for(i_dev=0; i_dev < nbOfdeviceInConf; i_dev++){
+                                                        destMessage->Config.sonar[i_dev].id=jRead_long((char *)srcBuffer, KEY_MESSAGE_VALUE_CFG_SONAR_ID, &i_dev); 
+                                                        jRead_string((char *)srcBuffer, KEY_MESSAGE_VALUE_CFG_SONAR_EVENT_STATE, destMessage->Config.sonar[i_dev].event_state, 15, &i_dev );
+                                                        destMessage->Config.sonar[i_dev].event_low = jRead_long((char *)srcBuffer, KEY_MESSAGE_VALUE_CFG_SONAR_EVENT_LOW, &i_dev);
+                                                        destMessage->Config.sonar[i_dev].event_high = jRead_long((char *)srcBuffer, KEY_MESSAGE_VALUE_CFG_SONAR_EVENT_HIGH, &i_dev);
+                                                        destMessage->Config.sonar[i_dev].event_hyst = jRead_long((char *)srcBuffer, KEY_MESSAGE_VALUE_CFG_SONAR_EVENT_HYST, &i_dev);
+                                                    }
+                                                }
+
+                                                // BATTERY Setting
+                                                jRead((char *)srcBuffer, KEY_MESSAGE_VALUE_CFG_BATTERY, &cfg_device_list );
+
+                                                // RECHERCHE DATA DE TYPE ARRAY
+                                                if(cfg_device_list.dataType == JREAD_ARRAY ){
+                                                    // Get the number of SONAR in array
+                                                    nbOfdeviceInConf=cfg_device_list.elements;
+                                                    destMessage->Config.battValueCnt = nbOfdeviceInConf;
+                                                    
+                                                    for(i_dev=0; i_dev < nbOfdeviceInConf; i_dev++){
+                                                        destMessage->Config.battery[i_dev].id=jRead_long((char *)srcBuffer, KEY_MESSAGE_VALUE_CFG_BATT_ID, &i_dev); 
+                                                        jRead_string((char *)srcBuffer, KEY_MESSAGE_VALUE_CFG_BATT_EVENT_STATE, destMessage->Config.battery[i_dev].event_state, 15, &i_dev );
+                                                        destMessage->Config.battery[i_dev].event_low = jRead_long((char *)srcBuffer, KEY_MESSAGE_VALUE_CFG_BATT_EVENT_LOW, &i_dev);
+                                                        destMessage->Config.battery[i_dev].event_high = jRead_long((char *)srcBuffer, KEY_MESSAGE_VALUE_CFG_BATT_EVENT_HIGH, &i_dev);
+                                                        destMessage->Config.battery[i_dev].event_hyst = jRead_long((char *)srcBuffer, KEY_MESSAGE_VALUE_CFG_BATT_EVENT_HYST, &i_dev);
+                                                    }
+                                                }                                                 
+                                                
                                             // Get the name
                                                 jRead_string((char *)srcBuffer, KEY_MESSAGE_VALUE_CFG_NAME, destMessage->Config.robot.name, 15, &i );
                                             // Get the group
@@ -683,6 +772,8 @@ void jsonBuilder(char * buffer, int msgId, char* to, char* from, char* msgType, 
                                                                                         jwArr_object();
                                                                                             jwObj_int("cm", round((messageResponse[i].value)));
                                                                                             jwObj_string("event", messageResponse[i].DISTresponse.event_state);                                                                                            
+                                                                                            jwObj_int("event_lower", messageResponse[i].DISTresponse.event_high);                                                                                            
+                                                                                            jwObj_int("event_higher", messageResponse[i].DISTresponse.event_low);                                                                                            
                                                                                         jwEnd();           
                                                                                         i++;
                                                                                     }
@@ -741,6 +832,8 @@ void jsonBuilder(char * buffer, int msgId, char* to, char* from, char* msgType, 
                                                                                         jwArr_object();
                                                                                             jwObj_int("voltage_mv", round((messageResponse[i].value)));
                                                                                             jwObj_string("event", messageResponse[i].BATTesponse.event_state);                                                                                            
+                                                                                            jwObj_int("event_lower", messageResponse[i].BATTesponse.event_high);                                                                                            
+                                                                                            jwObj_int("event_higher", messageResponse[i].BATTesponse.event_low);                                                                                            
                                                                                         jwEnd();           
                                                                                         i++;
                                                                                     }
@@ -892,7 +985,74 @@ void jsonBuilder(char * buffer, int msgId, char* to, char* from, char* msgType, 
                                                                                                                     } 
                                                                                                                 jwEnd();                                             
                                                                                                             }
-                                                                                                           
+                                                                                                            
+                                                                                                        // CREATE JSON CONFIG FOR PWM
+                                                                                                            if(messageResponse[i].CONFIGresponse.pwmValueCnt > 0){
+                                                                                                                jwObj_array("pwm");
+                                                                                                                    for(j=0;j<messageResponse[i].CONFIGresponse.pwmValueCnt;j++){
+                                                                                                                        jwArr_object();
+                                                                                                                            jwObj_int( "pwm", messageResponse[i].CONFIGresponse.pwm[j].id);
+                                                                                                                            jwObj_string("state", messageResponse[i].CONFIGresponse.pwm[j].state);
+                                                                                                                            jwObj_int( "power", messageResponse[i].CONFIGresponse.pwm[j].power);
+                                                                                                                        jwEnd();
+                                                                                                                    } 
+                                                                                                                jwEnd();                                             
+                                                                                                            }                                                                                                            
+                                                                                                            
+                                                                                                        // CREATE JSON CONFIG FOR DIN CONFIG
+                                                                                                            if(messageResponse[i].CONFIGresponse.dinValueCnt > 0){
+                                                                                                                jwObj_array("din");
+                                                                                                                    for(j=0;j<messageResponse[i].CONFIGresponse.dinValueCnt;j++){
+                                                                                                                        jwArr_object();
+                                                                                                                            jwObj_int( "din", messageResponse[i].CONFIGresponse.din[j].id);
+                                                                                                                            jwObj_string("event", messageResponse[i].CONFIGresponse.din[j].event_state);
+                                                                                                                        jwEnd();
+                                                                                                                    } 
+                                                                                                                jwEnd();                                             
+                                                                                                            }                                                                                                            
+
+                                                                                                            // CREATE JSON CONFIG FOR BTN CONFIG
+                                                                                                            if(messageResponse[i].CONFIGresponse.btnValueCnt > 0){
+                                                                                                                jwObj_array("button");
+                                                                                                                    for(j=0;j<messageResponse[i].CONFIGresponse.btnValueCnt;j++){
+                                                                                                                        jwArr_object();
+                                                                                                                            jwObj_int( "btn", messageResponse[i].CONFIGresponse.btn[j].id);
+                                                                                                                            jwObj_string("event", messageResponse[i].CONFIGresponse.btn[j].event_state);
+                                                                                                                        jwEnd();
+                                                                                                                    } 
+                                                                                                                jwEnd();                                             
+                                                                                                            }
+                                                                                                            
+                                                                                                            // CREATE JSON CONFIG FOR SONAR CONFIG
+                                                                                                            if(messageResponse[i].CONFIGresponse.sonarValueCnt > 0){
+                                                                                                                jwObj_array("sonar");
+                                                                                                                    for(j=0;j<messageResponse[i].CONFIGresponse.sonarValueCnt;j++){
+                                                                                                                        jwArr_object();
+                                                                                                                            jwObj_int( "sonar", messageResponse[i].CONFIGresponse.sonar[j].id);
+                                                                                                                            jwObj_string("event", messageResponse[i].CONFIGresponse.sonar[j].event_state);
+                                                                                                                            jwObj_int( "event_lower", messageResponse[i].CONFIGresponse.sonar[j].event_low);
+                                                                                                                            jwObj_int( "event_higher", messageResponse[i].CONFIGresponse.sonar[j].event_high);
+                                                                                                                            jwObj_int( "event_hysteresis", messageResponse[i].CONFIGresponse.sonar[j].event_hyst);
+                                                                                                                        jwEnd();
+                                                                                                                    } 
+                                                                                                                jwEnd();                                             
+                                                                                                            } 
+
+                                                                                                            // CREATE JSON CONFIG FOR BATTERY CONFIG
+                                                                                                            if(messageResponse[i].CONFIGresponse.battValueCnt > 0){
+                                                                                                                jwObj_array("battery");
+                                                                                                                    for(j=0;j<messageResponse[i].CONFIGresponse.battValueCnt;j++){
+                                                                                                                        jwArr_object();
+                                                                                                                            jwObj_int( "battery", messageResponse[i].CONFIGresponse.battery[j].id);
+                                                                                                                            jwObj_string("event", messageResponse[i].CONFIGresponse.battery[j].event_state);
+                                                                                                                            jwObj_int( "event_lower", messageResponse[i].CONFIGresponse.battery[j].event_low);
+                                                                                                                            jwObj_int( "event_higher", messageResponse[i].CONFIGresponse.battery[j].event_high);
+                                                                                                                            jwObj_int( "event_hysteresis", messageResponse[i].CONFIGresponse.battery[j].event_hyst);
+                                                                                                                        jwEnd();
+                                                                                                                    } 
+                                                                                                                jwEnd();                                             
+                                                                                                            }                                                                                                             
+                                                                                                            
                                                                                                             break;
                                                                                 default : jwObj_string("error", "unknown"); break;
                                                                             }

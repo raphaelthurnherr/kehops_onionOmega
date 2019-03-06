@@ -1,4 +1,4 @@
-#define FIRMWARE_VERSION "0.6.2"
+#define FIRMWARE_VERSION "0.6.5"
 
 #define DEFAULT_EVENT_STATE 1   
 
@@ -105,8 +105,6 @@ int main(int argc, char *argv[]) {
                                              // si activ�.
         char welcomeMessage[100];
 	system("clear");
-        
-        resetConfig();
                 
         // Creation d'un id unique avec l'adresse mac si non defini au demarrage
 	if(!strcmp(sysApp.info.name, ""))
@@ -143,6 +141,7 @@ int main(int argc, char *argv[]) {
             printf ("#[CORE] Demarrage tâche hardware: OK\n");
         }
         
+        sysApp.kehops.resetConfig=1;
 // --------------------------------------------------------------------
 // BOUCLE DU PROGRAMME PRINCIPAL
 // - Messagerie avec ALGOID, attentes de messages en provenance de l'h�te -> D�marrage du traitement des commandes
@@ -400,7 +399,13 @@ int processmessage(void){
                                 break;
                                 
             case CONFIG  :
+                
                                 for(valCnt=0;valCnt<message.msgValueCnt;valCnt++){
+                                // CONFIG COMMAND FOR RESET
+                                    if(!strcmp(message.Config.action.reset, "true")){
+                                        resetConfig();              // !!! Dont'work, string stay in structure and are used later
+                                    }
+
                             // CONFIG COMMAND FOR DATASTREAM
 
                                     // Récupére les parametres de configuration du nom du robot si specifié
@@ -586,20 +591,120 @@ int processmessage(void){
                                         else
                                             messageResponse[valCnt].CONFIGresponse.pwm[i].id=-1;
                                     }
+                                    
+                                    // CONFIG COMMAND FOR DIN SETTING
+                                    for(i=0;i<message.Config.dinValueCnt; i++){
+                                        messageResponse[valCnt].CONFIGresponse.dinValueCnt=message.Config.dinValueCnt;
+                                        
+                                        
+                                        // Check if DIN exist...
+                                        if(message.Config.din[i].id >= 0 && message.Config.din[i].id<NBDIN){
 
+                                            // Save config for DIN event State
+                                            if(!strcmp(message.Config.din[i].event_state, "on")){
+                                                kehops.proximity[message.Config.din[i].id].event.enable = 1;
+                                                strcpy(messageResponse[valCnt].CONFIGresponse.din[i].event_state, "on");
+                                            }
+                                            else if(!strcmp(message.Config.din[i].event_state, "off")){
+                                                kehops.proximity[message.Config.din[i].id].event.enable = 0;
+                                                strcpy(messageResponse[valCnt].CONFIGresponse.din[i].event_state, "off");
+                                            }
+                                            messageResponse[valCnt].CONFIGresponse.din[i].id = message.Config.din[i].id;
+                                        }
+                                        else
+                                            messageResponse[valCnt].CONFIGresponse.din[i].id=-1;
+                                    }
+                                    
+                                    // CONFIG COMMAND FOR BTN SETTING
+                                    for(i=0;i<message.Config.dinValueCnt; i++){
+                                        messageResponse[valCnt].CONFIGresponse.btnValueCnt=message.Config.btnValueCnt;
+                                        
+                                        // Check if DIN exist...
+                                        if(message.Config.btn[i].id >= 0 && message.Config.btn[i].id <NBBTN){
+
+                                            // Save config for BTN event State
+                                            if(!strcmp(message.Config.btn[i].event_state, "on")){
+                                                kehops.button[message.Config.btn[i].id].event.enable = 1;
+                                                strcpy(messageResponse[valCnt].CONFIGresponse.btn[i].event_state, "on");
+                                            }
+                                            else if(!strcmp(message.Config.btn[i].event_state, "off")){
+                                                kehops.button[message.Config.btn[i].id].event.enable = 0;
+                                                strcpy(messageResponse[valCnt].CONFIGresponse.btn[i].event_state, "off");
+                                            }
+                                            messageResponse[valCnt].CONFIGresponse.btn[i].id = message.Config.btn[i].id;
+                                        }
+                                        else
+                                            messageResponse[valCnt].CONFIGresponse.btn[i].id=-1;
+                                    }
+                                    
+                                    // CONFIG COMMAND FOR SONAR SETTING
+                                    for(i=0;i<message.Config.sonarValueCnt; i++){
+                                        messageResponse[valCnt].CONFIGresponse.sonarValueCnt=message.Config.sonarValueCnt;
+                                        
+                                        // Check if SONAR exist...
+                                        if(message.Config.sonar[i].id >= 0 && message.Config.sonar[i].id <NBSONAR){
+
+                                            // Save config for SONAR event State
+                                            if(!strcmp(message.Config.sonar[i].event_state, "on")){
+                                                kehops.sonar[message.Config.sonar[i].id].event.enable = 1;
+                                                strcpy(messageResponse[valCnt].CONFIGresponse.sonar[i].event_state, "on");
+                                            }
+                                            else if(!strcmp(message.Config.sonar[i].event_state, "off")){
+                                                kehops.sonar[message.Config.sonar[i].id].event.enable = 0;
+                                                strcpy(messageResponse[valCnt].CONFIGresponse.sonar[i].event_state, "off");
+                                            }
+                                            // Save config for SONAR event LOW, HIGH and HYSTERESIS
+                                            kehops.sonar[message.Config.sonar[i].id].event.low = message.Config.sonar[i].event_low;
+                                            kehops.sonar[message.Config.sonar[i].id].event.high = message.Config.sonar[i].event_high;
+                                            kehops.sonar[message.Config.sonar[i].id].event.hysteresis = message.Config.sonar[i].event_hyst;
+                                            
+                                            messageResponse[valCnt].CONFIGresponse.sonar[i].id = message.Config.sonar[i].id;
+                                            messageResponse[valCnt].CONFIGresponse.sonar[i].event_low = message.Config.sonar[i].event_low;
+                                            messageResponse[valCnt].CONFIGresponse.sonar[i].event_high = message.Config.sonar[i].event_high;
+                                            messageResponse[valCnt].CONFIGresponse.sonar[i].event_hyst = message.Config.sonar[i].event_hyst;
+                                        }
+                                        else
+                                            messageResponse[valCnt].CONFIGresponse.sonar[i].id=-1;
+                                    }
+
+                                    // CONFIG COMMAND FOR BATTERY SETTING
+                                    for(i=0;i<message.Config.battValueCnt; i++){
+                                        messageResponse[valCnt].CONFIGresponse.battValueCnt=message.Config.battValueCnt;
+                                        
+                                        // Check if BATTERY exist...
+                                        if(message.Config.battery[i].id >= 0 && message.Config.battery[i].id <NBAIN){
+
+                                            // Save config for BATTERY event State
+                                            if(!strcmp(message.Config.battery[i].event_state, "on")){
+                                                kehops.battery[message.Config.battery[i].id].event.enable = 1;
+                                                strcpy(messageResponse[valCnt].CONFIGresponse.battery[i].event_state, "on");
+                                            }
+                                            else if(!strcmp(message.Config.battery[i].event_state, "off")){
+                                                kehops.battery[message.Config.battery[i].id].event.enable = 0;
+                                                strcpy(messageResponse[valCnt].CONFIGresponse.battery[i].event_state, "off");
+                                            }
+                                            // Save config for SONAR event LOW, HIGH and HYSTERESIS
+                                            kehops.battery[message.Config.battery[i].id].event.low = message.Config.battery[i].event_low;
+                                            kehops.battery[message.Config.battery[i].id].event.high = message.Config.battery[i].event_high;
+                                            kehops.battery[message.Config.battery[i].id].event.hysteresis = message.Config.battery[i].event_hyst;
+                                            
+                                            messageResponse[valCnt].CONFIGresponse.battery[i].id = message.Config.battery[i].id;
+                                            messageResponse[valCnt].CONFIGresponse.battery[i].event_low = message.Config.battery[i].event_low;
+                                            messageResponse[valCnt].CONFIGresponse.battery[i].event_high = message.Config.battery[i].event_high;
+                                            messageResponse[valCnt].CONFIGresponse.battery[i].event_hyst = message.Config.battery[i].event_hyst;
+                                        }
+                                        else
+                                            messageResponse[valCnt].CONFIGresponse.battery[i].id=-1;
+                                    }
+                                    
                                 // CONFIG COMMAND FOR SAVE
                                     if(!strcmp(message.Config.action.save, "true")){
                                         SaveConfig("kehops.cfg");
                                         sprintf(reportBuffer, "Save KEHOPS configuration for message #%d\n", message.msgID);
                                         printf(reportBuffer);                                                             // Affichage du message dans le shell
                                         sendMqttReport(message.msgID, reportBuffer);				      // Envoie le message sur le canal MQTT "Report"
-                                    }
-
-                                // CONFIG COMMAND FOR RESET
-                                    if(!strcmp(message.Config.action.reset, "true")){
-                                        sysApp.kehops.resetConfig = 1;
-                                    }
-
+                                    }                                    
+                                    
                         // Préparation des valeurs du message de réponse
                                     
                                     strcpy(messageResponse[valCnt].CONFIGresponse.robot.name, sysApp.info.name);
@@ -1452,7 +1557,6 @@ int makeStatusRequest(int msgType){
 	for(i=0;i<NBDIN;i++){
 		messageResponse[ptrData].DINresponse.id=i;
                 messageResponse[ptrData].value = kehops.proximity[i].measure.state;
-                
                 if(kehops.proximity[i].event.enable) strcpy(messageResponse[ptrData].DINresponse.event_state, "on");
                 else strcpy(messageResponse[ptrData].DINresponse.event_state, "off");                
 		ptrData++;
@@ -1480,6 +1584,8 @@ int makeStatusRequest(int msgType){
         for(i=0;i<NBSONAR;i++){
                 messageResponse[ptrData].DISTresponse.id=i;
                 messageResponse[ptrData].value = kehops.sonar[i].measure.distance_cm;
+                messageResponse[ptrData].DISTresponse.event_low = kehops.sonar[i].event.low;
+                messageResponse[ptrData].DISTresponse.event_high = kehops.sonar[i].event.high;
                 
                 if(kehops.sonar[i].event.enable) strcpy(messageResponse[ptrData].DISTresponse.event_state, "on");
                 else strcpy(messageResponse[ptrData].DISTresponse.event_state, "off");
@@ -1517,7 +1623,8 @@ int makeStatusRequest(int msgType){
         for(i=0;i<NBAIN;i++){
                 messageResponse[ptrData].BATTesponse.id=i;
                 messageResponse[ptrData].value = kehops.battery[i].measure.voltage_mV;
-                
+                messageResponse[ptrData].BATTesponse.event_low = kehops.battery[i].event.low;
+                messageResponse[ptrData].BATTesponse.event_high = kehops.battery[i].event.high;                
                 if(kehops.battery[i].event.enable) strcpy(messageResponse[ptrData].BATTesponse.event_state, "on");
                 else strcpy(messageResponse[ptrData].BATTesponse.event_state, "off");
                 ptrData++;
@@ -2397,7 +2504,6 @@ void resetConfig(void){
         sysConf.communication.mqtt.stream.state  = ON;
         sysConf.communication.mqtt.stream.time_ms = 500;
         sysApp.info.wan_online = 0;  
-        sysApp.kehops.resetConfig = 0;
         
         strcpy(sysApp.info.name, "");
         strcpy(sysApp.info.group, "");
@@ -2424,6 +2530,7 @@ void resetConfig(void){
         }
         
         sysApp.info.startUpTime = 0;
+        sysApp.kehops.resetConfig = 0;
 }
 
 int getStartupArg(int count, char *arg[]){
@@ -2613,7 +2720,59 @@ int makeConfigRequest(void){
             strcpy(messageResponse[ptrData].CONFIGresponse.pwm[i].isServoMode,"on");
         else
             strcpy(messageResponse[ptrData].CONFIGresponse.pwm[i].isServoMode,"off");
-    }    
+    }
+    
+        // Récupération de la config des DIN
+    messageResponse[ptrData].CONFIGresponse.dinValueCnt = NBDIN;
+    for(i=0;i<NBDIN; i++){
+        messageResponse[ptrData].CONFIGresponse.din[i].id = i;        
+        
+        if(kehops.proximity[i].event.enable)
+            strcpy(messageResponse[ptrData].CONFIGresponse.din[i].event_state, "on");
+        else 
+            strcpy(messageResponse[ptrData].CONFIGresponse.din[i].event_state, "off");
+    }  
+    
+        // Récupération de la config des BOUTON
+    messageResponse[ptrData].CONFIGresponse.btnValueCnt = NBBTN;
+    for(i=0;i<NBBTN; i++){
+        messageResponse[ptrData].CONFIGresponse.btn[i].id = i;        
+        
+        if(kehops.button[i].event.enable)
+            strcpy(messageResponse[ptrData].CONFIGresponse.btn[i].event_state, "on");
+        else 
+            strcpy(messageResponse[ptrData].CONFIGresponse.btn[i].event_state, "off");
+    }
+    
+    // Récupération de la config des SONAR
+    messageResponse[ptrData].CONFIGresponse.sonarValueCnt = NBSONAR;
+    for(i=0;i<NBSONAR; i++){
+        messageResponse[ptrData].CONFIGresponse.sonar[i].id = i;        
+        
+        if(kehops.sonar[i].event.enable)
+            strcpy(messageResponse[ptrData].CONFIGresponse.sonar[i].event_state, "on");
+        else 
+            strcpy(messageResponse[ptrData].CONFIGresponse.sonar[i].event_state, "off");
+        
+        messageResponse[ptrData].CONFIGresponse.sonar[i].event_low = kehops.sonar[i].event.low;
+        messageResponse[ptrData].CONFIGresponse.sonar[i].event_high = kehops.sonar[i].event.high;
+        messageResponse[ptrData].CONFIGresponse.sonar[i].event_hyst = kehops.sonar[i].event.hysteresis;
+    }
+
+    // Récupération de la config des BATTERIE
+    messageResponse[ptrData].CONFIGresponse.sonarValueCnt = NBAIN;
+    for(i=0;i<NBAIN; i++){
+        messageResponse[ptrData].CONFIGresponse.battery[i].id = i;        
+        
+        if(kehops.battery[i].event.enable)
+            strcpy(messageResponse[ptrData].CONFIGresponse.battery[i].event_state, "on");
+        else 
+            strcpy(messageResponse[ptrData].CONFIGresponse.battery[i].event_state, "off");
+        
+        messageResponse[ptrData].CONFIGresponse.battery[i].event_low = kehops.battery[i].event.low;
+        messageResponse[ptrData].CONFIGresponse.battery[i].event_high = kehops.battery[i].event.high;
+        messageResponse[ptrData].CONFIGresponse.battery[i].event_hyst = kehops.battery[i].event.hysteresis;
+    }     
  
     // Envoie du message de réponse de la configuration
     messageResponse[ptrData].responseType = RESP_STD_MESSAGE;

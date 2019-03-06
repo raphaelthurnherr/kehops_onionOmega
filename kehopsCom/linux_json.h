@@ -73,6 +73,14 @@ struct mDin{
 	char event_state[25];
 };
 
+struct mAin{
+	int id;
+	char event_state[25];
+        int event_low;
+        int event_high;
+        int event_hyst;
+};
+
 struct mBroker{
 	char address[128];
 };
@@ -134,6 +142,10 @@ struct mConfig{
         int motValueCnt;
         int ledValueCnt;
         int pwmValueCnt;
+        int btnValueCnt;
+        int dinValueCnt;
+        int sonarValueCnt;
+        int battValueCnt;
         int stepperValueCnt;
         int wheelValueCnt;
 	struct mStream stream;
@@ -145,6 +157,10 @@ struct mConfig{
         struct mStepperConfig stepper[10];
         struct mLedConfig led[10];
         struct mLedConfig pwm[10];
+        struct mDin btn[10];
+        struct mDin din[10];
+        struct mAin sonar[10];
+        struct mAin battery[10];
 };
 
 struct mDistance{
