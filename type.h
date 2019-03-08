@@ -295,7 +295,7 @@ typedef struct robotRgb{
 
 
 typedef struct robotKehops{
-    robot_battery battery[1];
+    robot_battery battery[NBAIN];
     robot_button button[NBBTN];
     robot_stepperwheel stepperWheel[NBSTEPPER];
     robot_dcwheel dcWheel[NBMOTOR];

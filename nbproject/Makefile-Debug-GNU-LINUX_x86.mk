@@ -44,6 +44,7 @@ OBJECTFILES= \
 	${OBJECTDIR}/configManager.o \
 	${OBJECTDIR}/hwControl/boardHWctrl.o \
 	${OBJECTDIR}/hwControl/boardHWsimu.o \
+	${OBJECTDIR}/hwControl/device_drivers/pca9685.o \
 	${OBJECTDIR}/hwControl/hwManager.o \
 	${OBJECTDIR}/hwControl/libs/i2c/onion-i2c.o \
 	${OBJECTDIR}/hwControl/libs/onion-debug/onion-debug.o \
@@ -147,6 +148,11 @@ ${OBJECTDIR}/hwControl/boardHWsimu.o: hwControl/boardHWsimu.c
 	${MKDIR} -p ${OBJECTDIR}/hwControl
 	${RM} "$@.d"
 	$(COMPILE.c) -g -DI2CSIMU -IhwControl/libs/i2c -IhwControl/libs/onion-debug -IhwControl -IkehopsCom/libs/lib_json -IkehopsCom/libs/lib_mqtt -IkehopsCom -Iactuators -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/hwControl/boardHWsimu.o hwControl/boardHWsimu.c
+
+${OBJECTDIR}/hwControl/device_drivers/pca9685.o: hwControl/device_drivers/pca9685.c
+	${MKDIR} -p ${OBJECTDIR}/hwControl/device_drivers
+	${RM} "$@.d"
+	$(COMPILE.c) -g -DI2CSIMU -IhwControl/libs/i2c -IhwControl/libs/onion-debug -IhwControl -IkehopsCom/libs/lib_json -IkehopsCom/libs/lib_mqtt -IkehopsCom -Iactuators -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/hwControl/device_drivers/pca9685.o hwControl/device_drivers/pca9685.c
 
 ${OBJECTDIR}/hwControl/hwManager.o: hwControl/hwManager.c
 	${MKDIR} -p ${OBJECTDIR}/hwControl

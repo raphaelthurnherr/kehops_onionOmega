@@ -15,6 +15,8 @@
 #include "hwManager.h"
 #include "../kehops_main.h"
 
+#include "pca9685.h"
+
 #ifdef I2CSIMU
 #include "boardHWsimu.h"
 #define POOLTIME 20000
@@ -188,12 +190,26 @@ int getMcuFirmware(void);                                              // Get th
 
 int resetHardware(t_sysConf * Config);
 
+
+
 // ------------------------------------------
 // Programme principale TIMER
 // ------------------------------------------
 void *hwTask (void * arg){
         char dinState=0;
 
+        device_pca9685 test;
+        
+        device_pca9685 *myDevice = &test;
+        
+        myDevice->frequency=50;
+        myDevice->deviceAddress=22;
+        myDevice->invertedOutput=33;
+        myDevice->totemPoleOutput=66;
+        myDevice->externalClock=99;
+        
+        pca9685_init(myDevice);
+                
 	if(buggyBoardInit()){
                 
 		printf("\n#[HW MANAGER] Initialisation carte HW: OK\n");

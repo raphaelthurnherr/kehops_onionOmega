@@ -1,4 +1,4 @@
-#define FIRMWARE_VERSION "0.6.5"
+#define FIRMWARE_VERSION "0.6.6"
 
 #define DEFAULT_EVENT_STATE 1   
 
@@ -105,10 +105,6 @@ int main(int argc, char *argv[]) {
                                              // si activ�.
         char welcomeMessage[100];
 	system("clear");
-                
-        // Creation d'un id unique avec l'adresse mac si non defini au demarrage
-	if(!strcmp(sysApp.info.name, ""))
-            strcpy(&sysApp.info.name, getMACaddr());
 
         // Récupération des paramètres [NomClient et address brocker] durant l'execution de l'application
         getStartupArg(argc, argv);
@@ -2515,6 +2511,10 @@ void resetConfig(void){
         }else
             printf("#[CORE] Load configuration file from \"kehops.cfg\": OK\n");
 
+        // Creation d'un id unique avec l'adresse mac si non defini au demarrage
+	if(!strcmp(sysApp.info.name, ""))
+            strcpy(&sysApp.info.name, getMACaddr());
+        
         for(i=0;i<NBLED;i++){
             if(kehops.led[i].config.defaultState==1)
                 setLedPower(i, kehops.led[i].config.defaultPower);
