@@ -1,0 +1,274 @@
+{
+  "robot": {
+    "name": "929c",
+    "group": "kehops_"
+  },
+  "mqtt": {
+    "broker": {
+      "address": "vps596769.ovh.net"
+    },
+    "stream": {
+      "state": "on",
+      "time": 250,
+      "onEvent": "on"
+    }
+  },
+  "motor": [
+    {
+      "name": 0,
+      "dc_motor_id": 0,
+      "inverted": "on",
+      "pwmMin": 25,
+      "rpmMin": 20,
+      "rpmMax": 180
+    },
+    {
+      "name": 1,
+      "dc_motor_id": 1,
+      "inverted": "on",
+      "pwmMin": 20,
+      "rpmMin": 20,
+      "rpmMax": 180
+    }
+  ],
+  "wheel": [
+    {
+      "name": 0,
+      "diameter": 45,
+      "pulses": 45,
+      "rpmRegulator": {
+        "state": "off",
+        "Pname_Kp": 0.5,
+        "Pname_Ki": 0.02,
+        "Pname_Kd": 0.008
+      }
+    },
+    {
+      "name": 1,
+      "diameter": 45,
+      "pulses": 45,
+      "rpmRegulator": {
+        "state": "off",
+        "Pname_Kp": 0.5,
+        "Pname_Ki": 0.02,
+        "Pname_Kd": 0.008
+      }
+    }
+  ],
+  "stepper": [
+    {
+      "name": 0,
+      "stepper_motor_id": 0,
+      "inverted": "off",
+      "ratio": 64,
+      "steps": 32
+    }
+  ],
+  "led": [
+    {
+      "name": 0,
+      "dout_id": 0,
+      "state": "off",
+      "power": 30
+    },
+    {
+      "name": 1,
+      "dout_id": 1,
+      "state": "on",
+      "power": 100
+    },
+    {
+      "name": 2,
+      "dout_id": 2,
+      "state": "on",
+      "power": 10
+    }
+  ],
+  "pwm": [{"/* CHANGE TO GENERIC NAME DOUT */"},
+    {
+      "name": 0,
+      "dout_id": 3,
+      "state": "off",
+      "power": 0
+    },
+    {
+      "name": 1,
+      "dout_id": 4,
+      "state": "on",
+      "power": 100
+    },
+    {
+      "name": 2,
+      "dout_id": 5,
+      "state": "on",
+      "power": 100
+    },
+    {
+      "name": 3,
+      "dout_id": 6,
+      "state": "off",
+      "power": 0
+    },
+    {
+      "name": 4,
+      "dout_id": 7,
+      "state": "off",
+      "power": 0
+    },
+    {
+      "name": 5,
+      "dout_id": 8,
+      "state": "off",
+      "power": 100
+    },
+    {
+      "name": 6,
+      "dout_id": 9,
+      "state": "off",
+      "power": 0
+    },
+    {
+      "name": 7,
+      "dout_id": 10,
+      "state": "off",
+      "power": 0
+    },
+    {
+      "name": 8,
+      "dout_id": 11,
+      "state": "off",
+      "power": 0
+    },
+    {
+      "name": 9,
+      "dout_id": 12,
+      "state": "off",
+      "power": 0
+    }
+  ],
+  "din": [
+    {
+      "name": 0,
+      "din_id": 0,
+      "event": "on"
+    },
+    {
+      "name": 1,
+      "din_id": 1,
+      "event": "on"
+    },
+    {
+      "name": 2,
+      "din_id": 2,
+      "event": "on"
+    },
+    {
+      "name": 3,
+      "din_id": 3,
+      "event": "on"
+    },
+    {
+      "name": 4,
+      "din_id": 4,
+      "event": "on"
+    },
+    {
+      "name": 5,
+      "din_id": 5,
+      "event": "on"
+    }
+  ],
+  "button": [
+    {
+      "name": 0,
+      "din_id": 0,
+      "event": "on"
+    },
+    {
+      "name": 1,
+	  "din_id": 1,
+      "event": "off"
+    }
+  ],
+  "sonar": [
+    {
+      "": "/* CHANGE NAME SONAR TO DISTANCE*/"
+    },
+    {
+      "name": 0,
+      "distanceSensor_id": 0,
+      "event": "on",
+      "event_lower": 20,
+      "event_higher": 180,
+      "event_hysteresis": 10
+    },
+    {
+      "name": 1,
+      "distanceSensor_id": 1,
+      "event": "on",
+      "event_lower": 21,
+      "event_higher": 181,
+      "event_hysteresis": 1
+    },
+    {
+      "name": 2,
+      "distanceSensor_id": 2,
+      "event": "on",
+      "event_lower": 22,
+      "event_higher": 182,
+      "event_hysteresis": 1
+    }
+  ],
+  "battery": [
+    {
+      "name": 0,
+      "ain_id": 0,
+      "event": "off",
+      "event_lower": 3600,
+      "event_higher": 4000,
+      "event_hysteresis": 100
+    }
+  ],
+  "color": [
+    {
+      "name": 0,
+      "rgbSensor_id": 0,
+      "event": "off",
+      "red": {
+        "event_lower": 1000,
+        "event_higher": 2500,
+        "event_hysteresis": 1
+      },
+      "green": {
+        "event_lower": 1000,
+        "event_higher": 2500,
+        "event_hysteresis": 1
+      },
+      "blue": {
+        "event_lower": 1000,
+        "event_higher": 2500,
+        "event_hysteresis": 1
+      }
+    },
+    {
+      "name": 1,
+      "rgbSensor_id": 1,
+      "event": "off",
+      "red": {
+        "event_lower": 1000,
+        "event_higher": 2500,
+        "event_hysteresis": 1
+      },
+      "green": {
+        "event_lower": 1000,
+        "event_higher": 2500,
+        "event_hysteresis": 1
+      },
+      "blue": {
+        "event_lower": 1000,
+        "event_higher": 2500,
+        "event_hysteresis": 1
+      }
+    }
+  ]
+}

@@ -9,14 +9,14 @@ newHeader='#define BUILD_CODE '$((number+1))
 echo $newHeader > buildNumber.h
 echo Build code: \# $((number))       
 
-md5sum /home/raph-pnp/Documents/dev/embedded_soft/kehops_onionOmega/dist/Release/GNU_Omega-Linux/kehops | cut -c -32 > dist/Debug/GNU_Omega-Linux/kehops.md5
-#md5sum /home/raph/NetBeansProjects/kehops_onionOmega/dist/Release/GNU_Omega-Linux/kehops | cut -c -32 > dist/Release/GNU_Omega-Linux/kehops.md5
+#md5sum /home/raph-pnp/Documents/dev/embedded_soft/kehops_onionOmega/dist/Release/GNU_Omega-Linux/kehops | cut -c -32 > dist/Debug/GNU_Omega-Linux/kehops.md5
+md5sum /home/raph/NetBeansProjects/kehops_onionOmega/dist/Release/GNU_Omega-Linux/kehops | cut -c -32 > dist/Debug/GNU_Omega-Linux/kehops.md5
 echo "Fichier MD5 cr�e: "`cat dist/Release/GNU_Omega-Linux/kehops.md5`
 
 echo "Transfere des fichiers binaire..."
 
-#rsync -a /home/raph/NetBeansProjects/kehops_onionOmega/dist/Debug/GNU_Omega-Linux/kehops root@192.168.3.1:~/kehops
-rsync -a /home/raph-pnp/Documents/dev/embedded_soft/kehops_onionOmega/dist/Debug/GNU_Omega-Linux/kehops root@192.168.3.1:~/kehops
+rsync -a /home/raph/NetBeansProjects/kehops_onionOmega/dist/Debug/GNU_Omega-Linux/kehops root@192.168.3.1:~/kehops
+#rsync -a /home/raph-pnp/Documents/dev/embedded_soft/kehops_onionOmega/dist/Debug/GNU_Omega-Linux/kehops root@192.168.3.1:~/kehops
 
 echo "Transfere du fichier MD5 du binaire..."
 #rsync -a /home/raph-pnp/Documents/dev/embedded_soft/kehops_onionOmega/dist/Debug/GNU_Omega-Linux/kehops.md5  root@192.168.3.1:~/kehops

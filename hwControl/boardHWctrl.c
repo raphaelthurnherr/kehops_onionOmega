@@ -5,6 +5,8 @@
 #include <onion-i2c.h>
 #include "../buggy_descriptor.h"
 
+#include "pca9685.h"                                            // PCA9685 PWM driver
+
 unsigned char buggyBoardInit(void);                             // Initialisation of the board (PWM Driver, GPIO driver, etc..)
 
 unsigned char configPWMdevice(void);                            // Configuration of the PCA9685 for 50Hz operation
@@ -45,7 +47,11 @@ int I2C_writeDeviceReg(unsigned char deviceAd, unsigned char registerAdr, unsign
 unsigned char buggyBoardInit(void){
 	unsigned char err;
         
-	err+=configPWMdevice();					// Configuration du Chip PWM pour gestion de la v�locit� des DC moteur et angle servomoteur
+        
+//      DEBUG !!!!!  PWM CONFIG is now provide by hwManager.ch due to new driver
+//	err+=configPWMdevice();					// Configuration du Chip PWM pour gestion de la v�locit� des DC moteur et angle servomoteur
+              
+        
 	err+=configGPIOdevice();				// Confguration du chip d'entr�es/sortie pour la gestion du sens de rotation des moteur DC
         err+=configRGBdevice();                                 // Configuration du capteur de couleur RGBC
         err+=configStepMotorDriver();                           // Configuration du contrôleur de moteur pas à pas

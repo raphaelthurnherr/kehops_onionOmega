@@ -1,0 +1,85 @@
+{
+  "devices": [
+    {
+      "id": 0,
+      "type": "_efm8bb",
+      "interface": "i2c",
+      "address": "0x0a",
+      "attributes": {}
+    },
+    { 
+      "id": 1,
+      "type": "_pca9629",
+      "interface": "i2c",
+      "address": "0x20",
+      "attributes": {
+        "onInit": [
+          {
+            "regAddr": "0x16",
+            "data": "0x9a"
+          },
+          {
+            "regAddr": "0x17",
+            "data": "0x02"
+          }
+        ]
+      }
+    },
+    {
+      "id": 2,
+      "type": "_mcp23008",
+      "interface": "i2c",
+      "address": "0x21",
+      "attributes": {}
+    },
+    {
+      "id": 3,
+      "type": "_bh1745",
+      "interface": "i2c",
+      "address": "0x38",
+      "attributes": {}
+    },
+    {
+      "id": 4,
+      "type": "_bh1745",
+      "interface": "i2c",
+      "address": "0x39",
+      "attributes": {}
+    },
+    {
+      "id": 5,
+      "type": "_pca9685",
+      "interface": "i2c",
+      "address": "0x40",
+      "attributes": {}
+    }
+    {
+      "id": 6,
+      "type": "_tca9546",
+      "interface": "i2c",
+      "address": "0xe0",
+      "attributes": {}
+    },
+    {
+      "id": 7,
+      "type": "_drv8830",
+      "interface": "i2c",
+      "address": "0xc0",
+      "attributes": {}
+    },
+    {
+      "id": 8,
+      "type": "_vl53l1x",
+      "interface": "i2c",
+      "address": "0x52",
+      "attributes": {}
+    },
+    {
+      "id": 9,
+      "type": "_vl53l1x",
+      "interface": "i2c",
+      "address": "0x52",
+      "attributes": {}
+    }
+  ]
+}

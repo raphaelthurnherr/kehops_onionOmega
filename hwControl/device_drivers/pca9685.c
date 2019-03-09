@@ -9,6 +9,7 @@
  * 
  */
 
+#ifndef I2CSIMU
 
 // Register Definitions
 #define MODE1 0x00		//Mode  register  1
@@ -29,28 +30,32 @@
 #define ALLLED_OFF_H 0xFD	//load all the LEDn_OFF registers, byte 1 (turn 8-15 channels off)
 #define PRE_SCALE 0xFE		//prescaler for output frequency
 
-#define LED_MULTIPLYER 4	// For the other 15 channels
+#define CHANNEL_MULTIPLYER 4	// For the other 15 channels
 #define INTERNAL_CLK_FREQ 25000000     //25MHz default oscillator clock
 
 // dependency definition
 #include "pca9685.h"
 #include <onion-i2c.h>
 
-unsigned char pca9685_init(device_pca9685 *pca9685_handler);        // PCA9685 driver initialization
-
+char pca9685_init(device_pca9685 *pca9685_handler);                                            // PCA9685 driver initialization
+char pca9685_setPWMoffValue(device_pca9685 *pca9685config, unsigned char channel, int value);  // Set OFF value for selected channel
+char pca9685_setPWMdutyCycle(device_pca9685 *pca9685config, unsigned char channel, unsigned char value); // Set dutycycle for selected channel
+    
 /**
- * \fn unsigned char pca9685_init(int freq, int outputStates)
+ * \fn char pca9685_init(device_pca9685 *pca9685config)
  * \brief PCA9685 driver initialization
  *
- * \param deviceAdr Specify the device bus address
- * \param freq Set the base frequecy for PWM outputs, -1 don't set the frequency
- * \param outputStates Set the default state of all PWM outputs -1 don't set the state
- * \return {Bus error count during initialization}
+ * \param handler to PCA9685 configuration structure
+ * \return Error
+ * =0, no error
+ * >0, error count during device initialization
+ * <0, configuration error
+ *  Note that configuration error is prioritary on device bus initialization error
  */
 
 
-unsigned char pca9685_init(device_pca9685 *pca9685config){
-	unsigned char err=0;
+char pca9685_init(device_pca9685 *pca9685config){
+    char err=0;
 /*        
         printf("Device Adr: %d \n", pca9685config->deviceAddress);
         printf("Device OutStates: %d \n", pca9685config->defaultOutputStates);
@@ -59,7 +64,7 @@ unsigned char pca9685_init(device_pca9685 *pca9685config){
         printf("Device EXTCLK: %d \n", pca9685config->useExternalClock);
         
         pca9685config->useExternalClock=123;
-  */
+*/
         unsigned char deviceAddr = pca9685config->deviceAddress;
         unsigned char freq = pca9685config->frequency;
         unsigned char totemPole = pca9685config->totemPoleOutput;
@@ -68,7 +73,7 @@ unsigned char pca9685_init(device_pca9685 *pca9685config){
         
         long clockFreq;
 
-        unsigned char data;
+        unsigned char data, config_error;
         
                     
 	// MODE1 register, sleep before config
@@ -79,9 +84,13 @@ unsigned char pca9685_init(device_pca9685 *pca9685config){
         data=0;
         clockFreq = INTERNAL_CLK_FREQ;                      // default value is 25000
                 
-        if(extClkMHz>0){
-            data |= 0x40;                                   // External clock selected
-            clockFreq = extClkMHz;
+        if(extClkMHz>0){                                    // Check if external clock is used
+            if(extClkMHz < 50000000){
+                data |= 0x40;                                   
+                clockFreq = extClkMHz;
+            }
+            else
+                config_error=1;
         }
         
         // Write MODE1 Register
@@ -104,12 +113,71 @@ unsigned char pca9685_init(device_pca9685 *pca9685config){
         // Write MODE2 Register
         err+= i2c_write(0, deviceAddr, MODE2, data);
         
-        // All outputs on clock 0
+        // All outputs turn-on on clock 0
         err+= i2c_write(0, deviceAddr, ALLLED_ON_L, 0x00);
         err+= i2c_write(0, deviceAddr, ALLLED_ON_H, 0x00);
 
 	// Write MODE 1 register, system ready (no sleep, no allcall_adr)
         err+= i2c_write(0, deviceAddr, MODE1, 0x81);
         
-	return err;    
+        // Return configuration error in priority
+        if(!config_error)
+            return err;    
+        else 
+            return -1;
 }
+
+/**
+ * \fn char pca9685_setPWMdutyCycle(device_pca9685 *pca9685config, unsigned char channel, unsigned char value)
+ * \brief Set Dutycyle value for selected channel
+ *
+ * \param handler to PCA9685 configuration structure
+ * \return Error
+ * =0, no error
+ * >0, error count during device initialization
+ * <0, configuration error
+ *  Note that configuration error is prioritary on device bus initialization error
+ */
+
+char pca9685_setPWMdutyCycle(device_pca9685 *pca9685config, unsigned char channel, unsigned char dutyCycle){
+    char err=0;        
+    
+    unsigned int power;
+    unsigned char PowerLow;
+    unsigned char PowerHigh;
+    
+    unsigned char deviceAddr = pca9685config->deviceAddress;
+
+    // Dutycycle % to register value conversion
+    power = (4095*dutyCycle)/100;
+    
+    PowerLow = power&0x00FF;;
+    PowerHigh = (power&0x0F00) >>8;
+    
+    // Get the channel address register
+    unsigned char channelAddr = LED0_OFF_L + (channel * CHANNEL_MULTIPLYER);
+
+    err+=i2c_write(0, deviceAddr, channelAddr, PowerLow);
+    err+=i2c_write(0, deviceAddr, channelAddr+1, PowerHigh);
+    
+    return err;
+}
+
+/**
+ * \fn char pca9685_setPWMoffValue(device_pca9685 *pca9685config, unsigned char channel, int value)
+ * \brief Set OFF value for selected channel
+ *
+ * \param handler to PCA9685 configuration structure
+ * \return Error
+ * =0, no error
+ * >0, error count during device initialization
+ * <0, configuration error
+ *  Note that configuration error is prioritary on device bus initialization error
+ */
+
+char pca9685_setPWMoffValue(device_pca9685 *pca9685config, unsigned char channel, int value){
+    char err=0;
+    return err;
+}
+
+#endif

@@ -15,7 +15,6 @@
 #include "hwManager.h"
 #include "../kehops_main.h"
 
-#include "pca9685.h"
 
 #ifdef I2CSIMU
 #include "boardHWsimu.h"
@@ -27,6 +26,10 @@
 
 #include "../buggy_descriptor.h"
 #include "../type.h"
+
+
+// Device drivers declaration
+#include "pca9685.h"
 
 
 // Thread Messager
@@ -154,8 +157,13 @@ typedef struct tHWversion{
 t_HWversion BoardInfo;
 
 int i2c_command_queuing[50][3];
-
 int timeCount_ms=0;
+
+/*DEBUG ******* HERE IS THE NEW DRIVER DECLARATION */
+
+device_pca9685 myPWMdriver;
+device_pca9685 *myDevice = &myPWMdriver;
+/*DEBUG ******* END OF  NEW DRIVER DECLARATION */
 
 int getMotorFrequency(unsigned char motorNb);                   // Retourne la fr�quence actuelle mesuree sur l'encodeur
 int getMotorPulses(unsigned char motorName);                    // Retourne le nombre d'impulsion d'encodeur moteur depuis le d�marrage
@@ -197,20 +205,13 @@ int resetHardware(t_sysConf * Config);
 // ------------------------------------------
 void *hwTask (void * arg){
         char dinState=0;
-
-        device_pca9685 test;
-        
-        device_pca9685 *myDevice = &test;
-        
-        myDevice->frequency=50;
-        myDevice->deviceAddress=22;
-        myDevice->invertedOutput=33;
-        myDevice->totemPoleOutput=66;
-        myDevice->externalClock=99;
-        
-        pca9685_init(myDevice);
                 
-	if(buggyBoardInit()){
+        // Setting up the pca9685 device
+        myDevice->frequency=50;
+        myDevice->deviceAddress=0x40;
+        myDevice->totemPoleOutput=1; 
+                
+	if(buggyBoardInit() && pca9685_init(myDevice) == 0){       
                 
 		printf("\n#[HW MANAGER] Initialisation carte HW: OK\n");
 		sendMqttReport(0,"#[HW MANAGER] Initialisation carte HW: OK\n");
@@ -519,7 +520,7 @@ int setMotorSpeed(int motorName, int ratio){
 // SET_I2C_COMMAND_QUEUE: Mise en file d'attente de l'appelle d'une fonction I2C
 // ------------------------------------------------------------------------------------
 int set_i2c_command_queue(int (*callback)(char, int),char adr, int cmd){
-	unsigned char freeIndex, i;
+	unsigned char freeIndex;
 
 	// Recherche d'un emplacement libre dans la file d'attente
 	for(freeIndex=0;(freeIndex<50) && (i2c_command_queuing[freeIndex][CALLBACK]>0);freeIndex++);
@@ -539,12 +540,26 @@ int set_i2c_command_queue(int (*callback)(char, int),char adr, int cmd){
 void setLedPower(unsigned char ledID, unsigned char power){
 	unsigned char ledAdress;
 	ledAdress=getOrganI2Cregister(LED, ledID);
-	set_i2c_command_queue(&PCA9685_setLedPower, ledAdress, power);
+        
+	//set_i2c_command_queue(&PCA9685_setLedPower, ledAdress, power);        
+        // DEBUG !!! Use the new driver !!!!!!!!
+        
+        unsigned char channelNb;
+        
+        switch(ledID){
+            case 0 : channelNb = 9; break;
+            case 1:  channelNb = 12; break;
+            case 2 : channelNb = 14; break;
+            default: break;
+        }
+        printf("LED %d on CHANNEL: %d\n", ledID, channelNb);
+        pca9685_setPWMdutyCycle(myDevice, channelNb, power); // Set dutycycle for selected channel
 }
 
 void setPwmPower(unsigned char ID, unsigned char power){
 	unsigned char pwmAdress;
 	pwmAdress=getOrganI2Cregister(PWM, ID);
+        
 	set_i2c_command_queue(&PCA9685_setLedPower, pwmAdress, power);
 }
 

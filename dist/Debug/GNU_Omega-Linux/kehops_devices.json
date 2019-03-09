@@ -1,0 +1,307 @@
+{
+  "drivers": {
+    "dc_motors": [
+      {
+        "id": 0,
+        "driver": {
+          "device_id": "",
+          "type": "generic_motor_driver",
+          "attributes": {
+            "enable": {
+              "driver": {
+                "device_id": "2",
+                "type": "mcp23008",
+                "attributes": {
+                  "channel": 4
+                }
+              }
+            },
+            "speed": {
+              "driver": {
+                "device_id": "5",
+                "type": "pca9685",
+                "attributes": {
+                  "channel": 0
+                }
+              }
+            },
+            "cw": {
+              "driver": {
+                "device_id": "2",
+                "type": "mcp23008",
+                "attributes": {
+                  "channel": 2
+                }
+              }
+            },
+            "ccw": {
+              "driver": {
+                "device_id": "2",
+                "type": "mcp23008",
+                "attributes": {
+                  "channel": 1
+                }
+              }
+            }
+          }
+        }
+      },
+      {
+        "id": 1,
+        "driver": {
+          "device_id": "",
+          "type": "generic",
+          "attributes": {
+            "speed": {
+              "driver": {
+                "device_id": "5",
+                "type": "pca9685",
+                "attributes": {
+                  "channel": 1
+                }
+              }
+            },
+            "cw": {
+              "driver": {
+                "device_id": "2",
+                "type": "mcp23008",
+                "attributes": {
+                  "channel": 0
+                }
+              }
+            },
+            "ccw": {
+              "driver": {
+                "device_id": "2",
+                "type": "mcp23008",
+                "attributes": {
+                  "channel": 3
+                }
+              }
+            }
+          }
+        }
+      },
+      {
+        "id": 2,
+        "driver": {
+          "device_id": "7",
+          "type": "drv8830",
+          "attributes": {}
+        }
+      }
+    ],
+    "stepper_motors": [
+      {
+        "id": 0,
+        "driver": {
+          "device_id": "1",
+          "type": "pca9629",
+          "attributes": {}
+        }
+      }
+    ],
+    "dout": [
+      {
+        "id": 0,
+        "driver": {
+          "device_id": "5",
+          "type": "pca9685",
+          "attributes": {
+            "channel": 2
+          }
+        }
+      },
+      {
+        "id": 1,
+        "driver": {
+          "device_id": "5",
+          "type": "pca9685",
+          "attributes": {
+            "channel": 3
+          }
+        }
+      },
+      {
+        "id": 2,
+        "driver": {
+          "device_id": "5",
+          "type": "pca9685",
+          "attributes": {
+            "channel": 5
+          }
+        }
+      },
+      {
+        "id": 3,
+        "driver": {
+          "device_id": "5",
+          "type": "pca9685",
+          "attributes": {
+            "channel": 6
+          }
+        }
+      },
+      {
+        "id": 4,
+        "driver": {
+          "device_id": "5",
+          "type": "pca9685",
+          "attributes": {
+            "channel": 7
+          }
+        }
+      },
+      {
+        "id": 5,
+        "driver": {
+          "device_id": "5",
+          "type": "pca9685",
+          "attributes": {
+            "channel": 8
+          }
+        }
+      },
+      {
+        "id": 6,
+        "driver": {
+          "device_id": "5",
+          "type": "pca9685",
+          "attributes": {
+            "channel": 9
+          }
+        }
+      },
+      {
+        "id": 7,
+        "driver": {
+          "device_id": "5",
+          "type": "pca9685",
+          "attributes": {
+            "channel": 10
+          }
+        }
+      },
+      {
+        "id": 8,
+        "driver": {
+          "device_id": "5",
+          "type": "pca9685",
+          "attributes": {
+            "channel": 11
+          }
+        }
+      },
+      {
+        "id": 9,
+        "driver": {
+          "device_id": "5",
+          "type": "pca9685",
+          "attributes": {
+            "channel": 11
+          }
+        }
+      }
+    ],
+    "din": [
+      {
+        "id": 0,
+        "driver": {
+          "device_id": "2",
+          "type": "mcp23008",
+          "attributes": {
+            "channel": 6
+          }
+        }
+      },
+      {
+        "id": 1,
+        "driver": {
+          "device_id": "2",
+          "type": "mcp23008",
+          "attributes": {
+            "channel": 5
+          }
+        }
+      }
+    ],
+    "ain": [
+      {
+        "id": 0,
+        "driver": {
+          "device_id": "0",
+          "type": "efm8bb",
+          "attributes": {
+            "channel": 0
+          }
+        }
+      }
+    ],
+    "counter": [
+      {
+        "id": 0,
+        "driver": {
+          "device_id": "0",
+          "type": "efm8bb",
+          "attributes": {
+            "channel": 0
+          }
+        }
+      },
+      {
+        "id": 1,
+        "driver": {
+          "device_id": "0",
+          "type": "efm8bb",
+          "attributes": {
+            "channel": 1
+          }
+        }
+      }
+    ],
+    "rgbSensor": [
+      {
+        "id": 0,
+        "driver": {
+          "device_id": "3",
+          "type": "bh1745",
+          "attributes": {}
+        }
+      },
+      {
+        "id": 1,
+        "driver": {
+          "device_id": "4",
+          "type": "bh1745",
+          "attributes": {}
+        }
+      }
+    ],
+    "distanceSensor": [
+      {
+        "id": 0,
+        "driver": {
+          "device_id": "0",
+          "type": "efm8bb",
+          "attributes": {}
+        }
+      },
+      {
+        "id": 1,
+        "driver": {
+          "device_id": "8",
+          "type": "vl53l1x",
+          "attributes": {
+            "sub-driver": {
+              "device_id": "6",
+              "type": "tca9546",
+              "attributes": {
+                "channel": 0
+              }
+            }
+          }
+        }
+      }
+    ]
+  }
+}
