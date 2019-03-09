@@ -515,7 +515,6 @@ int setMotorSpeed(int motorName, int ratio){
 	return(1);
 }
 
-
 // ------------------------------------------------------------------------------------
 // SET_I2C_COMMAND_QUEUE: Mise en file d'attente de l'appelle d'une fonction I2C
 // ------------------------------------------------------------------------------------

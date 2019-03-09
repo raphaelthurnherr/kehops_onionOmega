@@ -76,6 +76,7 @@ OBJECTFILES= \
 	${OBJECTDIR}/kehopsCom/mqttProtocol.o \
 	${OBJECTDIR}/kehopsCom/udpPublish.o \
 	${OBJECTDIR}/kehops_main.o \
+	${OBJECTDIR}/partsDescriptor.o \
 	${OBJECTDIR}/timerManager.o \
 	${OBJECTDIR}/tools.o
 
@@ -308,6 +309,11 @@ ${OBJECTDIR}/kehops_main.o: kehops_main.c
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
 	$(COMPILE.c) -g -IhwControl/libs/i2c -IhwControl/libs/onion-debug -IhwControl -Iactuators -IkehopsCom -IkehopsCom/libs/lib_json -IkehopsCom/libs/lib_mqtt -IhwControl/device_drivers -include buildNumber.h -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/kehops_main.o kehops_main.c
+
+${OBJECTDIR}/partsDescriptor.o: partsDescriptor.c
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} "$@.d"
+	$(COMPILE.c) -g -IhwControl/libs/i2c -IhwControl/libs/onion-debug -IhwControl -Iactuators -IkehopsCom -IkehopsCom/libs/lib_json -IkehopsCom/libs/lib_mqtt -IhwControl/device_drivers -include buildNumber.h -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/partsDescriptor.o partsDescriptor.c
 
 ${OBJECTDIR}/timerManager.o: timerManager.c
 	${MKDIR} -p ${OBJECTDIR}

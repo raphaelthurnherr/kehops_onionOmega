@@ -52,6 +52,15 @@
           "device_id": "",
           "type": "generic",
           "attributes": {
+            "enable": {
+              "driver": {
+                "device_id": "2",
+                "type": "mcp23008",
+                "attributes": {
+                  "channel": 4
+                }
+              }
+            },
             "speed": {
               "driver": {
                 "device_id": "5",
@@ -199,6 +208,16 @@
           "type": "pca9685",
           "attributes": {
             "channel": 11
+          }
+        }
+      },
+	{
+        "id": 10,
+        "driver": {
+          "device_id": "2",
+          "type": "mcp23008",
+          "attributes": {
+            "channel": 7
           }
         }
       }

@@ -81,6 +81,7 @@
 #include "jWrite.h"
 #include "kehops_main.h"
 #include "hwControl/hwManager.h"
+#include "configManager.h"
 
 char * OpenConfigFromFile(char *filename);
 char LoadConfig(char * fileName);
@@ -89,9 +90,13 @@ char SaveConfig(char * fileName);
 unsigned char mode=0;
 unsigned char dataCommandReady=0;
 
-//------------------------------------------------------------------
-// EXTRACTION DES DONNEES DU FICHIER
-//------------------------------------------------------------------
+/**
+ * \fn char * OpenConfigFromFile(char *filename)
+ * \brief Open the config file get the content for futur use.
+ *
+ * \param filename to open
+ * \return 0 is returned if no errors, otherwise, return -1;
+ */
 
 char * OpenConfigFromFile(char *filename){   
     FILE *myFile = fopen(filename, "rw+");
@@ -137,6 +142,15 @@ char * OpenConfigFromFile(char *filename){
 // LoadConfig
 // Get configuration file and load data into config structure
 // -----------------------------------------------------------------------------
+
+/**
+ * \fn char LoadConfig(char * fileName)
+ * \brief Extract the file content from buffer and dispatch the settings to the
+ * kehops structure.
+ *
+ * \param filename to open
+ * \return pointer to the buffer with file content
+ */
 
 char LoadConfig(char * fileName){
 	struct jReadElement cfg_devices_list, cfg_mqtt_list;

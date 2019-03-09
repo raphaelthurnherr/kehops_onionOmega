@@ -1,4 +1,4 @@
-#define FIRMWARE_VERSION "0.6.6a"
+#define FIRMWARE_VERSION "0.6.6b"
 
 #define DEFAULT_EVENT_STATE 1   
 
@@ -138,6 +138,7 @@ int main(int argc, char *argv[]) {
         }
         
         sysApp.kehops.resetConfig=1;
+        
 // --------------------------------------------------------------------
 // BOUCLE DU PROGRAMME PRINCIPAL
 // - Messagerie avec ALGOID, attentes de messages en provenance de l'h�te -> D�marrage du traitement des commandes

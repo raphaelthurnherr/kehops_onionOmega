@@ -26,7 +26,6 @@ extern "C" {
 extern char LoadConfig(char * fileName);
 extern char SaveConfig(char * fileName);
 
-extern char * OpenConfigFromFile(char *filename);
 #ifdef __cplusplus
 }
 #endif
