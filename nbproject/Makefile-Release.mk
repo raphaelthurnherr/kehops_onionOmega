@@ -42,6 +42,7 @@ OBJECTFILES= \
 	${OBJECTDIR}/actuators/asyncSTEPPER.o \
 	${OBJECTDIR}/actuators/asyncTools.o \
 	${OBJECTDIR}/configManager.o \
+	${OBJECTDIR}/driversDescriptor.o \
 	${OBJECTDIR}/hwControl/boardHWctrl.o \
 	${OBJECTDIR}/hwControl/boardHWsimu.o \
 	${OBJECTDIR}/hwControl/device_drivers/pca9685.o \
@@ -76,7 +77,6 @@ OBJECTFILES= \
 	${OBJECTDIR}/kehopsCom/mqttProtocol.o \
 	${OBJECTDIR}/kehopsCom/udpPublish.o \
 	${OBJECTDIR}/kehops_main.o \
-	${OBJECTDIR}/partsDescriptor.o \
 	${OBJECTDIR}/timerManager.o \
 	${OBJECTDIR}/tools.o
 
@@ -139,6 +139,11 @@ ${OBJECTDIR}/configManager.o: configManager.c
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
 	$(COMPILE.c) -O2 -IhwControl/libs/i2c -IhwControl/libs/onion-debug -IhwControl -Iactuators -IkehopsCom/libs/lib_json -IkehopsCom/libs/lib_mqtt -IkehopsCom -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/configManager.o configManager.c
+
+${OBJECTDIR}/driversDescriptor.o: driversDescriptor.c
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} "$@.d"
+	$(COMPILE.c) -O2 -IhwControl/libs/i2c -IhwControl/libs/onion-debug -IhwControl -Iactuators -IkehopsCom/libs/lib_json -IkehopsCom/libs/lib_mqtt -IkehopsCom -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/driversDescriptor.o driversDescriptor.c
 
 ${OBJECTDIR}/hwControl/boardHWctrl.o: hwControl/boardHWctrl.c
 	${MKDIR} -p ${OBJECTDIR}/hwControl
@@ -309,11 +314,6 @@ ${OBJECTDIR}/kehops_main.o: kehops_main.c
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
 	$(COMPILE.c) -O2 -IhwControl/libs/i2c -IhwControl/libs/onion-debug -IhwControl -Iactuators -IkehopsCom/libs/lib_json -IkehopsCom/libs/lib_mqtt -IkehopsCom -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/kehops_main.o kehops_main.c
-
-${OBJECTDIR}/partsDescriptor.o: partsDescriptor.c
-	${MKDIR} -p ${OBJECTDIR}
-	${RM} "$@.d"
-	$(COMPILE.c) -O2 -IhwControl/libs/i2c -IhwControl/libs/onion-debug -IhwControl -Iactuators -IkehopsCom/libs/lib_json -IkehopsCom/libs/lib_mqtt -IkehopsCom -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/partsDescriptor.o partsDescriptor.c
 
 ${OBJECTDIR}/timerManager.o: timerManager.c
 	${MKDIR} -p ${OBJECTDIR}

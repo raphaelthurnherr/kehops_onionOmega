@@ -163,6 +163,7 @@ int timeCount_ms=0;
 
 device_pca9685 myPWMdriver;
 device_pca9685 *myDevice = &myPWMdriver;
+
 /*DEBUG ******* END OF  NEW DRIVER DECLARATION */
 
 int getMotorFrequency(unsigned char motorNb);                   // Retourne la fr�quence actuelle mesuree sur l'encodeur
@@ -205,11 +206,14 @@ int resetHardware(t_sysConf * Config);
 // ------------------------------------------
 void *hwTask (void * arg){
         char dinState=0;
-                
+
+// DEBUG
         // Setting up the pca9685 device
         myDevice->frequency=50;
         myDevice->deviceAddress=0x40;
         myDevice->totemPoleOutput=1; 
+
+        LoadDriversDescriptor("devices.cfg");        
                 
 	if(buggyBoardInit() && pca9685_init(myDevice) == 0){       
                 
