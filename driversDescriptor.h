@@ -41,7 +41,6 @@ typedef struct devicesList{
 }devices_list;
 
 
-
 /*
  * ****************************************************************************
  * ****************************************************************************
@@ -49,7 +48,7 @@ typedef struct devicesList{
 
 struct driverAttribute{
     int device_channel;
-}device_attribute;
+};
     
 
 /**
@@ -66,18 +65,29 @@ struct driverAttribute{
  * 
  */
 
-struct device_subdriver{
+
+struct device_subdrivers{
     int device_id;
     char device_type[15];
     struct driverAttribute attributes;
-    struct device_subdriver sub_driver;
 };
 
-struct device_settings{
+
+typedef struct device_drivers{
     int device_id;
     char device_type[15];
-    struct device_subdriver sub_driver;
     struct driverAttribute attributes;
+    struct device_subdrivers sub_driver;
+} deviceDriver;
+
+/**
+ * \struct device_driver [driversDescriptor.h]
+ *  Sub structure for devices.
+ * -> include part_Driver structure
+ */
+struct device{
+    int id;
+    struct device_drivers driver;
 };
 
 /**
@@ -85,51 +95,30 @@ struct device_settings{
  *  Sub structure for parts.
  * -> include specific sub attribute Structure
  */
-struct generic_motor_driver_attribute{
-    struct device_settings enable;
-    struct device_settings speed;
-    struct device_settings cw;
-    struct device_settings ccw;
-};
-
-
-/**
- * \struct device_driver [driversDescriptor.h]
- *  Sub structure for devices.
- * -> include part_Driver structure
- */
-struct device_driver{
-    int id;
-    struct device_settings driver;
+struct generic_motor_driver{
+    struct device enable;
+    struct device speed;
+    struct device cw;
+    struct device ccw;
 };
 
 /**
  * \struct partsList [driversDescriptor.h]
  * structure to list the parts of the robot
  */
-typedef struct partsList{
-    int device_id;
+typedef struct parts_list{
+    int part_id;
     char type[15];
-    struct generic_motor_driver_attribute dc_motor[5];
-    struct device_driver distanceSensor[2];
-}parts_list;
-
-parts_list partsList;
-
-partsList.dc_motor[0].id =99;
-partsList.dc_motor[0].driver.device_id =0;
-partsList.dc_motor[0].driver.type;
-partsList.dc_motor[0].driver.generic_motor_attributes.enable.device_id;
-partsList.distanceSensor[0].id;
-partsList.distanceSensor[0].driver.device_id
-partsList.distanceSensor[0].driver.device_id =0;
-partsList.distanceSensor[0].driver.device_type="efm8bb"
-partsList.distanceSensor[0].driver.attributes.device_channel = 0
-partsList.distanceSensor[0].driver.sub_driver.device_id=9;
-partsList.distanceSensor[0].driver.sub_driver.device_type="i2cmux"
-partsList.distanceSensor[0].driver.sub_driver.sub_driver.device_id=88;
-partsList.distanceSensor[0].driver.sub_driver.sub_driver.device_type="i2cmux";
-partsList.distanceSensor[0].driver.sub_driver.sub_driver.sub_driver.sub_driver;
+    struct generic_motor_driver dc_motor[5];
+    struct device stepper_motors[10];
+    struct device dout[25];
+    struct device din[25];
+    struct device ain[25];
+    struct device counter[10];
+    struct device rgbSensor[10];
+    struct device distanceSensor[10];
+    
+}kehopsParts;
 
 
 /**

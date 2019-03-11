@@ -25,7 +25,9 @@
 #endif
 
 #include "../buggy_descriptor.h"
+#include "../driversDescriptor.h"
 #include "../type.h"
+
 
 
 // Device drivers declaration
@@ -164,6 +166,7 @@ int timeCount_ms=0;
 device_pca9685 myPWMdriver;
 device_pca9685 *myDevice = &myPWMdriver;
 
+
 /*DEBUG ******* END OF  NEW DRIVER DECLARATION */
 
 int getMotorFrequency(unsigned char motorNb);                   // Retourne la fr�quence actuelle mesuree sur l'encodeur
@@ -212,9 +215,12 @@ void *hwTask (void * arg){
         myDevice->frequency=50;
         myDevice->deviceAddress=0x40;
         myDevice->totemPoleOutput=1; 
-
+        
         LoadDriversDescriptor("devices.cfg");        
-                
+        LoadDevicesDescriptor("drivers.cfg");
+        
+        
+        
 	if(buggyBoardInit() && pca9685_init(myDevice) == 0){       
                 
 		printf("\n#[HW MANAGER] Initialisation carte HW: OK\n");
