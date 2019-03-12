@@ -1,5 +1,5 @@
 /**
- * \file partsDescriptor.h
+ * \file deviceMapping.h
  * \brief  Interconnect the user parts (like LEDs components) to the hardware
  *  driver IC output (like PCA9685 driver) or generic driver.
  *      
@@ -13,8 +13,8 @@
  * 
  */
 
-#ifndef DRIVERSDESCRIPTOR_H
-#define DRIVERSDESCRIPTOR_H
+#ifndef DEVICEMAPPING_H
+#define DEVICEMAPPING_H
 
 /**
  * \struct attributes [driversDescriptor.h]
@@ -134,5 +134,5 @@ extern char LoadDriversDescriptor(char * fileName);
  */  
 extern char LoadDevicesDescriptor(char * fileName);
 
-#endif /* DRIVERSDESCRIPTOR_H */
+#endif /* DEVICEMAPPING_H */
 

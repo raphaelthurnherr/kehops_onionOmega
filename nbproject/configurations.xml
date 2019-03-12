@@ -9,8 +9,8 @@
       <itemPath>asyncTools/asyncMOTOR.h</itemPath>
       <itemPath>asyncTools/asyncSTEPPER.h</itemPath>
       <itemPath>asyncTools/asyncTools.h</itemPath>
-      <itemPath>driverDescriptor_jsonKeys.h</itemPath>
-      <itemPath>driversDescriptor.h</itemPath>
+      <itemPath>deviceMapping.h</itemPath>
+      <itemPath>deviceMapping_jsonKeys.h</itemPath>
       <itemPath>type.h</itemPath>
       <itemPath>AlgoidCom/typeNew.h</itemPath>
       <itemPath>hwControl/wifi_json.h</itemPath>
@@ -122,7 +122,7 @@
       </logicalFolder>
       <itemPath>configManager.c</itemPath>
       <itemPath>configManager.h</itemPath>
-      <itemPath>driversDescriptor.c</itemPath>
+      <itemPath>deviceMapping.c</itemPath>
       <itemPath>kehops_main.c</itemPath>
       <itemPath>hwControl/networkManager.c</itemPath>
       <itemPath>hwControl/networkManager.h</itemPath>
@@ -220,13 +220,13 @@
       </item>
       <item path="configManager.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="deviceMapping.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="deviceMapping.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="deviceMapping_jsonKeys.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="dist/Debug/GNU_Omega-Linux/wifi" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="driverDescriptor_jsonKeys.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="driversDescriptor.c" ex="false" tool="0" flavor2="0">
-      </item>
-      <item path="driversDescriptor.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="hwControl/boardHWctrl.c" ex="false" tool="0" flavor2="0">
       </item>
@@ -529,13 +529,13 @@
       </item>
       <item path="configManager.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="deviceMapping.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="deviceMapping.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="deviceMapping_jsonKeys.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="dist/Debug/GNU_Omega-Linux/wifi" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="driverDescriptor_jsonKeys.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="driversDescriptor.c" ex="false" tool="0" flavor2="0">
-      </item>
-      <item path="driversDescriptor.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="hwControl/boardHWctrl.c" ex="false" tool="0" flavor2="0">
       </item>
@@ -831,13 +831,13 @@
       </item>
       <item path="configManager.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="deviceMapping.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="deviceMapping.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="deviceMapping_jsonKeys.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="dist/Debug/GNU_Omega-Linux/wifi" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="driverDescriptor_jsonKeys.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="driversDescriptor.c" ex="false" tool="0" flavor2="0">
-      </item>
-      <item path="driversDescriptor.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="hwControl/boardHWctrl.c" ex="false" tool="0" flavor2="0">
       </item>
@@ -1134,13 +1134,13 @@
       </item>
       <item path="configManager.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="deviceMapping.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="deviceMapping.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="deviceMapping_jsonKeys.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="dist/Debug/GNU_Omega-Linux/wifi" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="driverDescriptor_jsonKeys.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="driversDescriptor.c" ex="false" tool="0" flavor2="0">
-      </item>
-      <item path="driversDescriptor.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="hwControl/boardHWctrl.c" ex="false" tool="0" flavor2="9">
       </item>

@@ -42,7 +42,7 @@ OBJECTFILES= \
 	${OBJECTDIR}/actuators/asyncSTEPPER.o \
 	${OBJECTDIR}/actuators/asyncTools.o \
 	${OBJECTDIR}/configManager.o \
-	${OBJECTDIR}/driversDescriptor.o \
+	${OBJECTDIR}/deviceMapping.o \
 	${OBJECTDIR}/hwControl/boardHWctrl.o \
 	${OBJECTDIR}/hwControl/boardHWsimu.o \
 	${OBJECTDIR}/hwControl/device_drivers/pca9685.o \
@@ -140,10 +140,10 @@ ${OBJECTDIR}/configManager.o: configManager.c
 	${RM} "$@.d"
 	$(COMPILE.c) -g -IhwControl/libs/i2c -IhwControl/libs/onion-debug -IhwControl -Iactuators -IkehopsCom -IkehopsCom/libs/lib_json -IkehopsCom/libs/lib_mqtt -IhwControl/device_drivers -include buildNumber.h -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/configManager.o configManager.c
 
-${OBJECTDIR}/driversDescriptor.o: driversDescriptor.c
+${OBJECTDIR}/deviceMapping.o: deviceMapping.c
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
-	$(COMPILE.c) -g -IhwControl/libs/i2c -IhwControl/libs/onion-debug -IhwControl -Iactuators -IkehopsCom -IkehopsCom/libs/lib_json -IkehopsCom/libs/lib_mqtt -IhwControl/device_drivers -include buildNumber.h -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/driversDescriptor.o driversDescriptor.c
+	$(COMPILE.c) -g -IhwControl/libs/i2c -IhwControl/libs/onion-debug -IhwControl -Iactuators -IkehopsCom -IkehopsCom/libs/lib_json -IkehopsCom/libs/lib_mqtt -IhwControl/device_drivers -include buildNumber.h -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/deviceMapping.o deviceMapping.c
 
 ${OBJECTDIR}/hwControl/boardHWctrl.o: hwControl/boardHWctrl.c
 	${MKDIR} -p ${OBJECTDIR}/hwControl

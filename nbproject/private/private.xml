@@ -7,16 +7,16 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/home/raph-pnp/Documents/dev/embedded_soft/kehops_onionOmega/configManager.c</file>
             <file>file:/home/raph-pnp/Documents/dev/embedded_soft/kehops_onionOmega/hwControl/device_drivers/pca9685.c</file>
-            <file>file:/home/raph-pnp/Documents/dev/embedded_soft/kehops_onionOmega/hwControl/boardHWctrl.c</file>
+            <file>file:/home/raph-pnp/Documents/dev/embedded_soft/kehops_onionOmega/deviceMapping.h</file>
+            <file>file:/home/raph-pnp/Documents/dev/embedded_soft/kehops_onionOmega/kehopsCom/libs/lib_json/jRead.h</file>
             <file>file:/home/raph-pnp/Documents/dev/embedded_soft/kehops_onionOmega/hwControl/device_drivers/pca9685.h</file>
-            <file>file:/home/raph-pnp/Documents/dev/embedded_soft/kehops_onionOmega/driversDescriptor.h</file>
-            <file>file:/home/raph-pnp/Documents/dev/embedded_soft/kehops_onionOmega/driverDescriptor_jsonKeys.h</file>
             <file>file:/home/raph-pnp/Documents/dev/embedded_soft/kehops_onionOmega/kehops_main.c</file>
-            <file>file:/home/raph-pnp/Documents/dev/embedded_soft/kehops_onionOmega/runRemote.sh</file>
-            <file>file:/home/raph-pnp/Documents/dev/embedded_soft/kehops_onionOmega/driversDescriptor.c</file>
+            <file>file:/home/raph-pnp/Documents/dev/embedded_soft/kehops_onionOmega/deviceMapping.c</file>
+            <file>file:/home/raph-pnp/Documents/dev/embedded_soft/kehops_onionOmega/kehopsCom/libs/lib_json/jRead.c</file>
+            <file>file:/home/raph-pnp/Documents/dev/embedded_soft/kehops_onionOmega/deviceMapping_jsonKeys.h</file>
             <file>file:/home/raph-pnp/Documents/dev/embedded_soft/kehops_onionOmega/hwControl/hwManager.c</file>
+            <file>file:/home/raph-pnp/Documents/dev/embedded_soft/kehops_onionOmega/kehopsCom/linux_JSON.c</file>
         </group>
     </open-files>
 </project-private>

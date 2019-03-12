@@ -25,7 +25,7 @@
 #endif
 
 #include "../buggy_descriptor.h"
-#include "../driversDescriptor.h"
+#include "../deviceMapping.h"
 #include "../type.h"
 
 
@@ -217,7 +217,7 @@ void *hwTask (void * arg){
         myDevice->totemPoleOutput=1; 
         
         LoadDriversDescriptor("devices.cfg");        
-        LoadDevicesDescriptor("drivers.cfg");
+        LoadDevicesDescriptor("deviceMap.cfg");
         
         
         
