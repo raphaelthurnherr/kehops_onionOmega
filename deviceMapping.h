@@ -16,6 +16,8 @@
 #ifndef DEVICEMAPPING_H
 #define DEVICEMAPPING_H
 
+#define MAX_DRIVERS_PER_TYPE 25
+
 /**
  * \struct attributes [driversDescriptor.h]
  *  Sub structure for devices.
@@ -34,10 +36,10 @@ struct deviceAttributes{
  * -> include attributes structure of device
  */
 typedef struct devicesList{
+    int   device_id;
     char type[15];
     unsigned char address;
     struct deviceAttributes attributes;
-    
 }devices_list;
 
 
@@ -87,6 +89,7 @@ typedef struct device_drivers{
  */
 struct device{
     int id;
+    char interface[25];
     struct device_drivers driver;
 };
 
@@ -109,14 +112,14 @@ struct generic_motor_driver{
 typedef struct parts_list{
     int part_id;
     char type[15];
-    struct generic_motor_driver dc_motor[5];
-    struct device stepper_motors[10];
-    struct device dout[25];
-    struct device din[25];
-    struct device ain[25];
-    struct device counter[10];
-    struct device rgbSensor[10];
-    struct device distanceSensor[10];
+    struct generic_motor_driver dc_motor[MAX_DRIVERS_PER_TYPE];
+    struct device stepper_motors[MAX_DRIVERS_PER_TYPE];
+    struct device dout[MAX_DRIVERS_PER_TYPE];
+    struct device din[MAX_DRIVERS_PER_TYPE];
+    struct device ain[MAX_DRIVERS_PER_TYPE];
+    struct device counter[MAX_DRIVERS_PER_TYPE];
+    struct device rgbSensor[MAX_DRIVERS_PER_TYPE];
+    struct device distanceSensor[MAX_DRIVERS_PER_TYPE];
     
 }kehopsParts;
 

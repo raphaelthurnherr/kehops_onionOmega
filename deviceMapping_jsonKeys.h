@@ -43,6 +43,7 @@
 #define FILE_KEY_DRIVERS_DISTANCE "{'drivers'{'distanceSensor'"
 
 #define FILE_KEY_DRIVER_ID "[*{'id'"
+#define FILE_KEY_DRIVER_INTERFACE "[*{'interface'"
 #define FILE_KEY_DRIVER_DEVICE "[*{'driver'{'device_id'"
 #define FILE_KEY_DRIVER_TYPE "[*{'driver'{'type'"
 #define FILE_KEY_DRIVER_ATTRIBUTES "[*{'driver'{'attributes'"
