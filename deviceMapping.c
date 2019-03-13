@@ -1,5 +1,5 @@
 /**
- * \file partsDescriptor.c
+ * \file deviceMApping.c
  * \brief  Interconnect the user parts (like LEDs components) to the hardware
  *  driver IC output (like PCA9685 driver) or generic driver.
  *      
@@ -7,11 +7,14 @@
  * \version 0.1
  * \date 09.03.2019
  *
- *  With reading the partsDescriptor.cfg file, these functions will create dynamically
- *  the connections between the user components parts (leds, motors, etc..) and the terminals
- *  of the driver IC.
+ *  With reading the deviceMap.cfg file and the device.cfg (electronic components), these
+ *  functions will define the structure of the hardware board.
+ *  The connections between the user components parts (leds, motors, etc..) and the terminals
+ *  of the drivers IC will be create:
+ * 
  * 
  */
+//#define PRINT_INFO
 
 #define MAX_BOARD_DEVICE 50
 #define MAX_MQTT_BUFF 8192
@@ -35,19 +38,17 @@ char * OpenDataFromFile(char *filename);
 char LoadDescriptor(char * fileName);
 char LoadDevicesDescriptor(char * fileName);
     
-/**
- * \fn char * printDriverData(int partsNb, struct device * device)
- * \brief Print a structured view of a device settings
- *
- * \param int partsNb (No of part in array) 
- * \param struct device * device (No of part in array)
- * 
- * \return pointer to the buffer with file content
- */
-unsigned char printDriverData(int partsNb, struct device * device);
-unsigned char printDeviceData(int deviceNb, devices_list * device);
+
+// Functions déclaration
+
+unsigned char printDriverData(int partsNb, struct device * device);  // Print a formatted map of the drivers settings using "deviceMap.cfg"
+unsigned char printDeviceData(int deviceNb, devices_list * device);  // Print a formatted map of the device IC setting using "devices.cfg"
+
+// Function to clear the drivers and devices structure
 void clearDriverSettings(void);
 void clearDeviceSettings(void);
+
+
 /**
  * \fn char * OpenConfigFromFile(char *filename)
  * \brief Open the config file get the content for futur use.
@@ -112,7 +113,7 @@ char LoadDriversDescriptor(char * fileName){
     int devicesCount, deviceId;
     int i, j;
     char * srcDataBuffer;
-    char strValue[15];
+    char strValue[25];
 
     // Read file and store the result in buffer
     srcDataBuffer = OpenDataFromFile(fileName); 
@@ -141,7 +142,7 @@ char LoadDriversDescriptor(char * fileName){
                     boardDevice[deviceId].device_id=deviceId;
                                     
                     // Get the type (name) of the device
-                    if(jRead_string((char *)srcDataBuffer, FILE_KEY_DEVICES_TYPE, strValue, 15, &i )>0)
+                    if(jRead_string((char *)srcDataBuffer, FILE_KEY_DEVICES_TYPE, strValue, 25, &i )>0)
                         strcpy(boardDevice[deviceId].type, strValue);
                     else strcpy(boardDevice[deviceId].type, "error");
 
@@ -150,25 +151,19 @@ char LoadDriversDescriptor(char * fileName){
                     jRead((char *)srcDataBuffer, FILE_KEY_DEVICES_ADDRESS, &deviceData);
                     if(deviceData.dataType == JREAD_STRING){
                         // Convert string to int
-                        if(jRead_string((char *)srcDataBuffer, FILE_KEY_DEVICES_ADDRESS, strValue, 15, &i )>0)
+                        if(jRead_string((char *)srcDataBuffer, FILE_KEY_DEVICES_ADDRESS, strValue, 25, &i )>0)
                             boardDevice[deviceId].address = strtol(strValue, NULL, 0);
-                        else boardDevice[deviceId].address= -1;
+                        else boardDevice[deviceId].address= NULL;
                     }
                     else{
                             if(deviceData.dataType == JREAD_NUMBER){
                                 boardDevice[deviceId].address = jRead_double((char *)srcDataBuffer, FILE_KEY_DEVICES_ADDRESS, &i); 
                             }
                     }
+                #ifdef PRINT_INFO                     
                     printDeviceData(i, &boardDevice[deviceId]);
+                #endif    
                 }
-            }
-            
-            printf("\n DEBUG ----- DEVICE IN CONFIG FILE: %d -------\n", devicesCount);
-            for(i=0;i<devicesCount;i++){
-                printf("\n   Device ID #%d     type: %s    address: %d", i, boardDevice[i].type, boardDevice[i].address);
-                    //for(j=0;j<3;j++){
-                        //printf("\n     Register: %d   Data: %d", i);
-            //}
             }
         }
     }
@@ -186,7 +181,7 @@ char LoadDriversDescriptor(char * fileName){
  */
 
 char LoadDevicesDescriptor(char * fileName){
-    struct jReadElement partsList;
+    struct jReadElement partsList, genericList;
     int partsCount, driverId;
     int i, data, readResult;
     char * srcDataBuffer;
@@ -196,15 +191,74 @@ char LoadDevicesDescriptor(char * fileName){
 
     // Set the ID to "unknown"
     clearDriverSettings();
-            
+             
      if(srcDataBuffer != NULL){
          
+    // Get the DC MOTOR device list 
+        jRead((char *)srcDataBuffer, FILE_KEY_DRIVERS_MOTOR, &partsList );
+        if(partsList.dataType == JREAD_ARRAY ){
+            partsCount = partsList.elements;       // Get the number of devices
+
+            for(i=0;i<partsCount;i++){
+                
+                driverId=jRead_int((char *)partsList.pValue, FILE_KEY_DRIVER_ID, &i);
+
+                if(driverId >= 0 && driverId < MAX_DRIVERS_PER_TYPE){
+                    // Get and save the driver ID
+                    kparts.dc_motor[driverId].id = driverId;
+                    
+                    // Get and save the device interface
+                    if(jRead_string((char *)partsList.pValue, FILE_KEY_DRIVER_INTERFACE, strValue, 25, &i )>0){
+                        strcpy(kparts.dc_motor[driverId].interface, strValue);
+                       
+                        if(!strcmp(kparts.dc_motor[driverId].interface, "generic_hbridge")){
+                            printf("****************** GENERIC ***************\n");
+
+                            jReadParam((char *)partsList.pValue, KEY_ATTRIBUTES_EN_DRV, &genericList, i );
+                            
+                            if(jRead_string((char *)genericList.pValue, KEY_TYPE, strValue, 25, &i)>0){
+//                                printf("-----------------------MON DEVICE:: %s\n", strValue);  
+                                strcpy(kparts.dc_motor[driverId].driver.device_type, strValue);
+                            }
+                            
+                            if(jRead_string((char *)genericList.pValue, KEY_INTERFACE, strValue, 25, &i)>0){
+                                strcpy(kparts.dc_motor[driverId].interface, strValue);
+                            }
+                            if(jRead_string((char *)genericList.pValue, KEY_INTERFACE, strValue, 25, &i)>0){
+                                strcpy(kparts.dc_motor[driverId].attributes.dc_motor.ccw., strValue);
+                            }
+                        }else
+                        {
+                            printf("****************** device ***************\n");
+                            
+                            // Get the device ID of IC
+                            kparts.dc_motor[driverId].driver.device_id = jRead_int((char *)partsList.pValue, FILE_KEY_DRIVER_DEVICE, &i); 
+
+                            // Get the type of device
+                            if(jRead_string((char *)partsList.pValue, FILE_KEY_DRIVER_TYPE, strValue, 25, &i )>0)
+                                strcpy(kparts.dc_motor[driverId].driver.device_type, strValue);
+
+                            // Get the channel attribute of device
+                            kparts.dc_motor[driverId].driver.attributes.device_channel = jRead_int((char *)partsList.pValue, FILE_KEY_DRIVER_ATTRIBUTES_CHANNEL, &i);
+                        }
+                    }
+                }
+            }
+        #ifdef PRINT_INFO            
+            printf("\nDOUT LIST:COUNT: %d     \n", partsCount);                       
+            for(i=0;i<MAX_DRIVERS_PER_TYPE;i++){
+                if(kparts.dc_motor[i].id > -1)
+                    printDriverData(i, &kparts.dc_motor[i]);
+            }
+        #endif
+        }
+        
+         
     // Get the DOUT device list 
-         //strcpy(partsList.pValue, "");   // Clear the device data
         jRead((char *)srcDataBuffer, FILE_KEY_DRIVERS_DOUT, &partsList );
         if(partsList.dataType == JREAD_ARRAY ){
             partsCount = partsList.elements;       // Get the number of devices
-            //printf("\nDOUT LIST:COUNT: %d     \n", partsCount);           
+
             for(i=0;i<partsCount;i++){
                 
                 driverId=jRead_int((char *)partsList.pValue, FILE_KEY_DRIVER_ID, &i);
@@ -214,26 +268,27 @@ char LoadDevicesDescriptor(char * fileName){
                     kparts.dout[driverId].id = driverId;
                     
                     // Get and save the device interface
-                    if(jRead_string((char *)partsList.pValue, FILE_KEY_DRIVER_INTERFACE, strValue, 15, &i )>0)
+                    if(jRead_string((char *)partsList.pValue, FILE_KEY_DRIVER_INTERFACE, strValue, 25, &i )>0)
                         strcpy(kparts.dout[driverId].interface, strValue);
-
-
+                    
                     // Get the device ID of IC
                     kparts.dout[driverId].driver.device_id = jRead_int((char *)partsList.pValue, FILE_KEY_DRIVER_DEVICE, &i); 
 
                     // Get the type of device
-                    if(jRead_string((char *)partsList.pValue, FILE_KEY_DRIVER_TYPE, strValue, 15, &i )>0)
+                    if(jRead_string((char *)partsList.pValue, FILE_KEY_DRIVER_TYPE, strValue, 25, &i )>0)
                         strcpy(kparts.dout[driverId].driver.device_type, strValue);
 
                     // Get the channel attribute of device
                     kparts.dout[driverId].driver.attributes.device_channel = jRead_int((char *)partsList.pValue, FILE_KEY_DRIVER_ATTRIBUTES_CHANNEL, &i);
                 }
             }
-            
+        #ifdef PRINT_INFO            
+            printf("\nDOUT LIST:COUNT: %d     \n", partsCount);                       
             for(i=0;i<MAX_DRIVERS_PER_TYPE;i++){
-                if(kparts.dout[i].id >= 0)
+                if(kparts.dout[i].id > -1)
                     printDriverData(i, &kparts.dout[i]);
             }
+        #endif
         }
 
     // Get the DIN device list 
@@ -241,7 +296,6 @@ char LoadDevicesDescriptor(char * fileName){
         if(partsList.dataType == JREAD_ARRAY ){
             partsCount = partsList.elements;       // Get the number of devices
           
-            printf("\DIN LIST:COUNT: %d        \n", partsCount); 
             for(i=0;i<partsCount;i++){
                 driverId=jRead_int((char *)partsList.pValue, FILE_KEY_DRIVER_ID, &i); 
                 
@@ -250,28 +304,34 @@ char LoadDevicesDescriptor(char * fileName){
                     kparts.din[driverId].id = driverId;
 
                     // Get and save the device interface
-                    if(jRead_string((char *)partsList.pValue, FILE_KEY_DRIVER_INTERFACE, strValue, 15, &i )>0)
+                    if(jRead_string((char *)partsList.pValue, FILE_KEY_DRIVER_INTERFACE, strValue, 25, &i )>0)
                         strcpy(kparts.din[driverId].interface, strValue);
                     
                     // Get the device ID of IC
                     kparts.din[driverId].driver.device_id = jRead_int((char *)partsList.pValue, FILE_KEY_DRIVER_DEVICE, &i); 
 
                     // Get the type of device
-                    if(jRead_string((char *)partsList.pValue, FILE_KEY_DRIVER_TYPE, strValue, 15, &i )>0)
+                    if(jRead_string((char *)partsList.pValue, FILE_KEY_DRIVER_TYPE, strValue, 25, &i )>0)
                         strcpy(kparts.din[driverId].driver.device_type, strValue);
 
                     // Get the channel attribute of device
                     kparts.din[driverId].driver.attributes.device_channel = jRead_int((char *)partsList.pValue, FILE_KEY_DRIVER_ATTRIBUTES_CHANNEL, &i);
-                    //printDriverData(i, &kparts.din[driverId]);
                 }
             }
+            
+        #ifdef PRINT_INFO            
+            printf("\DIN LIST:COUNT: %d        \n", partsCount); 
+            for(i=0;i<MAX_DRIVERS_PER_TYPE;i++){
+                if(kparts.din[i].id > -1)
+                    printDriverData(i, &kparts.din[i]);
+            }            
+        #endif
         }
         
     // Get the AIN device list 
         jRead((char *)srcDataBuffer, FILE_KEY_DRIVERS_AIN, &partsList );
         if(partsList.dataType == JREAD_ARRAY ){
-            partsCount = partsList.elements;       // Get the number of devices
-            printf("\nAIN LIST:COUNT: %d      \n", partsCount);           
+            partsCount = partsList.elements;       // Get the number of devices          
             for(i=0;i<partsCount;i++){
                 driverId=jRead_int((char *)partsList.pValue, FILE_KEY_DRIVER_ID, &i); 
                 
@@ -280,33 +340,34 @@ char LoadDevicesDescriptor(char * fileName){
                     kparts.ain[driverId].id = driverId;
                     
                     // Get and save the device interface
-                    if(jRead_string((char *)partsList.pValue, FILE_KEY_DRIVER_INTERFACE, strValue, 15, &i )>0)
+                    if(jRead_string((char *)partsList.pValue, FILE_KEY_DRIVER_INTERFACE, strValue, 25, &i )>0)
                         strcpy(kparts.ain[driverId].interface, strValue);
                     
                     // Get the device ID of IC
                     kparts.ain[driverId].driver.device_id = jRead_int((char *)partsList.pValue, FILE_KEY_DRIVER_DEVICE, &i); 
 
                     // Get the type of device
-                    if(jRead_string((char *)partsList.pValue, FILE_KEY_DRIVER_TYPE, strValue, 15, &i )>0)
+                    if(jRead_string((char *)partsList.pValue, FILE_KEY_DRIVER_TYPE, strValue, 25, &i )>0)
                         strcpy(kparts.ain[driverId].driver.device_type, strValue);
 
                     // Get the channel attribute of device
                     kparts.ain[driverId].driver.attributes.device_channel = jRead_int((char *)partsList.pValue, FILE_KEY_DRIVER_ATTRIBUTES_CHANNEL, &i);
-
                 }
             }
-            
+        #ifdef PRINT_INFO            
+            printf("\nAIN LIST:COUNT: %d      \n", partsCount); 
             for(i=0;i<MAX_DRIVERS_PER_TYPE;i++){
-                if(kparts.ain[i].id >= 0)
+                if(kparts.ain[i].id > -1)
                     printDriverData(i, &kparts.ain[i]);
             }
+        #endif  
         } 
         
     // Get the COUNTER device list 
         jRead((char *)srcDataBuffer, FILE_KEY_DRIVERS_CNT, &partsList );
         if(partsList.dataType == JREAD_ARRAY ){
             partsCount = partsList.elements;       // Get the number of devices
-            printf("\COUNTER LIST:COUNT: %d       \n", partsCount);           
+            
             for(i=0;i<partsCount;i++){
                 driverId=jRead_int((char *)partsList.pValue, FILE_KEY_DRIVER_ID, &i); 
                 
@@ -315,31 +376,34 @@ char LoadDevicesDescriptor(char * fileName){
                     kparts.counter[driverId].id = driverId;
                     
                     // Get and save the device interface
-                    if(jRead_string((char *)partsList.pValue, FILE_KEY_DRIVER_INTERFACE, strValue, 15, &i )>0)
+                    if(jRead_string((char *)partsList.pValue, FILE_KEY_DRIVER_INTERFACE, strValue, 25, &i )>0)
                         strcpy(kparts.counter[driverId].interface, strValue);
                     
                     // Get the device ID of IC
                     kparts.counter[driverId].driver.device_id = jRead_int((char *)partsList.pValue, FILE_KEY_DRIVER_DEVICE, &i); 
 
                     // Get the type of device
-                    if(jRead_string((char *)partsList.pValue, FILE_KEY_DRIVER_TYPE, strValue, 15, &i )>0)
+                    if(jRead_string((char *)partsList.pValue, FILE_KEY_DRIVER_TYPE, strValue, 25, &i )>0)
                         strcpy(kparts.counter[driverId].driver.device_type, strValue);
 
                     // Get the channel attribute of device
                     kparts.counter[driverId].driver.attributes.device_channel = jRead_int((char *)partsList.pValue, FILE_KEY_DRIVER_ATTRIBUTES_CHANNEL, &i);
                 }
             }
+        #ifdef PRINT_INFO
+            printf("\COUNTER LIST:COUNT: %d       \n", partsCount);           
             for(i=0;i<MAX_DRIVERS_PER_TYPE;i++){
-                if(kparts.counter[i].id >= 0)
+                if(kparts.counter[i].id > -1)
                     printDriverData(i, &kparts.counter[i]);
             }            
+        #endif  
         }
 
             // Get the RGB Sensor device list 
         jRead((char *)srcDataBuffer, FILE_KEY_DRIVERS_RGB, &partsList );
         if(partsList.dataType == JREAD_ARRAY ){
             partsCount = partsList.elements;       // Get the number of devices
-            printf("\nRGB LIST:COUNT: %d           \n", partsCount);           
+
             for(i=0;i<partsCount;i++){
                 driverId=jRead_int((char *)partsList.pValue, FILE_KEY_DRIVER_ID, &i); 
 
@@ -348,32 +412,34 @@ char LoadDevicesDescriptor(char * fileName){
                     kparts.rgbSensor[driverId].id = driverId;
 
                     // Get and save the device interface
-                    if(jRead_string((char *)partsList.pValue, FILE_KEY_DRIVER_INTERFACE, strValue, 15, &i )>0)
+                    if(jRead_string((char *)partsList.pValue, FILE_KEY_DRIVER_INTERFACE, strValue, 25, &i )>0)
                         strcpy(kparts.rgbSensor[driverId].interface, strValue);
                     
                     // Get the device ID of IC
                     kparts.rgbSensor[driverId].driver.device_id = jRead_int((char *)partsList.pValue, FILE_KEY_DRIVER_DEVICE, &i); 
 
                     // Get the type of device
-                    if(jRead_string((char *)partsList.pValue, FILE_KEY_DRIVER_TYPE, strValue, 15, &i )>0)
+                    if(jRead_string((char *)partsList.pValue, FILE_KEY_DRIVER_TYPE, strValue, 25, &i )>0)
                         strcpy(kparts.rgbSensor[driverId].driver.device_type, strValue);
 
                     // Get the channel attribute of device
                     kparts.rgbSensor[driverId].driver.attributes.device_channel  = jRead_int((char *)partsList.pValue, FILE_KEY_DRIVER_ATTRIBUTES_CHANNEL, &i);
-
                 }
             }
+        #ifdef PRINT_INFO
+            printf("\nRGB LIST:COUNT: %d           \n", partsCount);           
             for(i=0;i<MAX_DRIVERS_PER_TYPE;i++){
-                if(kparts.rgbSensor[i].id >= 0)
+                if(kparts.rgbSensor[i].id > -1)
                     printDriverData(i, &kparts.rgbSensor[i]);
-            }            
+            }      
+        #endif  
         }
         
     // Get the DISTANCE device list 
         jRead((char *)srcDataBuffer, FILE_KEY_DRIVERS_DISTANCE, &partsList );
         if(partsList.dataType == JREAD_ARRAY ){
             partsCount = partsList.elements;       // Get the number of devices
-            printf("\DISTANCE LIST:COUNT: %d           \n", partsCount);           
+
             for(i=0;i<partsCount;i++){
                 driverId=jRead_int((char *)partsList.pValue, FILE_KEY_DRIVER_ID, &i); 
                 
@@ -382,24 +448,28 @@ char LoadDevicesDescriptor(char * fileName){
                     kparts.distanceSensor[driverId].id = driverId;
 
                     // Get and save the device interface
-                    if(jRead_string((char *)partsList.pValue, FILE_KEY_DRIVER_INTERFACE, strValue, 15, &i )>0)
+                    if(jRead_string((char *)partsList.pValue, FILE_KEY_DRIVER_INTERFACE, strValue, 25, &i )>0)
                         strcpy(kparts.distanceSensor[driverId].interface, strValue);
                     
                     // Get the device ID of IC
                     kparts.distanceSensor[driverId].driver.device_id = jRead_int((char *)partsList.pValue, FILE_KEY_DRIVER_DEVICE, &i); 
 
                     // Get the type of device
-                    if(jRead_string((char *)partsList.pValue, FILE_KEY_DRIVER_TYPE, strValue, 15, &i )>0)
+                    if(jRead_string((char *)partsList.pValue, FILE_KEY_DRIVER_TYPE, strValue, 25, &i )>0)
                         strcpy(kparts.distanceSensor[driverId].driver.device_type, strValue);
 
                     // Get the channel attribute of device
                     kparts.distanceSensor[driverId].driver.attributes.device_channel = jRead_int((char *)partsList.pValue, FILE_KEY_DRIVER_ATTRIBUTES_CHANNEL, &i);
                 }
             }
+            
+        #ifdef PRINT_INFO
+            printf("\DISTANCE LIST:COUNT: %d           \n", partsCount);           
             for(i=0;i<MAX_DRIVERS_PER_TYPE;i++){
-                if(kparts.distanceSensor[i].id >= 0)
+                if(kparts.distanceSensor[i].id > -1)
                     printDriverData(i, &kparts.distanceSensor[i]);
-            }            
+            }
+        #endif      
         }
 
         // Get the STEPPER device list 
@@ -407,7 +477,7 @@ char LoadDevicesDescriptor(char * fileName){
         jRead((char *)srcDataBuffer, FILE_KEY_DRIVERS_STEPPER, &partsList );
         if(partsList.dataType == JREAD_ARRAY ){
             partsCount = partsList.elements;       // Get the number of devices
-            printf("\STEPPER LIST:COUNT: %d           \n", partsCount);           
+
             for(i=0;i<partsCount;i++){
                 driverId=jRead_int((char *)partsList.pValue, FILE_KEY_DRIVER_ID, &i); 
                 
@@ -416,14 +486,14 @@ char LoadDevicesDescriptor(char * fileName){
                     kparts.stepper_motors[driverId].id = driverId;
 
                     // Get and save the device interface
-                    if(jRead_string((char *)partsList.pValue, FILE_KEY_DRIVER_INTERFACE, strValue, 15, &i )>0)
+                    if(jRead_string((char *)partsList.pValue, FILE_KEY_DRIVER_INTERFACE, strValue, 25, &i )>0)
                         strcpy(kparts.stepper_motors[driverId].interface, strValue);
                     
                     // Get the device ID of IC
                     kparts.stepper_motors[driverId].driver.device_id = jRead_int((char *)partsList.pValue, FILE_KEY_DRIVER_DEVICE, &i); 
 
                     // Get the type of device
-                    if(jRead_string((char *)partsList.pValue, FILE_KEY_DRIVER_TYPE, strValue, 15, &i )>0)
+                    if(jRead_string((char *)partsList.pValue, FILE_KEY_DRIVER_TYPE, strValue, 25, &i )>0)
                         strcpy(kparts.stepper_motors[driverId].driver.device_type, strValue);
 
                     // Get the channel attribute of device
@@ -431,10 +501,14 @@ char LoadDevicesDescriptor(char * fileName){
                 }
             }
         }
+        
+    #ifdef PRINT_INFO
+        printf("\STEPPER LIST:COUNT: %d           \n", partsCount);           
         for(i=0;i<MAX_DRIVERS_PER_TYPE;i++){
-            if(kparts.stepper_motors[i].id >= 0)
+            if(kparts.stepper_motors[i].id > -1)
                 printDriverData(i, &kparts.stepper_motors[i]);
-        }            
+        } 
+    #endif  
 
      }
         return -1;
@@ -443,25 +517,19 @@ char LoadDevicesDescriptor(char * fileName){
 
 
 /**
- * \fn char * printDriverData(char *filename)
- * \brief Open the config file get the content for futur use.
- *
- * \param filename to open
- * \return pointer to the buffer with file content
- * 
- * output format:
-
- * /**
- * \fn char * printDriverData(int partsNb, struct device * device)
+ * \fn unsigned char printDriverData(int partsNb, struct device * device)
  * \brief Print a structured view of a device settings
  *
- * \param int partsNb (No of part in array) 
- * \param struct device * device (No of part in array)
+ * \param int partsNb, number of the field in the array driver
+ * \param struct device * device, The driver to print
+ *
+ * \return -
  * 
- * \return pointer to the buffer with file content
+ * output format:
  * 
- *   DIN #0 
+ *  driverArray[partsNb] 
  *  |__ ID: 1
+ *  |__ Interface: i2c
  *  |__ Driver
  *     |__ deviceId: 2
  *     |__ type: 
@@ -480,6 +548,27 @@ unsigned char printDriverData(int partsNb, struct device * device){
             device->driver.attributes.device_channel);        
 }
 
+
+/**
+ * \fn unsigned char printDriverData(int partsNb, struct device * device)
+ * \brief Print a structured view of a device settings
+ *
+ * \param int partsNb, number of the field in the array driver
+ * \param struct device * device, The driver to print
+ *
+ * \return -
+ * 
+ * output format:
+ * 
+ * deviceArray[partsNb] 
+ * |__ ID: 5
+ *   |__ Type: _tca9546
+ *   |__ Address: 0xe0
+  *  |__ Attributes:{Not implemented}
+ * 
+ * 
+ */
+
 unsigned char printDeviceData(int deviceNb, devices_list * device){
     
     int devId = device->device_id;
@@ -487,6 +576,15 @@ unsigned char printDeviceData(int deviceNb, devices_list * device){
     printf("\n#%d \n |__ ID: %d\n |__ Type: %s\n |__ Address: 0x%2x\n |__ Attributes:{Not implemented}\n",
            deviceNb, devId, device->type, device->address);        
 }
+
+
+
+/**
+ * \fn void clearDriverSettings(void)
+ * \brief Clear all the drivers structures with setting setting the ID to -1
+ * \param -
+ * \return -
+ */
 
 void clearDriverSettings(void){
     int i;
@@ -502,6 +600,12 @@ void clearDriverSettings(void){
     }
 }
 
+/**
+ * \fn void clearDeviceSettings(void)
+ * \brief Clear all the devices structures with setting setting the ID to -1
+ * \param -
+ * \return -
+ */
 void clearDeviceSettings(void){
     int i;
     // Init ID of device to "unknown"

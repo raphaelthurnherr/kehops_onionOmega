@@ -561,7 +561,7 @@ void setLedPower(unsigned char ledID, unsigned char power){
             case 2 : channelNb = 14; break;
             default: break;
         }
-        printf("LED %d on CHANNEL: %d\n", ledID, channelNb);
+
         pca9685_setPWMdutyCycle(myDevice, channelNb, power); // Set dutycycle for selected channel
 }
 

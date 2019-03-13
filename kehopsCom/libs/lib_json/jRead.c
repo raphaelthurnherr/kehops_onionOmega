@@ -132,6 +132,7 @@ char *	jRead_atoi( char *p, unsigned int *result );
 char *	jRead_atol( char *p, long *result );
 char *	jRead_atof( char *p, double *result);
 
+const char emptyString[1]= { 0 };
 //=======================================================
 
 char *jReadSkipWhitespace( char *sp )
@@ -553,7 +554,7 @@ char * jReadParam( char *pJson, char *pQuery, struct jReadElement *pResult, int 
 				return jReadParam( ++pJson, pQuery, pResult, queryParams );
 			}
 			// no key match... skip this value
-			pJson= jRead( ++pJson, "", pResult );
+			pJson= jRead( ++pJson, emptyString, pResult );
 			pJson= jReadFindTok( pJson, &jTok );
 			if( jTok == JREAD_EOBJECT )
 			{
@@ -591,7 +592,7 @@ char * jReadParam( char *pJson, char *pQuery, struct jReadElement *pResult, int 
 			if( count == index )
 				return jReadParam( ++pJson, pQuery, pResult, queryParams );	// return value at index
 			// not this index... skip this value
-			pJson= jRead( ++pJson, "", &jElement );
+			pJson= jRead( ++pJson, emptyString, &jElement );
 			if( pResult->error )
 				break;
 			count++;				

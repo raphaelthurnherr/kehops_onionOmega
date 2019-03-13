@@ -48,11 +48,6 @@ typedef struct devicesList{
  * ****************************************************************************
  */
 
-struct driverAttribute{
-    int device_channel;
-};
-    
-
 /**
  * \struct device_subdriver [driversDescriptor.h]
  *  device_subdriver is used for reccursive drive if a device need 
@@ -68,12 +63,16 @@ struct driverAttribute{
  */
 
 
+struct driverAttribute{
+    int device_channel;
+};
+
+
 struct device_subdrivers{
     int device_id;
     char device_type[15];
     struct driverAttribute attributes;
 };
-
 
 typedef struct device_drivers{
     int device_id;
@@ -81,6 +80,27 @@ typedef struct device_drivers{
     struct driverAttribute attributes;
     struct device_subdrivers sub_driver;
 } deviceDriver;
+
+typedef struct generic_drivers{
+    int device_id;
+    char interface[25];
+    char device_type[15];
+    struct driverAttribute attributes;
+    struct device_subdrivers sub_driver;
+} genericDriver;
+
+
+struct genericAttributeMotor{
+    struct generic_drivers enable;
+    struct generic_drivers speed;
+    struct generic_drivers cw;
+    struct generic_drivers ccw;
+};
+
+
+typedef struct generic_attribute{
+    struct genericAttributeMotor dc_motor;
+}genericAttributes;
 
 /**
  * \struct device_driver [driversDescriptor.h]
@@ -90,19 +110,8 @@ typedef struct device_drivers{
 struct device{
     int id;
     char interface[25];
-    struct device_drivers driver;
-};
-
-/**
- * \struct dcMotor_attribute [driversDescriptor.h]
- *  Sub structure for parts.
- * -> include specific sub attribute Structure
- */
-struct generic_motor_driver{
-    struct device enable;
-    struct device speed;
-    struct device cw;
-    struct device ccw;
+    deviceDriver driver;
+    genericAttributes attributes;
 };
 
 /**
@@ -112,7 +121,7 @@ struct generic_motor_driver{
 typedef struct parts_list{
     int part_id;
     char type[15];
-    struct generic_motor_driver dc_motor[MAX_DRIVERS_PER_TYPE];
+    struct device dc_motor[MAX_DRIVERS_PER_TYPE];
     struct device stepper_motors[MAX_DRIVERS_PER_TYPE];
     struct device dout[MAX_DRIVERS_PER_TYPE];
     struct device din[MAX_DRIVERS_PER_TYPE];

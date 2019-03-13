@@ -1,5 +1,5 @@
 /**
- * \file driverDescriptor_jsonKeys.h
+ * \file deviceMapping_jsonKeys.h
  * \brief  Interconnect the user parts (like LEDs components) to the hardware
  *  driver IC output (like PCA9685 driver) or generic driver.
  *      
@@ -13,8 +13,8 @@
  */ 
       
 
-#ifndef DRIVERDESCRIPTOR_JSONKEYS_H
-#define DRIVERDESCRIPTOR_JSONKEYS_H
+#ifndef DEVICEMAPPING_JSONKEYS_H
+#define DEVICEMAPPING_JSONKEYS_H
 
 /**
  * \def JSON keys for electronic device definition
@@ -29,7 +29,7 @@
 #define DEVICES_ATTRIBUTES_DEVINIT_INIT_DATA "{'deviceInit'[*{'regData'"
 
 /**
- * \def JSON keys for DOUT driver definition
+ * \def JSON keys for driver definition
 */
 #define FILE_KEY_DRIVERS "{'drivers'"
 
@@ -42,39 +42,37 @@
 #define FILE_KEY_DRIVERS_RGB "{'drivers'{'rgbSensor'"
 #define FILE_KEY_DRIVERS_DISTANCE "{'drivers'{'distanceSensor'"
 
+/**
+ * \def Common definition
+*/
+
+// For search in array
 #define FILE_KEY_DRIVER_ID "[*{'id'"
 #define FILE_KEY_DRIVER_INTERFACE "[*{'interface'"
 #define FILE_KEY_DRIVER_DEVICE "[*{'driver'{'device_id'"
 #define FILE_KEY_DRIVER_TYPE "[*{'driver'{'type'"
 #define FILE_KEY_DRIVER_ATTRIBUTES "[*{'driver'{'attributes'"
 
-#define FILE_KEY_DRIVER_ATTRIBUTES_CHANNEL "[*{'driver'{'attributes'{'channel'"
-#define FILE_KEY_DRIVER_ATTRIBUTES_EN "[*{'driver'{'attributes'{'enable'"
-#define FILE_KEY_DRIVER_ATTRIBUTES_SPEED "[*{'driver'{'attributes'{'speed'"
-#define FILE_KEY_DRIVER_ATTRIBUTES_CW "[*{'driver'{'attributes'{'cw'"
-#define FILE_KEY_DRIVER_ATTRIBUTES_CCW "[*{'driver'{'attributes'{'ccw'"
+
+// For search in object
+#define KEY_DEVICE "{driver{'device_id'"
+#define KEY_TYPE "{{driver'type'"
+#define KEY_INTERFACE "{'interface'"
+#define KEY_ATTRIBUTES "{'attributes'"
+
+#define KEY_DRIVER_DEVICE "{'device_id'"
+
+#define FILE_KEY_DRIVER_ATTRIBUTES_CHANNEL "[*{{'attributes'{'channel'"
+#define KEY_ATTRIBUTES_EN "[*{'attributes'{'enable'"
+#define KEY_ATTRIBUTES_SPEED "[*{'attributes'{'speed'"
+#define KEY_ATTRIBUTES_CW "[*{'attributes'{'cw'"
+#define KEY_ATTRIBUTES_CCW "[*{'attributes'{'ccw'"
 
 #define FILE_KEY_DRIVER_ATTRIBUTES_SUBD "[*{'driver'{'sub-driver'"
 #define FILE_KEY_DRIVER_ATTRIBUTES_SUBD_DEVICE "[*{'driver'{'sub-driver'{'device_id'"
 #define FILE_KEY_DRIVER_ATTRIBUTES_SUBD_TYPE "[*{'driver'{'sub-driver'{'type'"
 #define FILE_KEY_DRIVER_ATTRIBUTES_SUBD_ATTRIBUTES "[*{'driver'{'sub-driver'{'attributes'"
 #define FILE_KEY_DRIVER_ATTRIBUTES_SUBD_ATTRIBUTES_CHANNEL "[*{'driver'{'sub-driver'{'attributes'{'channel'"
-/*
-      {
-        "id": 1,
-        "driver": {
-          "device_id": "8",
-          "type": "vl53l1x",
-          "attributes": {},
-          "sub-driver": {
-              "device_id": "6",
-              "type": "tca9546",
-              "attributes": {
-                "channel": 0
-              }
-          }
-        }
-      }
- */
-#endif /* DRIVERDESCRIPTOR_JSONKEYS_H */
+
+#endif /* DEVICEMAPPING_JSONKEYS_H */
 
