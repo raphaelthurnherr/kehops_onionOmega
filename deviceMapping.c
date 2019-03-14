@@ -214,32 +214,32 @@ char LoadDevicesDescriptor(char * fileName){
                         if(!strcmp(kparts.dc_motor[driverId].interface, "generic_hbridge")){
                             printf("****************** GENERIC ***************\n");
 
-                            jReadParam((char *)partsList.pValue, KEY_ATTRIBUTES_EN_DRV, &genericList, i );
+                            jReadParam((char *)partsList.pValue, KEY_ATTRIBUTES_EN, &genericList, i );
                             
                             if(jRead_string((char *)genericList.pValue, KEY_TYPE, strValue, 25, &i)>0){
 //                                printf("-----------------------MON DEVICE:: %s\n", strValue);  
-                                strcpy(kparts.dc_motor[driverId].driver.device_type, strValue);
+                                strcpy(kparts.dc_motor[driverId].sw_driver.dc_motor.ccw.hw_driver, strValue);
                             }
                             
                             if(jRead_string((char *)genericList.pValue, KEY_INTERFACE, strValue, 25, &i)>0){
                                 strcpy(kparts.dc_motor[driverId].interface, strValue);
                             }
                             if(jRead_string((char *)genericList.pValue, KEY_INTERFACE, strValue, 25, &i)>0){
-                                strcpy(kparts.dc_motor[driverId].attributes.dc_motor.ccw., strValue);
+                                //kparts.dc_motor[driverId].sw_driver.
                             }
                         }else
                         {
                             printf("****************** device ***************\n");
                             
                             // Get the device ID of IC
-                            kparts.dc_motor[driverId].driver.device_id = jRead_int((char *)partsList.pValue, FILE_KEY_DRIVER_DEVICE, &i); 
+                            kparts.dc_motor[driverId].hw_driver.device_id = jRead_int((char *)partsList.pValue, FILE_KEY_DRIVER_DEVICE, &i); 
 
                             // Get the type of device
                             if(jRead_string((char *)partsList.pValue, FILE_KEY_DRIVER_TYPE, strValue, 25, &i )>0)
-                                strcpy(kparts.dc_motor[driverId].driver.device_type, strValue);
+                                strcpy(kparts.dc_motor[driverId].hw_driver.device_type, strValue);
 
                             // Get the channel attribute of device
-                            kparts.dc_motor[driverId].driver.attributes.device_channel = jRead_int((char *)partsList.pValue, FILE_KEY_DRIVER_ATTRIBUTES_CHANNEL, &i);
+                            kparts.dc_motor[driverId].hw_driver.attributes.device_channel = jRead_int((char *)partsList.pValue, FILE_KEY_DRIVER_ATTRIBUTES_CHANNEL, &i);
                         }
                     }
                 }
@@ -272,14 +272,14 @@ char LoadDevicesDescriptor(char * fileName){
                         strcpy(kparts.dout[driverId].interface, strValue);
                     
                     // Get the device ID of IC
-                    kparts.dout[driverId].driver.device_id = jRead_int((char *)partsList.pValue, FILE_KEY_DRIVER_DEVICE, &i); 
+                    kparts.dout[driverId].hw_driver.device_id = jRead_int((char *)partsList.pValue, FILE_KEY_DRIVER_DEVICE, &i); 
 
                     // Get the type of device
                     if(jRead_string((char *)partsList.pValue, FILE_KEY_DRIVER_TYPE, strValue, 25, &i )>0)
-                        strcpy(kparts.dout[driverId].driver.device_type, strValue);
+                        strcpy(kparts.dout[driverId].hw_driver.device_type, strValue);
 
                     // Get the channel attribute of device
-                    kparts.dout[driverId].driver.attributes.device_channel = jRead_int((char *)partsList.pValue, FILE_KEY_DRIVER_ATTRIBUTES_CHANNEL, &i);
+                    kparts.dout[driverId].hw_driver.attributes.device_channel = jRead_int((char *)partsList.pValue, FILE_KEY_DRIVER_ATTRIBUTES_CHANNEL, &i);
                 }
             }
         #ifdef PRINT_INFO            
@@ -308,14 +308,14 @@ char LoadDevicesDescriptor(char * fileName){
                         strcpy(kparts.din[driverId].interface, strValue);
                     
                     // Get the device ID of IC
-                    kparts.din[driverId].driver.device_id = jRead_int((char *)partsList.pValue, FILE_KEY_DRIVER_DEVICE, &i); 
+                    kparts.din[driverId].hw_driver.device_id = jRead_int((char *)partsList.pValue, FILE_KEY_DRIVER_DEVICE, &i); 
 
                     // Get the type of device
                     if(jRead_string((char *)partsList.pValue, FILE_KEY_DRIVER_TYPE, strValue, 25, &i )>0)
-                        strcpy(kparts.din[driverId].driver.device_type, strValue);
+                        strcpy(kparts.din[driverId].hw_driver.device_type, strValue);
 
                     // Get the channel attribute of device
-                    kparts.din[driverId].driver.attributes.device_channel = jRead_int((char *)partsList.pValue, FILE_KEY_DRIVER_ATTRIBUTES_CHANNEL, &i);
+                    kparts.din[driverId].hw_driver.attributes.device_channel = jRead_int((char *)partsList.pValue, FILE_KEY_DRIVER_ATTRIBUTES_CHANNEL, &i);
                 }
             }
             
@@ -344,14 +344,14 @@ char LoadDevicesDescriptor(char * fileName){
                         strcpy(kparts.ain[driverId].interface, strValue);
                     
                     // Get the device ID of IC
-                    kparts.ain[driverId].driver.device_id = jRead_int((char *)partsList.pValue, FILE_KEY_DRIVER_DEVICE, &i); 
+                    kparts.ain[driverId].hw_driver.device_id = jRead_int((char *)partsList.pValue, FILE_KEY_DRIVER_DEVICE, &i); 
 
                     // Get the type of device
                     if(jRead_string((char *)partsList.pValue, FILE_KEY_DRIVER_TYPE, strValue, 25, &i )>0)
-                        strcpy(kparts.ain[driverId].driver.device_type, strValue);
+                        strcpy(kparts.ain[driverId].hw_driver.device_type, strValue);
 
                     // Get the channel attribute of device
-                    kparts.ain[driverId].driver.attributes.device_channel = jRead_int((char *)partsList.pValue, FILE_KEY_DRIVER_ATTRIBUTES_CHANNEL, &i);
+                    kparts.ain[driverId].hw_driver.attributes.device_channel = jRead_int((char *)partsList.pValue, FILE_KEY_DRIVER_ATTRIBUTES_CHANNEL, &i);
                 }
             }
         #ifdef PRINT_INFO            
@@ -380,14 +380,14 @@ char LoadDevicesDescriptor(char * fileName){
                         strcpy(kparts.counter[driverId].interface, strValue);
                     
                     // Get the device ID of IC
-                    kparts.counter[driverId].driver.device_id = jRead_int((char *)partsList.pValue, FILE_KEY_DRIVER_DEVICE, &i); 
+                    kparts.counter[driverId].hw_driver.device_id = jRead_int((char *)partsList.pValue, FILE_KEY_DRIVER_DEVICE, &i); 
 
                     // Get the type of device
                     if(jRead_string((char *)partsList.pValue, FILE_KEY_DRIVER_TYPE, strValue, 25, &i )>0)
-                        strcpy(kparts.counter[driverId].driver.device_type, strValue);
+                        strcpy(kparts.counter[driverId].hw_driver.device_type, strValue);
 
                     // Get the channel attribute of device
-                    kparts.counter[driverId].driver.attributes.device_channel = jRead_int((char *)partsList.pValue, FILE_KEY_DRIVER_ATTRIBUTES_CHANNEL, &i);
+                    kparts.counter[driverId].hw_driver.attributes.device_channel = jRead_int((char *)partsList.pValue, FILE_KEY_DRIVER_ATTRIBUTES_CHANNEL, &i);
                 }
             }
         #ifdef PRINT_INFO
@@ -416,14 +416,14 @@ char LoadDevicesDescriptor(char * fileName){
                         strcpy(kparts.rgbSensor[driverId].interface, strValue);
                     
                     // Get the device ID of IC
-                    kparts.rgbSensor[driverId].driver.device_id = jRead_int((char *)partsList.pValue, FILE_KEY_DRIVER_DEVICE, &i); 
+                    kparts.rgbSensor[driverId].hw_driver.device_id = jRead_int((char *)partsList.pValue, FILE_KEY_DRIVER_DEVICE, &i); 
 
                     // Get the type of device
                     if(jRead_string((char *)partsList.pValue, FILE_KEY_DRIVER_TYPE, strValue, 25, &i )>0)
-                        strcpy(kparts.rgbSensor[driverId].driver.device_type, strValue);
+                        strcpy(kparts.rgbSensor[driverId].hw_driver.device_type, strValue);
 
                     // Get the channel attribute of device
-                    kparts.rgbSensor[driverId].driver.attributes.device_channel  = jRead_int((char *)partsList.pValue, FILE_KEY_DRIVER_ATTRIBUTES_CHANNEL, &i);
+                    kparts.rgbSensor[driverId].hw_driver.attributes.device_channel  = jRead_int((char *)partsList.pValue, FILE_KEY_DRIVER_ATTRIBUTES_CHANNEL, &i);
                 }
             }
         #ifdef PRINT_INFO
@@ -452,14 +452,14 @@ char LoadDevicesDescriptor(char * fileName){
                         strcpy(kparts.distanceSensor[driverId].interface, strValue);
                     
                     // Get the device ID of IC
-                    kparts.distanceSensor[driverId].driver.device_id = jRead_int((char *)partsList.pValue, FILE_KEY_DRIVER_DEVICE, &i); 
+                    kparts.distanceSensor[driverId].hw_driver.device_id = jRead_int((char *)partsList.pValue, FILE_KEY_DRIVER_DEVICE, &i); 
 
                     // Get the type of device
                     if(jRead_string((char *)partsList.pValue, FILE_KEY_DRIVER_TYPE, strValue, 25, &i )>0)
-                        strcpy(kparts.distanceSensor[driverId].driver.device_type, strValue);
+                        strcpy(kparts.distanceSensor[driverId].hw_driver.device_type, strValue);
 
                     // Get the channel attribute of device
-                    kparts.distanceSensor[driverId].driver.attributes.device_channel = jRead_int((char *)partsList.pValue, FILE_KEY_DRIVER_ATTRIBUTES_CHANNEL, &i);
+                    kparts.distanceSensor[driverId].hw_driver.attributes.device_channel = jRead_int((char *)partsList.pValue, FILE_KEY_DRIVER_ATTRIBUTES_CHANNEL, &i);
                 }
             }
             
@@ -490,14 +490,14 @@ char LoadDevicesDescriptor(char * fileName){
                         strcpy(kparts.stepper_motors[driverId].interface, strValue);
                     
                     // Get the device ID of IC
-                    kparts.stepper_motors[driverId].driver.device_id = jRead_int((char *)partsList.pValue, FILE_KEY_DRIVER_DEVICE, &i); 
+                    kparts.stepper_motors[driverId].hw_driver.device_id = jRead_int((char *)partsList.pValue, FILE_KEY_DRIVER_DEVICE, &i); 
 
                     // Get the type of device
                     if(jRead_string((char *)partsList.pValue, FILE_KEY_DRIVER_TYPE, strValue, 25, &i )>0)
-                        strcpy(kparts.stepper_motors[driverId].driver.device_type, strValue);
+                        strcpy(kparts.stepper_motors[driverId].hw_driver.device_type, strValue);
 
                     // Get the channel attribute of device
-                    kparts.stepper_motors[driverId].driver.attributes.device_channel = jRead_int((char *)partsList.pValue, FILE_KEY_DRIVER_ATTRIBUTES_CHANNEL, &i);
+                    kparts.stepper_motors[driverId].hw_driver.attributes.device_channel = jRead_int((char *)partsList.pValue, FILE_KEY_DRIVER_ATTRIBUTES_CHANNEL, &i);
                 }
             }
         }
@@ -544,8 +544,8 @@ unsigned char printDriverData(int partsNb, struct device * device){
     int devId = device->id;
     
     printf("\n#%d \n |__ ID: %d\n |__ Interface: %s\n |__ Driver\n    |__ deviceId: %d\n    |__ type: %s\n    |__ attributes\n       |__ channel: %d\n"
-            , partsNb, devId, device->interface, device->driver.device_id, device->driver.device_type,
-            device->driver.attributes.device_channel);        
+            , partsNb, devId, device->interface, device->hw_driver.device_id, device->hw_driver.device_type,
+            device->hw_driver.attributes.device_channel);        
 }
 
 

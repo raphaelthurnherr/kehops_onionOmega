@@ -79,28 +79,28 @@ typedef struct device_drivers{
     char device_type[15];
     struct driverAttribute attributes;
     struct device_subdrivers sub_driver;
-} deviceDriver;
+} hwDeviceDriver;
 
 typedef struct generic_drivers{
     int device_id;
     char interface[25];
-    char device_type[15];
-    struct driverAttribute attributes;
-    struct device_subdrivers sub_driver;
+    hwDeviceDriver hw_driver;
 } genericDriver;
 
 
-struct genericAttributeMotor{
-    struct generic_drivers enable;
-    struct generic_drivers speed;
-    struct generic_drivers cw;
-    struct generic_drivers ccw;
+struct sw_dcMotor{
+    genericDriver enable;
+    genericDriver speed;
+    genericDriver cw;
+    genericDriver ccw;
 };
 
 
-typedef struct generic_attribute{
-    struct genericAttributeMotor dc_motor;
-}genericAttributes;
+typedef struct sw_DeviceDriver{
+    struct sw_dcMotor dc_motor;
+}swDeviceDriver;
+
+ 
 
 /**
  * \struct device_driver [driversDescriptor.h]
@@ -110,8 +110,8 @@ typedef struct generic_attribute{
 struct device{
     int id;
     char interface[25];
-    deviceDriver driver;
-    genericAttributes attributes;
+    hwDeviceDriver hw_driver;
+    swDeviceDriver sw_driver;
 };
 
 /**
