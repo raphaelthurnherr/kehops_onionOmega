@@ -65,10 +65,10 @@
 
 /*************************************************************/
 
-#define KEY_ATTRIBUTES_EN "[*{'attributes'{'enable'"
-#define KEY_ATTRIBUTES_SPEED "[*{'attributes'{'speed'"
-#define KEY_ATTRIBUTES_CW "[*{'attributes'{'cw'"
-#define KEY_ATTRIBUTES_CCW "[*{'attributes'{'ccw'"
+#define KEY_DEVICE_ATTRIBUTES_EN "{'enable'"
+#define KEY_DEVICE_ATTRIBUTES_SPEED "{'speed'"
+#define KEY_DEVICEATTRIBUTES_CW "{'cw'"
+#define KEY_DEVICE_ATTRIBUTES_CCW "{'ccw'"
 
 #endif /* DEVICEMAPPING_JSONKEYS_H */
 

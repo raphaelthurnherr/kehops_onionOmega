@@ -39,8 +39,8 @@ char LoadDescriptor(char * fileName);
 char LoadDevicesDescriptor(char * fileName);
   
 int getSettings(char * buffer, char * deviceType, struct device * mydevice);
-int getDriverSettings(char * buffer, char * deviceType, struct device * mydevice);
-
+int getDriverSettings(struct jReadElement  * myDevice, hwDeviceDriver * hwDevice);
+int getGenericHBridgeSettings(struct jReadElement  * myDevice, swDeviceDriver * swDevice);
 // Functions déclaration
 
 unsigned char printDriverData(int partsNb, struct device * device);  // Print a formatted map of the drivers settings using "deviceMap.cfg"
@@ -305,80 +305,39 @@ char LoadDevicesDescriptor(char * fileName){
 
 
 int getSettings(char * buffer, char * deviceType, struct device * mydevice){
-    struct jReadElement deviceList, myDevice, deviceDriver, driverAttributes, driverSubdriver;
-    int deviceCount, deviceId, driverId, data;
+    struct jReadElement deviceList, myDevice;
+    int deviceCount, deviceId;
        char strValue[25];
     int i;
     
     jRead((char *)buffer, deviceType, &deviceList );
-     if(deviceList.dataType == JREAD_ARRAY ){
-         deviceCount = deviceList.elements;       // Get the number of devices
+    if(deviceList.dataType == JREAD_ARRAY ){
+        deviceCount = deviceList.elements;       // Get the number of devices
 
-         for(i=0;i<deviceCount;i++){
-             jReadParam((char *)deviceList.pValue, KEY_OBJ_X_DEVICE, &myDevice, &i );
+        for(i=0;i<deviceCount;i++){
+            jReadParam((char *)deviceList.pValue, KEY_OBJ_X_DEVICE, &myDevice, &i );
 
-         // GET THE DEVICE ID
-             deviceId=jRead_int((char *)myDevice.pValue, KEY_DEVICE_STR_ID, NULL);
+        // GET THE DEVICE ID
+            deviceId=jRead_int((char *)myDevice.pValue, KEY_DEVICE_STR_ID, NULL);
 
-             if(deviceId >= 0 && deviceId < MAX_DRIVERS_PER_TYPE){
-                 // Get and save the driver ID
-                 mydevice[deviceId].id = deviceId;
+            if(deviceId >= 0 && deviceId < MAX_DRIVERS_PER_TYPE){
+                // Get and save the driver ID
+                mydevice[deviceId].id = deviceId;
 
-         // GET THE DEVICE INTERFACE    
-             // Get and save the device interface
-                 if(jRead_string((char *)myDevice.pValue, KEY_DEVICE_STR_INTERFACE, strValue, 25, NULL )>0){
-                     strcpy(mydevice[deviceId].interface, strValue);
-                 }
+        // GET THE DEVICE INTERFACE    
+            // Get and save the device interface
+                if(jRead_string((char *)myDevice.pValue, KEY_DEVICE_STR_INTERFACE, strValue, 25, NULL )>0){
+                    strcpy(mydevice[deviceId].interface, strValue);
+                }
 
-         // GET THE DEVICE DRIVER
-             // Get the DRIVER settings
-                 jRead((char *)myDevice.pValue, KEY_DEVICE_OBJ_DRIVER, &deviceDriver);
+                if(!strcmp(mydevice[deviceId].interface, "I2C"))        
+                    getDriverSettings(&myDevice, &mydevice[deviceId].hw_driver);
+                
+                if(!strcmp(mydevice[deviceId].interface, "generic_hbridge")){       
+                    getGenericHBridgeSettings(&myDevice, &mydevice[deviceId].sw_driver);
+//                    printf("\n------- ENABLE: ID %d  TYPE:  %s  ATT. CHANNEL: %d\n", mydevice[deviceId].sw_driver.dc_motor.enable.hw_driver.device_id, mydevice[deviceId].sw_driver.dc_motor.enable.hw_driver.device_type, mydevice[deviceId].sw_driver.dc_motor.enable.hw_driver.attributes.device_channel);
+                }
 
-                 if(deviceDriver.dataType == JREAD_OBJECT){
-                     // Get the device ID of the driver
-                     driverId=jRead_int((char *)deviceDriver.pValue, KEY_DRIVER_STR_ID, NULL);
-
-                     //Check that the driver ID is valid
-                     if(driverId >= 0){
-                         mydevice[deviceId].hw_driver.device_id = driverId;
-                         if(jRead_string((char *)deviceDriver.pValue, KEY_DRIVER_STR_TYPE, strValue, 25, NULL )>0){
-                             strcpy(mydevice[deviceId].hw_driver.device_type, strValue);
-                         }              
-                         // Get the ATTRIBUTES settings of driver
-                         jRead((char *)deviceDriver.pValue, KEY_DRIVER_OBJ_ATTRIBUTES, &driverAttributes);
-                         if(driverAttributes.dataType == JREAD_OBJECT){
-                             // Get the channel attibute of the driver
-                             data=jRead_int((char *)driverAttributes.pValue, KEY_DRIVER_STR_CHANNEL, NULL);
-                             if(data>=0){
-                                 mydevice[deviceId].hw_driver.attributes.device_channel = data;
-                             }
-                         }
-                     // Get the SUBDRIVERS settings of driver
-                         jRead((char *)deviceDriver.pValue, KEY_DRIVER_OBJ_SUBDRIVER, &driverSubdriver);
-                         if(driverSubdriver.dataType == JREAD_OBJECT){
-                             // Get the device ID of the driver
-                             driverId=jRead_int((char *)driverSubdriver.pValue, KEY_DRIVER_STR_ID, NULL);
-
-                             //Check that the driver ID is valid
-                             if(driverId >= 0){
-                                 mydevice[deviceId].hw_driver.sub_driver.device_id = driverId;
-                                 if(jRead_string((char *)driverSubdriver.pValue, KEY_DRIVER_STR_TYPE, strValue, 25, NULL )>0){
-                                     strcpy(mydevice[deviceId].hw_driver.sub_driver.device_type, strValue);
-                                 }              
-                                 // Get the ATTRIBUTES settings of driver
-                                 jRead((char *)driverSubdriver.pValue, KEY_DRIVER_OBJ_ATTRIBUTES, &driverAttributes);
-                                 if(driverAttributes.dataType == JREAD_OBJECT){
-                                     // Get the channel attibute of the driver
-                                     data=jRead_int((char *)driverAttributes.pValue, KEY_DRIVER_STR_CHANNEL, NULL);
-                                     if(data>=0){
-                                         mydevice[deviceId].hw_driver.sub_driver.attributes.device_channel = data;
-                                     }
-                                 }                        
-                             }                                
-
-                         }                        
-                     } 
-                 }
              }
          }
      #ifdef PRINT_INFO            
@@ -392,7 +351,7 @@ int getSettings(char * buffer, char * deviceType, struct device * mydevice){
 }
 
 /**
- * \fn int getDriverSettings(char * buffer, char * deviceType, struct device * mydevice)
+ * \fn int getDriverSettings(struct jReadElement * myDevice, hwDeviceDriver * hwDevice)
  * \brief Extract the DRIVER settings from config buffer
  *
  * \param char * buffer, Buffer with config
@@ -410,9 +369,153 @@ int getSettings(char * buffer, char * deviceType, struct device * mydevice){
  *        |__ channel: 5
  * 
  */
-int getDriverSettings(char * buffer, char * deviceType, struct device * mydevice){
+int getDriverSettings(struct jReadElement * myDevice, hwDeviceDriver * hwDevice){
+struct jReadElement deviceDriver, driverAttributes, driverSubdriver;
+int deviceId, driverId, data;
+char strValue[25];
+
+// GET THE DEVICE DRIVER
+// Get the DRIVER settings
+    jRead((char *)myDevice->pValue, KEY_DEVICE_OBJ_DRIVER, &deviceDriver);
+
+    if(deviceDriver.dataType == JREAD_OBJECT){
+        // Get the device ID of the driver
+        driverId=jRead_int((char *)deviceDriver.pValue, KEY_DRIVER_STR_ID, NULL);
+
+        //Check that the driver ID is valid
+        if(driverId >= 0){
+            hwDevice->device_id = driverId;
+            if(jRead_string((char *)deviceDriver.pValue, KEY_DRIVER_STR_TYPE, strValue, 25, NULL )>0){
+                strcpy(hwDevice->device_type, strValue);
+            }              
+            // Get the ATTRIBUTES settings of driver
+            jRead((char *)deviceDriver.pValue, KEY_DRIVER_OBJ_ATTRIBUTES, &driverAttributes);
+            if(driverAttributes.dataType == JREAD_OBJECT){
+                // Get the channel attibute of the driver
+                data=jRead_int((char *)driverAttributes.pValue, KEY_DRIVER_STR_CHANNEL, NULL);
+                if(data>=0){
+                    hwDevice->attributes.device_channel = data;
+                }
+            }
+            
+         // Get the SUBDRIVERS settings of driver
+            jRead((char *)deviceDriver.pValue, KEY_DRIVER_OBJ_SUBDRIVER, &driverSubdriver);
+            if(driverSubdriver.dataType == JREAD_OBJECT){
+                // Get the device ID of the driver
+                driverId=jRead_int((char *)driverSubdriver.pValue, KEY_DRIVER_STR_ID, NULL);
+
+                //Check that the driver ID is valid
+                if(driverId >= 0){
+                    hwDevice->sub_driver.device_id = driverId;
+                    if(jRead_string((char *)driverSubdriver.pValue, KEY_DRIVER_STR_TYPE, strValue, 25, NULL )>0){
+                        strcpy(hwDevice->sub_driver.device_type, strValue);
+                    }              
+                    // Get the ATTRIBUTES settings of driver
+                    jRead((char *)driverSubdriver.pValue, KEY_DRIVER_OBJ_ATTRIBUTES, &driverAttributes);
+                    if(driverAttributes.dataType == JREAD_OBJECT){
+                        // Get the channel attibute of the driver
+                        data=jRead_int((char *)driverAttributes.pValue, KEY_DRIVER_STR_CHANNEL, NULL);
+                       if(data>=0){
+                            hwDevice->sub_driver.attributes.device_channel = data;
+                       }
+                    }                        
+                }                                
+            }else
+                hwDevice->sub_driver.device_id = -1;
+                
+        } 
+    }  
+     return 0;
+}
+
+
+/**
+ * \fn int getGenericHBridgeSettings(struct jReadElement  * myDevice, swDeviceDriver * swDevice)
+ * \brief Extract the GENERIC H BRIDGE composed with many drivers settings
+ *
+ * \param char * buffer, Buffer with config
+ * \param char * deviceType, JSON KEY for Device array beginning (like:  "{'drivers'{'dout'")
+ * \param struct device * mydevice, Structure to store the extracted values)
+ *
+ * \return -
+ * 
+ * search structure format:
+ * 
+ *  |__ Driver
+ *     |__ deviceId: 2
+ *     |__ type: 
+ *     |__ attributes
+ *        |__ channel: 5
+ * 
+ */
+int getGenericHBridgeSettings(struct jReadElement  * myDevice, swDeviceDriver * swDevice){
+struct jReadElement deviceDriver, deviceAttributes, driverAttributes;
+int deviceId, driverId, data;
+char strValue[25];
+
+    // Get the ATTRIBUTES settings of driver
+    jRead((char *)myDevice->pValue, KEY_DRIVER_OBJ_ATTRIBUTES, &deviceAttributes);
+
     
-    
+    if(deviceAttributes.dataType == JREAD_OBJECT){
+        // Get the channel attibute of the driver
+        // Get the ATTRIBUTES ENABLE settings of driver
+        
+// GET THE ENABLE ATTRIBUTES        
+        jRead((char *)deviceAttributes.pValue, KEY_DEVICE_ATTRIBUTES_EN, &deviceDriver);
+        if(deviceDriver.dataType == JREAD_OBJECT){
+            
+            // GET THE DEVICE INTERFACE    
+            // Get and save the device interface
+            if(jRead_string((char *)deviceDriver.pValue, KEY_DEVICE_STR_INTERFACE, strValue, 25, NULL )>0){
+                strcpy(swDevice->dc_motor.enable.interface, strValue);
+            }            
+            if(!strcmp(swDevice->dc_motor.enable.interface, "I2C"))
+                getDriverSettings(&deviceDriver, &swDevice->dc_motor.enable.hw_driver);
+        }
+        
+// GET THE SPEED ATTRIBUTES        
+        jRead((char *)deviceAttributes.pValue, KEY_DEVICE_ATTRIBUTES_SPEED, &deviceDriver);
+        if(deviceDriver.dataType == JREAD_OBJECT){
+            
+            // GET THE DEVICE INTERFACE    
+            // Get and save the device interface
+            if(jRead_string((char *)deviceDriver.pValue, KEY_DEVICE_STR_INTERFACE, strValue, 25, NULL )>0){
+                strcpy(swDevice->dc_motor.speed.interface, strValue);
+            }            
+            if(!strcmp(swDevice->dc_motor.speed.interface, "I2C"))
+                getDriverSettings(&deviceDriver, &swDevice->dc_motor.speed.hw_driver);
+        }
+        
+// GET THE CW ATTRIBUTES        
+        jRead((char *)deviceAttributes.pValue, KEY_DEVICEATTRIBUTES_CW, &deviceDriver);
+        if(deviceDriver.dataType == JREAD_OBJECT){
+            
+            // GET THE DEVICE INTERFACE    
+            // Get and save the device interface
+            if(jRead_string((char *)deviceDriver.pValue, KEY_DEVICE_STR_INTERFACE, strValue, 25, NULL )>0){
+                strcpy(swDevice->dc_motor.cw.interface, strValue);
+            }            
+            if(!strcmp(swDevice->dc_motor.cw.interface, "I2C"))
+                getDriverSettings(&deviceDriver, &swDevice->dc_motor.cw.hw_driver);
+        }
+
+// GET THE CCW ATTRIBUTES        
+        jRead((char *)deviceAttributes.pValue, KEY_DEVICE_ATTRIBUTES_CCW, &deviceDriver);
+        if(deviceDriver.dataType == JREAD_OBJECT){
+            
+            // GET THE DEVICE INTERFACE    
+            // Get and save the device interface§
+            if(jRead_string((char *)deviceDriver.pValue, KEY_DEVICE_STR_INTERFACE, strValue, 25, NULL )>0){
+                strcpy(swDevice->dc_motor.ccw.interface, strValue);
+            }            
+            if(!strcmp(swDevice->dc_motor.ccw.interface, "I2C"))
+                getDriverSettings(&deviceDriver, &swDevice->dc_motor.ccw.hw_driver);
+        }
+        
+    }
+            
+ return 0;   
 }
 /**
  * \fn unsigned char printDriverData(int partsNb, struct device * device)
@@ -488,14 +591,30 @@ void clearDriverSettings(void){
     int i;
     // Init ID of device to "unknown"
     for(i=0;i<MAX_DRIVERS_PER_TYPE; i++){
-        kparts.dout[i].id = -1;        
+        kparts.dout[i].id = -1;
+        kparts.dout[i].hw_driver.sub_driver.device_id=-1;
+        
         kparts.din[i].id = -1;
+        kparts.din[i].hw_driver.sub_driver.device_id=-1;
+        
         kparts.ain[i].id = -1;
+        kparts.ain[i].hw_driver.sub_driver.device_id=-1;
+        
         kparts.stepper_motors[i].id = -1;
+        kparts.stepper_motors[i].hw_driver.sub_driver.device_id=-1;
+        
         kparts.dc_motor[i].id = -1;
+        kparts.dc_motor[i].hw_driver.sub_driver.device_id=-1;
+        
         kparts.distanceSensor[i].id = -1;
+        kparts.distanceSensor[i].hw_driver.sub_driver.device_id=-1;
+        
         kparts.rgbSensor[i].id = -1;
+        kparts.rgbSensor[i].hw_driver.sub_driver.device_id=-1;
+        
         kparts.counter[i].id = -1;
+        kparts.counter[i].hw_driver.sub_driver.device_id=-1;
+        
     }
 }
 
