@@ -28,8 +28,6 @@
 #include "../deviceMapping.h"
 #include "../type.h"
 
-
-
 // Device drivers declaration
 #include "pca9685.h"
 

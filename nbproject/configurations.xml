@@ -469,9 +469,10 @@
             <pElem>hwControl/libs/onion-debug</pElem>
             <pElem>hwControl</pElem>
             <pElem>actuators</pElem>
+            <pElem>kehopsCom</pElem>
             <pElem>kehopsCom/libs/lib_json</pElem>
             <pElem>kehopsCom/libs/lib_mqtt</pElem>
-            <pElem>kehopsCom</pElem>
+            <pElem>hwControl/device_drivers</pElem>
           </incDir>
           <commandLine>-pthread -lm</commandLine>
         </cTool>
@@ -776,10 +777,11 @@
             <pElem>hwControl/libs/i2c</pElem>
             <pElem>hwControl/libs/onion-debug</pElem>
             <pElem>hwControl</pElem>
+            <pElem>actuators</pElem>
             <pElem>kehopsCom</pElem>
             <pElem>kehopsCom/libs/lib_json</pElem>
             <pElem>kehopsCom/libs/lib_mqtt</pElem>
-            <pElem>actuators</pElem>
+            <pElem>hwControl/device_drivers</pElem>
           </incDir>
           <commandLine>-pthread -lm</commandLine>
           <preprocessorList>
@@ -1083,6 +1085,7 @@
             <pElem>kehopsCom/libs/lib_mqtt</pElem>
             <pElem>kehopsCom</pElem>
             <pElem>actuators</pElem>
+            <pElem>hwControl/device_drivers</pElem>
           </incDir>
           <commandLine>-pthread -lm</commandLine>
           <preprocessorList>

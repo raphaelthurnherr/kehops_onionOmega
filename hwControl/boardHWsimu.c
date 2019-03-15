@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include "boardHWsimu.h"
 #include "../buggy_descriptor.h"
+#include "pca9685.h"                                            // PCA9685 PWM driver
 
 
 unsigned char buggyBoardInit(void);                             // Initialisation of the board (PWM Driver, GPIO driver, etc..)

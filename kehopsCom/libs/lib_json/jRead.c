@@ -1,7 +1,7 @@
 // jRead.cpp 
 // Version 1v5
 //
-// jRead - an in-place JSON element reader
+// jRead - an in-place JSON element readerjRead_string
 // =======================================
 //
 // Instead of parsing JSON into some structure, this maintains the input JSON as unaltered text
