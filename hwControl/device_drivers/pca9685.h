@@ -27,6 +27,7 @@ typedef struct pca9685{
 
 /**
  * \brief PCA9685 driver initialization
+ * \param pointer on the configuration structure
  * \return code error
  */
 extern char pca9685_init(device_pca9685 *pca9685config);        // PCA9685 driver initialization

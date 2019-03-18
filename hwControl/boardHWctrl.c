@@ -480,7 +480,7 @@ unsigned char configStepMotorDriver(void){
     err+= i2c_write(0, PCA9629, 0x04, 0x10);    // INTMODE
     err+= i2c_write(0, PCA9629, 0x05, 0x1F);    // MSK
     err+= i2c_write(0, PCA9629, 0x06, 0x00);    // INTSTAT
-    //err+= i2c_write(0, PCA9629, 0x07, 0x);      // IP
+    //err+= i2c_write(0, PCA9629, 0x07, 0x);    // IP
     err+= i2c_write(0, PCA9629, 0x08, 0x00);    // INT_MTR_ACT
     err+= i2c_write(0, PCA9629, 0x09, 0x00);    // EXTRASTEPS0
     err+= i2c_write(0, PCA9629, 0x0A, 0x00);    // EXTRASTEPS1

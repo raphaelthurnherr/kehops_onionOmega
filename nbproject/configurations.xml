@@ -40,6 +40,14 @@
         <logicalFolder name="device_drivers"
                        displayName="device_drivers"
                        projectFiles="true">
+          <itemPath>hwControl/device_drivers/bh1745.c</itemPath>
+          <itemPath>hwControl/device_drivers/bh1745.h</itemPath>
+          <itemPath>hwControl/device_drivers/efm8_mcu_kehops.c</itemPath>
+          <itemPath>hwControl/device_drivers/efm8_mcu_kehops.h</itemPath>
+          <itemPath>hwControl/device_drivers/mcp23008.c</itemPath>
+          <itemPath>hwControl/device_drivers/mcp23008.h</itemPath>
+          <itemPath>hwControl/device_drivers/pca9629.c</itemPath>
+          <itemPath>hwControl/device_drivers/pca9629.h</itemPath>
           <itemPath>hwControl/device_drivers/pca9685.c</itemPath>
           <itemPath>hwControl/device_drivers/pca9685.h</itemPath>
         </logicalFolder>
@@ -237,6 +245,34 @@
       <item path="hwControl/boardHWsimu.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="hwControl/changeLog.txt" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/bh1745.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/bh1745.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/efm8_mcu_kehops.c"
+            ex="false"
+            tool="0"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/efm8_mcu_kehops.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/mcp23008.c"
+            ex="false"
+            tool="0"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/mcp23008.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/pca9629.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/pca9629.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="hwControl/device_drivers/pca9685.c" ex="false" tool="0" flavor2="0">
       </item>
@@ -548,6 +584,34 @@
       </item>
       <item path="hwControl/changeLog.txt" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="hwControl/device_drivers/bh1745.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/bh1745.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/efm8_mcu_kehops.c"
+            ex="false"
+            tool="0"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/efm8_mcu_kehops.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/mcp23008.c"
+            ex="false"
+            tool="0"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/mcp23008.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/pca9629.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/pca9629.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="hwControl/device_drivers/pca9685.c" ex="false" tool="0" flavor2="0">
       </item>
       <item path="hwControl/device_drivers/pca9685.h" ex="false" tool="3" flavor2="0">
@@ -850,6 +914,34 @@
       <item path="hwControl/boardHWsimu.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="hwControl/changeLog.txt" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/bh1745.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/bh1745.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/efm8_mcu_kehops.c"
+            ex="false"
+            tool="0"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/efm8_mcu_kehops.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/mcp23008.c"
+            ex="false"
+            tool="0"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/mcp23008.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/pca9629.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/pca9629.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="hwControl/device_drivers/pca9685.c" ex="false" tool="0" flavor2="0">
       </item>
@@ -1154,6 +1246,34 @@
       <item path="hwControl/boardHWsimu.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="hwControl/changeLog.txt" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/bh1745.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/bh1745.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/efm8_mcu_kehops.c"
+            ex="false"
+            tool="0"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/efm8_mcu_kehops.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/mcp23008.c"
+            ex="false"
+            tool="0"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/mcp23008.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/pca9629.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/pca9629.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="hwControl/device_drivers/pca9685.c" ex="false" tool="0" flavor2="0">
       </item>
