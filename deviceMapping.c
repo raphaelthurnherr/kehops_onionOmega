@@ -192,61 +192,6 @@ char LoadDevicesDescriptor(char * fileName){
     clearDriverSettings();
              
      if(srcDataBuffer != NULL){
-/*         
-    // Get the DC MOTOR device list 
-        jRead((char *)srcDataBuffer, KEY_ARRAY_MOTOR, &deviceList );
-        if(deviceList.dataType == JREAD_ARRAY ){
-            deviceCount = deviceList.elements;       // Get the number of devices
-
-            for(i=0;i<deviceCount;i++){
-                
-                driverId=jRead_int((char *)deviceList.pValue, FILE_KEY_DRIVER_ID, &i);
-
-                if(driverId >= 0 && driverId < MAX_DRIVERS_PER_TYPE){
-                    // Get and save the driver ID
-                    kparts.dc_motor[driverId].id = driverId;
-                    
-                    // Get and save the device interface
-                    if(jRead_string((char *)deviceList.pValue, FILE_KEY_DRIVER_INTERFACE, strValue, 25, &i )>0){
-                        strcpy(kparts.dc_motor[driverId].interface, strValue);
-                       
-                        if(!strcmp(kparts.dc_motor[driverId].interface, "generic_hbridge")){
-                            printf("****************** GENERIC ***************\n");
-
-                            // Get the "ENABLE SUB-SETTINGS"
-                            jReadParam((char *)deviceList.pValue, KEY_ATTRIBUTES_EN, &myDevice, i );
-
- //                           printf("-----------------------MON DEVICE KEXX:: %s\n", genericList.pValue);  
-
-                            if(jRead_int((char *)myDevice.pValue, KEY_DEVICE, NULL)>0){
-                                kparts.dc_motor[driverId].sw_driver.dc_motor.enable.hw_driver.device_id = strValue;
-                            }                            
-                            
-                            if(jRead_string((char *)myDevice.pValue, KEY_TYPE, strValue, 25, NULL)>0){
-                                printf("-----------------------MON DEVICE TYPE:: %s\n", strValue);  
-                                strcpy(kparts.dc_motor[driverId].sw_driver.dc_motor.enable.hw_driver.device_type, strValue);
-                            }                            
-
-                        }else
-                        {
-                            printf("****************** device ***************\n");
-                            
-                            // Get the device ID of IC
-                            kparts.dc_motor[driverId].hw_driver.device_id = jRead_int((char *)deviceList.pValue, FILE_KEY_DRIVER_DEVICE, &i); 
-
-                            // Get the type of device
-                            if(jRead_string((char *)deviceList.pValue, FILE_KEY_DRIVER_TYPE, strValue, 25, &i )>0)
-                                strcpy(kparts.dc_motor[driverId].hw_driver.device_type, strValue);
-
-                            // Get the channel attribute of device
-                            kparts.dc_motor[driverId].hw_driver.attributes.device_channel = jRead_int((char *)deviceList.pValue, FILE_KEY_DRIVER_ATTRIBUTES_CHANNEL, &i);
-                        }
-                    }
-                }
-            }
-        }
-
-*/
 
      getSettings(srcDataBuffer, KEY_ARRAY_MOTOR, kparts.dc_motor);
      getSettings(srcDataBuffer, KEY_ARRAY_STEPPER, kparts.stepper_motors);
@@ -257,22 +202,6 @@ char LoadDevicesDescriptor(char * fileName){
      getSettings(srcDataBuffer, KEY_ARRAY_RGB, kparts.rgbSensor);
      getSettings(srcDataBuffer, KEY_ARRAY_DISTANCE, kparts.distanceSensor);
      
-    // Get the DOUT device list 
- 
-        
-      /*   
-
-    // Get the DIN device list 
- 
-    // Get the AIN device list 
-
-    // Get the COUNTER device list 
-// Get the RGB Sensor device list 
-        
-    // Get the DISTANCE device list 
-
-        // Get the STEPPER device list 
-*/
      }
         return -1;
 }
@@ -302,7 +231,6 @@ char LoadDevicesDescriptor(char * fileName){
  * 
  * 
  */
-
 
 int getSettings(char * buffer, char * deviceType, struct device * mydevice){
     struct jReadElement deviceList, myDevice;
@@ -391,11 +319,13 @@ char strValue[25];
             // Get the ATTRIBUTES settings of driver
             jRead((char *)deviceDriver.pValue, KEY_DRIVER_OBJ_ATTRIBUTES, &driverAttributes);
             if(driverAttributes.dataType == JREAD_OBJECT){
-                // Get the channel attibute of the driver
-                data=jRead_int((char *)driverAttributes.pValue, KEY_DRIVER_STR_CHANNEL, NULL);
-                if(data>=0){
-                    hwDevice->attributes.device_channel = data;
-                }
+
+            // Get the channel attibute of the driver
+            data=jRead_int((char *)driverAttributes.pValue, KEY_DRIVER_STR_CHANNEL, NULL);
+            if(data>=0){
+                hwDevice->attributes.device_channel = data;
+            }
+
             }
             
          // Get the SUBDRIVERS settings of driver
@@ -422,7 +352,6 @@ char strValue[25];
                 }                                
             }else
                 hwDevice->sub_driver.device_id = -1;
-                
         } 
     }  
      return 0;
@@ -544,9 +473,48 @@ unsigned char printDriverData(int partsNb, struct device * device){
     
     int devId = device->id;
     
-    printf("\n#%d \n |__ ID: %d\n |__ Interface: %s\n |__ Driver\n    |__ deviceId: %d\n    |__ type: %s\n    |__ attributes\n       |__ channel: %d\n    |__ sub-driver\n       |__ deviceId: %d\n       |__ type: %s\n       |__ attributes\n           |__ channel: %d\n    "
-            , partsNb, devId, device->interface, device->hw_driver.device_id, device->hw_driver.device_type,
-            device->hw_driver.attributes.device_channel, device->hw_driver.sub_driver.device_id, device->hw_driver.sub_driver.device_type, device->hw_driver.sub_driver.attributes.device_channel);  
+    if(!strcmp(device->interface, "I2C")){       
+        printf("\n#%d \n |__ ID: %d\n |__ Interface: %s\n |__ Driver\n    |__ deviceId: %d\n    |__ type: %s\n    |__ attributes\n       |__ channel: %d\n"
+            , partsNb, devId, device->interface, device->hw_driver.device_id, device->hw_driver.device_type, device->hw_driver.attributes.device_channel);  
+        if(device->hw_driver.sub_driver.device_id >= 0){
+            printf("    |__ sub-driver\n       |__ deviceId: %d\n       |__ type: %s\n       |__ attributes\n           |__ channel: %d\n    ", 
+                    device->hw_driver.sub_driver.device_id, device->hw_driver.sub_driver.device_type, device->hw_driver.sub_driver.attributes.device_channel);
+        }
+    }
+    else
+        if(!strcmp(device->interface, "generic_hbridge")){       
+            printf("\n#%d \n |__ ID: %d\n |__ Interface: %s\n |__ Attributes\n", partsNb, devId, device->interface);  
+            
+            if(!strcmp(device->sw_driver.dc_motor.enable.interface, "I2C")){
+                printf("    |__ Enable\n       |__ Interface: %s\n       |__ Driver\n         |__ deviceId: %d\n         |__ type: %s\n         |__ attributes\n            |__ channel: %d\n"
+                , device->sw_driver.dc_motor.enable.interface, device->sw_driver.dc_motor.enable.hw_driver.device_id, device->sw_driver.dc_motor.enable.hw_driver.device_type, device->sw_driver.dc_motor.enable.hw_driver.attributes.device_channel);  
+                if(device->sw_driver.dc_motor.enable.hw_driver.sub_driver.device_id >= 0){
+                    printf("         |__ sub-driver\n            |__ deviceId: %d\n            |__ type: %s\n            |__ attributes\n                |__ channel: %d\n    ", 
+                    device->sw_driver.dc_motor.enable.hw_driver.sub_driver.device_id, device->sw_driver.dc_motor.enable.hw_driver.sub_driver.device_type, device->sw_driver.dc_motor.enable.hw_driver.sub_driver.attributes.device_channel);
+                }
+                
+                printf("    |__ CW\n       |__ Interface: %s\n       |__ Driver\n         |__ deviceId: %d\n         |__ type: %s\n         |__ attributes\n            |__ channel: %d\n"
+                , device->sw_driver.dc_motor.cw.interface, device->sw_driver.dc_motor.cw.hw_driver.device_id, device->sw_driver.dc_motor.cw.hw_driver.device_type, device->sw_driver.dc_motor.cw.hw_driver.attributes.device_channel);  
+                if(device->sw_driver.dc_motor.cw.hw_driver.sub_driver.device_id >= 0){
+                    printf("       |__ sub-driver\n          |__ deviceId: %d\n          |__ type: %s\n          |__ attributes\n              |__ channel: %d\n    ", 
+                    device->sw_driver.dc_motor.cw.hw_driver.sub_driver.device_id, device->sw_driver.dc_motor.cw.hw_driver.sub_driver.device_type, device->sw_driver.dc_motor.cw.hw_driver.sub_driver.attributes.device_channel);
+                }
+                                
+                printf("    |__ CCW\n       |__ Interface: %s\n       |__ Driver\n        |__ deviceId: %d\n         |__ type: %s\n         |__ attributes\n            |__ channel: %d\n"
+                , device->sw_driver.dc_motor.ccw.interface, device->sw_driver.dc_motor.ccw.hw_driver.device_id, device->sw_driver.dc_motor.ccw.hw_driver.device_type, device->sw_driver.dc_motor.ccw.hw_driver.attributes.device_channel);  
+                if(device->sw_driver.dc_motor.ccw.hw_driver.sub_driver.device_id >= 0){
+                    printf("         |__ sub-driver\n            |__ deviceId: %d\n            |__ type: %s\n            |__ attributes\n                |__ channel: %d\n    ", 
+                    device->sw_driver.dc_motor.ccw.hw_driver.sub_driver.device_id, device->sw_driver.dc_motor.ccw.hw_driver.sub_driver.device_type, device->sw_driver.dc_motor.ccw.hw_driver.sub_driver.attributes.device_channel);
+                }
+                                                
+                printf("    |__ Speed\n       |__ Interface: %s\n       |__ Driver\n         |__ deviceId: %d\n         |__ type: %s\n         |__ attributes\n            |__ channel: %d\n"
+                , device->sw_driver.dc_motor.speed.interface, device->sw_driver.dc_motor.speed.hw_driver.device_id, device->sw_driver.dc_motor.speed.hw_driver.device_type, device->sw_driver.dc_motor.speed.hw_driver.attributes.device_channel);  
+                if(device->sw_driver.dc_motor.speed.hw_driver.sub_driver.device_id >= 0){
+                    printf("         |__ sub-driver\n            |__ deviceId: %d\n            |__ type: %s\n            |__ attributes\n                |__ channel: %d\n    ", 
+                    device->sw_driver.dc_motor.speed.hw_driver.sub_driver.device_id, device->sw_driver.dc_motor.speed.hw_driver.sub_driver.device_type, device->sw_driver.dc_motor.speed.hw_driver.sub_driver.attributes.device_channel);
+                }
+            }
+        }    
 }
 
 
@@ -592,29 +560,44 @@ void clearDriverSettings(void){
     // Init ID of device to "unknown"
     for(i=0;i<MAX_DRIVERS_PER_TYPE; i++){
         kparts.dout[i].id = -1;
+        kparts.dout[i].hw_driver.attributes.device_channel = -1;
         kparts.dout[i].hw_driver.sub_driver.device_id=-1;
+        kparts.dout[i].hw_driver.sub_driver.attributes.device_channel=-1;
         
         kparts.din[i].id = -1;
+        kparts.din[i].hw_driver.attributes.device_channel = -1;
         kparts.din[i].hw_driver.sub_driver.device_id=-1;
+        kparts.dout[i].hw_driver.sub_driver.attributes.device_channel=-1;
         
         kparts.ain[i].id = -1;
+        kparts.ain[i].hw_driver.attributes.device_channel = -1;
         kparts.ain[i].hw_driver.sub_driver.device_id=-1;
-        
+        kparts.ain[i].hw_driver.sub_driver.attributes.device_channel=-1;
+             
         kparts.stepper_motors[i].id = -1;
+        kparts.stepper_motors[i].hw_driver.attributes.device_channel = -1;
         kparts.stepper_motors[i].hw_driver.sub_driver.device_id=-1;
+        kparts.stepper_motors[i].hw_driver.sub_driver.attributes.device_channel=-1;
         
         kparts.dc_motor[i].id = -1;
+        kparts.dc_motor[i].hw_driver.attributes.device_channel = -1;
         kparts.dc_motor[i].hw_driver.sub_driver.device_id=-1;
+        kparts.dc_motor[i].hw_driver.sub_driver.attributes.device_channel=-1;
         
         kparts.distanceSensor[i].id = -1;
+        kparts.distanceSensor[i].hw_driver.attributes.device_channel = -1;
         kparts.distanceSensor[i].hw_driver.sub_driver.device_id=-1;
+        kparts.distanceSensor[i].hw_driver.sub_driver.attributes.device_channel=-1;
         
         kparts.rgbSensor[i].id = -1;
+        kparts.rgbSensor[i].hw_driver.attributes.device_channel = -1;
         kparts.rgbSensor[i].hw_driver.sub_driver.device_id=-1;
+        kparts.rgbSensor[i].hw_driver.sub_driver.attributes.device_channel=-1;
         
         kparts.counter[i].id = -1;
+        kparts.counter[i].hw_driver.attributes.device_channel = -1;
         kparts.counter[i].hw_driver.sub_driver.device_id=-1;
-        
+        kparts.counter[i].hw_driver.sub_driver.attributes.device_channel=-1;
     }
 }
 
