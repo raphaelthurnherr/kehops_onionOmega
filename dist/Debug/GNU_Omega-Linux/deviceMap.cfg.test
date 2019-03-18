@@ -2,55 +2,6 @@
   "drivers": {
     "dc_motors": [
       {
-        "id": 0,
-        "interface": "generic_hbridge",
-        "attributes": {
-          "enable": {
-            "interface": "I2C",
-            "driver": {
-              "device_id": "2",
-              "type": "mcp23008",
-              "attributes": {
-                "channel": 4
-              }
-            }
-          },
-          "speed": {
-            "interface": "I2C",
-            "driver": {
-              "device_id": "5",
-              "interface": "I2C",
-              "type": "pca9685",
-              "attributes": {
-                "channel": 0
-              }
-            }
-          },
-          "cw": {
-            "interface": "I2C",
-            "driver": {
-              "device_id": "2",
-              "interface": "I2C",
-              "type": "mcp23008",
-              "attributes": {
-                "channel": 2
-              }
-            }
-          },
-          "ccw": {
-            "interface": "I2C",
-            "driver": {
-              "device_id": "2",
-              "interface": "I2C",
-              "type": "mcp23008",
-              "attributes": {
-                "channel": 1
-              }
-            }
-          }
-        }
-      },
-            {
         "id": 1,
         "interface": "generic_hbridge",
         "attributes": {
@@ -76,6 +27,17 @@
             }
           },
           "cw": {
+            "interface": "I2C",
+            "driver": {
+              "device_id": "2",
+              "interface": "I2C",
+              "type": "mcp23008",
+              "attributes": {
+                "channel": 0
+              }
+            }
+          },
+          "ccw": {
             "interface": "I2C",
             "driver": {
               "device_id": "2",
@@ -85,18 +47,15 @@
                 "channel": 3
               }
             }
-          },
-          "ccw": {
-            "interface": "I2C",
-            "driver": {
-              "device_id": "2",
-              "interface": "I2C",
-              "type": "mcp23008",
-              "attributes": {
-                "channel": 0
-              }
-            }
           }
+        }
+      },
+      {
+        "id": 2,
+        "interface": "I2C",
+        "driver": {
+          "device_id": "7",
+          "type": "drv8830"
         }
       }
     ],
@@ -106,13 +65,23 @@
         "interface": "I2C",
         "driver": {
           "device_id": "1",
-          "type": "pca9629"
+          "type": "pca9629",
+          "attributes": {
+            "channel": 123
+          },
+          "sub-driver": {
+            "device_id": "6",
+            "type": "tca9546",
+            "attributes": {
+              "channel": 0
+            }
+          }
         }
       }
     ],
     "dout": [
       {
-        "id": 0,
+        "id": 16,
         "interface": "I2C",
         "driver": {
           "device_id": "5",
@@ -120,32 +89,52 @@
           "attributes": {
             "channel": 2
           }
+        },
+        "attributes": {
+          "dummy": "test"
         }
       },
       {
-        "id": 1,
+        "id": 3,
         "interface": "I2C",
         "driver": {
           "device_id": "5",
           "type": "pca9685",
           "attributes": {
-            "channel": 3
+            "channel": 2
+          },
+          "sub-driver": {
+            "device_id": "6",
+            "type": "tca9546",
+            "attributes": {
+              "channel": 666
+            }
           }
         }
       },
       {
-        "id": 2,
         "interface": "I2C",
         "driver": {
           "device_id": "5",
-          "type": "pca9685",
+          "type": "xxxxxxx",
+          "attributes": {
+            "channel": 125
+          }
+        }
+      },
+      {
+        "id": 24,
+        "interface": "SMBUS",
+        "driver": {
+          "device_id": "5",
+          "type": "yxyxyx",
           "attributes": {
             "channel": 5
           }
         }
       },
       {
-        "id": 3,
+        "id": 0,
         "interface": "I2C",
         "driver": {
           "device_id": "5",
@@ -160,9 +149,9 @@
         "interface": "I2C",
         "driver": {
           "device_id": "5",
-          "type": "pca9685",
+          "type": "",
           "attributes": {
-            "channel": 15
+            "channel": 7
           }
         }
       },
@@ -171,7 +160,7 @@
         "interface": "I2C",
         "driver": {
           "device_id": "5",
-          "type": "",
+          "type": "pca9685",
           "attributes": {
             "channel": 8
           }
@@ -184,7 +173,7 @@
           "device_id": "5",
           "type": "pca9685",
           "attributes": {
-            "channel": 7
+            "channel": 9
           }
         }
       },
@@ -195,7 +184,7 @@
           "device_id": "5",
           "type": "pca9685",
           "attributes": {
-            "channel": 13
+            "channel": 10
           }
         }
       },
@@ -206,7 +195,7 @@
           "device_id": "5",
           "type": "pca9685",
           "attributes": {
-            "channel": 10
+            "channel": 11
           }
         }
       },
@@ -223,39 +212,18 @@
       },
       {
         "id": 10,
-        "interface": "I2C",
         "driver": {
-          "device_id": "5",
-          "type": "pca9685",
+          "device_id": "2",
+          "type": "mcp23008",
           "attributes": {
-            "channel": 9
-          }
-        }
-      },
-      {
-        "id": 11,
-        "driver": {
-          "device_id": "5",
-          "type": "pca9685",
-          "attributes": {
-            "channel": 12
-          }
-        }
-      },
-      {
-        "id": 12,
-        "driver": {
-          "device_id": "5",
-          "type": "pca9685",
-          "attributes": {
-            "channel": 14
+            "channel": 7
           }
         }
       }
     ],
     "din": [
       {
-        "id": 0,
+        "id": 5,
         "interface": "I2C",
         "driver": {
           "device_id": "2",
@@ -266,7 +234,7 @@
         }
       },
       {
-        "id": 1,
+        "id": 66,
         "interface": "I2C",
         "driver": {
           "device_id": "2",
@@ -288,11 +256,33 @@
             "channel": 0
           }
         }
+      },
+      {
+        "id": 1,
+        "interface": "I2C",
+        "driver": {
+          "device_id": "336",
+          "type": "efm8bb",
+          "attributes": {
+            "channel": 99
+          }
+        }
+      },
+      {
+        "id": 2,
+        "interface": "I2C",
+        "driver": {
+          "device_id": "3",
+          "type": "efm8bb",
+          "attributes": {
+            "channel": 87
+          }
+        }
       }
     ],
     "counter": [
       {
-        "id": 0,
+        "id": 2,
         "interface": "I2C",
         "driver": {
           "device_id": "0",
@@ -303,7 +293,17 @@
         }
       },
       {
-        "id": 1,
+        "id": 8,
+        "interface": "I2C",
+        "driver": {
+          "device_id": "0",
+          "type": "efm8bb",
+          "attributes": {
+            "channel": 1
+          }
+        }
+      },
+      {
         "interface": "I2C",
         "driver": {
           "device_id": "0",
@@ -316,7 +316,7 @@
     ],
     "rgbSensor": [
       {
-        "id": 0,
+        "id": 5,
         "interface": "I2C",
         "driver": {
           "device_id": "3",
@@ -345,11 +345,11 @@
         "id": 1,
         "interface": "I2C",
         "driver": {
-          "device_id": "-1",
+          "device_id": "8",
           "type": "vl53l1x",
           "sub-driver": {
             "device_id": "6",
-            "type": "tca9548"
+            "type": "tca9546"
           }
         }
       }
