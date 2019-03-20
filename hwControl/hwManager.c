@@ -161,9 +161,8 @@ int timeCount_ms=0;
 
 /*DEBUG ******* HERE IS THE NEW DRIVER DECLARATION */
 
-device_pca9685 myPWMdriver;
-device_pca9685 *myDevice = &myPWMdriver;
-
+device_pca9685 myPWMdriver[MAX_DRIVERS_PER_TYPE];
+device_pca9685 *myDevice = &myPWMdriver[0];
 
 /*DEBUG ******* END OF  NEW DRIVER DECLARATION */
 
@@ -214,9 +213,22 @@ void *hwTask (void * arg){
         myDevice->deviceAddress=0x40;
         myDevice->totemPoleOutput=1; 
         
-        LoadDriversDescriptor("devices.cfg");        
-        LoadDevicesDescriptor("deviceMap.cfg");
+        // Create the structure for hardware description
+        //and get the setting from configs file
+        kehopsParts kehopsParts;
+        LoadKehopsHardwareMap(&kehopsParts);
         
+        int i;
+        
+        for(i=0;i<MAX_DRIVERS_PER_TYPE;i++){
+            if(kehopsParts.dout[i].id >= 0){
+                printf("\n__________MAIN DOUT : PART ID: %d, DEVICE ID: %d, TYPE: %s  CHANNEL: %d\n", kehopsParts.dout[i].id, kehopsParts.dout[i].hw_driver.device_id, 
+                kehopsParts.dout[i].hw_driver.device_type, kehopsParts.dout[i].hw_driver.attributes.device_channel);
+            }
+        }
+         
+        
+//  End of DEBUG for new  version
         
         
 	if(buggyBoardInit() && pca9685_init(myDevice) == 0){       

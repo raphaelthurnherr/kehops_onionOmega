@@ -23,11 +23,13 @@
  *  Sub structure for devices.
  * -> include deviceInit structure for set the device registers
  */
+struct addrReg {
+    unsigned char regAddr;
+    unsigned char regData;
+};
+    
 struct deviceAttributes{
-    struct deviceInit{
-        unsigned char regAddr;
-        unsigned char regData;
-    } deviceInit[16];
+    struct addrReg deviceInit[32];
 };
 
 /**
@@ -83,7 +85,7 @@ typedef struct device_drivers{
 
 typedef struct generic_drivers{
     int device_id;
-    char interface[25];
+    char interface[MAX_DRIVERS_PER_TYPE];
     hwDeviceDriver hw_driver;
 } genericDriver;
 
@@ -109,7 +111,7 @@ typedef struct sw_DeviceDriver{
  */
 struct device{
     int id;
-    char interface[25];
+    char interface[MAX_DRIVERS_PER_TYPE];
     hwDeviceDriver hw_driver;
     swDeviceDriver sw_driver;
 };
@@ -137,14 +139,68 @@ typedef struct parts_list{
  * \brief Open and load drivers descriptor configuration
  * \return code error
  */  
-extern char LoadDriversDescriptor(char * fileName);
+extern char LoadDevicesDescriptor(char * fileName, devices_list * boardDevice);
 
 
 /**
  * \brief Open and load electronic devices descriptor configuration
  * \return code error
  */  
-extern char LoadDevicesDescriptor(char * fileName);
+extern char LoadBoardDescriptor(char * fileName, kehopsParts * kparts);
 
+/**
+ * \brief Load from config and get the hardware map of the board for hardware description
+ * \return code error
+ */  
+extern char LoadKehopsHardwareMap(kehopsParts * parts);
+
+
+/**
+ * \fn unsigned char printDeviceData(int partsNb, struct device * device)
+ * \brief Print a structured view of a device settings
+ *
+ * \param int partsNb, number of the field in the array driver
+ * \param struct device * device, The driver to print
+ *
+ * \return -
+ * 
+ * output format:
+ * 
+ * deviceArray[partsNb] 
+ * |__ ID: 5
+ *   |__ Type: _tca9546
+ *   |__ Address: 0xe0
+  *  |__ Attributes:{Not implemented}
+ * 
+ * 
+ */
+
+extern unsigned char printDeviceData(int deviceNb, devices_list * device);
+
+
+/**
+ * \fn unsigned char printBoardData(int partsNb, struct device * device)
+ * \brief Print a structured view of a device settings
+ *
+ * \param int partsNb, number of the field in the array driver
+ * \param struct device * device, The driver to print
+ *
+ * \return -
+ * 
+ * output format:
+ * 
+ *  driverArray[partsNb] 
+ *  |__ ID: 1
+ *  |__ Interface: i2c
+ *  |__ Driver
+ *     |__ deviceId: 2
+ *     |__ type: 
+ *     |__ attributes
+ *        |__ channel: 5
+ * 
+ * 
+ */
+
+unsigned char printBoardData(int partsNb, struct device * device);
 #endif /* DEVICEMAPPING_H */
 

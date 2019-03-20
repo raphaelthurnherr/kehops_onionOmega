@@ -14,6 +14,7 @@
  * 
  * 
  */
+
 #define PRINT_INFO
 
 #define MAX_BOARD_DEVICE 50
@@ -28,27 +29,22 @@
 #include "deviceMapping_jsonKeys.h"
 #include "deviceMapping.h"
 
-
-// Create structure for devices on the board
-devices_list boardDevice[MAX_BOARD_DEVICE];
-kehopsParts kparts;
-
-
 char * OpenDataFromFile(char *filename);
-char LoadDescriptor(char * fileName);
-char LoadDevicesDescriptor(char * fileName);
+
   
 int getSettings(char * buffer, char * deviceType, struct device * mydevice);
 int getDriverSettings(struct jReadElement  * myDevice, hwDeviceDriver * hwDevice);
 int getGenericHBridgeSettings(struct jReadElement  * myDevice, swDeviceDriver * swDevice);
-// Functions déclaration
 
 unsigned char printDriverData(int partsNb, struct device * device);  // Print a formatted map of the drivers settings using "deviceMap.cfg"
 unsigned char printDeviceData(int deviceNb, devices_list * device);  // Print a formatted map of the device IC setting using "devices.cfg"
 
+void clearBoardSettings(kehopsParts * kparts);
+void clearDeviceSettings(devices_list * boardDevice);
+
 // Function to clear the drivers and devices structure
-void clearDriverSettings(void);
-void clearDeviceSettings(void);
+char LoadDevicesDescriptor(char * fileName, devices_list * boardDevice);
+char LoadBoardDescriptor(char * fileName, kehopsParts * kparts);
 
 
 /**
@@ -58,11 +54,13 @@ void clearDeviceSettings(void);
  * \return pointer to the buffer with file content
  */
 
-char * OpenDataFromFile(char *filename){   
+char * OpenDataFromFile(char *filename){
+       
     FILE *myFile = fopen(filename, "rw+");
    static char *srcDataContent = NULL;
    
    int string_size, read_size;
+
 
    if (myFile)
    {
@@ -94,13 +92,13 @@ char * OpenDataFromFile(char *filename){
        // Always remember to close the file.
        fclose(myFile);
     }
-      
+
    return(srcDataContent);
 }
 
 /**
  * \fn char LoadDriversDescriptor(char * fileName)
- * \brief Extract the file config content and store the JSON result convertion
+ * \brief Extract the file config content of IC devices and store the JSON result convertion
  *  to the structure.
  * 
  * NOTE: The ID field of devices in the config file will define the field in the 
@@ -110,9 +108,9 @@ char * OpenDataFromFile(char *filename){
  * \return error
  */
 
-char LoadDriversDescriptor(char * fileName){
-    struct jReadElement devList, deviceData, deviceInitData;
-    int devicesCount, deviceId;
+char LoadDevicesDescriptor(char * fileName, devices_list * boardDevice){
+    struct jReadElement devList, deviceData, deviceSetting, data;
+    int devicesCount, deviceId, settingCount;
     int i, j;
     char * srcDataBuffer;
     char strValue[25];
@@ -120,7 +118,7 @@ char LoadDriversDescriptor(char * fileName){
     // Read file and store the result in buffer
     srcDataBuffer = OpenDataFromFile(fileName); 
 
-    clearDeviceSettings();
+    clearDeviceSettings(boardDevice);
 
     // Check that the file is not empty
     if(srcDataBuffer != NULL){
@@ -134,37 +132,80 @@ char LoadDriversDescriptor(char * fileName){
             if(devicesCount > MAX_BOARD_DEVICE)
                 printf("[driversDescriptor.c] !!! LoadDriversDescriptor() WARNING, MAX DEVICES LIMIT, ONLY THE %d FIRST ID WILL BE USED\n ", MAX_BOARD_DEVICE);
             
+            //Get the device settings for each IC
             for(i=0; i < devicesCount; i++){ 
-                deviceId=-1;
-                deviceId=jRead_int((char *)srcDataBuffer, FILE_KEY_DEVICES_ID, &i); 
-                        
-                // Get the device setting if ID specified
-                if(deviceId >= 0 && deviceId < MAX_BOARD_DEVICE){
-                    
-                    boardDevice[deviceId].device_id=deviceId;
-                                    
-                    // Get the type (name) of the device
-                    if(jRead_string((char *)srcDataBuffer, FILE_KEY_DEVICES_TYPE, strValue, 25, &i )>0)
-                        strcpy(boardDevice[deviceId].type, strValue);
-                    else strcpy(boardDevice[deviceId].type, "error");
+                
+                jReadParam(devList.pValue, KEY_OBJ_X_DEVICE, &deviceData, &i);
+                
+                if(deviceData.dataType == JREAD_OBJECT){
+                    deviceId=-1;
+                    deviceId = jRead_int((char *)deviceData.pValue, KEY_DEVICE_STR_ID, NULL);
+                    if(deviceId >= 0 && deviceId < MAX_BOARD_DEVICE){
+                        boardDevice[deviceId].device_id=deviceId;
+                        // Get the type (name) of the device
+                        if(jRead_string((char *)deviceData.pValue, KEY_DRIVER_STR_TYPE, strValue, 25, NULL )>0)
+                            strcpy(boardDevice[deviceId].type, strValue);
+                        else strcpy(boardDevice[deviceId].type, "error");
 
-                    // Get the bus address of the device, detect if address is a 
-                    // string or a number, if string, convert to number
-                    jRead((char *)srcDataBuffer, FILE_KEY_DEVICES_ADDRESS, &deviceData);
-                    if(deviceData.dataType == JREAD_STRING){
-                        // Convert string to int
-                        if(jRead_string((char *)srcDataBuffer, FILE_KEY_DEVICES_ADDRESS, strValue, 25, &i )>0)
-                            boardDevice[deviceId].address = strtol(strValue, NULL, 0);
-                        else boardDevice[deviceId].address= NULL;
-                    }
-                    else{
-                            if(deviceData.dataType == JREAD_NUMBER){
-                                boardDevice[deviceId].address = jRead_double((char *)srcDataBuffer, FILE_KEY_DEVICES_ADDRESS, &i); 
+                        // Get the bus address of the device, detect if address is a 
+                        // string or a number, if string, convert to number
+                        jRead((char *)deviceData.pValue, KEY_DRIVER_STR_ADDRESS, &deviceSetting);
+                        if(deviceSetting.dataType == JREAD_STRING){
+                            // Convert string to int
+                            if(jRead_string((char *)deviceData.pValue, KEY_DRIVER_STR_ADDRESS, strValue, 25, NULL )>0)
+                                boardDevice[deviceId].address = strtol(strValue, NULL, 0);
+                            else boardDevice[deviceId].address=NULL;
+                        }
+                        else{
+                                if(deviceSetting.dataType == JREAD_NUMBER){
+                                    boardDevice[deviceId].address = jRead_double((char *)deviceData.pValue, KEY_DRIVER_STR_ADDRESS, NULL); 
+                                }
+                        } 
+         /*               
+                        
+                        jRead((char *)deviceData.pValue, KEY_DEVICE_OBJ_ATTRIBUTES_DEVINIT, &deviceSetting);
+                        if(deviceSetting.dataType == JREAD_ARRAY){
+                            settingCount = deviceSetting.elements;
+                          
+                            for(j=0;j<settingCount;j++){
+                                // Get the init data attributes
+                                jReadParam((char *)deviceSetting.pValue, KEY_DEVICE_ARRAY_ATT_INIT_REGADDR, &data, &j);
+                                 
+                                if(data.dataType == JREAD_STRING){
+                                    // Convert string to int
+                                    if(jRead_string((char *)data.pValue, KEY_DEVICE_ARRAY_ATT_INIT_REGADDR, strValue, 25, &j )>0)
+                                        boardDevice[deviceId].attributes.deviceInit[j].regAddr = strtol(strValue, NULL, 0);
+                                    else boardDevice[deviceId].attributes.deviceInit[j].regAddr= NULL;
+                                }
+                                else{
+                                        if(deviceSetting.dataType == JREAD_NUMBER){
+                                            boardDevice[deviceId].attributes.deviceInit[j].regAddr = jRead_double((char *)data.pValue, KEY_DEVICE_ARRAY_ATT_INIT_REGADDR, &j); 
+                                        }
+                                }          
+                               
+                                jReadParam((char *)deviceSetting.pValue, KEY_DEVICE_ARRAY_ATT_INIT_REGDATA, &data, &j);
+                                
+                                if(data.dataType == JREAD_STRING){
+                                    // Convert string to int
+                                    if(jRead_string((char *)data.pValue, KEY_DEVICE_ARRAY_ATT_INIT_REGDATA, strValue, 25, &j )>0)
+                                        boardDevice[deviceId].attributes.deviceInit[j].regData = strtol(strValue, NULL, 0);
+                                    else boardDevice[deviceId].attributes.deviceInit[j].regData = NULL;
+                                }
+                                else{
+                                        if(deviceSetting.dataType == JREAD_NUMBER){
+                                            boardDevice[deviceId].attributes.deviceInit[j].regData = jRead_double((char *)data.pValue, KEY_DEVICE_ARRAY_ATT_INIT_REGDATA, &j); 
+                                        }
+                                }
+                     
                             }
-                    }
-                #ifdef PRINT_INFO                     
-                    printDeviceData(i, &boardDevice[deviceId]);
-                #endif    
+                             
+                        }
+           */
+                        
+                        #ifdef PRINT_INFO                     
+                           // printDeviceData(i, &boardDevice[deviceId]);
+                        #endif    
+                  }
                 }
             }
         }
@@ -175,35 +216,39 @@ char LoadDriversDescriptor(char * fileName){
 
 /**
  * \fn char LoadDevicesDescriptor(char * fileName)
- * \brief Extract the file content from buffer and dispatch the settings to the
+ * \brief Extract the file content of Device parts from buffer and dispatch the settings to the
  * kehops structure.
  *
  * \param filename to open
  * \return pointer to the buffer with file content
  */
 
-char LoadDevicesDescriptor(char * fileName){
-    char * srcDataBuffer;
- 
-            
+char LoadBoardDescriptor(char * fileName, kehopsParts * kparts){
+    char *srcDataBuffer;
+    
+    //printf("MY FILE NAME: %s", &fileName);
+       
     srcDataBuffer = OpenDataFromFile(fileName); 
 
+
+        
     // Set the ID to "unknown"
-    clearDriverSettings();
-             
+    clearBoardSettings(kparts);
+
+    
      if(srcDataBuffer != NULL){
 
-     getSettings(srcDataBuffer, KEY_ARRAY_MOTOR, kparts.dc_motor);
-     getSettings(srcDataBuffer, KEY_ARRAY_STEPPER, kparts.stepper_motors);
-     getSettings(srcDataBuffer, KEY_ARRAY_DOUT, kparts.dout);
-     getSettings(srcDataBuffer, KEY_ARRAY_DIN, kparts.din);
-     getSettings(srcDataBuffer, KEY_ARRAY_AIN, kparts.ain);
-     getSettings(srcDataBuffer, KEY_ARRAY_CNT, kparts.counter);
-     getSettings(srcDataBuffer, KEY_ARRAY_RGB, kparts.rgbSensor);
-     getSettings(srcDataBuffer, KEY_ARRAY_DISTANCE, kparts.distanceSensor);
-     
+        getSettings(srcDataBuffer, KEY_ARRAY_MOTOR, kparts->dc_motor);
+        getSettings(srcDataBuffer, KEY_ARRAY_STEPPER, kparts->stepper_motors);
+        getSettings(srcDataBuffer, KEY_ARRAY_DOUT, kparts->dout);
+        getSettings(srcDataBuffer, KEY_ARRAY_DIN, kparts->din);
+        getSettings(srcDataBuffer, KEY_ARRAY_AIN, kparts->ain);
+        getSettings(srcDataBuffer, KEY_ARRAY_CNT, kparts->counter);
+        getSettings(srcDataBuffer, KEY_ARRAY_RGB, kparts->rgbSensor);
+        getSettings(srcDataBuffer, KEY_ARRAY_DISTANCE, kparts->distanceSensor);
      }
-        return -1;
+  
+    return -1;
 }
 
 
@@ -241,8 +286,9 @@ int getSettings(char * buffer, char * deviceType, struct device * mydevice){
     jRead((char *)buffer, deviceType, &deviceList );
     if(deviceList.dataType == JREAD_ARRAY ){
         deviceCount = deviceList.elements;       // Get the number of devices
-
+        
         for(i=0;i<deviceCount;i++){
+
             jReadParam((char *)deviceList.pValue, KEY_OBJ_X_DEVICE, &myDevice, &i );
 
         // GET THE DEVICE ID
@@ -268,13 +314,15 @@ int getSettings(char * buffer, char * deviceType, struct device * mydevice){
 
              }
          }
+        
      #ifdef PRINT_INFO            
          printf("\SETTIGS LIST FOR %s [%d found]\n", deviceType, deviceCount);                       
          for(i=0;i<MAX_DRIVERS_PER_TYPE;i++){
              if(mydevice[i].id > -1)
-                 printDriverData(i, &mydevice[i]);
+                 printBoardData(i, &mydevice[i]);
          }
      #endif
+         
     }    
 }
 
@@ -319,13 +367,11 @@ char strValue[25];
             // Get the ATTRIBUTES settings of driver
             jRead((char *)deviceDriver.pValue, KEY_DRIVER_OBJ_ATTRIBUTES, &driverAttributes);
             if(driverAttributes.dataType == JREAD_OBJECT){
-
-            // Get the channel attibute of the driver
-            data=jRead_int((char *)driverAttributes.pValue, KEY_DRIVER_STR_CHANNEL, NULL);
-            if(data>=0){
-                hwDevice->attributes.device_channel = data;
-            }
-
+                // Get the channel attibute of the driver
+                data=jRead_int((char *)driverAttributes.pValue, KEY_DRIVER_STR_CHANNEL, NULL);
+                if(data>=0){
+                    hwDevice->attributes.device_channel = data;
+                }
             }
             
          // Get the SUBDRIVERS settings of driver
@@ -447,7 +493,7 @@ char strValue[25];
  return 0;   
 }
 /**
- * \fn unsigned char printDriverData(int partsNb, struct device * device)
+ * \fn unsigned char printBoardData(int partsNb, struct device * device)
  * \brief Print a structured view of a device settings
  *
  * \param int partsNb, number of the field in the array driver
@@ -469,7 +515,7 @@ char strValue[25];
  * 
  */
 
-unsigned char printDriverData(int partsNb, struct device * device){
+unsigned char printBoardData(int partsNb, struct device * device){
     
     int devId = device->id;
     
@@ -519,7 +565,7 @@ unsigned char printDriverData(int partsNb, struct device * device){
 
 
 /**
- * \fn unsigned char printDriverData(int partsNb, struct device * device)
+ * \fn unsigned char printDeviceData(int partsNb, struct device * device)
  * \brief Print a structured view of a device settings
  *
  * \param int partsNb, number of the field in the array driver
@@ -542,8 +588,8 @@ unsigned char printDeviceData(int deviceNb, devices_list * device){
     
     int devId = device->device_id;
     
-    printf("\n#%d \n |__ ID: %d\n |__ Type: %s\n |__ Address: 0x%2x\n |__ Attributes:{Not implemented}\n",
-           deviceNb, devId, device->type, device->address);        
+    printf("\n#%d \n |__ ID: %d\n |__ Type: %s\n |__ Address: 0x%2x\n |__ Attributes:\n     |__deviceInit\n        |__RegAdr: %d    RegData: %d\n",
+           deviceNb, devId, device->type, device->address, device->attributes.deviceInit[0].regAddr, device->attributes.deviceInit[0].regData);        
 }
 
 
@@ -555,49 +601,49 @@ unsigned char printDeviceData(int deviceNb, devices_list * device){
  * \return -
  */
 
-void clearDriverSettings(void){
+void clearBoardSettings(kehopsParts * kparts){
     int i;
     // Init ID of device to "unknown"
     for(i=0;i<MAX_DRIVERS_PER_TYPE; i++){
-        kparts.dout[i].id = -1;
-        kparts.dout[i].hw_driver.attributes.device_channel = -1;
-        kparts.dout[i].hw_driver.sub_driver.device_id=-1;
-        kparts.dout[i].hw_driver.sub_driver.attributes.device_channel=-1;
+        kparts->dout[i].id=-1;
+        kparts->dout[i].hw_driver.attributes.device_channel = -1;
+        kparts->dout[i].hw_driver.sub_driver.device_id=-1;
+        kparts->dout[i].hw_driver.sub_driver.attributes.device_channel=-1;
         
-        kparts.din[i].id = -1;
-        kparts.din[i].hw_driver.attributes.device_channel = -1;
-        kparts.din[i].hw_driver.sub_driver.device_id=-1;
-        kparts.dout[i].hw_driver.sub_driver.attributes.device_channel=-1;
+        kparts->din[i].id = -1;
+        kparts->din[i].hw_driver.attributes.device_channel = -1;
+        kparts->din[i].hw_driver.sub_driver.device_id=-1;
+        kparts->din[i].hw_driver.sub_driver.attributes.device_channel=-1;
         
-        kparts.ain[i].id = -1;
-        kparts.ain[i].hw_driver.attributes.device_channel = -1;
-        kparts.ain[i].hw_driver.sub_driver.device_id=-1;
-        kparts.ain[i].hw_driver.sub_driver.attributes.device_channel=-1;
+        kparts->ain[i].id = -1;
+        kparts->ain[i].hw_driver.attributes.device_channel = -1;
+        kparts->ain[i].hw_driver.sub_driver.device_id=-1;
+        kparts->ain[i].hw_driver.sub_driver.attributes.device_channel=-1;
              
-        kparts.stepper_motors[i].id = -1;
-        kparts.stepper_motors[i].hw_driver.attributes.device_channel = -1;
-        kparts.stepper_motors[i].hw_driver.sub_driver.device_id=-1;
-        kparts.stepper_motors[i].hw_driver.sub_driver.attributes.device_channel=-1;
+        kparts->stepper_motors[i].id = -1;
+        kparts->stepper_motors[i].hw_driver.attributes.device_channel = -1;
+        kparts->stepper_motors[i].hw_driver.sub_driver.device_id=-1;
+        kparts->stepper_motors[i].hw_driver.sub_driver.attributes.device_channel=-1;
         
-        kparts.dc_motor[i].id = -1;
-        kparts.dc_motor[i].hw_driver.attributes.device_channel = -1;
-        kparts.dc_motor[i].hw_driver.sub_driver.device_id=-1;
-        kparts.dc_motor[i].hw_driver.sub_driver.attributes.device_channel=-1;
+        kparts->dc_motor[i].id = -1;
+        kparts->dc_motor[i].hw_driver.attributes.device_channel = -1;
+        kparts->dc_motor[i].hw_driver.sub_driver.device_id=-1;
+        kparts->dc_motor[i].hw_driver.sub_driver.attributes.device_channel=-1;
         
-        kparts.distanceSensor[i].id = -1;
-        kparts.distanceSensor[i].hw_driver.attributes.device_channel = -1;
-        kparts.distanceSensor[i].hw_driver.sub_driver.device_id=-1;
-        kparts.distanceSensor[i].hw_driver.sub_driver.attributes.device_channel=-1;
+        kparts->distanceSensor[i].id = -1;
+        kparts->distanceSensor[i].hw_driver.attributes.device_channel = -1;
+        kparts->distanceSensor[i].hw_driver.sub_driver.device_id=-1;
+        kparts->distanceSensor[i].hw_driver.sub_driver.attributes.device_channel=-1;
         
-        kparts.rgbSensor[i].id = -1;
-        kparts.rgbSensor[i].hw_driver.attributes.device_channel = -1;
-        kparts.rgbSensor[i].hw_driver.sub_driver.device_id=-1;
-        kparts.rgbSensor[i].hw_driver.sub_driver.attributes.device_channel=-1;
+        kparts->rgbSensor[i].id = -1;
+        kparts->rgbSensor[i].hw_driver.attributes.device_channel = -1;
+        kparts->rgbSensor[i].hw_driver.sub_driver.device_id=-1;
+        kparts->rgbSensor[i].hw_driver.sub_driver.attributes.device_channel=-1;
         
-        kparts.counter[i].id = -1;
-        kparts.counter[i].hw_driver.attributes.device_channel = -1;
-        kparts.counter[i].hw_driver.sub_driver.device_id=-1;
-        kparts.counter[i].hw_driver.sub_driver.attributes.device_channel=-1;
+        kparts->counter[i].id = -1;
+        kparts->counter[i].hw_driver.attributes.device_channel = -1;
+        kparts->counter[i].hw_driver.sub_driver.device_id=-1;
+        kparts->counter[i].hw_driver.sub_driver.attributes.device_channel=-1;
     }
 }
 
@@ -607,10 +653,26 @@ void clearDriverSettings(void){
  * \param -
  * \return -
  */
-void clearDeviceSettings(void){
+void clearDeviceSettings(devices_list * boardDevice){
     int i;
     // Init ID of device to "unknown"
     for(i=0;i<MAX_BOARD_DEVICE; i++){
         boardDevice[i].device_id = -1;
     }
+}
+
+
+/**
+ * \fn char LoadKehopsHardwareMap(kehopsParts * parts)
+ * \brief Clear all the devices structures with setting setting the ID to -1
+ * \param kehopsParts * parts, pointer to the hardwareMap structure use for the drivers
+ * \return error
+ */
+char LoadKehopsHardwareMap(kehopsParts * parts){
+    // Create structure for devices on the board
+    devices_list boardDevice[MAX_BOARD_DEVICE];
+    
+    //LoadDevicesDescriptor("devices.cfg", boardDevice);  
+              printf("\nsdknhfksjhdfkjhsadkfjhsadf\n");
+    LoadBoardDescriptor("deviceMap.cfg", parts);
 }

@@ -20,10 +20,6 @@
  * \def JSON keys for electronic device definition
 */
 #define FILE_KEY_DEVICES "{'devices'"
-#define FILE_KEY_DEVICES_ID "{'devices'[*{'id'"
-#define FILE_KEY_DEVICES_TYPE "{'devices'[*{'type'"
-#define FILE_KEY_DEVICES_ADDRESS "{'devices'[*{'address'"
-
 
 /**
  * \def JSON keys for driver definition
@@ -51,7 +47,11 @@
 #define KEY_DEVICE_STR_ID "{'id'"
 #define KEY_DEVICE_STR_INTERFACE "{'interface'"
 #define KEY_DEVICE_OBJ_DRIVER "{'driver'"
-#define KEY_DEVICE_OBJ_ATTRIBUTES "{'attributes'"
+#define KEY_DRIVER_STR_ADDRESS "{'address'"
+#define KEY_DEVICE_OBJ_ATTRIBUTES_DEVINIT "{'attributes'{'deviceInit'"
+#define KEY_DEVICE_ARRAY_ATT_INIT_REGADDR "[*'regAddr'"
+#define KEY_DEVICE_ARRAY_ATT_INIT_REGDATA "[*'regData'"
+
 
 // DRIVERS OBJECT KEY SETTINGS
 #define KEY_DRIVER_STR_ID "{'device_id'"

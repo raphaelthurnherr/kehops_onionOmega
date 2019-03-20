@@ -1,0 +1,62 @@
+char LoadDevicesDescriptor(char * fileName, devices_list * boardDevice){
+    struct jReadElement devList, deviceData;
+    int devicesCount, deviceId;
+    int i, j;
+    char * srcDataBuffer;
+    char strValue[25];
+
+    // Read file and store the result in buffer
+    srcDataBuffer = OpenDataFromFile(fileName); 
+
+    clearDeviceSettings(boardDevice);
+
+    // Check that the file is not empty
+    if(srcDataBuffer != NULL){
+
+        // Get the device list 
+        jRead((char *)srcDataBuffer, FILE_KEY_DEVICES, &devList );
+        
+        if(devList.dataType == JREAD_ARRAY ){
+            devicesCount = devList.elements;       // Get the number of devices
+            
+            if(devicesCount > MAX_BOARD_DEVICE)
+                printf("[driversDescriptor.c] !!! LoadDriversDescriptor() WARNING, MAX DEVICES LIMIT, ONLY THE %d FIRST ID WILL BE USED\n ", MAX_BOARD_DEVICE);
+            
+            for(i=0; i < devicesCount; i++){ 
+                deviceId=-1;
+                deviceId=jRead_int((char *)srcDataBuffer, FILE_KEY_DEVICES_ID, &i); 
+                        
+                // Get the device setting if ID specified
+                if(deviceId >= 0 && deviceId < MAX_BOARD_DEVICE){
+                    
+                    boardDevice[deviceId].device_id=deviceId;
+                                    
+                    // Get the type (name) of the device
+                    if(jRead_string((char *)srcDataBuffer, FILE_KEY_DEVICES_TYPE, strValue, 25, &i )>0)
+                        strcpy(boardDevice[deviceId].type, strValue);
+                    else strcpy(boardDevice[deviceId].type, "error");
+
+                    // Get the bus address of the device, detect if address is a 
+                    // string or a number, if string, convert to number
+                    jRead((char *)srcDataBuffer, FILE_KEY_DEVICES_ADDRESS, &deviceData);
+                    if(deviceData.dataType == JREAD_STRING){
+                        // Convert string to int
+                        if(jRead_string((char *)srcDataBuffer, FILE_KEY_DEVICES_ADDRESS, strValue, 25, &i )>0)
+                            boardDevice[deviceId].address = strtol(strValue, NULL, 0);
+                        else boardDevice[deviceId].address= NULL;
+                    }
+                    else{
+                            if(deviceData.dataType == JREAD_NUMBER){
+                                boardDevice[deviceId].address = jRead_double((char *)srcDataBuffer, FILE_KEY_DEVICES_ADDRESS, &i); 
+                            }
+                    }
+                #ifdef PRINT_INFO                     
+                    printDeviceData(i, &boardDevice[deviceId]);
+                #endif    
+                }
+            }
+        }
+    }
+
+    return -1;
+}
