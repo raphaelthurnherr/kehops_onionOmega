@@ -28,9 +28,7 @@
 #include "jWrite.h"
 #include "deviceMapping_jsonKeys.h"
 #include "deviceMapping.h"
-
-char * OpenDataFromFile(char *filename);
-
+#include "fileIO.h"
   
 int getSettings(char * buffer, char * deviceType, struct device * mydevice);
 int getDriverSettings(struct jReadElement  * myDevice, hwDeviceDriver * hwDevice);
@@ -48,55 +46,6 @@ char LoadBoardDescriptor(char * fileName, kehopsParts * kparts);
 
 
 /**
- * \fn char * OpenConfigFromFile(char *filename)
- * \brief Open the config file get the content for futur use.
- * \param filename to open
- * \return pointer to the buffer with file content
- */
-
-char * OpenDataFromFile(char *filename){
-       
-    FILE *myFile = fopen(filename, "rw+");
-   static char *srcDataContent = NULL;
-   
-   int string_size, read_size;
-
-
-   if (myFile)
-   {
-       // Seek the last byte of the file
-       fseek(myFile, 0, SEEK_END);
-       // Offset from the first to the last byte, or in other words, filesize
-       string_size = ftell(myFile);
-       // go back to the start of the file
-       rewind(myFile);
-
-       // Allocate a string that can hold it all
-       srcDataContent = (char*) malloc(sizeof(char) * (string_size + 1) );
-
-       // Read it all in one operation
-       read_size = fread(srcDataContent, sizeof(char), string_size, myFile);
-
-       // fread doesn't set it so put a \0 in the last position
-       // and buffer is now officially a string
-       srcDataContent[string_size] = '\0';
-
-       if (string_size != read_size)
-       {
-           // Something went wrong, throw away the memory and set
-           // the buffer to NULL
-           free(srcDataContent);
-           srcDataContent = NULL;
-       }
-
-       // Always remember to close the file.
-       fclose(myFile);
-    }
-
-   return(srcDataContent);
-}
-
-/**
  * \fn char LoadDriversDescriptor(char * fileName)
  * \brief Extract the file config content of IC devices and store the JSON result convertion
  *  to the structure.
@@ -109,14 +58,14 @@ char * OpenDataFromFile(char *filename){
  */
 
 char LoadDevicesDescriptor(char * fileName, devices_list * boardDevice){
-    struct jReadElement devList, deviceData, deviceSetting, data;
+    struct jReadElement devList, deviceData, deviceSetting;
     int devicesCount, deviceId, settingCount;
     int i, j;
     char * srcDataBuffer;
     char strValue[25];
 
     // Read file and store the result in buffer
-    srcDataBuffer = OpenDataFromFile(fileName); 
+    OpenConfigFromFile(fileName, srcDataBuffer); 
 
     clearDeviceSettings(boardDevice);
 
@@ -228,7 +177,7 @@ char LoadBoardDescriptor(char * fileName, kehopsParts * kparts){
     
     //printf("MY FILE NAME: %s", &fileName);
        
-    srcDataBuffer = OpenDataFromFile(fileName); 
+    OpenConfigFromFile("deviceMap.cfg", srcDataBuffer);
 
 
         
@@ -673,6 +622,7 @@ char LoadKehopsHardwareMap(kehopsParts * parts){
     devices_list boardDevice[MAX_BOARD_DEVICE];
     
     //LoadDevicesDescriptor("devices.cfg", boardDevice);  
-              printf("\nsdknhfksjhdfkjhsadkfjhsadf\n");
+    printf("\nsdknhfksjhdfkjhsadkfjhsadf\n");
+   
     LoadBoardDescriptor("deviceMap.cfg", parts);
 }

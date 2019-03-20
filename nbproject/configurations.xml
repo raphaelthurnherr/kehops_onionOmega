@@ -131,6 +131,8 @@
       <itemPath>configManager.c</itemPath>
       <itemPath>configManager.h</itemPath>
       <itemPath>deviceMapping.c</itemPath>
+      <itemPath>fileIO.c</itemPath>
+      <itemPath>fileIO.h</itemPath>
       <itemPath>kehops_main.c</itemPath>
       <itemPath>hwControl/networkManager.c</itemPath>
       <itemPath>hwControl/networkManager.h</itemPath>
@@ -154,9 +156,9 @@
     <itemPath>dist/Debug/GNU_Omega-Linux/wifi</itemPath>
   </logicalFolder>
   <sourceRootList>
+    <Elem>actuators</Elem>
     <Elem>hwControl</Elem>
     <Elem>kehopsCom</Elem>
-    <Elem>actuators</Elem>
   </sourceRootList>
   <projectmakefile>Makefile</projectmakefile>
   <confs>
@@ -180,6 +182,7 @@
           </incDir>
           <incFile>
             <pElem>buildNumber.h</pElem>
+            <pElem>fileIO.h</pElem>
           </incFile>
           <commandLine>-pthread -lm</commandLine>
         </cTool>
@@ -235,6 +238,10 @@
       <item path="deviceMapping_jsonKeys.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="dist/Debug/GNU_Omega-Linux/wifi" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="fileIO.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="fileIO.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="hwControl/boardHWctrl.c" ex="false" tool="0" flavor2="0">
       </item>
@@ -574,6 +581,10 @@
       </item>
       <item path="dist/Debug/GNU_Omega-Linux/wifi" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="fileIO.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="fileIO.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="hwControl/boardHWctrl.c" ex="false" tool="0" flavor2="0">
       </item>
       <item path="hwControl/boardHWctrl.h" ex="false" tool="3" flavor2="0">
@@ -904,6 +915,10 @@
       <item path="deviceMapping_jsonKeys.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="dist/Debug/GNU_Omega-Linux/wifi" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="fileIO.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="fileIO.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="hwControl/boardHWctrl.c" ex="false" tool="0" flavor2="0">
       </item>
@@ -1236,6 +1251,10 @@
       <item path="deviceMapping_jsonKeys.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="dist/Debug/GNU_Omega-Linux/wifi" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="fileIO.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="fileIO.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="hwControl/boardHWctrl.c" ex="false" tool="0" flavor2="9">
       </item>

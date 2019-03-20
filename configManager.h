@@ -14,10 +14,6 @@
 #ifndef FILEIO_H
 #define FILEIO_H
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #define ERR_OPENFILE 0
 #define NOERR 1
 #define ERR_EXTRACT 2
@@ -25,10 +21,6 @@ extern "C" {
 
 extern char LoadConfig(char * fileName);
 extern char SaveConfig(char * fileName);
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif /* FILEIO_H */
 

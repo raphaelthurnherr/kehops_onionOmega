@@ -43,6 +43,7 @@ OBJECTFILES= \
 	${OBJECTDIR}/actuators/asyncTools.o \
 	${OBJECTDIR}/configManager.o \
 	${OBJECTDIR}/deviceMapping.o \
+	${OBJECTDIR}/fileIO.o \
 	${OBJECTDIR}/hwControl/boardHWctrl.o \
 	${OBJECTDIR}/hwControl/boardHWsimu.o \
 	${OBJECTDIR}/hwControl/device_drivers/bh1745.o \
@@ -148,6 +149,11 @@ ${OBJECTDIR}/deviceMapping.o: deviceMapping.c
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
 	$(COMPILE.c) -g -DI2CSIMU -IhwControl/libs/i2c -IhwControl/libs/onion-debug -IhwControl -IkehopsCom/libs/lib_json -IkehopsCom/libs/lib_mqtt -IkehopsCom -Iactuators -IhwControl/device_drivers -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/deviceMapping.o deviceMapping.c
+
+${OBJECTDIR}/fileIO.o: fileIO.c
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} "$@.d"
+	$(COMPILE.c) -g -DI2CSIMU -IhwControl/libs/i2c -IhwControl/libs/onion-debug -IhwControl -IkehopsCom/libs/lib_json -IkehopsCom/libs/lib_mqtt -IkehopsCom -Iactuators -IhwControl/device_drivers -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/fileIO.o fileIO.c
 
 ${OBJECTDIR}/hwControl/boardHWctrl.o: hwControl/boardHWctrl.c
 	${MKDIR} -p ${OBJECTDIR}/hwControl

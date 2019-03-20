@@ -10,9 +10,9 @@
             <sourceEncoding>UTF-8</sourceEncoding>
             <make-dep-projects/>
             <sourceRootList>
+                <sourceRootElem>actuators</sourceRootElem>
                 <sourceRootElem>hwControl</sourceRootElem>
                 <sourceRootElem>kehopsCom</sourceRootElem>
-                <sourceRootElem>actuators</sourceRootElem>
             </sourceRootList>
             <confList>
                 <confElem>

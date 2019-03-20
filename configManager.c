@@ -82,61 +82,11 @@
 #include "kehops_main.h"
 #include "hwControl/hwManager.h"
 #include "configManager.h"
+#include "fileIO.h"
 
-char * OpenConfigFromFile(char *filename);
+//char * OpenConfigFromFile(char *filename);
 char LoadConfig(char * fileName);
 char SaveConfig(char * fileName);
-
-unsigned char mode=0;
-unsigned char dataCommandReady=0;
-
-/**
- * \fn char * OpenConfigFromFile(char *filename)
- * \brief Open the config file get the content for futur use.
- *
- * \param filename to open
- * \return 0 is returned if no errors, otherwise, return -1;
- */
-
-char * OpenConfigFromFile(char *filename){   
-    FILE *myFile = fopen(filename, "rw+");
-   static char *srcDataContent = NULL;
-   
-   int string_size, read_size;
-
-   if (myFile)
-   {
-       // Seek the last byte of the file
-       fseek(myFile, 0, SEEK_END);
-       // Offset from the first to the last byte, or in other words, filesize
-       string_size = ftell(myFile);
-       // go back to the start of the file
-       rewind(myFile);
-
-       // Allocate a string that can hold it all
-       srcDataContent = (char*) malloc(sizeof(char) * (string_size + 1) );
-
-       // Read it all in one operation
-       read_size = fread(srcDataContent, sizeof(char), string_size, myFile);
-
-       // fread doesn't set it so put a \0 in the last position
-       // and buffer is now officially a string
-       srcDataContent[string_size] = '\0';
-
-       if (string_size != read_size)
-       {
-           // Something went wrong, throw away the memory and set
-           // the buffer to NULL
-           free(srcDataContent);
-           srcDataContent = NULL;
-       }
-
-       // Always remember to close the file.
-       fclose(myFile);
-    }
-      
-   return(srcDataContent);
-}
 
 // -----------------------------------------------------------------------------
 // LoadConfig
@@ -159,11 +109,13 @@ char LoadConfig(char * fileName){
         char * srcDataBuffer;
         char dataValue[15];
         
-        srcDataBuffer = OpenConfigFromFile(fileName); 
+        OpenConfigFromFile(fileName, srcDataBuffer); 
         
+        //printf("--------------------------------------\n%s\n----------------------------", srcDataBuffer);
         
         if(srcDataBuffer != NULL){
-        // EXTRACT MQTT SETTINGS FROM CONFIG        
+            printf(" \n &&&&&&&&&&&&& FILE IS NOT NULL ******************************\n");
+                    // EXTRACT MQTT SETTINGS FROM CONFIG        
             jRead((char *)srcDataBuffer, FILE_KEY_CONFIG_MQTT, &cfg_mqtt_list );
             // RECHERCHE DATA DE TYPE OBJ
             if(cfg_mqtt_list.dataType == JREAD_OBJECT ){
@@ -479,6 +431,8 @@ char LoadConfig(char * fileName){
     //            jRead_string((char *)srcDataBuffer, KEY_MESSAGE_VALUE_CFG_APPRESET, AlgoidMessageRX.Config.config.reset, 15, &i );
             return 0;
         }
+        else
+            printf(" \n &&&&&&&&&&&&& FILE IS NULL ****************\n");
         
         return -1;
 }
