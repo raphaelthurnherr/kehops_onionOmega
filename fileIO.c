@@ -15,14 +15,10 @@ unsigned char dataCommandReady=0;
 // EXTRACTION DES DONNEES DU FICHIER
 //------------------------------------------------------------------
 
-char * OpenConfigFromFile(char *fileName, char * destBuffer){   
-    
-    destBuffer = NULL;
-    
-    printf("\n****** FILENAME:    %s\n", fileName);
-        
-    FILE *myFile = fopen("kehops.cfg", "rw+");
-        
+char * OpenConfigFromFile(char *fileName, char *destBuffer){   
+   FILE *myFile = fopen(fileName, "rw+");
+   static char *srcDataContent = NULL;
+   
    int string_size, read_size;
 
    if (myFile)
@@ -35,26 +31,26 @@ char * OpenConfigFromFile(char *fileName, char * destBuffer){
        rewind(myFile);
 
        // Allocate a string that can hold it all
-       destBuffer = (char*) malloc(sizeof(char) * (string_size + 1) );
+       srcDataContent = (char*) malloc(sizeof(char) * (string_size + 1) );
 
        // Read it all in one operation
-       read_size = fread(destBuffer, sizeof(char), string_size, myFile);
+       read_size = fread(srcDataContent, sizeof(char), string_size, myFile);
 
        // fread doesn't set it so put a \0 in the last position
        // and buffer is now officially a string
-       destBuffer[string_size] = '\0';
+       srcDataContent[string_size] = '\0';
 
        if (string_size != read_size)
        {
            // Something went wrong, throw away the memory and set
            // the buffer to NULL
-           free(destBuffer);
-           destBuffer = NULL;
+           free(srcDataContent);
+           srcDataContent = NULL;
        }
 
        // Always remember to close the file.
        fclose(myFile);
     }
       
-   return 0;
+   return(srcDataContent);
 }

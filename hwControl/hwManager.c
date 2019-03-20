@@ -216,17 +216,17 @@ void *hwTask (void * arg){
         // Create the structure for hardware description
         //and get the setting from configs file
         kehopsParts kehopsParts;
-        //LoadKehopsHardwareMap(&kehopsParts);
+        LoadKehopsHardwareMap(&kehopsParts);
         
         int i;
-        /*
+        
         for(i=0;i<MAX_DRIVERS_PER_TYPE;i++){
             if(kehopsParts.dout[i].id >= 0){
                 printf("\n__________MAIN DOUT : PART ID: %d, DEVICE ID: %d, TYPE: %s  CHANNEL: %d\n", kehopsParts.dout[i].id, kehopsParts.dout[i].hw_driver.device_id, 
                 kehopsParts.dout[i].hw_driver.device_type, kehopsParts.dout[i].hw_driver.attributes.device_channel);
             }
         }
-         */
+         
         
 //  End of DEBUG for new  version
         

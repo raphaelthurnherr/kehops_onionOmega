@@ -152,7 +152,7 @@ char LoadDevicesDescriptor(char * fileName, devices_list * boardDevice){
            */
                         
                         #ifdef PRINT_INFO                     
-                           // printDeviceData(i, &boardDevice[deviceId]);
+                            printDeviceData(i, &boardDevice[deviceId]);
                         #endif    
                   }
                 }
@@ -173,11 +173,12 @@ char LoadDevicesDescriptor(char * fileName, devices_list * boardDevice){
  */
 
 char LoadBoardDescriptor(char * fileName, kehopsParts * kparts){
-    char *srcDataBuffer;
+    
+    char * srcDataBuffer;
     
     //printf("MY FILE NAME: %s", &fileName);
        
-    OpenConfigFromFile("deviceMap.cfg", srcDataBuffer);
+    srcDataBuffer = OpenConfigFromFile(fileName, NULL);
 
 
         
@@ -620,9 +621,7 @@ void clearDeviceSettings(devices_list * boardDevice){
 char LoadKehopsHardwareMap(kehopsParts * parts){
     // Create structure for devices on the board
     devices_list boardDevice[MAX_BOARD_DEVICE];
-    
-    //LoadDevicesDescriptor("devices.cfg", boardDevice);  
-    printf("\nsdknhfksjhdfkjhsadkfjhsadf\n");
-   
+    //usleep(1000000);
+    //LoadDevicesDescriptor("devices.cfg", boardDevice);    
     LoadBoardDescriptor("deviceMap.cfg", parts);
 }

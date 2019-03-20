@@ -106,15 +106,15 @@ char LoadConfig(char * fileName){
 	struct jReadElement cfg_devices_list, cfg_mqtt_list;
         int nbOfDeviceInConf, deviceId;
 	int i;
-        char * srcDataBuffer;
         char dataValue[15];
         
-        OpenConfigFromFile(fileName, srcDataBuffer); 
+        char * srcDataBuffer;
+        
+        srcDataBuffer = OpenConfigFromFile(fileName, srcDataBuffer); 
         
         //printf("--------------------------------------\n%s\n----------------------------", srcDataBuffer);
         
         if(srcDataBuffer != NULL){
-            printf(" \n &&&&&&&&&&&&& FILE IS NOT NULL ******************************\n");
                     // EXTRACT MQTT SETTINGS FROM CONFIG        
             jRead((char *)srcDataBuffer, FILE_KEY_CONFIG_MQTT, &cfg_mqtt_list );
             // RECHERCHE DATA DE TYPE OBJ
@@ -431,8 +431,6 @@ char LoadConfig(char * fileName){
     //            jRead_string((char *)srcDataBuffer, KEY_MESSAGE_VALUE_CFG_APPRESET, AlgoidMessageRX.Config.config.reset, 15, &i );
             return 0;
         }
-        else
-            printf(" \n &&&&&&&&&&&&& FILE IS NULL ****************\n");
         
         return -1;
 }
