@@ -11,16 +11,11 @@
  * Created on 15. octobre 2018, 21:45
  */
 
-#ifndef FILEIO_H
-#define FILEIO_H
+#ifndef CONFIGMANAGER_H
+#define CONFIGMANAGER_H
 
-#define ERR_OPENFILE 0
-#define NOERR 1
-#define ERR_EXTRACT 2
-#define ERR_CREATE_TAB 3
-
-extern char LoadConfig(char * fileName);
+extern char LoadConfig(void);
 extern char SaveConfig(char * fileName);
 
-#endif /* FILEIO_H */
+#endif /* CONFIGMANAGER_H */
 

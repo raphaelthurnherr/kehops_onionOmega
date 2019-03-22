@@ -73,7 +73,7 @@ struct dc_wheel_data{
 };
 
 struct s_motor_config{
-    int motorID;
+    int dc_motor_id;
     char inverted;   
     int powerMin;   
 };
@@ -105,7 +105,7 @@ struct dc_wheel_config{
 };
 
 struct s_stepper_config{
-    int motorID;
+    int stepper_motor_id;
     char inverted;   
     int steps;   
     int ratio;
@@ -151,11 +151,11 @@ typedef struct robotStepperWheel{
 // AIN & BATTERY  
 
 struct s_son_config{
-    int  sonarID;
+    int  distanceSensor_id;
 };
 
 struct s_batt_config{
-    int  ainID;
+    int  ain_id;
 };
 
 struct s_battery_meas{
@@ -183,7 +183,7 @@ typedef struct robotSonar{
 // BUTTONS
 
 struct s_button_config{
-    int  dinID;
+    int  din_id;
 };
 
 struct s_button_meas{
@@ -216,7 +216,7 @@ struct s_prox_meas{
 };
 
 struct s_prox_config{
-    int  dinID;
+    int  din_id;
 };
 
 typedef struct robotButton{
@@ -275,7 +275,7 @@ struct s_pwm_action{
 };
 
 struct s_pwm_config{
-    int  doutID;
+    int  dout_id;
     int  mode;
     int  defaultPower;
     int  defaultState;

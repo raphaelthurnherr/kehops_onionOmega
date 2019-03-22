@@ -4,13 +4,16 @@
     <logicalFolder name="HeaderFiles"
                    displayName="Header Files"
                    projectFiles="true">
+      <itemPath>hwControl/actuatorsDrivers.h</itemPath>
       <itemPath>algobotManager.sh.h</itemPath>
       <itemPath>asyncTools/asyncLED.h</itemPath>
       <itemPath>asyncTools/asyncMOTOR.h</itemPath>
       <itemPath>asyncTools/asyncSTEPPER.h</itemPath>
       <itemPath>asyncTools/asyncTools.h</itemPath>
-      <itemPath>deviceMapping.h</itemPath>
-      <itemPath>deviceMapping_jsonKeys.h</itemPath>
+      <itemPath>config/deviceMapping.h</itemPath>
+      <itemPath>config/deviceMapping_jsonKeys.h</itemPath>
+      <itemPath>fileIO.h</itemPath>
+      <itemPath>config/kehopsConfig.h</itemPath>
       <itemPath>type.h</itemPath>
       <itemPath>AlgoidCom/typeNew.h</itemPath>
       <itemPath>hwControl/wifi_json.h</itemPath>
@@ -128,11 +131,12 @@
         <itemPath>kehopsCom/udpPublish.c</itemPath>
         <itemPath>kehopsCom/udpPublish.h</itemPath>
       </logicalFolder>
+      <itemPath>hwControl/actuatorsDrivers.c</itemPath>
       <itemPath>configManager.c</itemPath>
       <itemPath>configManager.h</itemPath>
-      <itemPath>deviceMapping.c</itemPath>
+      <itemPath>config/deviceMapping.c</itemPath>
       <itemPath>fileIO.c</itemPath>
-      <itemPath>fileIO.h</itemPath>
+      <itemPath>config/kehopsConfig.c</itemPath>
       <itemPath>kehops_main.c</itemPath>
       <itemPath>hwControl/networkManager.c</itemPath>
       <itemPath>hwControl/networkManager.h</itemPath>
@@ -182,7 +186,6 @@
           </incDir>
           <incFile>
             <pElem>buildNumber.h</pElem>
-            <pElem>fileIO.h</pElem>
           </incFile>
           <commandLine>-pthread -lm</commandLine>
         </cTool>
@@ -227,21 +230,29 @@
       </item>
       <item path="asyncTools/asyncTools.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="config/deviceMapping.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="config/deviceMapping.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="config/deviceMapping_jsonKeys.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="config/kehopsConfig.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="config/kehopsConfig.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="configManager.c" ex="false" tool="0" flavor2="0">
       </item>
       <item path="configManager.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="deviceMapping.c" ex="false" tool="0" flavor2="0">
-      </item>
-      <item path="deviceMapping.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="deviceMapping_jsonKeys.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="dist/Debug/GNU_Omega-Linux/wifi" ex="false" tool="3" flavor2="0">
       </item>
       <item path="fileIO.c" ex="false" tool="0" flavor2="0">
       </item>
       <item path="fileIO.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="hwControl/actuatorsDrivers.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="hwControl/actuatorsDrivers.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="hwControl/boardHWctrl.c" ex="false" tool="0" flavor2="0">
       </item>
@@ -569,21 +580,29 @@
       </item>
       <item path="asyncTools/asyncTools.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="config/deviceMapping.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="config/deviceMapping.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="config/deviceMapping_jsonKeys.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="config/kehopsConfig.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="config/kehopsConfig.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="configManager.c" ex="false" tool="0" flavor2="0">
       </item>
       <item path="configManager.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="deviceMapping.c" ex="false" tool="0" flavor2="0">
-      </item>
-      <item path="deviceMapping.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="deviceMapping_jsonKeys.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="dist/Debug/GNU_Omega-Linux/wifi" ex="false" tool="3" flavor2="0">
       </item>
       <item path="fileIO.c" ex="false" tool="0" flavor2="0">
       </item>
       <item path="fileIO.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="hwControl/actuatorsDrivers.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="hwControl/actuatorsDrivers.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="hwControl/boardHWctrl.c" ex="false" tool="0" flavor2="0">
       </item>
@@ -904,21 +923,29 @@
       </item>
       <item path="asyncTools/asyncTools.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="config/deviceMapping.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="config/deviceMapping.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="config/deviceMapping_jsonKeys.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="config/kehopsConfig.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="config/kehopsConfig.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="configManager.c" ex="false" tool="0" flavor2="0">
       </item>
       <item path="configManager.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="deviceMapping.c" ex="false" tool="0" flavor2="0">
-      </item>
-      <item path="deviceMapping.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="deviceMapping_jsonKeys.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="dist/Debug/GNU_Omega-Linux/wifi" ex="false" tool="3" flavor2="0">
       </item>
       <item path="fileIO.c" ex="false" tool="0" flavor2="0">
       </item>
       <item path="fileIO.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="hwControl/actuatorsDrivers.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="hwControl/actuatorsDrivers.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="hwControl/boardHWctrl.c" ex="false" tool="0" flavor2="0">
       </item>
@@ -1240,21 +1267,29 @@
       </item>
       <item path="asyncTools/asyncTools.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="config/deviceMapping.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="config/deviceMapping.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="config/deviceMapping_jsonKeys.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="config/kehopsConfig.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="config/kehopsConfig.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="configManager.c" ex="false" tool="0" flavor2="0">
       </item>
       <item path="configManager.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="deviceMapping.c" ex="false" tool="0" flavor2="0">
-      </item>
-      <item path="deviceMapping.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="deviceMapping_jsonKeys.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="dist/Debug/GNU_Omega-Linux/wifi" ex="false" tool="3" flavor2="0">
       </item>
       <item path="fileIO.c" ex="false" tool="0" flavor2="0">
       </item>
       <item path="fileIO.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="hwControl/actuatorsDrivers.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="hwControl/actuatorsDrivers.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="hwControl/boardHWctrl.c" ex="false" tool="0" flavor2="9">
       </item>

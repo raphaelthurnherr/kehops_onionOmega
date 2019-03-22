@@ -17,15 +17,32 @@
 #define DEVICEMAPPING_H
 
 #define MAX_DRIVERS_PER_TYPE 25
+#define MAX_BOARD_DEVICE 50
+
+
+
+
+struct driverAttribute{
+    int device_channel;
+};
+
+
+struct device_subdrivers{
+    int address;
+    char device_type[15];
+    struct driverAttribute attributes;
+};
+
 
 /**
  * \struct attributes [driversDescriptor.h]
  *  Sub structure for devices.
  * -> include deviceInit structure for set the device registers
  */
+
 struct addrReg {
-    unsigned char regAddr;
-    unsigned char regData;
+    int regAddr;
+    int regData;
 };
     
 struct deviceAttributes{
@@ -38,10 +55,10 @@ struct deviceAttributes{
  * -> include attributes structure of device
  */
 typedef struct devicesList{
-    int   device_id;
     char type[15];
-    unsigned char address;
+    int address;
     struct deviceAttributes attributes;
+    struct device_subdrivers sub_driver;    
 }devices_list;
 
 
@@ -64,20 +81,8 @@ typedef struct devicesList{
  * 
  */
 
-
-struct driverAttribute{
-    int device_channel;
-};
-
-
-struct device_subdrivers{
-    int device_id;
-    char device_type[15];
-    struct driverAttribute attributes;
-};
-
 typedef struct device_drivers{
-    int device_id;
+    int address;
     char device_type[15];
     struct driverAttribute attributes;
     struct device_subdrivers sub_driver;
@@ -139,21 +144,14 @@ typedef struct parts_list{
  * \brief Open and load drivers descriptor configuration
  * \return code error
  */  
-extern char LoadDevicesDescriptor(char * fileName, devices_list * boardDevice);
+extern char LoadDevicesDescriptor(char * srcDataBuffer, devices_list * boardDevice);
 
 
 /**
  * \brief Open and load electronic devices descriptor configuration
  * \return code error
  */  
-extern char LoadBoardDescriptor(char * fileName, kehopsParts * kparts);
-
-/**
- * \brief Load from config and get the hardware map of the board for hardware description
- * \return code error
- */  
-extern char LoadKehopsHardwareMap(kehopsParts * parts);
-
+extern char LoadBoardDescriptor(char * srcDataBuffer, kehopsParts * kparts);
 
 /**
  * \fn unsigned char printDeviceData(int partsNb, struct device * device)
@@ -201,6 +199,15 @@ extern unsigned char printDeviceData(int deviceNb, devices_list * device);
  * 
  */
 
-unsigned char printBoardData(int partsNb, struct device * device);
+extern unsigned char printBoardData(int partsNb, struct device * device);
+
+// Create the structure for hardware description
+//and get the setting from configs file
+
+devices_list boardDevice[MAX_BOARD_DEVICE];
+kehopsParts kehopsActuators;
+
+
+
 #endif /* DEVICEMAPPING_H */
 

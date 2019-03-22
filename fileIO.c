@@ -8,6 +8,7 @@
 #include <stdio.h>
 #include "fileIO.h"
 
+char * OpenConfigFromFile(char *filename);
 unsigned char mode=0;
 unsigned char dataCommandReady=0;
 
@@ -15,9 +16,9 @@ unsigned char dataCommandReady=0;
 // EXTRACTION DES DONNEES DU FICHIER
 //------------------------------------------------------------------
 
-char * OpenConfigFromFile(char *fileName, char *destBuffer){   
-   FILE *myFile = fopen(fileName, "rw+");
-   static char *srcDataContent = NULL;
+char * OpenConfigFromFile(char *filename){   
+    FILE *myFile = fopen(filename, "rw+");
+   static char *srcDataBuffer = NULL;
    
    int string_size, read_size;
 
@@ -31,26 +32,26 @@ char * OpenConfigFromFile(char *fileName, char *destBuffer){
        rewind(myFile);
 
        // Allocate a string that can hold it all
-       srcDataContent = (char*) malloc(sizeof(char) * (string_size + 1) );
+       srcDataBuffer = (char*) malloc(sizeof(char) * (string_size + 1) );
 
        // Read it all in one operation
-       read_size = fread(srcDataContent, sizeof(char), string_size, myFile);
+       read_size = fread(srcDataBuffer, sizeof(char), string_size, myFile);
 
        // fread doesn't set it so put a \0 in the last position
        // and buffer is now officially a string
-       srcDataContent[string_size] = '\0';
+       srcDataBuffer[string_size] = '\0';
 
        if (string_size != read_size)
        {
            // Something went wrong, throw away the memory and set
            // the buffer to NULL
-           free(srcDataContent);
-           srcDataContent = NULL;
+           free(srcDataBuffer);
+           srcDataBuffer = NULL;
        }
 
        // Always remember to close the file.
        fclose(myFile);
     }
       
-   return(srcDataContent);
+   return(srcDataBuffer);
 }

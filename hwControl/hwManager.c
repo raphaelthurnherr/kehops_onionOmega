@@ -21,11 +21,12 @@
 #define POOLTIME 20000
 #else
 #include "boardHWctrl.h"
+#include "actuatorsDrivers.h"
 #define POOLTIME 1000
 #endif
 
 #include "../buggy_descriptor.h"
-#include "../deviceMapping.h"
+#include "../config/deviceMapping.h"
 #include "../type.h"
 
 // Device drivers declaration
@@ -159,13 +160,6 @@ t_HWversion BoardInfo;
 int i2c_command_queuing[50][3];
 int timeCount_ms=0;
 
-/*DEBUG ******* HERE IS THE NEW DRIVER DECLARATION */
-
-device_pca9685 myPWMdriver[MAX_DRIVERS_PER_TYPE];
-device_pca9685 *myDevice = &myPWMdriver[0];
-
-/*DEBUG ******* END OF  NEW DRIVER DECLARATION */
-
 int getMotorFrequency(unsigned char motorNb);                   // Retourne la fr�quence actuelle mesuree sur l'encodeur
 int getMotorPulses(unsigned char motorName);                    // Retourne le nombre d'impulsion d'encodeur moteur depuis le d�marrage
 char getDigitalInput(unsigned char inputNumber);                // Retourne l'�tat de l'entr�e num�rique sp�cifi�e
@@ -205,33 +199,9 @@ int resetHardware(t_sysConf * Config);
 // Programme principale TIMER
 // ------------------------------------------
 void *hwTask (void * arg){
-        char dinState=0;
-
-// DEBUG
-        // Setting up the pca9685 device
-        myDevice->frequency=50;
-        myDevice->deviceAddress=0x40;
-        myDevice->totemPoleOutput=1; 
+        char dinState=0;       
         
-        // Create the structure for hardware description
-        //and get the setting from configs file
-        kehopsParts kehopsParts;
-        LoadKehopsHardwareMap(&kehopsParts);
-        
-        int i;
-        
-        for(i=0;i<MAX_DRIVERS_PER_TYPE;i++){
-            if(kehopsParts.dout[i].id >= 0){
-                printf("\n__________MAIN DOUT : PART ID: %d, DEVICE ID: %d, TYPE: %s  CHANNEL: %d\n", kehopsParts.dout[i].id, kehopsParts.dout[i].hw_driver.device_id, 
-                kehopsParts.dout[i].hw_driver.device_type, kehopsParts.dout[i].hw_driver.attributes.device_channel);
-            }
-        }
-         
-        
-//  End of DEBUG for new  version
-        
-        
-	if(buggyBoardInit() && pca9685_init(myDevice) == 0){       
+	if(buggyBoardInit() && boardHWinit() == 0){       
                 
 		printf("\n#[HW MANAGER] Initialisation carte HW: OK\n");
 		sendMqttReport(0,"#[HW MANAGER] Initialisation carte HW: OK\n");
@@ -557,22 +527,9 @@ int set_i2c_command_queue(int (*callback)(char, int),char adr, int cmd){
 }
 
 void setLedPower(unsigned char ledID, unsigned char power){
-	unsigned char ledAdress;
-	ledAdress=getOrganI2Cregister(LED, ledID);
-        
-	//set_i2c_command_queue(&PCA9685_setLedPower, ledAdress, power);        
-        // DEBUG !!! Use the new driver !!!!!!!!
-        
-        unsigned char channelNb;
-        
-        switch(ledID){
-            case 0 : channelNb = 9; break;
-            case 1:  channelNb = 12; break;
-            case 2 : channelNb = 14; break;
-            default: break;
-        }
-
-        pca9685_setPWMdutyCycle(myDevice, channelNb, power); // Set dutycycle for selected channel
+        // USING THE NEW DRIVER
+        //actuator_setLedPower(ledID, power);
+        set_i2c_command_queue(&actuator_setLedPower, ledID, power);        
 }
 
 void setPwmPower(unsigned char ID, unsigned char power){

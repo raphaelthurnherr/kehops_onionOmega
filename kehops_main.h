@@ -21,10 +21,6 @@
 #define ROTATION          4
 #define ANGLE             5
 
-/*
-extern t_robotMap robot;
-extern t_sysConfig sysConfig;
-*/
 extern t_system sysInfo;
 
 //extern t_device device;            // Device structure with actuator & sensor     

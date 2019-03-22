@@ -49,12 +49,11 @@
 #define KEY_DEVICE_OBJ_DRIVER "{'driver'"
 #define KEY_DRIVER_STR_ADDRESS "{'address'"
 #define KEY_DEVICE_OBJ_ATTRIBUTES_DEVINIT "{'attributes'{'deviceInit'"
-#define KEY_DEVICE_ARRAY_ATT_INIT_REGADDR "[*'regAddr'"
-#define KEY_DEVICE_ARRAY_ATT_INIT_REGDATA "[*'regData'"
+#define KEY_DEVICE_ARRAY_ATT_INIT_REGADDR "[*{'regAddr'"
+#define KEY_DEVICE_ARRAY_ATT_INIT_REGDATA "[*{'regData'"
 
 
 // DRIVERS OBJECT KEY SETTINGS
-#define KEY_DRIVER_STR_ID "{'device_id'"
 #define KEY_DRIVER_STR_TYPE "{'type'"
 #define KEY_DRIVER_OBJ_ATTRIBUTES "{'attributes'"
 #define KEY_DRIVER_OBJ_SUBDRIVER "{'sub-driver'"

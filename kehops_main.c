@@ -2507,7 +2507,7 @@ void resetConfig(void){
         
         // Load config data
         int configStatus = -1;
-        configStatus = LoadConfig("kehops.cfg");
+        configStatus = LoadConfig();
         if(configStatus<0){
             printf("#[CORE] Load configuration file from \"kehops.cfg\": ERROR\n");
         }else

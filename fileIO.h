@@ -14,14 +14,20 @@
 #ifndef FILEIO_H
 #define FILEIO_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 #define ERR_OPENFILE 0
 #define NOERR 1
 #define ERR_EXTRACT 2
 #define ERR_CREATE_TAB 3
 
-extern char * OpenConfigFromFile(char *fileName, char * destBuffer);
+extern char * OpenConfigFromFile(char *filename);
 
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* FILEIO_H */
-

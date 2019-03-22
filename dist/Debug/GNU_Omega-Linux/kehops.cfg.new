@@ -15,7 +15,7 @@
   },
   "motor": [
     {
-      "name": 0,
+      "motor": 0,
       "dc_motor_id": 0,
       "inverted": "on",
       "pwmMin": 25,
@@ -23,7 +23,7 @@
       "rpmMax": 180
     },
     {
-      "name": 1,
+      "motor": 1,
       "dc_motor_id": 1,
       "inverted": "on",
       "pwmMin": 20,
@@ -33,31 +33,31 @@
   ],
   "wheel": [
     {
-      "name": 0,
+      "wheel": 0,
       "diameter": 45,
       "pulses": 45,
       "rpmRegulator": {
         "state": "off",
-        "Pname_Kp": 0.5,
-        "Pname_Ki": 0.02,
-        "Pname_Kd": 0.008
+        "PID_Kp": 0.5,
+        "PID_Ki": 0.02,
+        "PID_Kd": 0.008
       }
     },
     {
-      "name": 1,
+      "wheel": 1,
       "diameter": 45,
       "pulses": 45,
       "rpmRegulator": {
         "state": "off",
-        "Pname_Kp": 0.5,
-        "Pname_Ki": 0.02,
-        "Pname_Kd": 0.008
+        "PID_Kp": 0.5,
+        "PID_Ki": 0.02,
+        "PID_Kd": 0.008
       }
     }
   ],
   "stepper": [
     {
-      "name": 0,
+      "motor": 0,
       "stepper_motor_id": 0,
       "inverted": "off",
       "ratio": 64,
@@ -66,81 +66,81 @@
   ],
   "led": [
     {
-      "name": 0,
-      "dout_id": 0,
+      "led": 0,
+      "dout_id": 10,
       "state": "off",
       "power": 30
     },
     {
-      "name": 1,
-      "dout_id": 1,
+      "led": 1,
+      "dout_id": 11,
       "state": "on",
       "power": 100
     },
     {
-      "name": 2,
-      "dout_id": 2,
+      "led": 2,
+      "dout_id": 12,
       "state": "on",
       "power": 10
     }
   ],
-  "pwm": [{"/* CHANGE TO GENERIC NAME DOUT */"},
+  "pwm": [{"/* CHANGE TO GENERIC NAME DOUT */", ""},
     {
-      "name": 0,
+      "pwm": 0,
       "dout_id": 3,
       "state": "off",
       "power": 0
     },
     {
-      "name": 1,
+      "pwm": 1,
       "dout_id": 4,
       "state": "on",
       "power": 100
     },
     {
-      "name": 2,
+      "pwm": 2,
       "dout_id": 5,
       "state": "on",
       "power": 100
     },
     {
-      "name": 3,
+      "pwm": 3,
       "dout_id": 6,
       "state": "off",
       "power": 0
     },
     {
-      "name": 4,
+      "pwm": 4,
       "dout_id": 7,
       "state": "off",
       "power": 0
     },
     {
-      "name": 5,
+      "pwm": 5,
       "dout_id": 8,
       "state": "off",
       "power": 100
     },
     {
-      "name": 6,
+      "pwm": 6,
       "dout_id": 9,
       "state": "off",
       "power": 0
     },
     {
-      "name": 7,
+      "pwm": 7,
       "dout_id": 10,
       "state": "off",
       "power": 0
     },
     {
-      "name": 8,
+      "pwm": 8,
       "dout_id": 11,
       "state": "off",
       "power": 0
     },
     {
-      "name": 9,
+      "pwm": 9,
       "dout_id": 12,
       "state": "off",
       "power": 0
@@ -148,44 +148,44 @@
   ],
   "din": [
     {
-      "name": 0,
+      "din": 0,
       "din_id": 0,
       "event": "on"
     },
     {
-      "name": 1,
+      "din": 1,
       "din_id": 1,
       "event": "on"
     },
     {
-      "name": 2,
+      "din": 2,
       "din_id": 2,
       "event": "on"
     },
     {
-      "name": 3,
+      "din": 3,
       "din_id": 3,
       "event": "on"
     },
     {
-      "name": 4,
+      "din": 4,
       "din_id": 4,
       "event": "on"
     },
     {
-      "name": 5,
+      "din": 5,
       "din_id": 5,
       "event": "on"
     }
   ],
   "button": [
     {
-      "name": 0,
+      "din": 0,
       "din_id": 0,
       "event": "on"
     },
     {
-      "name": 1,
+      "din": 1,
 	  "din_id": 1,
       "event": "off"
     }
