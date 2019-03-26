@@ -44,7 +44,7 @@ int boardHWinit(void){
 
     // DEVICES TYPE PCA9585 CONFIGURATION
     for(i=0; boardDevice[i].address >= 0 && i<MAX_BOARD_DEVICE; i++){
-            if(!strcmp(boardDevice[i].type, "_pca9685")){
+            if(!strcmp(boardDevice[i].type, "pca9685")){
                 // Setting up the pca9685 device
                 dev_pca9685.frequency=50;
                 dev_pca9685.totemPoleOutput=1;                 
@@ -72,9 +72,9 @@ int boardHWinit(void){
 
 /**
  * \fn char actuator_setLedPower()
- * \brief Apply on the DOUT the requiere PWM
+ * \brief Get the DOUT hardware id of the LED from config and apply the PWM settings
  *
- * \param ledID, powerr
+ * \param ledID, power
  * \return -
  */
 
@@ -90,3 +90,51 @@ char actuator_setLedPower(int ledID, int power){
 }
 
 
+/**
+ * \fn char actuator_setPwmPower()
+ * \brief Get the DOUT hardware id of the LED from config and apply the PWM settings
+ *
+ * \param pwmID, power
+ * \return -
+ */
+
+char actuator_setPwmPower(int pwmID, int power){
+    
+    int dout_id = kehops.pwm[pwmID].config.dout_id;  
+    int channel = kehopsActuators.dout[dout_id].hw_driver.attributes.device_channel;
+    
+    printf("SET PWM POWER FROM NEW DRIVERS:    dout_id: %d     channel: %d     power: %d\n", dout_id, channel, power);
+    
+    dev_pca9685.deviceAddress = kehopsActuators.dout[dout_id].hw_driver.address;
+    pca9685_setPWMdutyCycle(&dev_pca9685, channel, power);
+}
+
+/**
+ * \fn char actuator_setsetServoPosition()
+ * \brief Get the DOUT hardware id of the SERVO from config and apply the PWM settings
+ *
+ * \param pwmID, position
+ * \return -
+ */
+
+char actuator_setServoPosition(int pwmID, int position){
+    float time_ms;
+
+    int dout_id = kehops.pwm[pwmID].config.dout_id;  
+    int channel = kehopsActuators.dout[dout_id].hw_driver.attributes.device_channel;
+    
+    // Calculation of OFF Value for PCA
+    if(position>100)
+        position=100;
+
+    if(position >= 0)
+        time_ms = 0.8 + ((2.2-0.8)/100)*position;
+    else
+        time_ms = 0.0;                    // Turn off the servomotor (no refresh)   
+
+        
+    printf("SET SERVO POSITION FROM NEW DRIVERS:    dout_id: %d     channel: %d     power: %d     time: %.2f\n", dout_id, channel, position, time_ms);
+    
+    dev_pca9685.deviceAddress = kehopsActuators.dout[dout_id].hw_driver.address;
+    pca9685_setPulseWidthTime(&dev_pca9685, channel, time_ms);
+}

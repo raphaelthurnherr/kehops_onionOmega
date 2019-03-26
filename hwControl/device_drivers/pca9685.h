@@ -18,7 +18,7 @@
 
 typedef struct pca9685{
     unsigned char deviceAddress;                // Bus device address
-    unsigned char frequency;                    // Output frequency required
+    int frequency;                              // Output frequency required
     unsigned char invertedOutput;               // >0, invert the output logic level
     unsigned char totemPoleOutput;              // >0, use the totem pole type (push-pull), otherwise open-drain type is used
     long externalClock;                         // 0, driver internal clock 25MHz, otherwise set the external frequency in [Hz]
@@ -34,10 +34,10 @@ extern char pca9685_init(device_pca9685 *pca9685config);        // PCA9685 drive
 
 
 /**
- * \brief Set OFF value for selected channel
+ * \brief Set the pulse width time in mS for channel
  * \return code error
  */
-extern char pca9685_setPWMoffValue(device_pca9685 *pca9685config, unsigned char channel, int value);  // Set OFF value for selected channel
+extern char pca9685_setPulseWidthTime(device_pca9685 *pca9685config, unsigned char channel, float timeMs);  // Set OFF value for selected channel
 
 
 /**

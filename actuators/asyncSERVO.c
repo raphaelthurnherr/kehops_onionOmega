@@ -40,9 +40,9 @@ int setAsyncServoAction(int actionNumber, int pwmName, int mode, int time){
             setServoPosition(pwmName, kehops.pwm[pwmName].power); 
         }
         else
-            if(mode==OFF)
-            setServoPosition(pwmName, -1);
-        
+            if(mode==OFF){
+                setServoPosition(pwmName, -1);
+            }
         // Utilise un delais de 5ms sinon message "Begin" arrive apres
         setTimerResult=setTimer(5, &checkBlinkServoCount, actionNumber, pwmName, PWM);     // Consid�re un blink infini  
         

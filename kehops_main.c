@@ -1278,13 +1278,11 @@ int runPwmAction(void){
                 if(!kehops.pwm[i].config.mode){
                     if(!strcmp(message.PWMarray[ptrData].state,"blink"))
                         kehops.pwm[i].state = BLINK;
-                if(message.PWMarray[ptrData].time > 0)
-                    kehops.pwm[i].action.blinkTime = message.PWMarray[ptrData].time;
-                if(message.PWMarray[ptrData].blinkCount > 0)
-                    kehops.pwm[i].action.blinkCount = message.PWMarray[ptrData].blinkCount;
+                    if(message.PWMarray[ptrData].time > 0)
+                        kehops.pwm[i].action.blinkTime = message.PWMarray[ptrData].time;
+                    if(message.PWMarray[ptrData].blinkCount > 0)
+                        kehops.pwm[i].action.blinkCount = message.PWMarray[ptrData].blinkCount;
                 }
-                
-                
                 
                 // Recuperation des consignes dans le message (si disponible)
                 if(message.PWMarray[ptrData].powerPercent >= 0)

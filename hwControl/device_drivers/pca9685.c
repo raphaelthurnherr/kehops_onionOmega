@@ -38,7 +38,7 @@
 #include <onion-i2c.h>
 
 char pca9685_init(device_pca9685 *pca9685_handler);                                            // PCA9685 driver initialization
-char pca9685_setPWMoffValue(device_pca9685 *pca9685config, unsigned char channel, int value);  // Set OFF value for selected channel
+char pca9685_setPulseWidthTime(device_pca9685 *pca9685config, unsigned char channel, float timeMs);  // Set the pulse width time in mS
 char pca9685_setPWMdutyCycle(device_pca9685 *pca9685config, unsigned char channel, unsigned char value); // Set dutycycle for selected channel
     
 /**
@@ -80,9 +80,10 @@ char pca9685_init(device_pca9685 *pca9685config){
         err+= i2c_write(0, deviceAddr, MODE1, 0x10);
         
         
-        // MODE1 register setup, configure clock source
-        data=0;
-        clockFreq = INTERNAL_CLK_FREQ;                      // default value is 25000
+        // MODE1 register setup and maintain sleep mode
+        data=0x10;
+        
+        clockFreq = INTERNAL_CLK_FREQ;                      // default value is 25MHz
                 
         if(extClkMHz>0){                                    // Check if external clock is used
             if(extClkMHz < 50000000){
@@ -158,7 +159,7 @@ char pca9685_setPWMdutyCycle(device_pca9685 *pca9685config, unsigned char channe
     
     // Get the channel address register
     unsigned char channelAddr = LED0_OFF_L + (channel * CHANNEL_MULTIPLYER);
-
+        
     err+=i2c_write(0, deviceAddr, channelAddr, PowerLow);
     err+=i2c_write(0, deviceAddr, channelAddr+1, PowerHigh);
     
@@ -166,8 +167,8 @@ char pca9685_setPWMdutyCycle(device_pca9685 *pca9685config, unsigned char channe
 }
 
 /**
- * \fn char pca9685_setPWMoffValue(device_pca9685 *pca9685config, unsigned char channel, int value)
- * \brief Set OFF value for selected channel
+ * \fn char pca9685_setPulseWidthTime(device_pca9685 *pca9685config, unsigned char channel, int value)
+ * \brief Set the pulse width time in mS
  *
  * \param handler to PCA9685 configuration structure
  * \return Error
@@ -177,8 +178,38 @@ char pca9685_setPWMdutyCycle(device_pca9685 *pca9685config, unsigned char channe
  *  Note that configuration error is prioritary on device bus initialization error
  */
 
-char pca9685_setPWMoffValue(device_pca9685 *pca9685config, unsigned char channel, int value){
+char pca9685_setPulseWidthTime(device_pca9685 *pca9685config, unsigned char channel, float timeMs){
     char err=0;
+    unsigned char deviceAddr = pca9685config->deviceAddress;
+    int userFreq = pca9685config->frequency;
+   
+    unsigned char lsbValue, msbValue;
+    unsigned int reloadValue;
+    
+    float clockPulseTime;
+
+    // Calculation of pulse time clock for external oscillator;
+    if(timeMs>0.0){
+        clockPulseTime = (float)(1000/userFreq)/4096;
+
+        reloadValue = timeMs/clockPulseTime;
+
+        if(reloadValue > 4095) 
+            reloadValue = 4095;
+    }else 
+        reloadValue = 0;
+
+    printf("\n ########   PCA FREQ:    %d       DEVADR: 0x%2x      RELOAD:  %d\n",userFreq, deviceAddr, reloadValue);    
+    
+    lsbValue = reloadValue & 0x00FF;
+    msbValue = (reloadValue & 0x0F00)>>8;
+    
+    // Get the channel address register
+    unsigned char channelAddr = LED0_OFF_L + (channel * CHANNEL_MULTIPLYER);
+        
+    err+=i2c_write(0, deviceAddr, channelAddr, lsbValue);
+    err+=i2c_write(0, deviceAddr, channelAddr+1, msbValue);
+    
     return err;
 }
 

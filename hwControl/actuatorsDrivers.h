@@ -25,11 +25,33 @@
 extern int boardHWinit();
 
 /**
- * \brief Apply on the DOUT the requiere PWM
- * \param -
+ * \fn char actuator_setLedPower()
+ * \brief Get the DOUT hardware id of the LED from config and apply the PWM settings
+ *
+ * \param ledID, powerr
  * \return -
- */  
+ */
 extern char actuator_setLedPower(int ledID, int power);
 
+/**
+ * \fn char actuator_setPwmPower()
+ * \brief Get the DOUT hardware id of the PWM output from config and apply the PWM settings
+ *
+ * \param ledID, powerr
+ * \return -
+ */
+
+char actuator_setPwmPower(int pwmID, int power);
+
+
+/**
+ * \fn char actuator_setsetServoPosition()
+ * \brief Get the DOUT hardware id of the SERVO from config and apply the PWM settings
+ *
+ * \param pwmID, position
+ * \return -
+ */
+
+char actuator_setServoPosition(int pwmID, int position);
         
 #endif /* ACTUATORSDRIVERS_H */

@@ -40,9 +40,9 @@ char LoadConfig(void){
     LoadDevicesDescriptor(srcDataBuffer, &boardDevice[0]);
 
     // Get the config file and setup the structure board parts
-    // in the deviceMappingFile        
+    // in the deviceMappingFile. Use the board Device for get the IC information
     srcDataBuffer = OpenConfigFromFile("deviceMap.cfg"); 
-    LoadBoardDescriptor(srcDataBuffer, &kehopsActuators);
+    LoadBoardDescriptor(srcDataBuffer, &kehopsActuators, &boardDevice[0]);
     
     srcDataBuffer = OpenConfigFromFile("kehops.cfg");         
     extractKehopsConfig(srcDataBuffer);

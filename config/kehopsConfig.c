@@ -29,10 +29,10 @@
 #define FILE_KEY_CONFIG_LED_STATE "{'led'[*{'state'"
 
 #define FILE_KEY_CONFIG_PWM "{'pwm'"
-#define FILE_KEY_CONFIG_PWM_ID "{'pwm'[*{'pwm'"
+#define FILE_KEY_CONFIG_PWM_ID     "{'pwm'[*{'pwm'"
 #define FILE_KEY_CONFIG_PWM_MAP_ID "{'pwm'[*{'dout_id'"
-#define FILE_KEY_CONFIG_PWM_POWER "{'pwm'[*{'power'"
-#define FILE_KEY_CONFIG_PWM_STATE "{'pwm'[*{'state'"
+#define FILE_KEY_CONFIG_PWM_POWER  "{'pwm'[*{'power'"
+#define FILE_KEY_CONFIG_PWM_STATE  "{'pwm'[*{'state'"
 
 #define FILE_KEY_CONFIG_DIN "{'din'"
 #define FILE_KEY_CONFIG_DIN_ID "{'din'[*{'din'"
@@ -260,6 +260,7 @@ void extractKehopsConfig(char * srcDataBuffer){
     // EXTRACT LED SETTINGS FROM CONFIG    
       // Reset motor data config before reading
       for(i=0;i<NBLED;i++){
+          kehops.led[i].config.dout_id = -1;
           kehops.led[i].config.defaultPower = -1;
           kehops.led[i].config.defaultState = -1;
           kehops.led[i].config.mode = -1;
@@ -277,9 +278,8 @@ void extractKehopsConfig(char * srcDataBuffer){
                 deviceId=-1;
                 deviceId=jRead_long((char *)srcDataBuffer, FILE_KEY_CONFIG_LED_ID, &i); 
 
-                kehops.led[deviceId].config.defaultPower = jRead_int((char *)srcDataBuffer, FILE_KEY_CONFIG_LED_POWER, &i);
-
                 if(deviceId >= 0 && deviceId < NBLED){
+                    kehops.led[deviceId].config.defaultPower = jRead_int((char *)srcDataBuffer, FILE_KEY_CONFIG_LED_POWER, &i);
                     kehops.led[deviceId].config.dout_id = jRead_int((char *)srcDataBuffer, FILE_KEY_CONFIG_LED_MAP_ID, &i);
                     jRead_string((char *)srcDataBuffer, FILE_KEY_CONFIG_LED_STATE, dataValue, 15, &i );
                     if(!strcmp(dataValue, "on")){
@@ -292,10 +292,11 @@ void extractKehopsConfig(char * srcDataBuffer){
                 }
             }
         }
-
+        
     // EXTRACT PWM SETTINGS FROM CONFIG    
       // Reset motor data config before reading
       for(i=0;i<NBPWM;i++){
+          kehops.pwm[i].config.dout_id = -1;
           kehops.pwm[i].config.defaultPower = 0;
           kehops.pwm[i].config.defaultState = 0;
           kehops.pwm[i].config.mode = 0;
@@ -308,12 +309,12 @@ void extractKehopsConfig(char * srcDataBuffer){
         if(cfg_devices_list.dataType == JREAD_ARRAY ){
             // Get the number of PWM in array
             nbOfDeviceInConf = cfg_devices_list.elements;
-            for(i=0; i < nbOfDeviceInConf; i++){ 
+            for(i=0; i < nbOfDeviceInConf; i++){
                 deviceId=-1;
                 deviceId = jRead_long((char *)srcDataBuffer, FILE_KEY_CONFIG_PWM_ID, &i); 
 
-                kehops.pwm[deviceId].config.defaultPower = jRead_int((char *)srcDataBuffer, FILE_KEY_CONFIG_PWM_POWER, &i);
-                if(deviceId >= 0 && deviceId < NBLED){
+                if(deviceId >= 0 && deviceId < NBPWM){
+                    kehops.pwm[deviceId].config.defaultPower = jRead_int((char *)srcDataBuffer, FILE_KEY_CONFIG_PWM_POWER, &i);
                     kehops.pwm[deviceId].config.dout_id = jRead_int((char *)srcDataBuffer, FILE_KEY_CONFIG_PWM_MAP_ID, &i);    
                     jRead_string((char *)srcDataBuffer, FILE_KEY_CONFIG_PWM_STATE, dataValue, 15, &i );
                     if(!strcmp(dataValue, "on")){
@@ -325,7 +326,7 @@ void extractKehopsConfig(char * srcDataBuffer){
                 }
             }
         }
-
+        
     // DIN Setting
         jRead((char *)srcDataBuffer, FILE_KEY_CONFIG_DIN, &cfg_devices_list );
 

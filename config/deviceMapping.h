@@ -26,8 +26,14 @@ struct driverAttribute{
     int device_channel;
 };
 
-
 struct device_subdrivers{
+    char name[15];
+    struct driverAttribute attributes;
+};
+
+
+struct driver_subdrivers{
+    char name[15];
     int address;
     char device_type[15];
     struct driverAttribute attributes;
@@ -55,6 +61,7 @@ struct deviceAttributes{
  * -> include attributes structure of device
  */
 typedef struct devicesList{
+    char name[15];
     char type[15];
     int address;
     struct deviceAttributes attributes;
@@ -82,10 +89,11 @@ typedef struct devicesList{
  */
 
 typedef struct device_drivers{
+    char name[15];
     int address;
     char device_type[15];
     struct driverAttribute attributes;
-    struct device_subdrivers sub_driver;
+    struct driver_subdrivers sub_driver;
 } hwDeviceDriver;
 
 typedef struct generic_drivers{
@@ -151,7 +159,7 @@ extern char LoadDevicesDescriptor(char * srcDataBuffer, devices_list * boardDevi
  * \brief Open and load electronic devices descriptor configuration
  * \return code error
  */  
-extern char LoadBoardDescriptor(char * srcDataBuffer, kehopsParts * kparts);
+extern char LoadBoardDescriptor(char * srcDataBuffer, kehopsParts * kparts, devices_list * boardDevice);
 
 /**
  * \fn unsigned char printDeviceData(int partsNb, struct device * device)

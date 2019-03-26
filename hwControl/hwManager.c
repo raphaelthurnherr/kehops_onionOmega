@@ -533,16 +533,14 @@ void setLedPower(unsigned char ledID, unsigned char power){
 }
 
 void setPwmPower(unsigned char ID, unsigned char power){
-	unsigned char pwmAdress;
-	pwmAdress=getOrganI2Cregister(PWM, ID);
-        
-	set_i2c_command_queue(&PCA9685_setLedPower, pwmAdress, power);
+        // USING THE NEW DRIVER
+        //actuator_setPwmPower(ID, power);
+        set_i2c_command_queue(&actuator_setPwmPower, ID, power);        
 }
 
 void setServoPosition(unsigned char ID, char position){
-	unsigned char pwmAdress;
-	pwmAdress=getOrganI2Cregister(PWM, ID);
-	set_i2c_command_queue(&PCA9685_setServoPos, pwmAdress, position);
+    printf("\n\n\n ************3 MA POSITION: %d\n\n\n", position);
+        set_i2c_command_queue(&actuator_setServoPosition, ID, position);
 }
 
 // ------------------------------------------------------------------------------------
