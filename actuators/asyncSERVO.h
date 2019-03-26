@@ -18,7 +18,7 @@
 extern "C" {
 #endif
 
-int setAsyncServoAction(int actionNumber, int pwmName, int mode, int time);
+int setAsyncServoAction(int actionNumber, int pwmName, int state, int time);
 int checkBlinkServoCount(int actionNumber, int pwmName);
 int endServoAction(int actionNumber, int pwmNumber);
 

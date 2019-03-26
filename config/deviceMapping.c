@@ -83,7 +83,6 @@ char LoadDevicesDescriptor(char * srcDataBuffer, devices_list * boardDevice){
                 if(deviceData.dataType == JREAD_OBJECT){
                     deviceAddress=-1;
                     
-                    
                     // Get the name of the integrated circuit 
                     if(jRead_string((char *)deviceData.pValue, KEY_DRIVER_STR_NAME, strValue, 25, NULL)>0)
                         strcpy(boardDevice[i].name, strValue);
@@ -101,9 +100,8 @@ char LoadDevicesDescriptor(char * srcDataBuffer, devices_list * boardDevice){
                             deviceAddress = -1;
                     }
                     else{
-                            if(deviceSetting.dataType == JREAD_NUMBER){
+                            if(deviceSetting.dataType == JREAD_NUMBER)
                                 deviceAddress = jRead_int((char *)deviceData.pValue, KEY_DRIVER_STR_ADDRESS, NULL); 
-                            }
                             else
                                 deviceAddress = -1;
                     }                    
@@ -115,12 +113,12 @@ char LoadDevicesDescriptor(char * srcDataBuffer, devices_list * boardDevice){
                             strcpy(boardDevice[i].type, strValue);
                         else strcpy(boardDevice[i].type, "error");
                         
+                        // Get the init data attributes                          
                         jRead((char *)deviceData.pValue, KEY_DEVICE_OBJ_ATTRIBUTES_DEVINIT, &deviceSetting);
                         if(deviceSetting.dataType == JREAD_ARRAY){
-                            settingCount = deviceSetting.elements;
+                            settingCount = deviceSetting.elements;                          
                           
                             for(j=0;j<settingCount;j++){
-                                // Get the init data attributes
                                 jReadParam((char *)deviceSetting.pValue, KEY_DEVICE_ARRAY_ATT_INIT_REGADDR, &deviceInit, &j);
                                  
                                 if(deviceInit.dataType == JREAD_STRING){

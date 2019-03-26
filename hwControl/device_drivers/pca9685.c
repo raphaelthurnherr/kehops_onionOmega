@@ -148,21 +148,31 @@ char pca9685_setPWMdutyCycle(device_pca9685 *pca9685config, unsigned char channe
     unsigned int power;
     unsigned char PowerLow;
     unsigned char PowerHigh;
-    
+    unsigned char channelAddr;
     unsigned char deviceAddr = pca9685config->deviceAddress;
 
     // Dutycycle % to register value conversion
-    power = (4095*dutyCycle)/100;
-    
-    PowerLow = power&0x00FF;;
-    PowerHigh = (power&0x0F00) >>8;
-    
-    // Get the channel address register
-    unsigned char channelAddr = LED0_OFF_L + (channel * CHANNEL_MULTIPLYER);
+    if(dutyCycle<100){
         
+        power = (4096*dutyCycle)/100;
+        PowerLow = power & 0x00FF;;
+        PowerHigh = (power & 0x0F00) >>8;
+
+        // Get the channel address register for ON value and set to clock 0
+        channelAddr = LED0_ON_H + (channel * CHANNEL_MULTIPLYER);
+        err+=i2c_write(0, deviceAddr, channelAddr, 0x00);
+        err+=i2c_write(0, deviceAddr, channelAddr+1, 0x00);
+
+        // Get the channel address register for OFF value        
+        channelAddr = LED0_OFF_L + (channel * CHANNEL_MULTIPLYER);    
+    }else{
+        // Set output full ON
+        channelAddr = LED0_ON_H + (channel * CHANNEL_MULTIPLYER);
+        PowerLow = PowerHigh = 0xFF;                      
+    }
+
     err+=i2c_write(0, deviceAddr, channelAddr, PowerLow);
     err+=i2c_write(0, deviceAddr, channelAddr+1, PowerHigh);
-    
     return err;
 }
 

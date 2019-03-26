@@ -340,7 +340,7 @@ int processmessage(void){
                                     else
                                         messageResponse[i].PWMresponse.id=-1;
                                             
-                                    // R�cup�ration des param�tes 
+                                    // R�cup�ration des param�tes
                                     strcpy(messageResponse[i].PWMresponse.state, message.PWMarray[i].state);
                                     messageResponse[i].PWMresponse.powerPercent=message.PWMarray[i].powerPercent;
                                     messageResponse[i].PWMresponse.blinkCount=message.PWMarray[i].blinkCount;
@@ -1274,8 +1274,8 @@ int runPwmAction(void){
                 if(!strcmp(message.PWMarray[ptrData].state,"blink"))
                     kehops.pwm[i].state = BLINK;
                 
-                // Blink mode not available in SERVO MODE (mode 1)
-                if(!kehops.pwm[i].config.mode){
+                // Only for PWM standard mode, (link mode not available in SERVO MODE "mode 1")
+                if(kehops.pwm[i].config.mode == 0){
                     if(!strcmp(message.PWMarray[ptrData].state,"blink"))
                         kehops.pwm[i].state = BLINK;
                     if(message.PWMarray[ptrData].time > 0)
@@ -1313,7 +1313,7 @@ int runPwmAction(void){
                                     time=message.PWMarray[ptrData].time;
                                     
                                     // Check if is a servomotor PWM (500uS .. 2.5mS)
-                                    if(!kehops.pwm[ID].config.mode){
+                                    if(kehops.pwm[ID].config.mode == 0){
                                         // Mode blink
                                         if(kehops.pwm[ID].state== BLINK){
                                             // Verifie la presence de parametres de type "time" et "count", sinon applique des
@@ -1346,7 +1346,7 @@ int runPwmAction(void){
                                     {
                                             if(kehops.pwm[ID].state == OFF)
                                                 setAsyncServoAction(myTaskId, ID, OFF, NULL);
-                                            if(kehops.pwm[ID].state == ON)
+                                            else
                                                 setAsyncServoAction(myTaskId, ID, ON, NULL);
                                     }
                                     

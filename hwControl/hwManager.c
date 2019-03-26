@@ -539,7 +539,6 @@ void setPwmPower(unsigned char ID, unsigned char power){
 }
 
 void setServoPosition(unsigned char ID, char position){
-    printf("\n\n\n ************3 MA POSITION: %d\n\n\n", position);
         set_i2c_command_queue(&actuator_setServoPosition, ID, position);
 }
 
