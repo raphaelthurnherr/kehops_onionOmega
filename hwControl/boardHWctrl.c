@@ -54,7 +54,7 @@ unsigned char buggyBoardInit(void){
         
 	err+=configGPIOdevice();				// Confguration du chip d'entr�es/sortie pour la gestion du sens de rotation des moteur DC
         err+=configRGBdevice();                                 // Configuration du capteur de couleur RGBC
-        err+=configStepMotorDriver();                           // Configuration du contrôleur de moteur pas à pas
+        //err+=configStepMotorDriver();                           // Configuration du contrôleur de moteur pas à pas
         
         // Reset la distance de la carte EFM8BB
 	EFM8BB_clearWheelDistance(MOTOR_ENCODER_LEFT);

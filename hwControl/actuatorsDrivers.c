@@ -13,7 +13,7 @@
  */
 
 
-#define INFO_DEBUG
+//#define INFO_DEBUG
 
 #include <unistd.h>
 #include <stdio.h>
@@ -27,13 +27,20 @@
 
 // Device drivers libraries declaration
 #include "pca9685.h"
+#include "pca9629.h"
 
 // Device variable déclaration
 #define MAX_PCA9685_DEVICE 8
+#define MAX_PCA9629_DEVICE 8
 
 device_pca9685 dev_pca9685[MAX_PCA9685_DEVICE];
+device_pca9629 dev_pca9629[MAX_PCA9629_DEVICE];
+
 unsigned char pca9685_count=0;
+unsigned char pca9629_count=0;
+
 int getPCA9685config_ptr(char * name);
+
 
 /**
  * \fn char boardHWinit()
@@ -46,38 +53,42 @@ int getPCA9685config_ptr(char * name);
 int boardHWinit(void){
     int err = 0;
     int i;
-    usleep(100000);
-    // DEVICES TYPE PCA9585 CONFIGURATION
+    usleep(1000000);
+
     for(i=0; boardDevice[i].address >= 0 && i<MAX_BOARD_DEVICE; i++){
-            if(!strcmp(boardDevice[i].type, "pca9685")){
-                
+        // DEVICES TYPE PCA9585 CONFIGURATION
+            if(!strcmp(boardDevice[i].type, "pca9685")){              
                 // Setting up the pca9685 device
                 strcpy(dev_pca9685[pca9685_count].deviceName, boardDevice[i].name);
                 if(boardDevice[i].attributes.frequency <= 0)
                     dev_pca9685[pca9685_count].frequency =200;
                 else
-                    dev_pca9685[pca9685_count].frequency = boardDevice[i].attributes.frequency;
-                
+                    dev_pca9685[pca9685_count].frequency = boardDevice[i].attributes.frequency;     
                 dev_pca9685[pca9685_count].totemPoleOutput=1;                 
                 dev_pca9685[pca9685_count].deviceAddress = boardDevice[i].address;                
                 err += pca9685_init(&dev_pca9685[pca9685_count]);
-
                 //printDeviceData(i, &boardDevice[i]);
                 pca9685_count++;
             }
-    }
-
-    /*
-    for(i=0;i<MAX_DRIVERS_PER_TYPE;i++){
-        if(kehopsActuators.dout[i].id >= 0){
             
-            #ifdef INFO_DEBUG
-                printf("\n__________MAIN DOUT : PART ID: %d, DEVICE ADDRESS: 0x%2x, TYPE: %s  CHANNEL: %d\n", kehopsActuators.dout[i].id, kehopsActuators.dout[i].hw_driver.address, 
-                kehopsActuators.dout[i].hw_driver.device_type, kehopsActuators.dout[i].hw_driver.attributes.device_channel);
-            #endif
-        }
-    }        
-      */     
+        // DEVICES TYPE PCA9529 CONFIGURATION
+            if(!strcmp(boardDevice[i].type, "pca9629")){              
+                // Setting up the pca9629 device
+               
+                printf("\n\n Configuring PCA9629\n----------------------------------\n");
+                dev_pca9629[pca9629_count].deviceAddress = boardDevice[i].address;
+                err += pca9629_init(&dev_pca9629[pca9629_count]);
+                printDeviceData(i, &boardDevice[i]);
+                pca9629_count++;
+            }
+             
+    }
+    
+
+    for(i=0; boardDevice[i].address >= 0 && i<MAX_BOARD_DEVICE; i++){
+
+    }
+  
     return err;
 }
 

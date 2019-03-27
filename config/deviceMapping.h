@@ -91,10 +91,7 @@ typedef struct devicesList{
 
 typedef struct device_drivers{
     char name[15];
-    int address;
-    char device_type[15];
     struct driverAttribute attributes;
-    struct driver_subdrivers sub_driver;
 } hwDeviceDriver;
 
 typedef struct generic_drivers{

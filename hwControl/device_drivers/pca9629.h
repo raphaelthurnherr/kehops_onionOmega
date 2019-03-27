@@ -19,7 +19,7 @@
 
 typedef struct pca9629{
     unsigned char deviceAddress;                // Bus device address
-    unsigned char pulsesWidth_ms;                // Specify the GPIO's port dirtection, 1 input, 0 output
+    unsigned char pulsesWidth_ms;               // Specify the GPIO's port dirtection, 1 input, 0 output
 } device_pca9629;
 
 
@@ -29,7 +29,7 @@ typedef struct pca9629{
  * \return code error
  */
 
-extern int pca9629_init(device_pca9629 pca9629config);
+extern int pca9629_init(device_pca9629 *pca9629config);
 
 /**
  * \brief pca9629_motorControl, Set the control of motor

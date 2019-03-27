@@ -203,7 +203,6 @@ void *hwTask (void * arg){
         char dinState=0;       
         
 	if(buggyBoardInit() && boardHWinit() == 0){       
-                
 		printf("\n#[HW MANAGER] Initialisation carte HW: OK\n");
 		sendMqttReport(0,"#[HW MANAGER] Initialisation carte HW: OK\n");
 	}
