@@ -210,7 +210,7 @@ void checkDCmotorPower(void){
 	//unsigned char PowerToSet;
 
 	// Contr�le successivement la puissance sur chaque moteur et effectue une rampe d'acc�l�ration ou d�c�leration
-	for(i=0;i<NBMOTOR;i++){
+	for(i=0;i<MAXMOTOR;i++){
             
             // Converti la consigne donnée en % en consigne  CM/SEC
             

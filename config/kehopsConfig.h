@@ -16,4 +16,14 @@
 extern void extractKehopsConfig(char * srcDataBuffer);
 extern char SaveKehopsConfig(char * fileName);
 
+extern unsigned char NBPWM;
+extern unsigned char NBLED;
+extern unsigned char NBAIN;
+extern unsigned char NBSONAR;
+extern unsigned char NBSTEPPER;
+extern unsigned char NBMOTOR;
+extern unsigned char NBRGBC;
+extern unsigned char NBBTN;
+extern unsigned char NBDIN;
+extern unsigned char NBCOUNTER;
 #endif /* KEHOPSCONFIG_H */

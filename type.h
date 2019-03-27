@@ -295,15 +295,15 @@ typedef struct robotRgb{
 
 
 typedef struct robotKehops{
-    robot_battery battery[NBAIN];
-    robot_button button[NBBTN];
-    robot_stepperwheel stepperWheel[NBSTEPPER];
-    robot_dcwheel dcWheel[NBMOTOR];
-    robot_pwm led[NBLED];
-    robot_pwm pwm[NBPWM];
-    robot_prox proximity[NBDIN];
-    robot_sonar sonar[NBSONAR];
-    robot_rgb rgb[NBRGBC];
+    robot_battery battery[MAXAIN];
+    robot_button button[MAXBTN];
+    robot_stepperwheel stepperWheel[MAXSTEPPER];
+    robot_dcwheel dcWheel[MAXMOTOR];
+    robot_pwm led[MAXLED];
+    robot_pwm pwm[MAXPWM];
+    robot_prox proximity[MAXDIN];
+    robot_sonar sonar[MAXSONAR];
+    robot_rgb rgb[MAXRGBC];
 }robot_kehops;
 
 

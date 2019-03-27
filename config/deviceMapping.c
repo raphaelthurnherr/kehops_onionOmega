@@ -331,6 +331,7 @@ char strValue[25];
             if(jRead_string((char *)deviceDriver.pValue, KEY_DRIVER_STR_NAME, strValue, 25, NULL )>0){
                 for(i=0;i<MAX_BOARD_DEVICE;i++){
                     if(!strcmp(strValue, icDevice[i].name)){
+                      strcpy(hwDevice->name, icDevice[i].name);         // !!!!!!! DEBUG
                       driverAddress = icDevice[i].address;
                       strcpy(hwDevice->device_type, icDevice[i].type);
                       

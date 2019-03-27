@@ -134,6 +134,7 @@
 
 #include "../type.h"
 #include "../buggy_descriptor.h"
+#include "../config/kehopsConfig.h"
 #include "linux_json.h"
 #include "libs/lib_json/jRead.h"
 #include "libs/lib_json/jWrite.h"

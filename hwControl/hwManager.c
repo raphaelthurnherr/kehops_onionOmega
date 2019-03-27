@@ -14,6 +14,7 @@
 #include <stdio.h>
 #include "hwManager.h"
 #include "../kehops_main.h"
+#include "../config/kehopsConfig.h"
 
 
 #ifdef I2CSIMU
@@ -128,17 +129,17 @@ struct actuator_dout{
 };
 
 typedef struct t_actuator{
-    struct actuator_motor motor[NBMOTOR];
-    struct actuator_stepper stepperMotor[NBSTEPPER];
-    struct actuator_dout digitalOutput[NBPWM+NBLED];
+    struct actuator_motor motor[MAXMOTOR];
+    struct actuator_stepper stepperMotor[MAXSTEPPER];
+    struct actuator_dout digitalOutput[MAXPWM+MAXLED];
     //struct actuator_dout digitalOutput[NBPWM+NBLED+NBSERVO];
 }ACTUATORS;
 
 typedef struct t_sensor{
-	struct s_din din[NBDIN];
-        struct s_analog ain[NBAIN+NBSONAR];
-	struct s_counter counter[NBMOTOR];
-	struct s_rgbc rgbc[NBRGBC];
+	struct s_din din[MAXDIN];
+        struct s_analog ain[MAXAIN+MAXSONAR];
+	struct s_counter counter[MAXMOTOR];
+	struct s_rgbc rgbc[MAXRGBC];
 
 }SENSORS;
 
@@ -579,32 +580,6 @@ unsigned char getOrganI2Cregister(char organType, unsigned char organName){
 		switch(organName){
 			case MOTOR_0 : organAdr = PCA_DCM0; break;
 			case MOTOR_1 : organAdr = PCA_DCM1; break;
-			default :	organAdr = UNKNOWN; break;
-		}
-	}
-        
-	if(organType == PWM){
-		switch(organName){
-			case PWM_0 : organAdr = PCA_CN1_4; break;
-			case PWM_1 : organAdr = PCA_CN2_4; break;
-			case PWM_2 : organAdr = PCA_CN3_7; break;
-                        case PWM_3 : organAdr = PCA_CN4_4; break;
-                        case PWM_4 : organAdr = PCA_CN7_3; break;
-                        case PWM_5 : organAdr = PCA_CN8_3; break;
-                        case PWM_6 : organAdr = PCA_CN9_7; break;
-                        case PWM_7 : organAdr = PCA_CN10_4; break;
-                        case PWM_8 : organAdr = PCA_CN11_3; break;
-                        case PWM_9 : organAdr = PCA_CN12_3; break;
-                        
-			default :	organAdr = UNKNOWN; break;
-		}
-	}
-
-	if(organType == LED){
-		switch(organName){
-			case LED_0 : organAdr = PCA_LED0; break;
-			case LED_1 : organAdr = PCA_LED1; break;
-			case LED_2 : organAdr = PCA_LED2; break;
 			default :	organAdr = UNKNOWN; break;
 		}
 	}

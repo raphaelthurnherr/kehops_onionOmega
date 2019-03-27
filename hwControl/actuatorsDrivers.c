@@ -12,7 +12,8 @@
  * Note: Per definition, a generic "drivers" can use more one IC drivers for create an action on an actuator
  */
 
-//#define INFO_DEBUG
+
+#define INFO_DEBUG
 
 #include <unistd.h>
 #include <stdio.h>
@@ -28,7 +29,11 @@
 #include "pca9685.h"
 
 // Device variable déclaration
-device_pca9685 dev_pca9685;
+#define MAX_PCA9685_DEVICE 8
+
+device_pca9685 dev_pca9685[MAX_PCA9685_DEVICE];
+
+unsigned char pca9685_count=0;
 
 /**
  * \fn char boardHWinit()
@@ -46,13 +51,16 @@ int boardHWinit(void){
     for(i=0; boardDevice[i].address >= 0 && i<MAX_BOARD_DEVICE; i++){
             if(!strcmp(boardDevice[i].type, "pca9685")){
                 // Setting up the pca9685 device
-                dev_pca9685.frequency=50;
-                dev_pca9685.totemPoleOutput=1;                 
-                dev_pca9685.deviceAddress = boardDevice[i].address;
-                err += pca9685_init(&dev_pca9685);
+                strcpy(dev_pca9685[pca9685_count].deviceName, boardDevice[i].name);
+                dev_pca9685[pca9685_count].frequency=50;
+                dev_pca9685[pca9685_count].totemPoleOutput=1;                 
+                dev_pca9685[pca9685_count].deviceAddress = boardDevice[i].address;
+                err += pca9685_init(&dev_pca9685[0]);
+
                 #ifdef INFO_DEBUG
-                    printf("\n__________ID [%d] , TYPE: %s  ADDRESS: %d  [0x%02x]\n",i, boardDevice[i].type, boardDevice[i].address, boardDevice[i].address);
+                    printf("\n__________ID [%d] , NAME: %s   TYPE: %s  ADDRESS: %d  [0x%02x]\n",i,boardDevice[i].name, boardDevice[i].type, boardDevice[i].address, boardDevice[i].address);
                 #endif                
+                pca9685_count++;
             }
     }
 
@@ -83,10 +91,12 @@ char actuator_setLedPower(int ledID, int power){
     int dout_id = kehops.led[ledID].config.dout_id;  
     int channel = kehopsActuators.dout[dout_id].hw_driver.attributes.device_channel;
     
-    printf("SET LED POWER FROM NEW DRIVERS:    dout_id: %d     channel: %d     power: %d\n", dout_id, channel, power);
     
-    dev_pca9685.deviceAddress = kehopsActuators.dout[dout_id].hw_driver.address;
-    pca9685_setPWMdutyCycle(&dev_pca9685, channel, power);
+    dev_pca9685[0].deviceAddress = kehopsActuators.dout[dout_id].hw_driver.address;
+    
+    printf("SET LED POWER FROM NEW DRIVERS:  NAME:%s   I2C add: 0x%2x    dout_id: %d     channel: %d     power: %d     frequency: %d\n",kehopsActuators.dout[dout_id].hw_driver.name,  dev_pca9685[0].deviceAddress, dout_id, channel, power, dev_pca9685[0].frequency);    
+    
+    pca9685_setPWMdutyCycle(&dev_pca9685[0], channel, power);
 }
 
 
@@ -102,11 +112,11 @@ char actuator_setPwmPower(int pwmID, int power){
     
     int dout_id = kehops.pwm[pwmID].config.dout_id;  
     int channel = kehopsActuators.dout[dout_id].hw_driver.attributes.device_channel;
+
+    dev_pca9685[0].deviceAddress = kehopsActuators.dout[dout_id].hw_driver.address;
     
-    printf("SET PWM POWER FROM NEW DRIVERS:    dout_id: %d     channel: %d     power: %d\n", dout_id, channel, power);
-    
-    dev_pca9685.deviceAddress = kehopsActuators.dout[dout_id].hw_driver.address;
-    pca9685_setPWMdutyCycle(&dev_pca9685, channel, power);
+    printf("SET PWM POWER FROM NEW DRIVERS:  NAME:%s   I2C add: 0x%2x    dout_id: %d     channel: %d     power: %d     frequency: %d\n",kehopsActuators.dout[dout_id].hw_driver.name,  dev_pca9685[0].deviceAddress, dout_id, channel, power, dev_pca9685[0].frequency);    
+    pca9685_setPWMdutyCycle(&dev_pca9685[0], channel, power);
 }
 
 /**
@@ -131,10 +141,10 @@ char actuator_setServoPosition(int pwmID, int position){
         time_ms = 0.8 + ((2.2-0.8)/100)*position;
     else
         time_ms = 0.0;                    // Turn off the servomotor (no refresh)   
-
-        
-    printf("SET SERVO POSITION FROM NEW DRIVERS:    dout_id: %d     channel: %d     power: %d     time: %.2f\n", dout_id, channel, position, time_ms);
     
-    dev_pca9685.deviceAddress = kehopsActuators.dout[dout_id].hw_driver.address;
-    pca9685_setPulseWidthTime(&dev_pca9685, channel, time_ms);
+    dev_pca9685[0].deviceAddress = kehopsActuators.dout[dout_id].hw_driver.address;
+    
+    printf("SET SERVO POSITION FROM NEW DRIVERS: NAME: %s   I2Cadd: 0x%2x    dout_id: %d     channel: %d     position: %d     time: %.2f\n",kehopsActuators.dout[dout_id].hw_driver.name, dev_pca9685[0].deviceAddress, dout_id, channel, position, time_ms);
+        
+    pca9685_setPulseWidthTime(&dev_pca9685[0], channel, time_ms);
 }

@@ -14,6 +14,8 @@
 #include "buildNumber.h"
 
 #include "buggy_descriptor.h"
+#include "../config/kehopsConfig.h"
+
 #include "kehopsCom/messagesManager.h"
 #include "networkManager.h"
 #include "linux_json.h"
@@ -2213,10 +2215,10 @@ void COLOREventCheck(void){
         unsigned char ptrBuff=0, RGBevent=0;
         
 	// Mise � jour de l'�tat des couleurs des capteur
-	static unsigned char RGB_red_WarningSended[NBRGBC];
-        static unsigned char RGB_green_WarningSended[NBRGBC];
-        static unsigned char RGB_blue_WarningSended[NBRGBC];
-        static unsigned char RGB_clear_WarningSended[NBRGBC];
+	static unsigned char RGB_red_WarningSended[MAXRGBC];
+        static unsigned char RGB_green_WarningSended[MAXRGBC];
+        static unsigned char RGB_blue_WarningSended[MAXRGBC];
+        static unsigned char RGB_clear_WarningSended[MAXRGBC];
         
 	unsigned char i;
 

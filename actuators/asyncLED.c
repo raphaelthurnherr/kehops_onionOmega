@@ -114,7 +114,7 @@ int endLedAction(int actionNumber, int LedNumber){
 
 int checkBlinkLedCount(int actionNumber, int ledName){
 	static int blinkCount=0;     // Variable de comptage du nombre de clignotements       
-        static int LEDtoggleState[NBLED];
+        static int LEDtoggleState[MAXLED];
 
         // Si mode blink actif, toggle sur LED et comptage
         if(kehops.led[ledName].state == BLINK){

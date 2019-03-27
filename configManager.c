@@ -34,6 +34,9 @@ char LoadConfig(void){
 
     char * srcDataBuffer;
 
+    srcDataBuffer = OpenConfigFromFile("kehops.cfg");         
+    extractKehopsConfig(srcDataBuffer);
+    
     // Get the config file and setup the structure board device
     // in the deviceMappingFile
     srcDataBuffer = OpenConfigFromFile("devices.cfg"); 
@@ -43,9 +46,9 @@ char LoadConfig(void){
     // in the deviceMappingFile. Use the board Device for get the IC information
     srcDataBuffer = OpenConfigFromFile("deviceMap.cfg"); 
     LoadBoardDescriptor(srcDataBuffer, &kehopsActuators, &boardDevice[0]);
-    
-    srcDataBuffer = OpenConfigFromFile("kehops.cfg");         
-    extractKehopsConfig(srcDataBuffer);
+       
+    printf("\n\n ********\n Config extracted: \n MOTORS: %d   STEPPERS: %d  PWM: %d   LED: %d   DIN: %d   AIN: %d   COUNTER: %d  BUTTON: %d  SONAR: %d  COLOR RGB: %d\n*********\n\n",
+            NBMOTOR, NBSTEPPER, NBPWM, NBLED, NBDIN, NBAIN, NBCOUNTER, NBBTN, NBSONAR, NBRGBC);
 
     return -1;
 }
