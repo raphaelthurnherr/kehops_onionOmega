@@ -42,7 +42,6 @@ void clearDeviceSettings(devices_list * boardDevice);
 char LoadDevicesDescriptor(char * srcDataBuffer, devices_list * boardDevice);
 char LoadBoardDescriptor(char * srcDataBuffer, kehopsParts * kparts, devices_list * boardDevice);
 
-
 /**
  * \fn char LoadDriversDescriptor(char * fileName)
  * \brief Extract the file config content of IC devices and store the JSON result convertion
@@ -113,7 +112,11 @@ char LoadDevicesDescriptor(char * srcDataBuffer, devices_list * boardDevice){
                             strcpy(boardDevice[i].type, strValue);
                         else strcpy(boardDevice[i].type, "error");
                         
-                        // Get the init data attributes                          
+
+                        // Get the frequency attributes for frequency                       
+                        boardDevice[i].attributes.frequency = jRead_int((char *)deviceData.pValue, KEY_DEVICE_OBJ_ATTRIBUTES_FREQUENCY, NULL); 
+                            
+                        // Get the init data attributes for devInit                       
                         jRead((char *)deviceData.pValue, KEY_DEVICE_OBJ_ATTRIBUTES_DEVINIT, &deviceSetting);
                         if(deviceSetting.dataType == JREAD_ARRAY){
                             settingCount = deviceSetting.elements;                          
@@ -692,15 +695,4 @@ void clearDeviceSettings(devices_list * boardDevice){
             boardDevice[i].attributes.deviceInit[j].regData = -1;
         }
     }
-}
-
-
-
-
-
-int getICbusAddress( char * ICname){
-}
-
-int getICtype( char * ICname){
-        
 }

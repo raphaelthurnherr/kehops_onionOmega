@@ -53,6 +53,7 @@ struct addrReg {
     
 struct deviceAttributes{
     struct addrReg deviceInit[32];
+    int frequency;
 };
 
 /**
@@ -214,8 +215,6 @@ extern unsigned char printBoardData(int partsNb, struct device * device);
 
 devices_list boardDevice[MAX_BOARD_DEVICE];
 kehopsParts kehopsActuators;
-
-
 
 #endif /* DEVICEMAPPING_H */
 
