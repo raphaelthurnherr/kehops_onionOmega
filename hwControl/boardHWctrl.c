@@ -5,8 +5,6 @@
 #include <onion-i2c.h>
 #include "../buggy_descriptor.h"
 
-#include "pca9685.h"                                            // PCA9685 PWM driver
-
 unsigned char buggyBoardInit(void);                             // Initialisation of the board (PWM Driver, GPIO driver, etc..)
 
 unsigned char configPWMdevice(void);                            // Configuration of the PCA9685 for 50Hz operation
@@ -26,14 +24,6 @@ int EFM8BB_getBoardType(void);                                  // Get the type 
 
 void PCA9685_DCmotorSetSpeed(unsigned char motorAdr, unsigned char dutyCycle);
 void PCA9685_setServoPos(unsigned char smAddr, char position);
-
-/*
-int PCA9629_StepperMotorControl(int motorNumber, int data);              //Configuration du registre "PAS" du driver moteur
-int PCA9629_StepperMotorSetStep(int motorNumber, int stepCount);         //Configuration du registre "PAS" du driver moteur
-int PCA9629_StepperMotorMode(int motorNumber, int data);                 // Mode action continue ou unique
-int PCA9629_StepperMotorPulseWidth(int motorNumber, int data);           // Définition de la largeur d'impulstion
-int PCA9629_ReadMotorState(int motorNumber);                             // Lecture du registre de contrôle du moteur
- */
 
 int BH1745_getRGBvalue(unsigned char sensorNb, int color);               // Get the value for specified color
 
@@ -191,106 +181,7 @@ void MCP2308_DCmotorSetRotation(unsigned char motorAdr, char direction){
         }
 
 }
-/*
-//================================================================================
-// STEPPERMOTORSETSTEP
-// Paramètrage du nombre de pas dans les registres du driver moteur pour CW et CCW
-//================================================================================
 
-int PCA9629_StepperMotorSetStep(int motorNumber, int stepCount){
-   	unsigned char err=0;
-	unsigned char motorAddress = 0;
-        
-        motorAddress = PCA9629 + motorNumber;
-
-        // Configuration du registre de nombre de pas dans le sens horaire
-        err += i2c_write(0, motorAddress, 0x12, stepCount&0x00FF);           // Défini le nombre de pas dans le registre LOW
-        err += i2c_write(0, motorAddress, 0x13, (stepCount&0xFF00)>>8);    // Défini le nombre de pas dans le registre HIGH
-
-        // Configuration du registre de nombre de pas dans le sens anti-horaire
-        err += i2c_write(0, motorAddress, 0x14, stepCount&0x00FF);           // Défini le nombre de pas dans le registre LOW
-        err += i2c_write(0, motorAddress, 0x15, (stepCount&0xFF00)>>8);    // Défini le nombre de pas dans le registre HIGH        
-
-	return(err);
-}
-
-//================================================================================
-// STEPPERMOTORCONTROL
-// Registre de commande du driver de moteur
-//================================================================================
-int PCA9629_StepperMotorControl(int motorNumber, int data){
-   	unsigned char err=0;
-	unsigned char motorAddress = 0;
-        
-        motorAddress = PCA9629 + motorNumber;
-
-        // Configuration du registre dans le sens horaire
-        err += i2c_write(0, motorAddress, 0x1A, data & 0x00FF);           // Défini le nombre de rotation dans le registre LOW    
-        return(err);
-}
-
-//================================================================================
-// READMOTORSTATE
-// Lecture de l'état actuel du moteur (run/stop)
-//================================================================================
-int PCA9629_ReadMotorState(int motorNumber){
-   	unsigned char err=0;
-	unsigned char motorAddress = 0;
-        int regState = 0;
-        
-        motorAddress = PCA9629 + motorNumber;
-
-        // LEcture du registre de controle du driver moteur
-        //err += i2c_write(0, motorAddress, 0x1A, data & 0x00FF);           // Défini le nombre de rotation dans le registre LOW    
-        err += i2c_readByte(0, motorAddress, 0x1A, &regState);
-        //printf("\nRegister motor State: %d\n", regState);
-        
-        if(!err){    
-            return regState;
-	}else{
-            printf("PCA9629_ReadMotorState() -> Read error\n");
-            return -1;
-        }
-}
-
-//================================================================================
-// STEPPERMOTORMODE
-// Registre de commande du mode du driver
-// Mode action continue ou mode action unique
-//================================================================================
-int PCA9629_StepperMotorMode(int motorNumber, int data){
-   	unsigned char err=0;
-	unsigned char motorAddress = 0;
-        
-        motorAddress = PCA9629 + motorNumber;
-
-        // Configuration du registre dans le sens horaire
-        err += i2c_write(0, motorAddress, 0x0F, data & 0x00FF);           // Défini le nombre de rotation dans le registre LOW    
-        return(err);
-}
-
-//================================================================================
-// STEPPERMOTORPULSEWIDTH
-// Registre de configuration de la largeur d'impulsion moteur pour les sens CW et CCW
-// Comprise entre 2mS (500Hz) et 22.5mS(44Hz) pour bon fonctionnement du mnoteur
-//================================================================================
-int PCA9629_StepperMotorPulseWidth(int motorNumber, int data){
-   	unsigned char err=0;
-	unsigned char motorAddress = 0;
-        
-        motorAddress = PCA9629 + motorNumber;
-
-        
-        // Configuration du registre dans le sens horaire
-        err+= i2c_write(0, PCA9629, 0x16, data & 0x00FF);         // CWPWL - Vitesse / Largeur d'impulsion pour CW
-        err+= i2c_write(0, PCA9629, 0x17, (data & 0xFF00)>>8);    // CWPWH
-        
-        err+= i2c_write(0, PCA9629, 0x18, data & 0x00FF);         // CCWPWL - Vitesse / Largeur d'impulsion pour CCW
-        err+= i2c_write(0, PCA9629, 0x19, (data & 0xFF00)>>8);    // CCWPWH
-        return(err);
-}
-
-*/
 //================================================================================
 // SETSERVOPOS
 // D�fini la position a appliquer au servomoteur

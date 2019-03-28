@@ -20,7 +20,7 @@
 int InitHwManager(void);						// Ouverture du thread Timer
 int CloseHwManager(void);						// Fermeture du thread Timer
 
-extern int set_i2c_command_queue(int (*callback)(char, int),char adr, int cmd); // Ajout la commande I2C dans la file
+extern int set_i2c_command_queue(int (*callback)(char, int, int),char adr, int cmd, int param); // Ajout la commande I2C dans la file
 
 extern int getMotorFrequency(unsigned char motorNb);	// Retourne la fr�quence actuelle mesuree sur l'encodeur
 extern int getMotorPulses(unsigned char motorNb);		// Retourne le nombre d'impulsion d'encodeur moteur depuis le d�marrage

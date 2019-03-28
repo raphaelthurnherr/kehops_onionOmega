@@ -8,6 +8,7 @@
 #define  CALLBACK 0
 #define  ADR	  1
 #define	 CMD      2
+#define	 PRM      3
 
 #include "pthread.h"
 #include <unistd.h>
@@ -159,7 +160,7 @@ typedef struct tHWversion{
 
 t_HWversion BoardInfo;
 
-int i2c_command_queuing[50][3];
+int i2c_command_queuing[50][4];
 int timeCount_ms=0;
 
 int getMotorFrequency(unsigned char motorNb);                   // Retourne la fr�quence actuelle mesuree sur l'encodeur
@@ -188,7 +189,7 @@ void setPwmPower(unsigned char ID, unsigned char power);
 
 void processCommandQueue(void);
 void execCommand(void (*ptrFunc)(char, int), char adr, int cmd);
-int set_i2c_command_queue(int (*callback)(char, int),char adr, int cmd);
+int set_i2c_command_queue(int (*callback)(char, int, int),char adr, int cmd, int param);
 
 int getHWversion(void);                                                 // Get the hardware board version
 int getMcuFirmware(void);                                              // Get the hardware microcontroller version
@@ -381,7 +382,7 @@ int setMotorDirection(char motorName, int direction){
 	// Conversion No de moteur en adresse du registre du PWM controleur
 	motorAdress=getOrganI2Cregister(MOTOR, motorName);
 
-        set_i2c_command_queue(&MCP2308_DCmotorSetRotation, motorAdress, direction);
+        set_i2c_command_queue(&MCP2308_DCmotorSetRotation, motorAdress, direction, NULL);
         
 	return(1);
 }
@@ -414,7 +415,8 @@ int setStepperStepAction(int motorNumber, int direction, int stepCount){
     //set_i2c_command_queue(&actuator_setStepperStepAction, motorNumber, direction);
     
     printf("\n-------- SET STEPPER STEP ACTION -------------\n");
-    actuator_setStepperStepAction(motorNumber, direction, stepCount);
+    //actuator_setStepperStepAction(motorNumber, direction, stepCount);
+    set_i2c_command_queue(&actuator_setStepperStepAction, motorNumber, direction, stepCount);
     return (0);
 } 
 
@@ -427,7 +429,7 @@ int setStepperStepAction(int motorNumber, int direction, int stepCount){
 int setStepperSpeed(int motorNumber, int speed){
     printf("\n-------- SET STEPPER SPEED -------------\n");
     // USING THE NEW DRIVER
-    //set_i2c_command_queue(&actuator_setStepperSpeed, motorNumber, speed);
+    set_i2c_command_queue(&actuator_setStepperSpeed, motorNumber, speed, NULL);
     
     return (1);
 }                           
@@ -458,7 +460,7 @@ int setMotorSpeed(int motorName, int ratio){
 		ratio = 0;
         
         //NEW
-        set_i2c_command_queue(&PCA9685_DCmotorSetSpeed, motorAdress, ratio);
+        set_i2c_command_queue(&PCA9685_DCmotorSetSpeed, motorAdress, ratio, NULL);
         
 	return(1);
 }
@@ -466,7 +468,7 @@ int setMotorSpeed(int motorName, int ratio){
 // ------------------------------------------------------------------------------------
 // SET_I2C_COMMAND_QUEUE: Mise en file d'attente de l'appelle d'une fonction I2C
 // ------------------------------------------------------------------------------------
-int set_i2c_command_queue(int (*callback)(char, int),char adr, int cmd){
+int set_i2c_command_queue(int (*callback)(char, int, int),char adr, int cmd, int param){
 	unsigned char freeIndex;
 
 	// Recherche d'un emplacement libre dans la file d'attente
@@ -478,6 +480,7 @@ int set_i2c_command_queue(int (*callback)(char, int),char adr, int cmd){
 		i2c_command_queuing[freeIndex][CALLBACK] =  callback;
 		i2c_command_queuing[freeIndex][ADR] =  adr;
 		i2c_command_queuing[freeIndex][CMD] =  cmd;
+                i2c_command_queuing[freeIndex][PRM] =  param;
 	}
 
 	return freeIndex;
@@ -486,17 +489,17 @@ int set_i2c_command_queue(int (*callback)(char, int),char adr, int cmd){
 void setLedPower(unsigned char ledID, unsigned char power){
         // USING THE NEW DRIVER
         //actuator_setLedPower(ledID, power);
-        set_i2c_command_queue(&actuator_setLedPower, ledID, power);        
+        set_i2c_command_queue(&actuator_setLedPower, ledID, power, NULL);        
 }
 
 void setPwmPower(unsigned char ID, unsigned char power){
         // USING THE NEW DRIVER
         //actuator_setPwmPower(ID, power);
-        set_i2c_command_queue(&actuator_setPwmPower, ID, power);        
+        set_i2c_command_queue(&actuator_setPwmPower, ID, power, NULL);        
 }
 
 void setServoPosition(unsigned char ID, char position){
-        set_i2c_command_queue(&actuator_setServoPosition, ID, position);
+        set_i2c_command_queue(&actuator_setServoPosition, ID, position, NULL);
 }
 
 // ------------------------------------------------------------------------------------
@@ -520,8 +523,9 @@ void processCommandQueue(void){
 		i2c_command_queuing[i][CALLBACK] = i2c_command_queuing[i+1][CALLBACK];
 		i2c_command_queuing[i][ADR] = i2c_command_queuing[i+1][ADR];
 		i2c_command_queuing[i][CMD] = i2c_command_queuing[i+1][CMD];
+                i2c_command_queuing[i][PRM] = i2c_command_queuing[i+1][PRM];
 	}
-	i2c_command_queuing[49][CALLBACK]=i2c_command_queuing[49][ADR]=i2c_command_queuing[49][CMD]=0;
+	i2c_command_queuing[49][CALLBACK]=i2c_command_queuing[49][ADR]=i2c_command_queuing[49][CMD]=i2c_command_queuing[49][PRM]=0;
 }
 
 
