@@ -58,6 +58,7 @@
 
 /**
  * \brief Initial configuration for Stepper motor controller
+ * \param handler to PCA9629 configuration structure
  * \return code error
  */
 
@@ -116,13 +117,98 @@ int pca9629_init(device_pca9629 *pca9629config){
  * \return code error
  */
 
-int pca9629_motorControl(int motorNumber, int data){
+int PCA9629_StepperMotorControl(device_pca9629 *pca9629config, int data){
    	unsigned char err=0;
-	unsigned char motorAddress = 0;
-        
-        motorAddress = 0x20 + motorNumber;
+
+        unsigned char devAddress = pca9629config->deviceAddress;
 
         // Configuration du registre dans le sens horaire
-        err += i2c_write(0, motorAddress, 0x1A, data & 0x00FF);           // Défini le nombre de rotation dans le registre LOW    
+        err += i2c_write(0, devAddress, 0x1A, data & 0x00FF);           // Défini le nombre de rotation dans le registre LOW    
+        return(err);
+}
+
+
+/**
+ * \brief int PCA9629_StepperMotorSetStep, Set the number of step to do in CW and CCW direction
+ * \param handler to PCA9629 configuration structure
+ * \return code error
+ */
+
+int PCA9629_StepperMotorSetStep(device_pca9629 *pca9629config, int stepCount){
+   	unsigned char err=0;
+       
+        unsigned char devAddress = pca9629config->deviceAddress;
+
+        // Configuration du registre de nombre de pas dans le sens horaire
+        err += i2c_write(0, devAddress, 0x12, stepCount&0x00FF);           // Défini le nombre de pas dans le registre LOW
+        err += i2c_write(0, devAddress, 0x13, (stepCount&0xFF00)>>8);    // Défini le nombre de pas dans le registre HIGH
+
+        // Configuration du registre de nombre de pas dans le sens anti-horaire
+        err += i2c_write(0, devAddress, 0x14, stepCount&0x00FF);           // Défini le nombre de pas dans le registre LOW
+        err += i2c_write(0, devAddress, 0x15, (stepCount&0xFF00)>>8);    // Défini le nombre de pas dans le registre HIGH        
+
+	return(err);
+}
+
+/**
+ * \brief int PCA9629_ReadMotorState, Get the actual state of the motor
+ * \param handler to PCA9629 configuration structure
+ * \return code error
+ */
+int PCA9629_ReadMotorState(device_pca9629 *pca9629config){
+   	unsigned char err=0;
+        int regState = 0;
+        
+        unsigned char devAddress = pca9629config->deviceAddress;
+
+        // LEcture du registre de controle du driver moteur
+        err += i2c_readByte(0, devAddress, 0x1A, &regState);
+        
+        if(!err){    
+            return regState;
+	}else{
+            printf("PCA9629_ReadMotorState() -> Read error\n");
+            return -1;
+        }
+}
+
+
+/**
+ * \brief int PCA9629_StepperMotorMode, Set the mode continuous or single action
+ * \param handler to PCA9629 configuration structure
+ * \return code error
+ */
+
+int PCA9629_StepperMotorMode(device_pca9629 *pca9629config, int data){
+   	unsigned char err=0;
+        
+        unsigned char devAddress = pca9629config->deviceAddress;
+        
+
+        // Configuration du registre dans le sens horaire
+        err += i2c_write(0, devAddress, 0x0F, data & 0x00FF);           // Défini le nombre de rotation dans le registre LOW    
+        return(err);
+}
+
+
+/**
+ * \brief int PCA9629_StepperMotorMode, Set the pulse width in CW and CCW direction
+ * between 2mS (500Hz) and 22.5mS (44Hz)
+ * \param handler to PCA9629 configuration structure
+ * \return code error
+ */
+
+int PCA9629_StepperMotorPulseWidth(device_pca9629 *pca9629config, int data){
+   	unsigned char err=0;
+
+        unsigned char devAddress = pca9629config->deviceAddress;
+
+        
+        // Configuration du registre dans le sens horaire
+        err+= i2c_write(0, devAddress, 0x16, data & 0x00FF);         // CWPWL - Vitesse / Largeur d'impulsion pour CW
+        err+= i2c_write(0, devAddress, 0x17, (data & 0xFF00)>>8);    // CWPWH
+        
+        err+= i2c_write(0, devAddress, 0x18, data & 0x00FF);         // CCWPWL - Vitesse / Largeur d'impulsion pour CCW
+        err+= i2c_write(0, devAddress, 0x19, (data & 0xFF00)>>8);    // CCWPWH
         return(err);
 }

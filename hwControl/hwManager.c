@@ -32,6 +32,7 @@
 
 // Device drivers declaration
 #include "pca9685.h"
+#include "pca9629.h"
 
 
 // Thread Messager
@@ -272,7 +273,7 @@ void *hwTask (void * arg){
                                     sensor.rgbc[RGBC_SENS_0].clear = BH1745_getRGBvalue(RGBC_SENS_0,CLEAR) ;
                                     sensor.rgbc[RGBC_SENS_1].clear = BH1745_getRGBvalue(RGBC_SENS_1, CLEAR) ; break;
 
-                        case 40 :   actuator.stepperMotor[STEPPER_0].isRunning = PCA9629_ReadMotorState(STEPPER_0) & 0x80; break;
+                        case 40 :  actuator.stepperMotor[STEPPER_0].isRunning = actuator_getStepperState(STEPPER_0); break;
                                 
 			default:
                                   if(i2c_command_queuing[0][CALLBACK]!=0)
@@ -409,40 +410,11 @@ int getMcuFirmware(void){
 // -------------------------------------------------------------------
 
 int setStepperStepAction(int motorNumber, int direction, int stepCount){
+    // USING THE NEW DRIVER
+    //set_i2c_command_queue(&actuator_setStepperStepAction, motorNumber, direction);
     
-    unsigned char ctrlData = 0;
-    unsigned char PMAmode = 0;
-        
-
-        // Check if motor inversion requiered and modify if necessary
-    if(kehops.stepperWheel[motorNumber].config.motor.inverted)
-        direction *= -1;
-
-    switch(direction){
-            case BUGGY_FORWARD :	ctrlData = 0x80; break;
-            case BUGGY_BACK :           ctrlData = 0x81; break;
-
-            case BUGGY_STOP : 		ctrlData = 0x20; break;
-            default :		     	break;
-    }
-        
-    if(stepCount<=0)
-        // Configuration du driver pour une rotation continue
-       PMAmode = 0x00;
-    else
-        // Configuration du driver pour une action unique
-        PMAmode = 0x01;
-    
-    // Reset le registre de contronle
-    // (Indispensable pour une nouvelle action après une action infinie)
-    set_i2c_command_queue(&PCA9629_StepperMotorControl, motorNumber, 0x00);
-    
-    // Assignation du mode action continu ou unique
-    set_i2c_command_queue(&PCA9629_StepperMotorMode, motorNumber, PMAmode);
-    set_i2c_command_queue(&PCA9629_StepperMotorSetStep, motorNumber, stepCount);
-    set_i2c_command_queue(&PCA9629_StepperMotorControl, motorNumber, ctrlData);
-
-    
+    printf("\n-------- SET STEPPER STEP ACTION -------------\n");
+    actuator_setStepperStepAction(motorNumber, direction, stepCount);
     return (0);
 } 
 
@@ -453,24 +425,10 @@ int setStepperStepAction(int motorNumber, int direction, int stepCount){
 // - vitesse 0..100%
 // -------------------------------------------------------------------
 int setStepperSpeed(int motorNumber, int speed){
-        int regData;
+    printf("\n-------- SET STEPPER SPEED -------------\n");
+    // USING THE NEW DRIVER
+    //set_i2c_command_queue(&actuator_setStepperSpeed, motorNumber, speed);
     
-    	// V�rification ratio max et min comprise entre 0..100%
-	if(speed > 100)
-		speed = 100;
-	if (speed<0)
-		speed = 1;
-
-        // Periode minimum (2mS) + vitesse en % (max 22.5mS)
-        regData = 0x029A + ((100-speed) * 75);
-       
-//        printf("\n\n\n REG DATA: %4x speed: %d\n\n\n", regData, speed);
-        
-	if(motorNumber >= 0)
-		set_i2c_command_queue(&PCA9629_StepperMotorPulseWidth, motorNumber, regData);
-	else
-		printf("\n function [setStepperSpeed] : undefine motor #%d", motorNumber);
-         
     return (1);
 }                           
 
@@ -521,7 +479,6 @@ int set_i2c_command_queue(int (*callback)(char, int),char adr, int cmd){
 		i2c_command_queuing[freeIndex][ADR] =  adr;
 		i2c_command_queuing[freeIndex][CMD] =  cmd;
 	}
-
 
 	return freeIndex;
 }

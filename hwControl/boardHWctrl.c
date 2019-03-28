@@ -27,11 +27,14 @@ int EFM8BB_getBoardType(void);                                  // Get the type 
 void PCA9685_DCmotorSetSpeed(unsigned char motorAdr, unsigned char dutyCycle);
 void PCA9685_setServoPos(unsigned char smAddr, char position);
 
+/*
 int PCA9629_StepperMotorControl(int motorNumber, int data);              //Configuration du registre "PAS" du driver moteur
 int PCA9629_StepperMotorSetStep(int motorNumber, int stepCount);         //Configuration du registre "PAS" du driver moteur
 int PCA9629_StepperMotorMode(int motorNumber, int data);                 // Mode action continue ou unique
 int PCA9629_StepperMotorPulseWidth(int motorNumber, int data);           // Définition de la largeur d'impulstion
 int PCA9629_ReadMotorState(int motorNumber);                             // Lecture du registre de contrôle du moteur
+ */
+
 int BH1745_getRGBvalue(unsigned char sensorNb, int color);               // Get the value for specified color
 
 int I2C_readDeviceReg(unsigned char deviceAd, unsigned char registerAdr);    // Get the value for selected register on device
@@ -188,7 +191,7 @@ void MCP2308_DCmotorSetRotation(unsigned char motorAdr, char direction){
         }
 
 }
-
+/*
 //================================================================================
 // STEPPERMOTORSETSTEP
 // Paramètrage du nombre de pas dans les registres du driver moteur pour CW et CCW
@@ -287,6 +290,7 @@ int PCA9629_StepperMotorPulseWidth(int motorNumber, int data){
         return(err);
 }
 
+*/
 //================================================================================
 // SETSERVOPOS
 // D�fini la position a appliquer au servomoteur
@@ -460,60 +464,7 @@ unsigned char configRGBdevice(void){
 }
 
 
-//================================================================================
-// configStepMotorDriver
-// Configuration initiale du contrôleur de moteur pas à pas
-//	- Registre de contr�le
 
-//================================================================================
-unsigned char configStepMotorDriver(void){
-    unsigned char err=0;
-    
-    // CONFIGURATION DU CIRCUIT DRIVER MOTEUR PAS A PAS
-    // bit 6 et 7 non utilisés dans les registres
-    
-    
-    err+= i2c_write(0, PCA9629, 0x00, 0x20);    // MODE - Configuration du registre MODE (pin INT désactivée, Allcall Adr. désactivé)
-    err+= i2c_write(0, PCA9629, 0x01, 0xFF);    // WDTOI
-    err+= i2c_write(0, PCA9629, 0x02, 0x00);    // WDCNTL
-    err+= i2c_write(0, PCA9629, 0x03, 0x0F);    // IO_CFG
-    err+= i2c_write(0, PCA9629, 0x04, 0x10);    // INTMODE
-    err+= i2c_write(0, PCA9629, 0x05, 0x1F);    // MSK
-    err+= i2c_write(0, PCA9629, 0x06, 0x00);    // INTSTAT
-    //err+= i2c_write(0, PCA9629, 0x07, 0x);    // IP
-    err+= i2c_write(0, PCA9629, 0x08, 0x00);    // INT_MTR_ACT
-    err+= i2c_write(0, PCA9629, 0x09, 0x00);    // EXTRASTEPS0
-    err+= i2c_write(0, PCA9629, 0x0A, 0x00);    // EXTRASTEPS1
-    err+= i2c_write(0, PCA9629, 0x0B, 0x10);    // OP_CFG_PHS
-    err+= i2c_write(0, PCA9629, 0x0C, 0x00);    // OP_STAT_TO
-    err+= i2c_write(0, PCA9629, 0x0D, 0x00);    // RUCNTL
-    err+= i2c_write(0, PCA9629, 0x0E, 0x00);    // RDCNTL
-    err+= i2c_write(0, PCA9629, 0x0F, 0x01);    // PMA - 0x01 Action unique, 0x00 action continue
-    err+= i2c_write(0, PCA9629, 0x10, 0x05);    // LOOPDLY_CW - Pour un delais de 20ms d'inversion de sens
-    err+= i2c_write(0, PCA9629, 0x11, 0x05);    // LOOPDLY_CCW Pour un delais de 20ms d'inversion de sens
-    err+= i2c_write(0, PCA9629, 0x12, 0xFF);    // CWSCOUNTL - Nombre de pas CW
-    err+= i2c_write(0, PCA9629, 0x13, 0xFF);    // CWSCOUNTH
-    err+= i2c_write(0, PCA9629, 0x14, 0xFF);    // CCWSCOUNTL - Nombre de pas CCW
-    err+= i2c_write(0, PCA9629, 0x15, 0xFF);    // CCWSCOUNTH
-    err+= i2c_write(0, PCA9629, 0x16, 0x9A);    // CWPWL - Vitesse / Largeur d'impulsion pour CW
-    err+= i2c_write(0, PCA9629, 0x17, 0x02);    // CWPWH
-    err+= i2c_write(0, PCA9629, 0x18, 0x9A);    // CCWPWL - Vitesse / Largeur d'impulsion pour CCW
-    err+= i2c_write(0, PCA9629, 0x19, 0x02);    // CCWPWH
-    err+= i2c_write(0, PCA9629, 0x1A, 0x00);    // MCNTL - Registre contrôle moteur
-    err+= i2c_write(0, PCA9629, 0x1B, 0xE2);    // SUBA1
-    err+= i2c_write(0, PCA9629, 0x1C, 0xE4);    // SUBA2
-    err+= i2c_write(0, PCA9629, 0x1D, 0xE8);    // SUBA3
-    err+= i2c_write(0, PCA9629, 0x1E, 0xE0);    // ALLCALLA
-    //err+= i2c_write(0, PCA9629, 0x1F, 0x00);    // STEPCOUNT0
-    //err+= i2c_write(0, PCA9629, 0x20, 0x00);    // STEPCOUNT1
-    //err+= i2c_write(0, PCA9629, 0x21, 0x00);    // STEPCOUNT2
-    //err+= i2c_write(0, PCA9629, 0x22, 0x00);    // STEPCOUNT3
-   
-    if(err)
-        printf("Kehops I2C Step motor driver device initialization with %d error\n", err);
-    
-    return err;    
-}
 
 
 

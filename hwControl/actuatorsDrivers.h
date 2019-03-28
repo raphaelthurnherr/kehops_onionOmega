@@ -41,7 +41,7 @@ extern char actuator_setLedPower(int ledID, int power);
  * \return -
  */
 
-char actuator_setPwmPower(int pwmID, int power);
+extern char actuator_setPwmPower(int pwmID, int power);
 
 
 /**
@@ -52,6 +52,28 @@ char actuator_setPwmPower(int pwmID, int power);
  * \return -
  */
 
-char actuator_setServoPosition(int pwmID, int position);
+extern char actuator_setServoPosition(int pwmID, int position);
         
+
+/**
+ * \fn char actuator_setStepperSpeed()
+ * \brief Get the STEPPER hardware id of and setup the speed
+ *
+ * \param motorNumber, direction, stepCount
+ * \return -
+ */
+
+extern int actuator_setStepperSpeed(int motorNumber, int speed);
+
+
+/**
+ * \fn char actuator_setStepperStepAction()
+ * \brief Get the STEPPER hardware id of and setup direction and step count to do
+ *
+ * \param motorNumber, direction, stepCount
+ * \return -
+ */
+
+extern int actuator_setStepperStepAction(int motorNumber, int direction, int stepCount);
+
 #endif /* ACTUATORSDRIVERS_H */
