@@ -65,27 +65,7 @@ extern unsigned char motorDCadr[2];                                             
 
 extern void MCP2308_DCmotorState(unsigned char state);
 extern void MCP2308_DCmotorSetRotation(unsigned char motorAdr, char direction);
-extern char MCP2308_ReadGPIO(unsigned char input);   // Lecture d'un GPIO sur le peripherique 
+
 extern void PCA9685_DCmotorSetSpeed(unsigned char motorAdr, unsigned char dutyCycle);
-extern void PCA9685_setServoPos(unsigned char smAddr, char position);
-extern void PCA9685_setLedPower(unsigned char smAddr, unsigned char power);
 
-extern int PCA9629_StepperMotorControl(int motorNumber, int data);              //Configuration du registre "PAS" du driver moteur
-extern int PCA9629_StepperMotorSetStep(int motorNumber, int stepCount);         //Configuration du registre "PAS" du driver moteur
-extern int PCA9629_StepperMotorMode(int motorNumber, int data);                 // Mode action continue ou unique
-extern int PCA9629_StepperMotorPulseWidth(int motorNumber, int data);           // Registre de configuration de la largeur d'impulsion moteur pour les sens CW et CCW
-extern int PCA9629_ReadMotorState(int motorNumber);                             // Lecture du registre de contrôle du moteur
-//extern void setDCmotorPower(unsigned char motorAdr, unsigned char power);
-
-extern int EFM8BB_readSonarDistance(void);					// Get distance in mm from the EFM8BB microcontroller
-extern char EFM8BB_readDigitalInput(unsigned char InputNr);			// Get digital input state in mm from the EFM8BB microcontroller
-extern int EFM8BB_readBatteryVoltage(void);					// Get the battery voltage in mV from EFM8BB microcontroller
-extern int EFM8BB_readFrequency(unsigned char wheelNb);				// Get frequency measured on EFM8BB
-extern int EFM8BB_readPulseCounter(unsigned char wheelNb);			// Get pulse counter on EFM8BB
-extern int EFM8BB_clearWheelDistance(unsigned char wheelNb);                    // Reset to 0 the pulse counter on EFM8BB
-extern int EFM8BB_getFirmwareVersion(void);                                     // Get the MCU firmware version
-extern int EFM8BB_getBoardType(void);                                           // Get the type of the board.
-extern int BH1745_getRGBvalue(unsigned char sensorNb, int color);                              // Get the value for specified color
-extern int I2C_readDeviceReg(unsigned char deviceAd, unsigned char registerAdr);    // Get the value for selected register on device
-extern int I2C_writeDeviceReg(unsigned char deviceAd, unsigned char registerAdr, unsigned char data);    // Get the value for selected register on device
 #endif

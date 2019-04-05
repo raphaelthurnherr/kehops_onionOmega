@@ -47,9 +47,9 @@
  * \param device_bh1745 bh1745Config, pointer on the configuration structure
  * \return code error
  */
-unsigned char bh1745nuc_init(device_bh1745 bh1745Config){
+unsigned char bh1745nuc_init(device_bh1745 *bh1745Config){
     unsigned char err=0;
-    unsigned char deviceAddress = bh1745Config.deviceAddress;
+    unsigned char deviceAddress = bh1745Config->deviceAddress;
     
     // Control register
     // b7:Initial reset, b6, INT inactive
@@ -77,9 +77,9 @@ unsigned char bh1745nuc_init(device_bh1745 bh1745Config){
  * \return code error
  */
 
-int bh1745nuc_getChannelRGBvalue(device_bh1745 bh1745Config, int channel){
+int bh1745nuc_getChannelRGBvalue(device_bh1745 * bh1745Config, int channel){
 	char err;
-        unsigned char deviceAddress = bh1745Config.deviceAddress;
+        unsigned char deviceAddress = bh1745Config->deviceAddress;
         
 	int value=-1;
         int RGBregAdr = CLEAR_DATA_LSBs;  // Registre CLEAR LSB par defaut 

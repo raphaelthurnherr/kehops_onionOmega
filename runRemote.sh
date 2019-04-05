@@ -1,4 +1,4 @@
-#!/bin/bash
+#bin/bash
 # Indique au système que l'argument qui suit est le programme utilisé pour exécuter ce fichier
 # En règle générale, les "#" servent à mettre en commentaire le texte qui suit comme ici
 
@@ -15,9 +15,9 @@ echo "Fichier MD5 cr�e: "`cat dist/Release/GNU_Omega-Linux/kehops.md5`
 
 echo "Transfere des fichiers binaire..."
 
-rsync -a /home/raph/NetBeansProjects/kehops_onionOmega/dist/Debug/GNU_Omega-Linux/kehops root@192.168.3.1:~/kehops
-#rsync -a /home/raph-pnp/Documents/dev/embedded_soft/kehops_onionOmega/dist/Debug/GNU_Omega-Linux/kehops root@192.168.3.1:~/kehops
-
+rsync -a /home/raph/ownCloud/dev/Projets/kehops_onionOmega/dist/Debug/GNU_Omega-Linux/kehops root@192.168.3.1:~/kehops
+#rsync -a /home/raph-pnp/ownCloud/dev/Projets/kehops_onionOmega/dist/Debug/GNU_Omega-Linux/kehops root@192.168.3.1:~/kehops
+        
 echo "Transfere du fichier MD5 du binaire..."
 #rsync -a /home/raph-pnp/Documents/dev/embedded_soft/kehops_onionOmega/dist/Debug/GNU_Omega-Linux/kehops.md5  root@192.168.3.1:~/kehops
 

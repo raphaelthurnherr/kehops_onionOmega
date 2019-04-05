@@ -16,6 +16,7 @@
  */
 
 typedef struct bh1745{
+    char deviceName[25];                        // Device Name of IC
     unsigned char deviceAddress;                // Bus device address
 } device_bh1745;
 
@@ -25,7 +26,7 @@ typedef struct bh1745{
  * \return code error
  */
 
-extern unsigned char bh1745nuc_init(device_bh1745 bh1745Config);
+extern unsigned char bh1745nuc_init(device_bh1745 *bh1745Config);
 
 
 /**
@@ -35,5 +36,5 @@ extern unsigned char bh1745nuc_init(device_bh1745 bh1745Config);
  * \return code error
  */
 
-extern int bh1745nuc_getChannelRGBvalue(device_bh1745 bh1745Config, int channel);
+extern int bh1745nuc_getChannelRGBvalue(device_bh1745 *bh1745Config, int channel);
 #endif /* BH1745_H */

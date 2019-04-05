@@ -53,6 +53,7 @@ struct addrReg {
     
 struct deviceAttributes{
     struct addrReg deviceInit[32];
+    int frequency;
 };
 
 /**
@@ -90,10 +91,7 @@ typedef struct devicesList{
 
 typedef struct device_drivers{
     char name[15];
-    int address;
-    char device_type[15];
     struct driverAttribute attributes;
-    struct driver_subdrivers sub_driver;
 } hwDeviceDriver;
 
 typedef struct generic_drivers{
@@ -141,7 +139,8 @@ typedef struct parts_list{
     struct device dout[MAX_DRIVERS_PER_TYPE];
     struct device din[MAX_DRIVERS_PER_TYPE];
     struct device ain[MAX_DRIVERS_PER_TYPE];
-    struct device counter[MAX_DRIVERS_PER_TYPE];
+    struct device freqCounter[MAX_DRIVERS_PER_TYPE];
+    struct device pulsesCounter[MAX_DRIVERS_PER_TYPE];
     struct device rgbSensor[MAX_DRIVERS_PER_TYPE];
     struct device distanceSensor[MAX_DRIVERS_PER_TYPE];
     
@@ -214,8 +213,6 @@ extern unsigned char printBoardData(int partsNb, struct device * device);
 
 devices_list boardDevice[MAX_BOARD_DEVICE];
 kehopsParts kehopsActuators;
-
-
 
 #endif /* DEVICEMAPPING_H */
 

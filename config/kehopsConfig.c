@@ -68,22 +68,34 @@
 #define FILE_KEY_CONFIG_MOTOR_MINRPM "{'motor'[*{'rpmMin'"
 #define FILE_KEY_CONFIG_MOTOR_MAXRPM "{'motor'[*{'rpmMax'"
 
-
-#define FILE_KEY_CONFIG_WHEEL "{'wheel'"
-#define FILE_KEY_CONFIG_WHEEL_ID "{'wheel'[*{'wheel'"
-#define FILE_KEY_CONFIG_WHEEL_PULSES "{'wheel'[*{'pulses'"
-#define FILE_KEY_CONFIG_WHEEL_DIAMETER "{'wheel'[*{'diameter'"
-#define FILE_KEY_CONFIG_WHEEL_PIDEN  "{'wheel'[*{'rpmRegulator'{'state'"
-#define FILE_KEY_CONFIG_WHEEL_PIDkp  "{'wheel'[*{'rpmRegulator'{'PID_Kp'"
-#define FILE_KEY_CONFIG_WHEEL_PIDki  "{'wheel'[*{'rpmRegulator'{'PID_Ki'"
-#define FILE_KEY_CONFIG_WHEEL_PIDkd  "{'wheel'[*{'rpmRegulator'{'PID_Kd'"
-
 #define FILE_KEY_CONFIG_STEPPER "{'stepper'"
 #define FILE_KEY_CONFIG_STEPPER_ID "{'stepper'[*{'motor'"
 #define FILE_KEY_CONFIG_STEPPER_MAP_ID "{'stepper'[*{'stepper_motor_id'"
 #define FILE_KEY_CONFIG_STEPPER_INVERT "{'stepper'[*{'inverted'"
 #define FILE_KEY_CONFIG_STEPPER_RATIO "{'stepper'[*{'ratio'"
 #define FILE_KEY_CONFIG_STEPPER_STEPS "{'stepper'[*{'steps'"
+
+#define FILE_KEY_CONFIG_WHEEL "{'wheel'"
+#define FILE_KEY_CONFIG_WHEEL_ID "{'wheel'[*{'wheel'"
+#define FILE_KEY_CONFIG_WHEEL_PULSES "{'wheel'[*{'pulses'"
+#define FILE_KEY_CONFIG_WHEEL_DIAMETER "{'wheel'[*{'diameter'"
+#define FILE_KEY_CONFIG_WHEEL_FREQCOUNT "{'wheel'[*{'freqCounter_id'"
+#define FILE_KEY_CONFIG_WHEEL_PULSCOUNT "{'wheel'[*{'pulsesCounter_id'"
+#define FILE_KEY_CONFIG_WHEEL_PIDEN  "{'wheel'[*{'rpmRegulator'{'state'"
+#define FILE_KEY_CONFIG_WHEEL_PIDkp  "{'wheel'[*{'rpmRegulator'{'PID_Kp'"
+#define FILE_KEY_CONFIG_WHEEL_PIDki  "{'wheel'[*{'rpmRegulator'{'PID_Ki'"
+#define FILE_KEY_CONFIG_WHEEL_PIDkd  "{'wheel'[*{'rpmRegulator'{'PID_Kd'"
+
+#define FILE_KEY_CONFIG_COLOR "{'color'"
+#define FILE_KEY_CONFIG_COLOR_ID "{'color'[*{'color'"
+#define FILE_KEY_CONFIG_COLOR_MAP_ID "{'color'[*{'rgbSensor_id'"
+#define FILE_KEY_CONFIG_COLOR_EVENT_STATE "{'color'[*{'event'"
+#define FILE_KEY_CONFIG_COLOR_RED "{'color'[*{'red'"
+#define FILE_KEY_CONFIG_COLOR_GREEN "{'color'[*{'green'"
+#define FILE_KEY_CONFIG_COLOR_BLUE "{'color'[*{'blue'"
+#define FILE_KEY_CONFIG_COLOR_EVENT_LOW "{'event_lower'"
+#define FILE_KEY_CONFIG_COLOR_EVENT_HIGH "{'event_higher'"
+#define FILE_KEY_CONFIG_COLOR_EVENT_HYST "{'event_hysteresis'"
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -95,6 +107,18 @@
 #include "../kehops_main.h"
 #include "kehopsConfig.h"
 
+
+unsigned char NBPWM=0;
+unsigned char NBLED=0;
+unsigned char NBAIN=0;
+unsigned char NBSONAR=0;
+unsigned char NBSTEPPER=0;
+unsigned char NBMOTOR=0;
+unsigned char NBRGBC=0;
+unsigned char NBBTN=0;
+unsigned char NBDIN=0;
+unsigned char NBWHEEL=0;
+
 /**
  * \brief Extract JSON configuration from FileBuffer to the kehops structrue configuration
  * \param char * buffer, pointer to the source buffer to extractz data
@@ -102,13 +126,16 @@
  */  
 void extractKehopsConfig(char * srcDataBuffer){
 
-    struct jReadElement cfg_devices_list, cfg_mqtt_list;
+    NBPWM = NBLED = NBAIN = NBSONAR = NBSTEPPER = NBSTEPPER = NBMOTOR = NBRGBC = NBBTN = NBDIN = NBWHEEL =0;
+    
+    
+    struct jReadElement cfg_devices_list, cfg_mqtt_list, cfg_devices;
     int nbOfDeviceInConf, deviceId;
     int i;
     char dataValue[15];
         
     if(srcDataBuffer != NULL){
-                // EXTRACT MQTT SETTINGS FROM CONFIG        
+    // EXTRACT MQTT SETTINGS FROM CONFIG        
         jRead((char *)srcDataBuffer, FILE_KEY_CONFIG_MQTT, &cfg_mqtt_list );
         // RECHERCHE DATA DE TYPE OBJ
         if(cfg_mqtt_list.dataType == JREAD_OBJECT ){
@@ -147,12 +174,6 @@ void extractKehopsConfig(char * srcDataBuffer){
 
 
     // EXTRACT MOTOR SETTINGS FROM CONFIG    
-        // Reset motor data config before reading
-        for(i=0;i<NBMOTOR;i++){
-          kehops.dcWheel[i].config.motor.inverted = 0;
-          kehops.dcWheel[i].config.rpmMin = 20;
-          kehops.dcWheel[i].config.rpmMax = 200;
-        }
 
         // Motor Setting
         jRead((char *)srcDataBuffer, FILE_KEY_CONFIG_MOTOR, &cfg_devices_list );
@@ -162,11 +183,19 @@ void extractKehopsConfig(char * srcDataBuffer){
             // Get the number of motors in array
             nbOfDeviceInConf=cfg_devices_list.elements;
 
+            // Reset motor data config before reading
+            for(i=0;i<nbOfDeviceInConf;i++){
+                kehops.dcWheel[i].config.motor.inverted = 0;
+                kehops.dcWheel[i].config.rpmMin = 20;
+                kehops.dcWheel[i].config.rpmMax = 200;
+            }
+            
             for(i=0; i < nbOfDeviceInConf; i++){ 
                 deviceId=-1;
                 deviceId=jRead_int((char *)srcDataBuffer, FILE_KEY_CONFIG_MOTOR_ID, &i); 
 
-                if(deviceId >= 0 && deviceId < NBMOTOR){
+                if(deviceId >= 0){
+                    NBMOTOR++;
                     kehops.dcWheel[deviceId].config.motor.dc_motor_id = jRead_int((char *)srcDataBuffer, FILE_KEY_CONFIG_MOTOR_MAP_ID, &i); 
                     kehops.dcWheel[deviceId].config.rpmMin = jRead_int((char *)srcDataBuffer, FILE_KEY_CONFIG_MOTOR_MINRPM, &i); 
                     kehops.dcWheel[deviceId].config.rpmMax = jRead_int((char *)srcDataBuffer, FILE_KEY_CONFIG_MOTOR_MAXRPM, &i); 
@@ -194,11 +223,6 @@ void extractKehopsConfig(char * srcDataBuffer){
         }
 
     // EXTRACT WHEEL SETTINGS FROM CONFIG    
-        // Reset motor data config before reading
-        for(i=0;i<NBMOTOR;i++){
-          kehops.dcWheel[deviceId].config.diameter = -1;
-          kehops.dcWheel[deviceId].config.pulsesPerRot = -1;
-        }
 
         // Wheel Setting
         jRead((char *)srcDataBuffer, FILE_KEY_CONFIG_WHEEL, &cfg_devices_list );
@@ -208,29 +232,32 @@ void extractKehopsConfig(char * srcDataBuffer){
             // Get the number of motors in array
             nbOfDeviceInConf=cfg_devices_list.elements;
 
+            // Reset motor data config before reading
+            for(i=0;i<nbOfDeviceInConf;i++){
+              kehops.dcWheel[i].config.diameter = -1;
+              kehops.dcWheel[i].config.pulsesPerRot = -1;
+              kehops.dcWheel[i].config.encoder.freqCounter_id = -1;
+              kehops.dcWheel[i].config.encoder.pulseCounter_id = -1;
+            }
+        
             for(i=0; i < nbOfDeviceInConf; i++){ 
                 deviceId=-1;
-                deviceId=jRead_long((char *)srcDataBuffer, FILE_KEY_CONFIG_WHEEL_ID, &i); 
-
-                if(deviceId >= 0 && deviceId < NBMOTOR){
+                deviceId=jRead_int((char *)srcDataBuffer, FILE_KEY_CONFIG_WHEEL_ID, &i); 
+                if(deviceId >= 0){
+                    NBWHEEL++;
+                    kehops.dcWheel[deviceId].config.encoder.freqCounter_id = jRead_int((char *)srcDataBuffer, FILE_KEY_CONFIG_WHEEL_FREQCOUNT, &i);
+                    kehops.dcWheel[deviceId].config.encoder.pulseCounter_id = jRead_int((char *)srcDataBuffer, FILE_KEY_CONFIG_WHEEL_PULSCOUNT, &i);
                     kehops.dcWheel[deviceId].config.diameter = jRead_long((char *)srcDataBuffer, FILE_KEY_CONFIG_WHEEL_DIAMETER, &i);
                     kehops.dcWheel[deviceId].config.pulsesPerRot = jRead_long((char *)srcDataBuffer, FILE_KEY_CONFIG_WHEEL_PULSES, &i);
-                    kehops.dcWheel[deviceId].data._MMPP = (kehops.dcWheel[deviceId].config.diameter * 3.1415926535897932384) / kehops.dcWheel[deviceId].config.pulsesPerRot;
+                    kehops.dcWheel[deviceId].data._MMPP = (kehops.dcWheel[deviceId].config.diameter * 3.141592) / kehops.dcWheel[deviceId].config.pulsesPerRot;
                     kehops.dcWheel[deviceId].data._MAXSPEED_CMSEC = ((float)kehops.dcWheel[deviceId].config.rpmMax /60) *  ((kehops.dcWheel[deviceId].config.diameter * 3.1415926535897932384)/10);
                 }
             }
         }
-
+        
     // EXTRACT STEPPER MOTOR SETTINGS FROM CONFIG
 
-    // Reset motor data config before reading
-    for(i=0;i<NBSTEPPER;i++){
-      kehops.stepperWheel[i].config.motor.inverted = -1;
-      kehops.stepperWheel[i].config.motor.ratio = -1;
-      kehops.stepperWheel[i].config.motor.steps = -1;
-    }
-
-    // Stepper motor Settings
+        // Stepper motor Settings
         jRead((char *)srcDataBuffer, FILE_KEY_CONFIG_STEPPER, &cfg_devices_list );
 
         // RECHERCHE DATA DE TYPE ARRAY
@@ -238,11 +265,19 @@ void extractKehopsConfig(char * srcDataBuffer){
             // Get the number of motors in array
             nbOfDeviceInConf=cfg_devices_list.elements;
 
+                        // Reset motor data config before reading
+            for(i=0;i<nbOfDeviceInConf;i++){
+              kehops.stepperWheel[i].config.motor.inverted = -1;
+              kehops.stepperWheel[i].config.motor.ratio = -1;
+              kehops.stepperWheel[i].config.motor.steps = -1;
+            }
+            
             for(i=0; i < nbOfDeviceInConf; i++){ 
                 deviceId=-1;
                 deviceId=jRead_long((char *)srcDataBuffer, FILE_KEY_CONFIG_STEPPER_ID, &i); 
 
-                if(deviceId >= 0 && deviceId < NBSTEPPER){
+                if(deviceId >= 0){
+                    NBSTEPPER++;
                     kehops.stepperWheel[deviceId].config.motor.stepper_motor_id = jRead_int((char *)srcDataBuffer, FILE_KEY_CONFIG_STEPPER_MAP_ID, &i); 
                     jRead_string((char *)srcDataBuffer, FILE_KEY_CONFIG_STEPPER_INVERT, dataValue, 15, &i );
                     if(!strcmp(dataValue, "on")){
@@ -258,13 +293,6 @@ void extractKehopsConfig(char * srcDataBuffer){
         }            
 
     // EXTRACT LED SETTINGS FROM CONFIG    
-      // Reset motor data config before reading
-      for(i=0;i<NBLED;i++){
-          kehops.led[i].config.dout_id = -1;
-          kehops.led[i].config.defaultPower = -1;
-          kehops.led[i].config.defaultState = -1;
-          kehops.led[i].config.mode = -1;
-      }
 
     // LED Setting
         jRead((char *)srcDataBuffer, FILE_KEY_CONFIG_LED, &cfg_devices_list );
@@ -274,11 +302,20 @@ void extractKehopsConfig(char * srcDataBuffer){
             // Get the number of motors in array
             nbOfDeviceInConf=cfg_devices_list.elements;
 
+            // Reset motor data config before reading
+            for(i=0;i<nbOfDeviceInConf;i++){
+                kehops.led[i].config.dout_id = -1;
+                kehops.led[i].config.defaultPower = -1;
+                kehops.led[i].config.defaultState = -1;
+                kehops.led[i].config.mode = -1;
+            }
+            
             for(i=0; i < nbOfDeviceInConf; i++){ 
                 deviceId=-1;
                 deviceId=jRead_long((char *)srcDataBuffer, FILE_KEY_CONFIG_LED_ID, &i); 
 
-                if(deviceId >= 0 && deviceId < NBLED){
+                if(deviceId >= 0){
+                    NBLED++;
                     kehops.led[deviceId].config.defaultPower = jRead_int((char *)srcDataBuffer, FILE_KEY_CONFIG_LED_POWER, &i);
                     kehops.led[deviceId].config.dout_id = jRead_int((char *)srcDataBuffer, FILE_KEY_CONFIG_LED_MAP_ID, &i);
                     jRead_string((char *)srcDataBuffer, FILE_KEY_CONFIG_LED_STATE, dataValue, 15, &i );
@@ -293,14 +330,6 @@ void extractKehopsConfig(char * srcDataBuffer){
             }
         }
         
-    // EXTRACT PWM SETTINGS FROM CONFIG    
-      // Reset motor data config before reading
-      for(i=0;i<NBPWM;i++){
-          kehops.pwm[i].config.dout_id = -1;
-          kehops.pwm[i].config.defaultPower = 0;
-          kehops.pwm[i].config.defaultState = 0;
-          kehops.pwm[i].config.mode = 0;
-      }
 
     // PWM Setting
         jRead((char *)srcDataBuffer, FILE_KEY_CONFIG_PWM, &cfg_devices_list );
@@ -309,13 +338,25 @@ void extractKehopsConfig(char * srcDataBuffer){
         if(cfg_devices_list.dataType == JREAD_ARRAY ){
             // Get the number of PWM in array
             nbOfDeviceInConf = cfg_devices_list.elements;
+         
+            // EXTRACT PWM SETTINGS FROM CONFIG    
+              // Reset motor data config before reading
+              for(i=0;i<nbOfDeviceInConf;i++){
+                  kehops.pwm[i].config.dout_id = -1;
+                  kehops.pwm[i].config.defaultPower = 0;
+                  kehops.pwm[i].config.defaultState = 0;
+                  kehops.pwm[i].config.mode = 0;
+              }
+            
             for(i=0; i < nbOfDeviceInConf; i++){
                 deviceId=-1;
                 deviceId = jRead_long((char *)srcDataBuffer, FILE_KEY_CONFIG_PWM_ID, &i); 
 
-                if(deviceId >= 0 && deviceId < NBPWM){
+                if(deviceId >= 0){
+                    NBPWM++;
                     kehops.pwm[deviceId].config.defaultPower = jRead_int((char *)srcDataBuffer, FILE_KEY_CONFIG_PWM_POWER, &i);
-                    kehops.pwm[deviceId].config.dout_id = jRead_int((char *)srcDataBuffer, FILE_KEY_CONFIG_PWM_MAP_ID, &i);    
+                    kehops.pwm[deviceId].config.dout_id = jRead_int((char *)srcDataBuffer, FILE_KEY_CONFIG_PWM_MAP_ID, &i);
+                    printf("KEHOPS PWM #%d:   dout_id: %d\n", i, kehops.pwm[deviceId].config.dout_id);
                     jRead_string((char *)srcDataBuffer, FILE_KEY_CONFIG_PWM_STATE, dataValue, 15, &i );
                     if(!strcmp(dataValue, "on")){
                         kehops.pwm[deviceId].config.defaultState = 1;
@@ -326,7 +367,7 @@ void extractKehopsConfig(char * srcDataBuffer){
                 }
             }
         }
-        
+         
     // DIN Setting
         jRead((char *)srcDataBuffer, FILE_KEY_CONFIG_DIN, &cfg_devices_list );
 
@@ -336,9 +377,10 @@ void extractKehopsConfig(char * srcDataBuffer){
             nbOfDeviceInConf = cfg_devices_list.elements;
             for(i=0; i < nbOfDeviceInConf; i++){ 
                 deviceId=-1;
-                deviceId = jRead_long((char *)srcDataBuffer, FILE_KEY_CONFIG_DIN_ID, &i); 
+                deviceId = jRead_int((char *)srcDataBuffer, FILE_KEY_CONFIG_DIN_ID, &i); 
 
-                if(deviceId >= 0 && deviceId < NBDIN){
+                if(deviceId >= 0){
+                    NBDIN++;
                     kehops.proximity[deviceId].config.din_id = jRead_int((char *)srcDataBuffer, FILE_KEY_CONFIG_DIN_MAP_ID, &i);
                     jRead_string((char *)srcDataBuffer, FILE_KEY_CONFIG_DIN_EVENT_STATE, dataValue, 15, &i );
                     if(!strcmp(dataValue, "on")){
@@ -360,9 +402,10 @@ void extractKehopsConfig(char * srcDataBuffer){
             nbOfDeviceInConf = cfg_devices_list.elements;
             for(i=0; i < nbOfDeviceInConf; i++){ 
                 deviceId=-1;
-                deviceId = jRead_long((char *)srcDataBuffer, FILE_KEY_CONFIG_BTN_ID, &i); 
+                deviceId = jRead_int((char *)srcDataBuffer, FILE_KEY_CONFIG_BTN_ID, &i); 
 
-                if(deviceId >= 0 && deviceId < NBBTN){
+                if(deviceId >= 0){
+                    NBBTN++;
                     kehops.button[deviceId].config.din_id = jRead_int((char *)srcDataBuffer, FILE_KEY_CONFIG_BTN_MAP_ID, &i);
                     jRead_string((char *)srcDataBuffer, FILE_KEY_CONFIG_BTN_EVENT_STATE, dataValue, 15, &i );
                     if(!strcmp(dataValue, "on")){
@@ -374,7 +417,7 @@ void extractKehopsConfig(char * srcDataBuffer){
                 }
             }
         }
-
+        
         // SONAR Setting
         jRead((char *)srcDataBuffer, FILE_KEY_CONFIG_SONAR, &cfg_devices_list );
 
@@ -384,9 +427,10 @@ void extractKehopsConfig(char * srcDataBuffer){
             nbOfDeviceInConf = cfg_devices_list.elements;
             for(i=0; i < nbOfDeviceInConf; i++){ 
                 deviceId=-1;
-                deviceId = jRead_long((char *)srcDataBuffer, FILE_KEY_CONFIG_SONAR_ID, &i); 
+                deviceId = jRead_int((char *)srcDataBuffer, FILE_KEY_CONFIG_SONAR_ID, &i); 
 
-                if(deviceId >= 0 && deviceId < NBSONAR){
+                if(deviceId >= 0){
+                    NBSONAR++;
                     kehops.sonar[deviceId].config.distanceSensor_id = jRead_int((char *)srcDataBuffer, FILE_KEY_CONFIG_SONAR_MAP_ID, &i); 
                     jRead_string((char *)srcDataBuffer, FILE_KEY_CONFIG_SONAR_EVENT_STATE, dataValue, 15, &i );
                     if(!strcmp(dataValue, "on")){
@@ -411,9 +455,10 @@ void extractKehopsConfig(char * srcDataBuffer){
             nbOfDeviceInConf = cfg_devices_list.elements;
             for(i=0; i < nbOfDeviceInConf; i++){ 
                 deviceId=-1;
-                deviceId = jRead_long((char *)srcDataBuffer, FILE_KEY_CONFIG_BATTERY_ID, &i); 
+                deviceId = jRead_int((char *)srcDataBuffer, FILE_KEY_CONFIG_BATTERY_ID, &i); 
 
-                if(deviceId >= 0 && deviceId < NBSONAR){
+                if(deviceId >= 0){
+                    NBAIN++;
                     kehops.battery[deviceId].config.ain_id = jRead_int((char *)srcDataBuffer, FILE_KEY_CONFIG_BATTERY_MAP_ID, &i); 
                     jRead_string((char *)srcDataBuffer, FILE_KEY_CONFIG_BATTERY_EVENT_STATE, dataValue, 15, &i );
                     if(!strcmp(dataValue, "on")){
@@ -422,12 +467,55 @@ void extractKehopsConfig(char * srcDataBuffer){
                         if(!strcmp(dataValue, "off")){
                             kehops.battery[deviceId].event.enable = 0;
                         }
-                    kehops.battery[deviceId].event.low = jRead_long((char *)srcDataBuffer, FILE_KEY_CONFIG_BATTERY_EVENT_LOW, &i); 
-                    kehops.battery[deviceId].event.high = jRead_long((char *)srcDataBuffer, FILE_KEY_CONFIG_BATTERY_EVENT_HIGH, &i); 
-                    kehops.battery[deviceId].event.hysteresis = jRead_long((char *)srcDataBuffer, FILE_KEY_CONFIG_BATTERY_EVENT_HYST, &i); 
+                    kehops.battery[deviceId].event.low = jRead_int((char *)srcDataBuffer, FILE_KEY_CONFIG_BATTERY_EVENT_LOW, &i); 
+                    kehops.battery[deviceId].event.high = jRead_int((char *)srcDataBuffer, FILE_KEY_CONFIG_BATTERY_EVENT_HIGH, &i); 
+                    kehops.battery[deviceId].event.hysteresis = jRead_int((char *)srcDataBuffer, FILE_KEY_CONFIG_BATTERY_EVENT_HYST, &i); 
                 }
             }
         }            
+
+        // COLOR SENSORS Setting
+        jRead((char *)srcDataBuffer, FILE_KEY_CONFIG_COLOR, &cfg_devices_list );
+
+        // RECHERCHE DATA DE TYPE ARRAY
+        if(cfg_devices_list.dataType == JREAD_ARRAY ){
+            // Get the number of RGB sensors in array
+            nbOfDeviceInConf = cfg_devices_list.elements;
+            
+            for(i=0; i < nbOfDeviceInConf; i++){ 
+                deviceId=-1;
+                deviceId = jRead_int((char *)srcDataBuffer, FILE_KEY_CONFIG_COLOR_ID, &i); 
+
+                if(deviceId >= 0){
+                    NBRGBC++;
+                    kehops.rgb[deviceId].config.rgbID = jRead_int((char *)srcDataBuffer, FILE_KEY_CONFIG_COLOR_MAP_ID, &i); 
+                    jRead_string((char *)srcDataBuffer, FILE_KEY_CONFIG_COLOR_EVENT_STATE, dataValue, 15, &i );
+                    if(!strcmp(dataValue, "on")){
+                        kehops.rgb[deviceId].config.event.enable = 1;
+                    }else
+                        if(!strcmp(dataValue, "off")){
+                            kehops.rgb[deviceId].config.event.enable = 0;
+                        }
+                    
+                    jReadParam((char *)srcDataBuffer, FILE_KEY_CONFIG_COLOR_RED, &cfg_devices, &i);
+                    kehops.rgb[deviceId].color.red.event.low = jRead_int((char *)cfg_devices.pValue, FILE_KEY_CONFIG_COLOR_EVENT_LOW, &i); 
+                    kehops.rgb[deviceId].color.red.event.high = jRead_int((char *)cfg_devices.pValue, FILE_KEY_CONFIG_COLOR_EVENT_HIGH, &i); 
+                    kehops.rgb[deviceId].color.red.event.hysteresis = jRead_int((char *)cfg_devices.pValue, FILE_KEY_CONFIG_COLOR_EVENT_HYST, &i); 
+
+                    jReadParam((char *)srcDataBuffer, FILE_KEY_CONFIG_COLOR_GREEN, &cfg_devices, &i);
+                    kehops.rgb[deviceId].color.green.event.low = jRead_int((char *)cfg_devices.pValue, FILE_KEY_CONFIG_COLOR_EVENT_LOW, &i); 
+                    kehops.rgb[deviceId].color.green.event.high = jRead_int((char *)cfg_devices.pValue, FILE_KEY_CONFIG_COLOR_EVENT_HIGH, &i); 
+                    kehops.rgb[deviceId].color.green.event.hysteresis = jRead_int((char *)cfg_devices.pValue, FILE_KEY_CONFIG_COLOR_EVENT_HYST, &i); 
+
+                    jReadParam((char *)srcDataBuffer, FILE_KEY_CONFIG_COLOR_BLUE, &cfg_devices, &i);
+                    kehops.rgb[deviceId].color.blue.event.low = jRead_int((char *)cfg_devices.pValue, FILE_KEY_CONFIG_COLOR_EVENT_LOW, &i); 
+                    kehops.rgb[deviceId].color.blue.event.high = jRead_int((char *)cfg_devices.pValue, FILE_KEY_CONFIG_COLOR_EVENT_HIGH, &i); 
+                    kehops.rgb[deviceId].color.blue.event.hysteresis = jRead_int((char *)cfg_devices.pValue, FILE_KEY_CONFIG_COLOR_EVENT_HYST, &i);                     
+                    
+                }
+            }
+        }         
+        
 
         // Reset settings
 //            jRead_string((char *)srcDataBuffer, KEY_MESSAGE_VALUE_CFG_APPRESET, AlgoidMessageRX.Config.config.reset, 15, &i );
@@ -496,10 +584,11 @@ char SaveKehopsConfig(char * fileName){
             
         // CREATE JSON CONFIG FOR WHEEL SETTING            
             jwObj_array("wheel");
-                for(i=0;i<NBMOTOR;i++){
+                for(i=0;i<NBWHEEL;i++){
                     jwArr_object();
                         jwObj_int( "wheel", i);
-
+                        jwObj_int( "pulsesCounter_id", kehops.dcWheel[i].config.encoder.pulseCounter_id);
+                        jwObj_int( "freqCounter_id", kehops.dcWheel[i].config.encoder.freqCounter_id);
                         jwObj_int( "diameter", kehops.dcWheel[i].config.diameter);
                         jwObj_int( "pulses", kehops.dcWheel[i].config.pulsesPerRot);
                         jwObj_object("rpmRegulator");

@@ -31,7 +31,8 @@
 #define KEY_ARRAY_DOUT "{'drivers'{'dout'"
 #define KEY_ARRAY_DIN "{'drivers'{'din'"
 #define KEY_ARRAY_AIN "{'drivers'{'ain'"
-#define KEY_ARRAY_CNT "{'drivers'{'counter'"
+#define KEY_ARRAY_CNT_PULSES "{'drivers'{'pulseCounter'"
+#define KEY_ARRAY_CNT_FREQ "{'drivers'{'freqCounter'"
 #define KEY_ARRAY_RGB "{'drivers'{'rgbSensor'"
 #define KEY_ARRAY_DISTANCE "{'drivers'{'distanceSensor'"
 
@@ -50,6 +51,7 @@
 #define KEY_DRIVER_STR_ADDRESS "{'address'"
 #define KEY_DRIVER_STR_TYPE "{'type'"
 #define KEY_DEVICE_OBJ_ATTRIBUTES_DEVINIT "{'attributes'{'deviceInit'"
+#define KEY_DEVICE_OBJ_ATTRIBUTES_FREQUENCY "{'attributes'{'frequency'"
 #define KEY_DEVICE_ARRAY_ATT_INIT_REGADDR "[*{'regAddr'"
 #define KEY_DEVICE_ARRAY_ATT_INIT_REGDATA "[*{'regData'"
 

@@ -208,8 +208,6 @@ char pca9685_setPulseWidthTime(device_pca9685 *pca9685config, unsigned char chan
             reloadValue = 4095;
     }else 
         reloadValue = 0;
-
-    printf("\n ########   PCA FREQ:    %d       DEVADR: 0x%2x      RELOAD:  %d\n",userFreq, deviceAddr, reloadValue);    
     
     lsbValue = reloadValue & 0x00FF;
     msbValue = (reloadValue & 0x0F00)>>8;

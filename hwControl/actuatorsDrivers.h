@@ -21,7 +21,6 @@
  * \param -
  * \return -
  */  
-
 extern int boardHWinit();
 
 /**
@@ -31,7 +30,7 @@ extern int boardHWinit();
  * \param ledID, powerr
  * \return -
  */
-extern char actuator_setLedPower(int ledID, int power);
+extern char actuator_setLedPower(int doutID, int power);
 
 /**
  * \fn char actuator_setPwmPower()
@@ -40,8 +39,7 @@ extern char actuator_setLedPower(int ledID, int power);
  * \param ledID, powerr
  * \return -
  */
-
-char actuator_setPwmPower(int pwmID, int power);
+extern char actuator_setPwmPower(int doutID, int power);
 
 
 /**
@@ -51,7 +49,38 @@ char actuator_setPwmPower(int pwmID, int power);
  * \param pwmID, position
  * \return -
  */
-
-char actuator_setServoPosition(int pwmID, int position);
+extern char actuator_setServoPosition(int doutID, int position);
         
+
+/**
+ * \fn char actuator_setStepperSpeed()
+ * \brief Get the STEPPER hardware id of and setup the speed
+ *
+ * \param motorNumber, direction, stepCount
+ * \return -
+ */
+extern int actuator_setStepperSpeed(int motorNumber, int speed);
+
+
+/**
+ * \fn char actuator_setStepperStepAction()
+ * \brief Get the STEPPER hardware id of and setup direction and step count to do
+ *
+ * \param motorNumber, direction, stepCount
+ * \return -
+ */
+extern int actuator_setStepperStepAction(int motorNumber, int direction, int stepCount);
+
+extern int actuator_getFirmwareVersion(void);
+extern int actuator_getBoardId(void);
+
+extern int actuator_getCounterFrequency(unsigned char wheelID);          // Retourne la fr�quence actuelle mesuree sur l'encodeur
+extern int actuator_getCounterPulses(unsigned char wheelID);             // Retourne le nombre d'impulsion d'encodeur moteur depuis le d�marrage
+extern int actuator_getDigitalInput(unsigned char dinID);                // Retourne l'état de l'entrée numérique spécifiée
+extern int actuator_getButtonInput(unsigned char btnID);
+extern int actuator_getDistance(unsigned char distanceSensorID);					// Retourne la distance en cm
+extern int actuator_getVoltage(unsigned char ainID);			// Retourne la tension battery en mV
+extern int actuator_getColor(unsigned char rgbID);			// Retourne la tension battery en mV
+extern void actuator_clearWheel(unsigned char Id);
+
 #endif /* ACTUATORSDRIVERS_H */

@@ -1,4 +1,4 @@
-#define FIRMWARE_VERSION "0.6.6b"
+#define FIRMWARE_VERSION "0.7.2"
 
 #define DEFAULT_EVENT_STATE 1   
 
@@ -14,6 +14,8 @@
 #include "buildNumber.h"
 
 #include "buggy_descriptor.h"
+#include "../config/kehopsConfig.h"
+
 #include "kehopsCom/messagesManager.h"
 #include "networkManager.h"
 #include "linux_json.h"
@@ -113,8 +115,11 @@ int main(int argc, char *argv[]) {
         printf(welcomeMessage);
         printf ("------------------------------------\n");
         
-// Cr�ation de la t�che pour la gestion réseau
+
         
+        resetConfig();
+
+// Cr�ation de la t�che pour la gestion réseau        
 	if(InitNetworkManager(&sysApp.info.wan_online, &sysConf.communication.mqtt.broker.address, &sysApp.info.name, &sysApp.info.group)) printf ("#[CORE] Creation tâche réseau : ERREUR\n");
         else {
             printf ("#[CORE] Demarrage tâche réseau: OK\n");            
@@ -137,7 +142,7 @@ int main(int argc, char *argv[]) {
             printf ("#[CORE] Demarrage tâche hardware: OK\n");
         }
         
-        sysApp.kehops.resetConfig=1;
+        //sysApp.kehops.resetConfig=1;
         
 // --------------------------------------------------------------------
 // BOUCLE DU PROGRAMME PRINCIPAL
@@ -224,7 +229,7 @@ int main(int argc, char *argv[]) {
                             kehops.dcWheel[i].measure.distance = (float)(getMotorPulses(i)) * (kehops.dcWheel[i].data._MMPP / 10.0);
                         }
                         
-                        kehops.sonar[0].measure.distance_cm = getSonarDistance()/10;
+                        kehops.sonar[0].measure.distance_cm = getSonarDistance(0)/10;
 			distanceEventCheck();										// Provoque un �venement de type "distance" si la distance mesur�e					// est hors de la plage sp�cifi�e par l'utilisateur
                         
 			DINEventCheck();										// Cont�le de l'�tat des entr�es num�rique
@@ -234,7 +239,7 @@ int main(int argc, char *argv[]) {
 															// G�n�re un �venement si changement d'�tat d�tect�
                                         										// Cont�le les valeur RGB des capteurs
                         
-                        kehops.battery[0].measure.voltage_mV = getBatteryVoltage();
+                        kehops.battery[0].measure.voltage_mV = getBatteryVoltage(0);
                         kehops.battery[0].measure.capacity =(kehops.battery[0].measure.voltage_mV-3500)/((4210-3500)/100);
                         batteryEventCheck();
 
@@ -2178,13 +2183,13 @@ void BUTTONEventCheck(void){
     for(i=0;i<NBBTN;i++){
         // Mise � jour de l'�tat des E/S
         oldBtnValue[i] = kehops.button [i].measure.state;
-        kehops.button[i].measure.state = getDigitalInput(4+i);
+        kehops.button[i].measure.state = getButtonInput(i);
 
         // V�rifie si un changement a eu lieu sur les entrees et transmet un message
         // "event" listant les modifications
         if(kehops.button [i].event.enable && (oldBtnValue[i] != kehops.button [i].measure.state)){
             messageResponse[ptrBuff].BTNresponse.id=i;
-            messageResponse[ptrBuff].value = kehops.button [i].measure.state;
+            messageResponse[ptrBuff].value = kehops.button[i].measure.state;
 
             if(kehops.button[i].event.enable) strcpy(messageResponse[ptrBuff].BTNresponse.event_state, "on");
             else strcpy(messageResponse[ptrBuff].BTNresponse.event_state, "off");
@@ -2213,10 +2218,10 @@ void COLOREventCheck(void){
         unsigned char ptrBuff=0, RGBevent=0;
         
 	// Mise � jour de l'�tat des couleurs des capteur
-	static unsigned char RGB_red_WarningSended[NBRGBC];
-        static unsigned char RGB_green_WarningSended[NBRGBC];
-        static unsigned char RGB_blue_WarningSended[NBRGBC];
-        static unsigned char RGB_clear_WarningSended[NBRGBC];
+	static unsigned char RGB_red_WarningSended[MAXRGBC];
+        static unsigned char RGB_green_WarningSended[MAXRGBC];
+        static unsigned char RGB_blue_WarningSended[MAXRGBC];
+        static unsigned char RGB_clear_WarningSended[MAXRGBC];
         
 	unsigned char i;
 
@@ -2420,6 +2425,8 @@ void runRestartCommand(void){
 
 void resetConfig(void){
     int i;
+    // NEED TO BE MAKE AFTER LOAD CONFIG
+    /*
     	// Init robot membre
 	for(i=0;i<NBAIN;i++){
             kehops.battery[i].event.enable = DEFAULT_EVENT_STATE;
@@ -2494,7 +2501,7 @@ void resetConfig(void){
 
         // ------------ Initialisation de la configuration systeme
         
-    
+    */
         // Initialisation configuration de flux de donn�es periodique
         sysConf.communication.mqtt.stream.state  = ON;
         sysConf.communication.mqtt.stream.time_ms = 500;
@@ -2531,6 +2538,7 @@ void resetConfig(void){
         
         sysApp.info.startUpTime = 0;
         sysApp.kehops.resetConfig = 0;
+        
 }
 
 int getStartupArg(int count, char *arg[]){

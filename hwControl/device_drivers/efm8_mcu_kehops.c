@@ -11,223 +11,118 @@
 
 // REGISTER DEFINITION FOR EFM8 MICROCONTROLLER
 
-#define FIRMWARE_REG                        0x01
 #define BOARDTYPE_REG                       0x00
+#define FIRMWARE_REG                        0x01
 #define DIN_REG                             0x04
-#define SON0                                0x08
-#define VOLT0                               0x0E
+#define DISTANCE_INST_MM                    0x08
+#define AIN0MV                              0x0E
 #define ENC_FREQ0                           0x13
-#define ENC_CNT1_RESET                      0x24
 #define ENC_CNT1                            0x14    
 #define ENC_FREQ1                           0x17
-#define ENC_CNT0_RESET                      0x28
 #define ENC_CNT0                            0x18
+#define ENC_CNT1_RESET                      0x24
+#define ENC_CNT0_RESET                      0x28
 
 #include "efm8_mcu_kehops.h"
 #include <onion-i2c.h>
 
+
 /**
- * \brief EFM8BB_readSonarDistance, Get the measured distance in mm by the sonar type (HC-SR04)
+ * \brief EFM8BB_getChannel, Get the value of register for channel xxx
  * \param pointer on the configuration structure
  * \return code error
  */
-int EFM8BB_kehops_getSonarDistance(device_efm8McuKehops *efm8bbconfig){
-    char err;
-    int SonarDistance_mm;
-    int mmMSB;
-    int mmLSB;					
-
+int EFM8BB_getChannel(device_efm8McuKehops *efm8bbconfig, unsigned char channel){
+    char err = 0;
+    unsigned int deviceReg_msb, deviceReg_lsb;
     unsigned char deviceAddress = efm8bbconfig->deviceAddress;
-    SonarDistance_mm=0;							// RAZ de la variable distance
-
-    err=i2c_readByte(0, deviceAddress, SON0, &mmLSB);
-    err+=i2c_readByte(0, deviceAddress, SON0+1, &mmMSB);
-
-    if(!err){              
-            SonarDistance_mm=((mmMSB<<8) & 0xFF00) + mmLSB;
-            return SonarDistance_mm;
-    }else{
-        printf("EFM8BB_readSonarDistance() -> Read error\n");
-        return -1;
+    int data_lsb =0 , data_msb =0;
+    
+    deviceReg_lsb = deviceReg_msb = 0;
+    
+    switch(channel){
+        case    0   : deviceReg_lsb = BOARDTYPE_REG; break;
+        case    1   : deviceReg_lsb = FIRMWARE_REG; break;
+   
+        case    2   : deviceReg_lsb = DIN_REG; break;
+        case    3   : deviceReg_lsb = DIN_REG; break;        
+        case    4   : deviceReg_lsb = DIN_REG; break;
+        case    5   : deviceReg_lsb = DIN_REG; break;
+        
+        case    6   : deviceReg_lsb = DISTANCE_INST_MM; 
+                      deviceReg_msb = DISTANCE_INST_MM+1;  break;
+        
+        case    7   : deviceReg_lsb = AIN0MV;
+                      deviceReg_msb = AIN0MV+1; break;
+        
+        case    8   : deviceReg_lsb = ENC_FREQ0; break;
+        case    9   : deviceReg_lsb = ENC_CNT0;
+                      deviceReg_msb = ENC_CNT0+1; break;
+        
+        case    10   : deviceReg_lsb = ENC_FREQ1; break;
+        case    11   : deviceReg_lsb = ENC_CNT1;
+                      deviceReg_msb = ENC_CNT1+1; break;
+        
+        case    12   : deviceReg_lsb = ENC_CNT0_RESET; break;
+        case    13   : deviceReg_lsb = ENC_CNT1_RESET; break;
+        
+        default:    break;
     }
-}
-
-
-/**
- * \brief EFM8BB_readBatteryVoltage, Get the voltage value in mV reand on the MCU ADC input
- * \param pointer on the configuration structure
- * \return code error
- */
-int EFM8BB_kehops_getVoltage(device_efm8McuKehops *efm8bbconfig){
-    char err =0;
-    int batteryVoltage_mV;
-    int mVMSB;
-    int mVLSB;
-    unsigned char deviceAddress = efm8bbconfig->deviceAddress;
-    batteryVoltage_mV=0;							// RAZ de la variable
-
-    err=i2c_readByte(0, deviceAddress, VOLT0, &mVLSB);
-    err+=i2c_readByte(0, deviceAddress, VOLT0+1, &mVMSB);
+    
+    //printf("EFM8BB_getChannel() -> CH#%d  REGISTER: H [0x%2x] L [0x%2x]\n", channel, deviceReg_msb,deviceReg_lsb);
+    
+    err += i2c_readByte(0, deviceAddress, deviceReg_lsb, &data_lsb);
+    
+    if(deviceReg_msb >0);
+        err += i2c_readByte(0, deviceAddress, deviceReg_msb, &data_msb);
+  
     if(!err){
-            batteryVoltage_mV=((mVMSB<<8) & 0xFF00) + mVLSB;
-            //printf("                       Battery: %d\n", batteryVoltage_mV);
-            return batteryVoltage_mV;
+        switch(channel){
+            case 2 : data_lsb &= 0x01; break;    // Set mask for din 0
+            case 3 : data_lsb &= 0x02; break;    // Set mask for din 1
+            case 4 : data_lsb &= 0x04; break;    // Set mask for din 2
+            case 5 : data_lsb &= 0x08; break;    // Set mask for din 3
+            default: break;
+        }
+        
+        return (data_msb<<8) + data_lsb;
     }else{
-        printf("EFM8BB_readBatteryVoltage() -> Read error\n");
+        printf("EFM8BB_getChannel() -> Read error\n");
         return -1;
     }
 }
 
 /**
- * \brief EFM8BB_kehops_getFrequency, Get the frequency measured by the MCU on input
+ * \brief EFM8BB_clearWheelDistance, reset the counter
  * \param pointer on the configuration structure
  * \return code error
  */
-int EFM8BB_kehops_getFrequency(device_efm8McuKehops *efm8bbconfig, unsigned char channel){
-    char err = 0, regAddr = 0;
-    int freqLSB=0;
-    int freqMSB=0;
-    int frequency = 0;
+int EFM8BB_clearWheelDistance(device_efm8McuKehops *efm8bbconfig, unsigned char channel){
+    char err = 0;
     unsigned char deviceAddress = efm8bbconfig->deviceAddress;
-
-    if(channel == 0) regAddr = ENC_FREQ0;
-    else regAddr = ENC_FREQ1;
-
-    // RAZ de la variable
-    err += i2c_readByte(0, deviceAddress, regAddr, &freqLSB);
-    //err += i2c_readByte(0, EFM8BB, regAddr+1, &freqMSB);
-
-    //frequency = ((freqMSB<<8) && 0xFF00 )+ freqLSB;
-
-    frequency = freqLSB;
-
-    if(!err){    
-            return frequency;
-    }else{
-        printf("EFM8BB_readFrequency() -> Read error\n");
-        return -1;
+    
+    unsigned char deviceReg_lsb;
+    int dummy;
+    
+        switch(channel){
+        case    9   : deviceReg_lsb = ENC_CNT0_RESET; break;
+        case    10   : deviceReg_lsb = ENC_CNT1_RESET; break;
+        default:    break;
     }
+        
+    printf("EFM8BB_clearWheelDistance() -> CH#%d  REGISTER: L [0x%2x]\n", channel, deviceReg_lsb);
+    err += i2c_readByte(0, deviceAddress, deviceReg_lsb, &dummy);
+    
+    return err;
 }
 
 /**
- * \brief EFM8BB_kehops_getCounter, Get the counter values measured by the MCU on input
+ * \brief EFM8BB_init, microcontroller initialization
  * \param pointer on the configuration structure
  * \return code error
  */
-int EFM8BB_kehops_getCounter(device_efm8McuKehops *efm8bbconfig, unsigned char channel){
-    char err=0, regAddr=0;
-    int pulseCount;
-    int pcMSB=0;
-    int pcLSB=0;
-    unsigned char deviceAddress = efm8bbconfig->deviceAddress;
-
-    if(channel==0) {
-            regAddr = ENC_CNT0;
-    }
-    else {
-            regAddr = ENC_CNT1;
-    }
-
-    pulseCount=0;							// RAZ de la variable
-
-    err=i2c_readByte(0, deviceAddress, regAddr, &pcLSB);
-    usleep(1000);
-    err+=i2c_readByte(0, deviceAddress, regAddr+1, &pcMSB);
-
-    pulseCount = ((pcMSB<<8) & 0xFF00) + pcLSB;
-
-    if(!err){
-            return pulseCount;
-    }else{
-        printf("EFM8BB_readPulseCounter() -> Read error\n");
-        return -1;
-    }
+int EFM8BB_init(device_efm8McuKehops *efm8bbconfig){
+    EFM8BB_clearWheelDistance(efm8bbconfig, 9);
+    EFM8BB_clearWheelDistance(efm8bbconfig, 10);
+    return 1;
 }
-
-/**
- * \brief EFM8BB_kehops_clearCounter, Clear the pulse counter register
- * \param pointer on the configuration structure
- * \return code error
- */
-int EFM8BB_kehops_clearCounter(device_efm8McuKehops *efm8bbconfig, unsigned char channel){
-    char err, regAddr;
-    int pulseCount;
-    unsigned char deviceAddress = efm8bbconfig->deviceAddress;
-
-    if(channel==0) {
-            regAddr = ENC_CNT0_RESET;
-    }
-    else {
-            regAddr = ENC_CNT1_RESET;
-    }
-
-    pulseCount=0;							// RAZ de la variable
-    err +=i2c_readByte(0, deviceAddress, regAddr, &pulseCount);
-    if(!err){
-            return pulseCount;
-    }else{
-        printf("EFM8BB_clearWheelDistance() -> Read error\n");
-        return -1;
-    }
-}
-
-/**
- * \brief EFM8BB_kehops_getDinState, Get the digital input states on the MCU inputs
- * \param pointer on the configuration structure
- * \return code error
- */
-char EFM8BB_kehops_getDinState(device_efm8McuKehops *efm8bbconfig){
-    char err;
-    char inputState=0;
-    unsigned char deviceAddress = efm8bbconfig->deviceAddress;
-
-    err = i2c_readByte(0, deviceAddress, DIN_REG, &inputState);
-
-    if(!err){
-            return inputState;
-    }else{
-        printf("EFM8BB_readDigitalInput() -> Read error\n");
-        return -1;
-    }
-}
-
-
-/**
- * \brief EFM8BB_getFirmwareVersion, Get the firmware version of MCU software
- * \param pointer on the configuration structure
- * \return code error
- */
-int EFM8BB_kehops_getFirmwareVersion(device_efm8McuKehops *efm8bbconfig){
-    char err;
-    int value=-1;
-    unsigned char deviceAddress = efm8bbconfig->deviceAddress;
-
-    err = i2c_readByte(0, deviceAddress, FIRMWARE_REG, &value);
-
-    if(!err){
-            return value;
-    }else{
-        printf("EFM8BB_getFirmwareVersion() -> Read error\n");
-        return -1;
-    }
-}
-
-/**
- * \brief EFM8BB_getBoardType, Get the boardTypeVersion read by the MCU on the port pins
- * \param pointer on the configuration structure
- * \return code error
- */
-int EFM8BB_kehops_getBoardType(device_efm8McuKehops *efm8bbconfig){
-    char err;
-    int value=-1;
-    unsigned char deviceAddress = efm8bbconfig->deviceAddress;
-
-    err = i2c_readByte(0, deviceAddress, BOARDTYPE_REG, &value);
-    if(!err){
-            return value;
-    }else{
-        printf("EFM8BB_getBoardType() -> Read error\n");
-        return -1;
-    }
-}
-
