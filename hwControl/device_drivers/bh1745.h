@@ -11,6 +11,12 @@
 #ifndef BH1745_H
 #define BH1745_H
 
+// Colors definition
+    #define RED                                 0
+    #define GREEN                               1
+    #define BLUE                                2
+    #define CLEAR                               3
+
 /**
  * \struct device_bh1745 [bh1745.h] Configuration structure definition
  */

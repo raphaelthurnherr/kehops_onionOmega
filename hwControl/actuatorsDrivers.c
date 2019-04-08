@@ -423,18 +423,24 @@ int actuator_getVoltage(unsigned char ainID){
     return voltage_mv;
 }
 
-int actuator_getColor(unsigned char rgbID){
-    int voltage_mv;
+int actuator_getRGBColor(unsigned char rgbID, RGB_COLOR * rgbColor){
     int ptrDev;    
+    
     int rgb_id = kehops.rgb[rgbID].config.rgbID; 
-    ptrDev = getEFM8BBconfig_ptr(kehopsActuators.ain[rgb_id].hw_driver.name);
+    ptrDev = getBH1745config_ptr(kehopsActuators.rgbSensor[rgb_id].hw_driver.name);
     if(ptrDev>=0){
-        voltage_mv = EFM8BB_getChannel(&dev_efm8bb[ptrDev], kehopsActuators.ain[rgb_id].hw_driver.attributes.device_channel);
+        rgbColor->red = bh1745nuc_getChannelRGBvalue(&dev_bh1745[ptrDev], RED);
+        rgbColor->green = bh1745nuc_getChannelRGBvalue(&dev_bh1745[ptrDev], GREEN);
+        rgbColor->blue = bh1745nuc_getChannelRGBvalue(&dev_bh1745[ptrDev], BLUE);
+        rgbColor->clear = bh1745nuc_getChannelRGBvalue(&dev_bh1745[ptrDev], CLEAR);
     }else{
-            printf ("#! Function [actuator_getVoltage] -> Unknown driver name: %s\n", kehopsActuators.ain[rgb_id].hw_driver.name);
-            voltage_mv = -1;
+            printf ("#! Function [actuator_getColor] -> Unknown driver name: %s\n", kehopsActuators.rgbSensor[rgb_id].hw_driver.name);
     }
-    return voltage_mv;
+    
+    if(rgbColor->red >= 0 && rgbColor->green >= 0 && rgbColor->blue >= 0 && rgbColor->clear >= 0)
+        return 0;
+    else
+        return -1;
 }
 
 

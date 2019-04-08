@@ -157,7 +157,7 @@ int EFM8BB_getBoardType(void){
         }
 }
 
-
+/*
 // -------------------------------------------------------------------
 // BH1445GETRGBVALUE
 // RECUPERE LA VALEUR DU REGISTRE POUR LA COULEUR:
@@ -198,4 +198,5 @@ int BH1745_getRGBvalue(unsigned char sensorNb, int color){
             return -1;
         }
 }
+*/
 #endif

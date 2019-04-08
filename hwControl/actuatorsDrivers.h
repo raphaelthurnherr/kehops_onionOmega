@@ -16,6 +16,16 @@
 #ifndef ACTUATORSDRIVERS_H
 #define ACTUATORSDRIVERS_H
 
+
+typedef struct s_color{
+        int red;
+        int green;
+        int blue;
+        int clear;
+//        struct s_rgbConfig config;
+}RGB_COLOR;
+
+
 /**
  * \brief Initialize the devices IC of the board
  * \param -
@@ -80,7 +90,8 @@ extern int actuator_getDigitalInput(unsigned char dinID);                // Reto
 extern int actuator_getButtonInput(unsigned char btnID);
 extern int actuator_getDistance(unsigned char distanceSensorID);					// Retourne la distance en cm
 extern int actuator_getVoltage(unsigned char ainID);			// Retourne la tension battery en mV
-extern int actuator_getColor(unsigned char rgbID);			// Retourne la tension battery en mV
+extern int actuator_getRGBColor(unsigned char rgbID, RGB_COLOR * rgbColor);			// Retourne la tension battery en mV
 extern void actuator_clearWheel(unsigned char Id);
+extern int actuator_getStepperState(int motorNumber);                   // 
 
 #endif /* ACTUATORSDRIVERS_H */

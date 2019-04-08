@@ -35,6 +35,8 @@
 #include "pca9685.h"
 #include "pca9629.h"
 #include "efm8_mcu_kehops.h"
+#include "mcp23008.h"
+#include "bh1745.h"
 
 
 // Thread Messager
@@ -43,10 +45,6 @@ pthread_t th_hwManager;
 // -------------------------------------
 // DEFINITION DES TYPE DE CAPTEURS
 // -------------------------------------
-struct s_color{
-	int value;
-};
-
 struct s_i2c_colorReg{
     int red;
     int green;
@@ -57,22 +55,15 @@ struct s_i2c_colorReg{
 struct s_analog{
 	int value;
 };
-
+/*
 struct s_rgbConfig{
 	int I2CdeviceAddress;
         struct s_i2c_colorReg I2CcolorAddress;
 };
+*/
 
 struct s_din{
 	int value;
-};
-
-struct s_rgbc{
-        int red;
-        int green;
-        int blue;
-        int clear;
-        struct s_rgbConfig config;
 };
 
 struct s_counter{
@@ -143,7 +134,7 @@ typedef struct t_sensor{
         struct s_din button[MAXBTN];
         struct s_analog distance[MAXSONAR];
 	struct s_counter counter[MAXCOUNTER];
-	struct s_rgbc rgbc[MAXRGBC];
+	RGB_COLOR rgbc[MAXRGBC];
 
 }SENSORS;
 
@@ -281,24 +272,16 @@ void *hwTask (void * arg){
                                     }
                                     break;                         
 
-                        case 35 :   /*sensor.rgbc[RGBC_SENS_0].red = BH1745_getRGBvalue(RGBC_SENS_0, RED) ;
-                                    sensor.rgbc[RGBC_SENS_1].red = BH1745_getRGBvalue(RGBC_SENS_1, RED) ;
-                                    
-                                    sensor.rgbc[RGBC_SENS_0].green = BH1745_getRGBvalue(RGBC_SENS_0, GREEN) ;
-                                    sensor.rgbc[RGBC_SENS_1].green = BH1745_getRGBvalue(RGBC_SENS_1, GREEN) ;
-
-                                    sensor.rgbc[RGBC_SENS_0].blue = BH1745_getRGBvalue(RGBC_SENS_0,BLUE) ;
-                                    sensor.rgbc[RGBC_SENS_1].blue = BH1745_getRGBvalue(RGBC_SENS_1, BLUE) ;
-
-                                    sensor.rgbc[RGBC_SENS_0].clear = BH1745_getRGBvalue(RGBC_SENS_0,CLEAR) ;
-                                    sensor.rgbc[RGBC_SENS_1].clear = BH1745_getRGBvalue(RGBC_SENS_1, CLEAR) ; break;
-                                     */
-                                    for(i = 0;i<NBRGBC;i++){
-                                        sensor.rgbc[i].blue = actuator_getColor(i);        // Conversion de distance mm en cm
+                        case 35 :   for(i = 0;i<NBRGBC;i++){
+                                        actuator_getRGBColor(i, &sensor.rgbc[i]);        // Get RGB Sensor value
                                     }
                                     break; 
 
-                        case 40 :  actuator.stepperMotor[STEPPER_0].isRunning = actuator_getStepperState(STEPPER_0); break;
+                        case 40 :   for(i=0;i<NBSTEPPER;i++){
+                                        actuator.stepperMotor[i].isRunning = actuator_getStepperState(i);
+                                    }
+                                    break;
+                            //actuator.stepperMotor[STEPPER_0].isRunning = actuator_getStepperState(STEPPER_0); break;
                                 
 			default:
                                   if(i2c_command_queuing[0][CALLBACK]!=0)

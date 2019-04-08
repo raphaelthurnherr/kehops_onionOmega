@@ -12,46 +12,6 @@
 
 // REGISTER DEFINITION FOR PCA9629 IC
 
-#define  MODE           0x00          // Mode register
-#define  SUBADR1        0x01          // I2C-bus subaddress 1
-#define  SUBADR2        0x02          // I2C-bus subaddress 2
-#define  SUBADR3        0x03          // I2C-bus subaddress 3
-#define  ALLCALLADR     0x04          // All Call I2C-bus address
-#define  WDTOI          0x05          // Watchdog time-out interval register
-#define  WDCNTL         0x06          // Watchdog control register
-#define  IP             0x07          // read only Input Port register 
-#define  INTSTAT        0x08          // read only Interrupt status register 
-#define  OP             0x09          // Output Port register
-#define  IOC            0x0A          // I/O Configuration register
-#define  MSK            0x0B          // Mask interrupt register
-#define  CLRINT         0x0C          // write only Clear interrupts 
-#define  INTMODE        0x0D          // Interrupt mode register
-#define  INT_ACT_SETUP  0x0E          // Interrupt action setup control register
-#define  INT_MTR_SETUP  0x0F          // Interrupt motor setup control register
-#define  INT_ES_SETUP   0x10          // Interrupt extra steps setup control register
-#define  INT_AUTO_CLR   0x11          // Interrupt auto clear control register
-#define  SETMODE        0x12          // Output state on STOP
-#define  PHCNTL         0x13          // Phase control register
-#define  SROTNL         0x14          // Steps per rotation low byte
-#define  SROTNH         0x15          // Steps per rotation high byte
-#define  CWPWL          0x16          // Step pulse width for CW rotation low byte
-#define  CWPWH          0x17          // Step pulse width for CW rotation high byte
-#define  CCWPWL         0x18          // Step pulse width for CCW rotation low byte
-#define  CCWPWH         0x19          // Step pulse width for CCW rotation high byte
-#define  CWSCOUNTL      0x1A          // Number of steps CW low byte
-#define  CWSCOUNTH      0x1B          // Number of steps CW high byte
-#define  CCWSCOUNTL     0x1C          // Number of steps CCW low byte
-#define  CCWSCOUNTH     0x1D          // Number of steps CCW high byte
-#define  CWRCOUNTL      0x1E          // Number of rotations CW low byte
-#define  CWRCOUNTH      0x1F          // Number of rotations CW high byte
-#define  CCWRCOUNTL     0x20          // Number of rotations CCW low byte
-#define  CCWRCOUNTH     0x21          // Number of rotations CCW high byte
-#define  EXTRASTEPS0    0x22          // Count value for extra steps or rotations for INTP0
-#define  EXTRASTEPS1    0x23          // Count value for extra steps or rotations for INTP1
-#define  RMPCNTL        0x24          // Ramp control register
-#define  LOOPDLY        0x25          // Loop delay time register
-#define  MCNTL          0x26          // Control start/stop motor
-
 #include "pca9629.h"
 #include <onion-i2c.h>
 
@@ -123,7 +83,8 @@ int PCA9629_StepperMotorControl(device_pca9629 *pca9629config, int data){
         unsigned char devAddress = pca9629config->deviceAddress;
 
         // Configuration du registre dans le sens horaire
-        err += i2c_write(0, devAddress, 0x1A, data & 0x00FF);           // Défini le nombre de rotation dans le registre LOW    
+        err += i2c_write(0, devAddress, 0x1a, data & 0x00FF);           // Défini le nombre de rotation dans le registre LOW       
+        
         return(err);
 }
 
@@ -162,7 +123,7 @@ int PCA9629_ReadMotorState(device_pca9629 *pca9629config){
         unsigned char devAddress = pca9629config->deviceAddress;
 
         // LEcture du registre de controle du driver moteur
-        err += i2c_readByte(0, devAddress, 0x1A, &regState);
+        err += i2c_readByte(0, devAddress, 0x1a, &regState);
         
         if(!err){    
             return regState;
@@ -186,7 +147,7 @@ int PCA9629_StepperMotorMode(device_pca9629 *pca9629config, int data){
         
 
         // Configuration du registre dans le sens horaire
-        err += i2c_write(0, devAddress, 0x0F, data & 0x00FF);           // Défini le nombre de rotation dans le registre LOW    
+        err += i2c_write(0, devAddress, 0x0f, data & 0x00FF);           // Défini le nombre de rotation dans le registre LOW    
         return(err);
 }
 

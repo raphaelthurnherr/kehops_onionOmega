@@ -7,12 +7,6 @@
  *
  * Setup and drive the 16 bit RGB color sensor
  */
-// Definition des couleurs pour le capteur RGB
-    #define RED                                 0
-    #define GREEN                               1
-    #define BLUE                                2
-    #define CLEAR                               3
-
 
 // REGISTER DEFINITION FOR BH1745NUC IC
 
