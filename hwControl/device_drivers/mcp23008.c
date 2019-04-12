@@ -76,9 +76,9 @@ int mcp23008_getChannel(device_mcp23008 *mcp23008config, unsigned char channel){
     unsigned char deviceAddress = mcp23008config->deviceAddress;
     int MCP2308_GPIO_STATE;
     unsigned char value=0;
-
+    
     err += i2c_readByte(0, deviceAddress, GPIO, &MCP2308_GPIO_STATE);
-
+    
     if(MCP2308_GPIO_STATE & (0x01<<channel))
         value = 0;
     else 

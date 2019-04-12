@@ -91,6 +91,7 @@ typedef struct devicesList{
 
 typedef struct device_drivers{
     char name[15];
+    char type[25];
     struct driverAttribute attributes;
 } hwDeviceDriver;
 
@@ -139,10 +140,10 @@ typedef struct parts_list{
     struct device dout[MAX_DRIVERS_PER_TYPE];
     struct device din[MAX_DRIVERS_PER_TYPE];
     struct device ain[MAX_DRIVERS_PER_TYPE];
-    struct device counter[MAX_DRIVERS_PER_TYPE];
+    struct device freqCounter[MAX_DRIVERS_PER_TYPE];
+    struct device pulsesCounter[MAX_DRIVERS_PER_TYPE];
     struct device rgbSensor[MAX_DRIVERS_PER_TYPE];
     struct device distanceSensor[MAX_DRIVERS_PER_TYPE];
-    
 }kehopsParts;
 
 

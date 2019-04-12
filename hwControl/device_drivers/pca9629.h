@@ -18,9 +18,9 @@
  */
 
 typedef struct pca9629{
-    unsigned char deviceName[25];
+    char deviceName[25];                        // Device Name of IC
     unsigned char deviceAddress;                // Bus device address
-    unsigned char pulsesWidth_ms;               // Specify the GPIO's port dirtection, 1 input, 0 output
+    unsigned char pulsesWidth_ms;               // Specify the pulse width for motor driving
 } device_pca9629;
 
 

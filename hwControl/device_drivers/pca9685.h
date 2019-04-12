@@ -17,7 +17,7 @@
  */
 
 typedef struct pca9685{
-    char deviceName[25];                   // Device Name of IC
+    char deviceName[25];                        // Device Name of IC
     unsigned char deviceAddress;                // Bus device address
     int frequency;                              // Output frequency required
     unsigned char invertedOutput;               // >0, invert the output logic level

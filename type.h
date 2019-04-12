@@ -78,6 +78,11 @@ struct s_motor_config{
     int powerMin;   
 };
 
+struct s_counter_config{
+    int freqCounter_id;
+    int pulseCounter_id;
+};
+
 struct dcwheel_settarget{
     int time;
     int distanceCM;
@@ -97,7 +102,7 @@ struct stepwheel_settarget{
 struct dc_wheel_config{
     struct s_pid pidReg;
     struct s_motor_config motor;
-    int counterID;
+    struct s_counter_config encoder;
     int diameter;           // Config of wheel diameter in mm
     int pulsesPerRot;       // Config number of pulses per rotation of encoder
     int rpmMax;             // Config max supperted RPM of Wheel (motor)

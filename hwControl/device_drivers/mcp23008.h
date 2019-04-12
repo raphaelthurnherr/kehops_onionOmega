@@ -17,6 +17,7 @@
  */
 
 typedef struct mcp23008{
+    char deviceName[25];                        // Device Name of IC
     unsigned char deviceAddress;                // Bus device address
     unsigned char gpioDirection;                // Specify the GPIO's port dirtection, 1 input, 0 output
     unsigned char invertedInput;               // >0, invert the output logic level

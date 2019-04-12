@@ -25,5 +25,5 @@ extern unsigned char NBMOTOR;
 extern unsigned char NBRGBC;
 extern unsigned char NBBTN;
 extern unsigned char NBDIN;
-extern unsigned char NBCOUNTER;
+extern unsigned char NBWHEEL;
 #endif /* KEHOPSCONFIG_H */

@@ -5,6 +5,7 @@
 
 // Device addresses (7 bits, lsb is a don't care)
 #ifdef BOARD_REV2
+
     #define  PCA9629               	0x20	// Device address for Step motor Driver
     #define  MCP2308               	0x21	// Device address for GPIO controller
     #define  EFM8BB               	0x0A	// Device address for EFM8BB microcontroller

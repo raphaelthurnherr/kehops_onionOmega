@@ -25,8 +25,8 @@ extern int set_i2c_command_queue(int (*callback)(char, int, int),char adr, int c
 extern int getMotorFrequency(unsigned char motorNb);	// Retourne la fr�quence actuelle mesuree sur l'encodeur
 extern int getMotorPulses(unsigned char motorNb);		// Retourne le nombre d'impulsion d'encodeur moteur depuis le d�marrage
 extern char getDigitalInput(unsigned char inputNb);	// Retourne l'�tat de l'entr�e num�rique sp�cifi�e
-extern int getSonarDistance(void);						// Retourne la distance en cm
-extern int getBatteryVoltage(void);					// Retourne la tension battery en mV
+extern int getSonarDistance(unsigned char distanceSensorID);						// Retourne la distance en cm
+extern int getBatteryVoltage(unsigned char ainID);					// Retourne la tension battery en mV
 extern char getButtonInput(unsigned char buttonNumber);
 extern int getColorValue(unsigned char sensorID, unsigned char color);      // Retourne la valeur de la couleur d�finie sur le capteur d�fini
 
@@ -35,7 +35,7 @@ extern int setMotorDirection(char motorName, int direction);
 
 extern void setServoPosition(unsigned char smName, char position);
 extern void setLedPower(unsigned char ledID, unsigned char power);
-extern void setPwmPower(unsigned char ID, unsigned char power);
+extern void setPwmPower(unsigned char pwmID, unsigned char power);
 
 extern int setStepperStepAction(int motorNumber, int direction, int stepCount);      // Effectue une action sur le moteur pas à pas (direction, nombre de pas)
 extern int setStepperSpeed(int motorNumber, int speed);     // Configuration de la vitesse du moteur pas à pas

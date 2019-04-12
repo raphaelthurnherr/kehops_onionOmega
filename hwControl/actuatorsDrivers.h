@@ -13,35 +13,44 @@
  */
 
 
+
 #ifndef ACTUATORSDRIVERS_H
 #define ACTUATORSDRIVERS_H
+
+#define DRIVER_EFM8BB "efm8bb"
+#define DRIVER_MCP23008 "mcp23008"
+#define DRIVER_PCA9685 "pca9685"
+#define DRIVER_PCA9629 "pca9629"
+#define DRIVER_TARTEMPION "tartempion"
+
+
+
+
+typedef struct s_color{
+        int red;
+        int green;
+        int blue;
+        int clear;
+//        struct s_rgbConfig config;
+}RGB_COLOR;
+
 
 /**
  * \brief Initialize the devices IC of the board
  * \param -
  * \return -
  */  
-
 extern int boardHWinit();
 
 /**
- * \fn char actuator_setLedPower()
- * \brief Get the DOUT hardware id of the LED from config and apply the PWM settings
+ * \fn char actuator_setDoutValue()
+ * \brief Get the DOUT hardware id of the output from config and apply the
+ *  PWM settings if available, else boolean value is apply
  *
  * \param ledID, powerr
  * \return -
  */
-extern char actuator_setLedPower(int ledID, int power);
-
-/**
- * \fn char actuator_setPwmPower()
- * \brief Get the DOUT hardware id of the PWM output from config and apply the PWM settings
- *
- * \param ledID, powerr
- * \return -
- */
-
-extern char actuator_setPwmPower(int pwmID, int power);
+extern char actuator_setDoutValue(int doutID, int value);
 
 
 /**
@@ -51,8 +60,7 @@ extern char actuator_setPwmPower(int pwmID, int power);
  * \param pwmID, position
  * \return -
  */
-
-extern char actuator_setServoPosition(int pwmID, int position);
+extern char actuator_setServoPosition(int doutID, int position);
         
 
 /**
@@ -62,8 +70,7 @@ extern char actuator_setServoPosition(int pwmID, int position);
  * \param motorNumber, direction, stepCount
  * \return -
  */
-
-extern int actuator_setStepperSpeed(int motorNumber, int speed);
+extern int actuator_setStepperSpeed(int stepperID, int speed);
 
 
 /**
@@ -73,7 +80,18 @@ extern int actuator_setStepperSpeed(int motorNumber, int speed);
  * \param motorNumber, direction, stepCount
  * \return -
  */
+extern int actuator_setStepperStepAction(int stepperID, int direction, int stepCount);
 
-extern int actuator_setStepperStepAction(int motorNumber, int direction, int stepCount);
+extern int actuator_getFirmwareVersion(void);
+extern int actuator_getBoardId(void);
+
+extern int actuator_getCounterFrequency(unsigned char wheelID);          // Retourne la fr�quence actuelle mesuree sur l'encodeur
+extern int actuator_getCounterPulses(unsigned char wheelID);             // Retourne le nombre d'impulsion d'encodeur moteur depuis le d�marrage
+extern int actuator_getDigitalInput(unsigned char dinID);                // Retourne l'état de l'entrée numérique spécifiée
+extern int actuator_getDistance(unsigned char distanceSensorID);					// Retourne la distance en cm
+extern int actuator_getVoltage(unsigned char ainID);			// Retourne la tension battery en mV
+extern int actuator_getRGBColor(unsigned char rgbID, RGB_COLOR * rgbColor);			// Retourne la tension battery en mV
+extern void actuator_clearWheel(unsigned char Id);
+extern int actuator_getStepperState(int stepperID);                   // 
 
 #endif /* ACTUATORSDRIVERS_H */

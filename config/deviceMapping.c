@@ -15,7 +15,7 @@
  * 
  */
 
-//#define PRINT_INFO
+#define PRINT_INFO
 
 #define MAX_MQTT_BUFF 8192
 
@@ -27,6 +27,23 @@
 #include "jWrite.h"
 #include "deviceMapping_jsonKeys.h"
 #include "deviceMapping.h"
+/*
+//********  NEED TO BE REWORK !!!!!!
+unsigned char DRV_NBMOTOR=0;
+unsigned char DRV_NBSTEPPER=0;
+unsigned char DRV_NBDOUT=0;
+unsigned char DRV_NBDIN=0;
+unsigned char DRV_NBAIN=0;
+
+unsigned char DRV_NBSONAR=0;
+unsigned char DRV_NBFCOUNTER=0;
+unsigned char DRV_NBPCOUNTER=0;
+unsigned char DRV_NBRGBC=0;
+unsigned char DRV_DISTSENSOR=0;
+//********  END NEED TO BE REWORK !!!!!!
+*/
+
+char * getDriverTypeByName(char * name);
 
 int getSettings(char * buffer, char * deviceType, struct device * mydevice, devices_list * icDevice);
 int getDriverSettings(struct jReadElement  * myDevice, hwDeviceDriver * hwDevice, devices_list * icDevice);
@@ -210,7 +227,8 @@ char LoadBoardDescriptor(char * srcDataBuffer, kehopsParts * kparts, devices_lis
         getSettings(srcDataBuffer, KEY_ARRAY_DOUT, kparts->dout, &boardDevice[0]);
         getSettings(srcDataBuffer, KEY_ARRAY_DIN, kparts->din, &boardDevice[0]);
         getSettings(srcDataBuffer, KEY_ARRAY_AIN, kparts->ain, &boardDevice[0]);
-        getSettings(srcDataBuffer, KEY_ARRAY_CNT, kparts->counter, &boardDevice[0]);
+        getSettings(srcDataBuffer, KEY_ARRAY_CNT_FREQ, kparts->freqCounter, &boardDevice[0]);
+        getSettings(srcDataBuffer, KEY_ARRAY_CNT_PULSES, kparts->pulsesCounter, &boardDevice[0]);
         getSettings(srcDataBuffer, KEY_ARRAY_RGB, kparts->rgbSensor, &boardDevice[0]);
         getSettings(srcDataBuffer, KEY_ARRAY_DISTANCE, kparts->distanceSensor, &boardDevice[0]);
      }
@@ -334,6 +352,7 @@ char strValue[25];
                 for(i=0;i<MAX_BOARD_DEVICE;i++){
                     if(!strcmp(strValue, icDevice[i].name)){
                         strcpy(hwDevice->name, icDevice[i].name);         // !!!!!!! DEBUG
+                        strcpy(hwDevice->type, getDriverTypeByName(icDevice[i].name));
                         driverAddress = icDevice[i].address;
                       
                         // Get the ATTRIBUTES settings of driver
@@ -469,8 +488,8 @@ unsigned char printBoardData(int partsNb, struct device * device){
     
     int devId = device->id;
     if(!strcmp(device->interface, "I2C")){       
-        printf("\n#%d \n |__ ID: %d\n |__ Interface: %s\n |__ Driver\n    |__ name: %s\n    |__ attributes\n       |__ channel: %d\n"
-            , partsNb, devId, device->interface, device->hw_driver.name, device->hw_driver.attributes.device_channel);  
+        printf("\n#%d \n |__ ID: %d\n |__ Interface: %s\n |__ Driver\n    |__ name: %s\n    |__ type: %s\n    |__ attributes\n       |__ channel: %d\n"
+            , partsNb, devId, device->interface, device->hw_driver.name,device->hw_driver.type, device->hw_driver.attributes.device_channel);  
         /*
         if(device->hw_driver.sub_driver.address >= 0){
             printf("    |__ sub-driver\n       |__ deviceAddress: 0x%2x\n       |__ type: %s\n       |__ attributes\n           |__ channel: %d\n    ", 
@@ -576,8 +595,11 @@ void clearBoardSettings(kehopsParts * kparts){
         kparts->rgbSensor[i].id = -1;
         kparts->rgbSensor[i].hw_driver.attributes.device_channel = -1;
         
-        kparts->counter[i].id = -1;
-        kparts->counter[i].hw_driver.attributes.device_channel = -1;
+        kparts->freqCounter[i].id = -1;
+        kparts->freqCounter[i].hw_driver.attributes.device_channel = -1;
+        
+        kparts->pulsesCounter[i].id = -1;
+        kparts->pulsesCounter[i].hw_driver.attributes.device_channel = -1;
     }
 }
 
@@ -598,4 +620,30 @@ void clearDeviceSettings(devices_list * boardDevice){
             boardDevice[i].attributes.deviceInit[j].regData = -1;
         }
     }
+}
+
+
+
+
+/**
+ * \brief char * getDriverTypeByName(char * name), Get the device type from
+ * the name and convert it to local definition
+ * \param char * name , name of the device (like IC3, U5, etc...)
+ * \return enum type
+ */ 
+
+char *  getDriverTypeByName(char * name){
+    int i;
+    static char ICtype[25]; 
+    
+    strcpy(ICtype, "Unknown");
+    
+    for(i=0; boardDevice[i].address >= 0 && i<MAX_BOARD_DEVICE; i++){
+        if(!strcmp(boardDevice[i].name, name)){
+            strcpy(ICtype, boardDevice[i].type);
+            break;
+        }
+    }
+    //printf("#%d Le driver trouvé pour [%s] est de type [%s]\n", i, name, boardDevice[i].type);
+    return ICtype;
 }

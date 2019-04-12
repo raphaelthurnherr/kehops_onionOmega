@@ -78,10 +78,6 @@ typedef enum o_stepper{
 #define MAXCOUNTER 16
 
 
-//unsigned char NBPWM=0;
-
-
-
 // Check TO CONVERT IN INT -1 / 0 / +1   IF NECESSARY !!!!
 #define BUGGY_STOP 		0
 #define BUGGY_FORWARD           1
