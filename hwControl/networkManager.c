@@ -145,8 +145,8 @@ int runBashPing(void){
     char systemCmd[128];
  //       sendMqttReport(message.msgID, "Try to ping cloud server on vps596769.ovh.net...");// Envoie le message sur le canal MQTT "Report"   
         
-        sprintf(&systemCmd, "ping -q -c 3 %s", ptr_pingAddress);
-        //sprintf(&systemCmd, "ping -q -c 2 -t 1000 %s", "www.google.com");
+        //sprintf(&systemCmd, "ping -q -c 2 %s", ptr_pingAddress);
+        sprintf(&systemCmd, "ping -q -c 2 %s 2>&1 >/dev/null", ptr_pingAddress);
         status=system(systemCmd);
         if(status != 0)
             *ptr_wanOnline = 0;

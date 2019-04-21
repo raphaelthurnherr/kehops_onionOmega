@@ -17,7 +17,7 @@
 #include "hwManager.h"
 char reportBuffer[256];
 
-int setAsyncServoAction(int actionNumber, int pwmName, int mode, int time);
+int setAsyncServoAction(int actionNumber, int pwmName, int state, int time);
 int checkBlinkServoCount(int actionNumber, int pwmName);
 int endServoAction(int actionNumber, int pwmNumber);
 
@@ -29,19 +29,20 @@ int endServoAction(int actionNumber, int pwmNumber);
 // - vitesse de clignotement en mS
 // -------------------------------------------------------------------
 
-int setAsyncServoAction(int actionNumber, int pwmName, int mode, int time){
+int setAsyncServoAction(int actionNumber, int pwmName, int state, int time){
 	int setTimerResult;
 	int endOfTask;
 
 	// D�marre un timer d'action sur le PWM et sp�cifie la fonction call back � appeler en time-out
 	// Valeur en retour >0 signifie que l'action "en retour" � �t� �cras�e
 
-        if(mode==ON){
+        if(state==ON){
             setServoPosition(pwmName, kehops.pwm[pwmName].power); 
         }
         else
-            if(mode==OFF)
-            setServoPosition(pwmName, -1);
+            if(state==OFF){
+                setServoPosition(pwmName, -1);
+            }
         
         // Utilise un delais de 5ms sinon message "Begin" arrive apres
         setTimerResult=setTimer(5, &checkBlinkServoCount, actionNumber, pwmName, PWM);     // Consid�re un blink infini  
@@ -50,8 +51,6 @@ int setAsyncServoAction(int actionNumber, int pwmName, int mode, int time){
 		if(setTimerResult>1){					// Le timer � �t� �cras� par la nouvelle action en retour car sur le meme peripherique
 			endOfTask=removeBuggyTask(setTimerResult);	// Supprime l'ancienne t�che qui � �t� �cras�e par la nouvelle action
                         if(endOfTask){
-                           
-
                                 sprintf(reportBuffer, "Annulation des actions PWM pour la tache #%d\n", setTimerResult);
 
                                 // Recupere l'expediteur original du message ayant provoque
@@ -87,7 +86,7 @@ int setAsyncServoAction(int actionNumber, int pwmName, int mode, int time){
 
 int checkBlinkServoCount(int actionNumber, int pwmName){
 	static int blinkCount=0;     // Variable de comptage du nombre de clignotements       
-        static int PWMtoggleState[NBPWM];
+        static int PWMtoggleState[MAXPWM];
 
         // Si mode blink actif, toggle sur PWM et comptage
         if(kehops.pwm[pwmName].state == BLINK){    

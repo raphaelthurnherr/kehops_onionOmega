@@ -6,6 +6,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include "fileIO.h"
 
 char * OpenConfigFromFile(char *filename);
 unsigned char mode=0;

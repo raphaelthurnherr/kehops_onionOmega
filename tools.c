@@ -39,8 +39,8 @@ int PID_speedControl(int motorId, float currentSpeed, float setPoint){
 
     float loopTimeDT = 1; 
     
-    static int lastSpeed[NBMOTOR];
-    static float sumError[NBMOTOR];
+    static int lastSpeed[MAXMOTOR];
+    static float sumError[MAXMOTOR];
         
     float output;
     float outputMin=0;

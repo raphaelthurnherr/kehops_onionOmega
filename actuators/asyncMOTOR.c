@@ -210,7 +210,7 @@ void checkDCmotorPower(void){
 	//unsigned char PowerToSet;
 
 	// Contr�le successivement la puissance sur chaque moteur et effectue une rampe d'acc�l�ration ou d�c�leration
-	for(i=0;i<NBMOTOR;i++){
+	for(i=0;i<MAXMOTOR;i++){
             
             // Converti la consigne donnée en % en consigne  CM/SEC
             
@@ -220,7 +220,7 @@ void checkDCmotorPower(void){
             actualRpmInPercent = rpmToPercent(i, kehops.dcWheel[i].measure.rpm);
             
             if(kehops.dcWheel[i].motor.userSpeedSetPoint <= 0){   
-                setMotorSpeed(i, 0);
+                //setMotorSpeed(i, 0);
             }else{
                 
                 if(kehops.dcWheel[i].config.pidReg.enable > 0){

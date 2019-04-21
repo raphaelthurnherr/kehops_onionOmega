@@ -31,4 +31,3 @@ extern char * OpenConfigFromFile(char *filename);
 #endif
 
 #endif /* FILEIO_H */
-

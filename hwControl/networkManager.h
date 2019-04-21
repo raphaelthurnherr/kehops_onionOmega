@@ -17,6 +17,7 @@
 int InitNetworkManager(int *wanState, char *address, char *name, char *group);						// Ouverture du thread Timer
 int CloseNetworkManager(void);					// Fermeture du thread Timer
 int runBashPing(void);                                          // Effectue via shell une command ping sur le serveur
+
 //void wifiNetworkScan(int *ptrResult, APDATA *ptrData);
 //extern int wifiNetworkConfig(WIFI_SETTING wifi);         // Démarre une procédure de configuration du WiFi
 extern unsigned char t10secFlag;				// Flag 10S scrut� par le programme principal

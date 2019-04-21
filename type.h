@@ -73,9 +73,14 @@ struct dc_wheel_data{
 };
 
 struct s_motor_config{
-    int motorID;
+    int dc_motor_id;
     char inverted;   
     int powerMin;   
+};
+
+struct s_counter_config{
+    int freqCounter_id;
+    int pulseCounter_id;
 };
 
 struct dcwheel_settarget{
@@ -97,7 +102,7 @@ struct stepwheel_settarget{
 struct dc_wheel_config{
     struct s_pid pidReg;
     struct s_motor_config motor;
-    int counterID;
+    struct s_counter_config encoder;
     int diameter;           // Config of wheel diameter in mm
     int pulsesPerRot;       // Config number of pulses per rotation of encoder
     int rpmMax;             // Config max supperted RPM of Wheel (motor)
@@ -105,7 +110,7 @@ struct dc_wheel_config{
 };
 
 struct s_stepper_config{
-    int motorID;
+    int stepper_motor_id;
     char inverted;   
     int steps;   
     int ratio;
@@ -151,11 +156,11 @@ typedef struct robotStepperWheel{
 // AIN & BATTERY  
 
 struct s_son_config{
-    int  sonarID;
+    int  distanceSensor_id;
 };
 
 struct s_batt_config{
-    int  ainID;
+    int  ain_id;
 };
 
 struct s_battery_meas{
@@ -183,7 +188,7 @@ typedef struct robotSonar{
 // BUTTONS
 
 struct s_button_config{
-    int  dinID;
+    int  din_id;
 };
 
 struct s_button_meas{
@@ -216,7 +221,7 @@ struct s_prox_meas{
 };
 
 struct s_prox_config{
-    int  dinID;
+    int  din_id;
 };
 
 typedef struct robotButton{
@@ -275,7 +280,7 @@ struct s_pwm_action{
 };
 
 struct s_pwm_config{
-    int  doutID;
+    int  dout_id;
     int  mode;
     int  defaultPower;
     int  defaultState;
@@ -295,15 +300,15 @@ typedef struct robotRgb{
 
 
 typedef struct robotKehops{
-    robot_battery battery[1];
-    robot_button button[NBBTN];
-    robot_stepperwheel stepperWheel[NBSTEPPER];
-    robot_dcwheel dcWheel[NBMOTOR];
-    robot_pwm led[NBLED];
-    robot_pwm pwm[NBPWM];
-    robot_prox proximity[NBDIN];
-    robot_sonar sonar[NBSONAR];
-    robot_rgb rgb[NBRGBC];
+    robot_battery battery[MAXAIN];
+    robot_button button[MAXBTN];
+    robot_stepperwheel stepperWheel[MAXSTEPPER];
+    robot_dcwheel dcWheel[MAXMOTOR];
+    robot_pwm led[MAXLED];
+    robot_pwm pwm[MAXPWM];
+    robot_prox proximity[MAXDIN];
+    robot_sonar sonar[MAXSONAR];
+    robot_rgb rgb[MAXRGBC];
 }robot_kehops;
 
 

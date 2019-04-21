@@ -9,6 +9,11 @@
       <itemPath>asyncTools/asyncMOTOR.h</itemPath>
       <itemPath>asyncTools/asyncSTEPPER.h</itemPath>
       <itemPath>asyncTools/asyncTools.h</itemPath>
+      <itemPath>config/deviceMapping.h</itemPath>
+      <itemPath>config/deviceMapping_jsonKeys.h</itemPath>
+      <itemPath>fileIO.h</itemPath>
+      <itemPath>hwControl/hardwareDrivers.h</itemPath>
+      <itemPath>config/kehopsConfig.h</itemPath>
       <itemPath>type.h</itemPath>
       <itemPath>AlgoidCom/typeNew.h</itemPath>
       <itemPath>hwControl/wifi_json.h</itemPath>
@@ -35,6 +40,20 @@
         <itemPath>actuators/asyncTools.h</itemPath>
       </logicalFolder>
       <logicalFolder name="hwControl" displayName="hwControl" projectFiles="true">
+        <logicalFolder name="device_drivers"
+                       displayName="device_drivers"
+                       projectFiles="true">
+          <itemPath>hwControl/device_drivers/bh1745.c</itemPath>
+          <itemPath>hwControl/device_drivers/bh1745.h</itemPath>
+          <itemPath>hwControl/device_drivers/efm8_mcu_kehops.c</itemPath>
+          <itemPath>hwControl/device_drivers/efm8_mcu_kehops.h</itemPath>
+          <itemPath>hwControl/device_drivers/mcp23008.c</itemPath>
+          <itemPath>hwControl/device_drivers/mcp23008.h</itemPath>
+          <itemPath>hwControl/device_drivers/pca9629.c</itemPath>
+          <itemPath>hwControl/device_drivers/pca9629.h</itemPath>
+          <itemPath>hwControl/device_drivers/pca9685.c</itemPath>
+          <itemPath>hwControl/device_drivers/pca9685.h</itemPath>
+        </logicalFolder>
         <logicalFolder name="libs" displayName="libs" projectFiles="true">
           <logicalFolder name="i2c" displayName="i2c" projectFiles="true">
             <itemPath>hwControl/libs/i2c/onion-i2c.c</itemPath>
@@ -45,10 +64,6 @@
             <itemPath>hwControl/libs/onion-debug/onion-debug.h</itemPath>
           </logicalFolder>
         </logicalFolder>
-        <itemPath>hwControl/boardHWctrl.c</itemPath>
-        <itemPath>hwControl/boardHWctrl.h</itemPath>
-        <itemPath>hwControl/boardHWsimu.c</itemPath>
-        <itemPath>hwControl/boardHWsimu.h</itemPath>
         <itemPath>hwControl/hwManager.c</itemPath>
         <itemPath>hwControl/hwManager.h</itemPath>
       </logicalFolder>
@@ -114,6 +129,10 @@
       </logicalFolder>
       <itemPath>configManager.c</itemPath>
       <itemPath>configManager.h</itemPath>
+      <itemPath>config/deviceMapping.c</itemPath>
+      <itemPath>fileIO.c</itemPath>
+      <itemPath>hwControl/hardwareDrivers.c</itemPath>
+      <itemPath>config/kehopsConfig.c</itemPath>
       <itemPath>kehops_main.c</itemPath>
       <itemPath>hwControl/networkManager.c</itemPath>
       <itemPath>hwControl/networkManager.h</itemPath>
@@ -132,14 +151,42 @@
                    kind="IMPORTANT_FILES_FOLDER">
       <itemPath>Makefile</itemPath>
     </logicalFolder>
+    <logicalFolder name="TestFiles"
+                   displayName="Test Files"
+                   projectFiles="false"
+                   kind="TEST_LOGICAL_FOLDER">
+    </logicalFolder>
+    <logicalFolder name="ExternalFiles"
+                   displayName="Important Files"
+                   projectFiles="false"
+                   kind="IMPORTANT_FILES_FOLDER">
+      <itemPath>Makefile</itemPath>
+    </logicalFolder>
+    <logicalFolder name="TestFiles"
+                   displayName="Test Files"
+                   projectFiles="false"
+                   kind="TEST_LOGICAL_FOLDER">
+    </logicalFolder>
+    <logicalFolder name="ExternalFiles"
+                   displayName="Important Files"
+                   projectFiles="false"
+                   kind="IMPORTANT_FILES_FOLDER">
+      <itemPath>Makefile</itemPath>
+    </logicalFolder>
     <itemPath>hwControl/changeLog.txt</itemPath>
     <itemPath>toDo</itemPath>
     <itemPath>dist/Debug/GNU_Omega-Linux/wifi</itemPath>
   </logicalFolder>
   <sourceRootList>
+    <Elem>actuators</Elem>
     <Elem>hwControl</Elem>
     <Elem>kehopsCom</Elem>
     <Elem>actuators</Elem>
+    <Elem>hwControl</Elem>
+    <Elem>kehopsCom</Elem>
+    <Elem>actuators</Elem>
+    <Elem>hwControl</Elem>
+    <Elem>kehopsCom</Elem>
   </sourceRootList>
   <projectmakefile>Makefile</projectmakefile>
   <confs>
@@ -159,6 +206,7 @@
             <pElem>kehopsCom</pElem>
             <pElem>kehopsCom/libs/lib_json</pElem>
             <pElem>kehopsCom/libs/lib_mqtt</pElem>
+            <pElem>hwControl/device_drivers</pElem>
           </incDir>
           <incFile>
             <pElem>buildNumber.h</pElem>
@@ -206,21 +254,63 @@
       </item>
       <item path="asyncTools/asyncTools.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="config/deviceMapping.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="config/deviceMapping.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="config/deviceMapping_jsonKeys.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="config/kehopsConfig.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="config/kehopsConfig.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="configManager.c" ex="false" tool="0" flavor2="0">
       </item>
       <item path="configManager.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="dist/Debug/GNU_Omega-Linux/wifi" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="hwControl/boardHWctrl.c" ex="false" tool="0" flavor2="0">
+      <item path="fileIO.c" ex="false" tool="0" flavor2="0">
       </item>
-      <item path="hwControl/boardHWctrl.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="hwControl/boardHWsimu.c" ex="false" tool="0" flavor2="0">
-      </item>
-      <item path="hwControl/boardHWsimu.h" ex="false" tool="3" flavor2="0">
+      <item path="fileIO.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="hwControl/changeLog.txt" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/bh1745.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/bh1745.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/efm8_mcu_kehops.c"
+            ex="false"
+            tool="0"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/efm8_mcu_kehops.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/mcp23008.c"
+            ex="false"
+            tool="0"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/mcp23008.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/pca9629.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/pca9629.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/pca9685.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/pca9685.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="hwControl/hardwareDrivers.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="hwControl/hardwareDrivers.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="hwControl/hwManager.c" ex="false" tool="0" flavor2="0">
       </item>
@@ -449,9 +539,10 @@
             <pElem>hwControl/libs/onion-debug</pElem>
             <pElem>hwControl</pElem>
             <pElem>actuators</pElem>
+            <pElem>kehopsCom</pElem>
             <pElem>kehopsCom/libs/lib_json</pElem>
             <pElem>kehopsCom/libs/lib_mqtt</pElem>
-            <pElem>kehopsCom</pElem>
+            <pElem>hwControl/device_drivers</pElem>
           </incDir>
           <commandLine>-pthread -lm</commandLine>
         </cTool>
@@ -505,21 +596,63 @@
       </item>
       <item path="asyncTools/asyncTools.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="config/deviceMapping.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="config/deviceMapping.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="config/deviceMapping_jsonKeys.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="config/kehopsConfig.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="config/kehopsConfig.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="configManager.c" ex="false" tool="0" flavor2="0">
       </item>
       <item path="configManager.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="dist/Debug/GNU_Omega-Linux/wifi" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="hwControl/boardHWctrl.c" ex="false" tool="0" flavor2="0">
+      <item path="fileIO.c" ex="false" tool="0" flavor2="0">
       </item>
-      <item path="hwControl/boardHWctrl.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="hwControl/boardHWsimu.c" ex="false" tool="0" flavor2="0">
-      </item>
-      <item path="hwControl/boardHWsimu.h" ex="false" tool="3" flavor2="0">
+      <item path="fileIO.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="hwControl/changeLog.txt" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/bh1745.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/bh1745.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/efm8_mcu_kehops.c"
+            ex="false"
+            tool="0"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/efm8_mcu_kehops.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/mcp23008.c"
+            ex="false"
+            tool="0"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/mcp23008.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/pca9629.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/pca9629.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/pca9685.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/pca9685.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="hwControl/hardwareDrivers.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="hwControl/hardwareDrivers.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="hwControl/hwManager.c" ex="false" tool="0" flavor2="0">
       </item>
@@ -746,10 +879,11 @@
             <pElem>hwControl/libs/i2c</pElem>
             <pElem>hwControl/libs/onion-debug</pElem>
             <pElem>hwControl</pElem>
+            <pElem>actuators</pElem>
             <pElem>kehopsCom</pElem>
             <pElem>kehopsCom/libs/lib_json</pElem>
             <pElem>kehopsCom/libs/lib_mqtt</pElem>
-            <pElem>actuators</pElem>
+            <pElem>hwControl/device_drivers</pElem>
           </incDir>
           <commandLine>-pthread -lm</commandLine>
           <preprocessorList>
@@ -797,21 +931,63 @@
       </item>
       <item path="asyncTools/asyncTools.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="config/deviceMapping.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="config/deviceMapping.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="config/deviceMapping_jsonKeys.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="config/kehopsConfig.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="config/kehopsConfig.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="configManager.c" ex="false" tool="0" flavor2="0">
       </item>
       <item path="configManager.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="dist/Debug/GNU_Omega-Linux/wifi" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="hwControl/boardHWctrl.c" ex="false" tool="0" flavor2="0">
+      <item path="fileIO.c" ex="false" tool="0" flavor2="0">
       </item>
-      <item path="hwControl/boardHWctrl.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="hwControl/boardHWsimu.c" ex="false" tool="0" flavor2="0">
-      </item>
-      <item path="hwControl/boardHWsimu.h" ex="false" tool="3" flavor2="0">
+      <item path="fileIO.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="hwControl/changeLog.txt" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/bh1745.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/bh1745.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/efm8_mcu_kehops.c"
+            ex="false"
+            tool="0"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/efm8_mcu_kehops.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/mcp23008.c"
+            ex="false"
+            tool="0"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/mcp23008.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/pca9629.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/pca9629.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/pca9685.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/pca9685.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="hwControl/hardwareDrivers.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="hwControl/hardwareDrivers.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="hwControl/hwManager.c" ex="false" tool="0" flavor2="0">
       </item>
@@ -1043,6 +1219,7 @@
             <pElem>kehopsCom/libs/lib_mqtt</pElem>
             <pElem>kehopsCom</pElem>
             <pElem>actuators</pElem>
+            <pElem>hwControl/device_drivers</pElem>
           </incDir>
           <commandLine>-pthread -lm</commandLine>
           <preprocessorList>
@@ -1090,21 +1267,63 @@
       </item>
       <item path="asyncTools/asyncTools.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="config/deviceMapping.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="config/deviceMapping.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="config/deviceMapping_jsonKeys.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="config/kehopsConfig.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="config/kehopsConfig.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="configManager.c" ex="false" tool="0" flavor2="0">
       </item>
       <item path="configManager.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="dist/Debug/GNU_Omega-Linux/wifi" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="hwControl/boardHWctrl.c" ex="false" tool="0" flavor2="9">
+      <item path="fileIO.c" ex="false" tool="0" flavor2="0">
       </item>
-      <item path="hwControl/boardHWctrl.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="hwControl/boardHWsimu.c" ex="false" tool="0" flavor2="9">
-      </item>
-      <item path="hwControl/boardHWsimu.h" ex="false" tool="3" flavor2="0">
+      <item path="fileIO.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="hwControl/changeLog.txt" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/bh1745.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/bh1745.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/efm8_mcu_kehops.c"
+            ex="false"
+            tool="0"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/efm8_mcu_kehops.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/mcp23008.c"
+            ex="false"
+            tool="0"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/mcp23008.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/pca9629.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/pca9629.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/pca9685.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/pca9685.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="hwControl/hardwareDrivers.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="hwControl/hardwareDrivers.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="hwControl/hwManager.c" ex="false" tool="0" flavor2="9">
       </item>

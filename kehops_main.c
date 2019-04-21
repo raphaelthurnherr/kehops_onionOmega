@@ -1,4 +1,4 @@
-#define FIRMWARE_VERSION "0.6.5"
+#define FIRMWARE_VERSION "1.0.0"
 
 #define DEFAULT_EVENT_STATE 1   
 
@@ -14,6 +14,8 @@
 #include "buildNumber.h"
 
 #include "buggy_descriptor.h"
+#include "../config/kehopsConfig.h"
+
 #include "kehopsCom/messagesManager.h"
 #include "networkManager.h"
 #include "linux_json.h"
@@ -105,10 +107,6 @@ int main(int argc, char *argv[]) {
                                              // si activ�.
         char welcomeMessage[100];
 	system("clear");
-                
-        // Creation d'un id unique avec l'adresse mac si non defini au demarrage
-	if(!strcmp(sysApp.info.name, ""))
-            strcpy(&sysApp.info.name, getMACaddr());
 
         // Récupération des paramètres [NomClient et address brocker] durant l'execution de l'application
         getStartupArg(argc, argv);
@@ -117,8 +115,11 @@ int main(int argc, char *argv[]) {
         printf(welcomeMessage);
         printf ("------------------------------------\n");
         
-// Cr�ation de la t�che pour la gestion réseau
+
         
+        resetConfig();
+
+// Cr�ation de la t�che pour la gestion réseau        
 	if(InitNetworkManager(&sysApp.info.wan_online, &sysConf.communication.mqtt.broker.address, &sysApp.info.name, &sysApp.info.group)) printf ("#[CORE] Creation tâche réseau : ERREUR\n");
         else {
             printf ("#[CORE] Demarrage tâche réseau: OK\n");            
@@ -141,7 +142,8 @@ int main(int argc, char *argv[]) {
             printf ("#[CORE] Demarrage tâche hardware: OK\n");
         }
         
-        sysApp.kehops.resetConfig=1;
+        //sysApp.kehops.resetConfig=1;
+        
 // --------------------------------------------------------------------
 // BOUCLE DU PROGRAMME PRINCIPAL
 // - Messagerie avec ALGOID, attentes de messages en provenance de l'h�te -> D�marrage du traitement des commandes
@@ -227,7 +229,7 @@ int main(int argc, char *argv[]) {
                             kehops.dcWheel[i].measure.distance = (float)(getMotorPulses(i)) * (kehops.dcWheel[i].data._MMPP / 10.0);
                         }
                         
-                        kehops.sonar[0].measure.distance_cm = getSonarDistance()/10;
+                        kehops.sonar[0].measure.distance_cm = getSonarDistance(0)/10;
 			distanceEventCheck();										// Provoque un �venement de type "distance" si la distance mesur�e					// est hors de la plage sp�cifi�e par l'utilisateur
                         
 			DINEventCheck();										// Cont�le de l'�tat des entr�es num�rique
@@ -237,7 +239,7 @@ int main(int argc, char *argv[]) {
 															// G�n�re un �venement si changement d'�tat d�tect�
                                         										// Cont�le les valeur RGB des capteurs
                         
-                        kehops.battery[0].measure.voltage_mV = getBatteryVoltage();
+                        kehops.battery[0].measure.voltage_mV = getBatteryVoltage(0);
                         kehops.battery[0].measure.capacity =(kehops.battery[0].measure.voltage_mV-3500)/((4210-3500)/100);
                         batteryEventCheck();
 
@@ -343,7 +345,7 @@ int processmessage(void){
                                     else
                                         messageResponse[i].PWMresponse.id=-1;
                                             
-                                    // R�cup�ration des param�tes 
+                                    // R�cup�ration des param�tes
                                     strcpy(messageResponse[i].PWMresponse.state, message.PWMarray[i].state);
                                     messageResponse[i].PWMresponse.powerPercent=message.PWMarray[i].powerPercent;
                                     messageResponse[i].PWMresponse.blinkCount=message.PWMarray[i].blinkCount;
@@ -1277,17 +1279,15 @@ int runPwmAction(void){
                 if(!strcmp(message.PWMarray[ptrData].state,"blink"))
                     kehops.pwm[i].state = BLINK;
                 
-                // Blink mode not available in SERVO MODE (mode 1)
-                if(!kehops.pwm[i].config.mode){
+                // Only for PWM standard mode, (link mode not available in SERVO MODE "mode 1")
+                if(kehops.pwm[i].config.mode == 0){
                     if(!strcmp(message.PWMarray[ptrData].state,"blink"))
                         kehops.pwm[i].state = BLINK;
-                if(message.PWMarray[ptrData].time > 0)
-                    kehops.pwm[i].action.blinkTime = message.PWMarray[ptrData].time;
-                if(message.PWMarray[ptrData].blinkCount > 0)
-                    kehops.pwm[i].action.blinkCount = message.PWMarray[ptrData].blinkCount;
+                    if(message.PWMarray[ptrData].time > 0)
+                        kehops.pwm[i].action.blinkTime = message.PWMarray[ptrData].time;
+                    if(message.PWMarray[ptrData].blinkCount > 0)
+                        kehops.pwm[i].action.blinkCount = message.PWMarray[ptrData].blinkCount;
                 }
-                
-                
                 
                 // Recuperation des consignes dans le message (si disponible)
                 if(message.PWMarray[ptrData].powerPercent >= 0)
@@ -1318,7 +1318,7 @@ int runPwmAction(void){
                                     time=message.PWMarray[ptrData].time;
                                     
                                     // Check if is a servomotor PWM (500uS .. 2.5mS)
-                                    if(!kehops.pwm[ID].config.mode){
+                                    if(kehops.pwm[ID].config.mode == 0){
                                         // Mode blink
                                         if(kehops.pwm[ID].state== BLINK){
                                             // Verifie la presence de parametres de type "time" et "count", sinon applique des
@@ -1351,7 +1351,7 @@ int runPwmAction(void){
                                     {
                                             if(kehops.pwm[ID].state == OFF)
                                                 setAsyncServoAction(myTaskId, ID, OFF, NULL);
-                                            if(kehops.pwm[ID].state == ON)
+                                            else
                                                 setAsyncServoAction(myTaskId, ID, ON, NULL);
                                     }
                                     
@@ -2183,13 +2183,13 @@ void BUTTONEventCheck(void){
     for(i=0;i<NBBTN;i++){
         // Mise � jour de l'�tat des E/S
         oldBtnValue[i] = kehops.button [i].measure.state;
-        kehops.button[i].measure.state = getDigitalInput(4+i);
+        kehops.button[i].measure.state = getButtonInput(i);
 
         // V�rifie si un changement a eu lieu sur les entrees et transmet un message
         // "event" listant les modifications
         if(kehops.button [i].event.enable && (oldBtnValue[i] != kehops.button [i].measure.state)){
             messageResponse[ptrBuff].BTNresponse.id=i;
-            messageResponse[ptrBuff].value = kehops.button [i].measure.state;
+            messageResponse[ptrBuff].value = kehops.button[i].measure.state;
 
             if(kehops.button[i].event.enable) strcpy(messageResponse[ptrBuff].BTNresponse.event_state, "on");
             else strcpy(messageResponse[ptrBuff].BTNresponse.event_state, "off");
@@ -2218,10 +2218,10 @@ void COLOREventCheck(void){
         unsigned char ptrBuff=0, RGBevent=0;
         
 	// Mise � jour de l'�tat des couleurs des capteur
-	static unsigned char RGB_red_WarningSended[NBRGBC];
-        static unsigned char RGB_green_WarningSended[NBRGBC];
-        static unsigned char RGB_blue_WarningSended[NBRGBC];
-        static unsigned char RGB_clear_WarningSended[NBRGBC];
+	static unsigned char RGB_red_WarningSended[MAXRGBC];
+        static unsigned char RGB_green_WarningSended[MAXRGBC];
+        static unsigned char RGB_blue_WarningSended[MAXRGBC];
+        static unsigned char RGB_clear_WarningSended[MAXRGBC];
         
 	unsigned char i;
 
@@ -2425,6 +2425,8 @@ void runRestartCommand(void){
 
 void resetConfig(void){
     int i;
+    // NEED TO BE MAKE AFTER LOAD CONFIG
+    /*
     	// Init robot membre
 	for(i=0;i<NBAIN;i++){
             kehops.battery[i].event.enable = DEFAULT_EVENT_STATE;
@@ -2499,7 +2501,7 @@ void resetConfig(void){
 
         // ------------ Initialisation de la configuration systeme
         
-    
+    */
         // Initialisation configuration de flux de donn�es periodique
         sysConf.communication.mqtt.stream.state  = ON;
         sysConf.communication.mqtt.stream.time_ms = 500;
@@ -2509,12 +2511,18 @@ void resetConfig(void){
         strcpy(sysApp.info.group, "");
         
         // Load config data
-        int configStatus = LoadConfig("kehops.cfg");
+        int configStatus = -1;
+        configStatus = LoadConfig();
+        
         if(configStatus<0){
             printf("#[CORE] Load configuration file from \"kehops.cfg\": ERROR\n");
         }else
             printf("#[CORE] Load configuration file from \"kehops.cfg\": OK\n");
 
+        // Creation d'un id unique avec l'adresse mac si non defini au demarrage
+	if(!strcmp(sysApp.info.name, ""))
+            strcpy(&sysApp.info.name, getMACaddr());
+        
         for(i=0;i<NBLED;i++){
             if(kehops.led[i].config.defaultState==1)
                 setLedPower(i, kehops.led[i].config.defaultPower);
@@ -2528,6 +2536,12 @@ void resetConfig(void){
             else
                 setPwmPower(i, 0);
         }
+        
+        for(i=0;i<NBMOTOR;i++){
+            // Enable the motors
+            setMotorState(i, 1);
+        }
+        
         
         sysApp.info.startUpTime = 0;
         sysApp.kehops.resetConfig = 0;

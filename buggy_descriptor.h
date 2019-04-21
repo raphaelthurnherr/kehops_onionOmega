@@ -20,7 +20,7 @@ typedef enum o_type{
 typedef enum o_encoder{
 	MOTOR_ENCODER_LEFT,
 	MOTOR_ENCODER_RIGHT,
-	NBCOUNTER
+	NBCOUNTER_
 }t_encoder;
 
 typedef enum o_din{
@@ -30,62 +30,52 @@ typedef enum o_din{
         DIN_3,
         DIN_4,
         DIN_5,
-	NBDIN
+	NBDIN_
 }t_din;
 
 typedef enum o_btn{
 	BTN_0,
 	BTN_1,
-	NBBTN
+	NBBTN_
 }t_btn;
 
 typedef enum o_colorSens{
 	RGBC_SENS_0,
 	RGBC_SENS_1,
-	NBRGBC
+	NBRGBC_
 }t_rgbc;
 
 typedef enum o_ain{
 	BATT_0,
-	NBAIN
+	NBAIN_
 }t_ain;
 
 typedef enum o_sonar{
 	SONAR_0,
-	NBSONAR
+	NBSONAR_
 }t_sonar;
 
 typedef enum o_motor{
 	MOTOR_0,
 	MOTOR_1,
-	NBMOTOR
+	NBMOTOR_
 }t_motor;
 
 typedef enum o_stepper{
 	STEPPER_0,
-        NBSTEPPER
+        NBSTEPPER_
 }t_stepper;
 
-typedef enum o_pwm{
-	PWM_0,
-	PWM_1,
-	PWM_2,
-        PWM_3,
-        PWM_4,
-        PWM_5,
-        PWM_6,
-        PWM_7,
-        PWM_8,
-        PWM_9, 
-	NBPWM
-}t_pwm;
-
-typedef enum o_led{
-	LED_0,
-	LED_1,
-	LED_2,
-	NBLED,
-}t_led;
+#define MAXPWM 64
+#define MAXLED 64
+#define MAXAIN 32
+#define MAXBTN 32
+#define MAXSONAR 16
+#define MAXSTEPPER 16
+#define MAXMOTOR 16
+#define MAXRGBC 32
+#define MAXDIN 64
+#define MAXCOUNTER 16
 
 
 // Check TO CONVERT IN INT -1 / 0 / +1   IF NECESSARY !!!!

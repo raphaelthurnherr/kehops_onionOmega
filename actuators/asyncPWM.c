@@ -85,7 +85,7 @@ int setAsyncPwmAction(int actionNumber, int pwmName, int mode, int time, int cou
 
 int checkBlinkPwmCount(int actionNumber, int pwmName){
 	static int blinkCount=0;     // Variable de comptage du nombre de clignotements       
-        static int PWMtoggleState[NBPWM];
+        static int PWMtoggleState[MAXPWM];
          
         // Si mode blink actif, toggle sur PWM et comptage
         if(kehops.pwm[pwmName].state == BLINK){
