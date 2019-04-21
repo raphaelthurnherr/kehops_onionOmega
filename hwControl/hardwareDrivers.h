@@ -17,14 +17,14 @@
 #ifndef ACTUATORSDRIVERS_H
 #define ACTUATORSDRIVERS_H
 
+#define DRIVER_BH1745 "bh1745"
 #define DRIVER_EFM8BB "efm8bb"
 #define DRIVER_MCP23008 "mcp23008"
 #define DRIVER_PCA9685 "pca9685"
 #define DRIVER_PCA9629 "pca9629"
-#define DRIVER_TARTEMPION "tartempion"
 
 
-
+#define IFACE_GEN_HBRIDGE_MOTOR "generic_hbridge"
 
 typedef struct s_color{
         int red;
@@ -82,11 +82,17 @@ extern int actuator_setStepperSpeed(int stepperID, int speed);
  */
 extern int actuator_setStepperStepAction(int stepperID, int direction, int stepCount);
 
+
+extern int actuator_genericHBridge_motorDirection(int motorID, int direction);
+extern int actuator_genericHBridge_motorSpeed(int motorID, int speed);
+extern int actuator_genericHBridge_motorState(int motorID, int state);
+
+
 extern int actuator_getFirmwareVersion(void);
 extern int actuator_getBoardId(void);
 
-extern int actuator_getCounterFrequency(unsigned char wheelID);          // Retourne la fr�quence actuelle mesuree sur l'encodeur
-extern int actuator_getCounterPulses(unsigned char wheelID);             // Retourne le nombre d'impulsion d'encodeur moteur depuis le d�marrage
+extern int actuator_getCounterFrequency(unsigned char freqCounterID);          // Retourne la fr�quence actuelle mesuree sur l'encodeur
+extern int actuator_getCounterPulses(unsigned char pulseCounterID);             // Retourne le nombre d'impulsion d'encodeur moteur depuis le d�marrage
 extern int actuator_getDigitalInput(unsigned char dinID);                // Retourne l'état de l'entrée numérique spécifiée
 extern int actuator_getDistance(unsigned char distanceSensorID);					// Retourne la distance en cm
 extern int actuator_getVoltage(unsigned char ainID);			// Retourne la tension battery en mV

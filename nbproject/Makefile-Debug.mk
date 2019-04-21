@@ -45,14 +45,12 @@ OBJECTFILES= \
 	${OBJECTDIR}/config/kehopsConfig.o \
 	${OBJECTDIR}/configManager.o \
 	${OBJECTDIR}/fileIO.o \
-	${OBJECTDIR}/hwControl/actuatorsDrivers.o \
-	${OBJECTDIR}/hwControl/boardHWctrl.o \
-	${OBJECTDIR}/hwControl/boardHWsimu.o \
 	${OBJECTDIR}/hwControl/device_drivers/bh1745.o \
 	${OBJECTDIR}/hwControl/device_drivers/efm8_mcu_kehops.o \
 	${OBJECTDIR}/hwControl/device_drivers/mcp23008.o \
 	${OBJECTDIR}/hwControl/device_drivers/pca9629.o \
 	${OBJECTDIR}/hwControl/device_drivers/pca9685.o \
+	${OBJECTDIR}/hwControl/hardwareDrivers.o \
 	${OBJECTDIR}/hwControl/hwManager.o \
 	${OBJECTDIR}/hwControl/libs/i2c/onion-i2c.o \
 	${OBJECTDIR}/hwControl/libs/onion-debug/onion-debug.o \
@@ -162,21 +160,6 @@ ${OBJECTDIR}/fileIO.o: fileIO.c
 	${RM} "$@.d"
 	$(COMPILE.c) -g -IhwControl/libs/i2c -IhwControl/libs/onion-debug -IhwControl -Iactuators -IkehopsCom -IkehopsCom/libs/lib_json -IkehopsCom/libs/lib_mqtt -IhwControl/device_drivers -include buildNumber.h -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/fileIO.o fileIO.c
 
-${OBJECTDIR}/hwControl/actuatorsDrivers.o: hwControl/actuatorsDrivers.c
-	${MKDIR} -p ${OBJECTDIR}/hwControl
-	${RM} "$@.d"
-	$(COMPILE.c) -g -IhwControl/libs/i2c -IhwControl/libs/onion-debug -IhwControl -Iactuators -IkehopsCom -IkehopsCom/libs/lib_json -IkehopsCom/libs/lib_mqtt -IhwControl/device_drivers -include buildNumber.h -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/hwControl/actuatorsDrivers.o hwControl/actuatorsDrivers.c
-
-${OBJECTDIR}/hwControl/boardHWctrl.o: hwControl/boardHWctrl.c
-	${MKDIR} -p ${OBJECTDIR}/hwControl
-	${RM} "$@.d"
-	$(COMPILE.c) -g -IhwControl/libs/i2c -IhwControl/libs/onion-debug -IhwControl -Iactuators -IkehopsCom -IkehopsCom/libs/lib_json -IkehopsCom/libs/lib_mqtt -IhwControl/device_drivers -include buildNumber.h -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/hwControl/boardHWctrl.o hwControl/boardHWctrl.c
-
-${OBJECTDIR}/hwControl/boardHWsimu.o: hwControl/boardHWsimu.c
-	${MKDIR} -p ${OBJECTDIR}/hwControl
-	${RM} "$@.d"
-	$(COMPILE.c) -g -IhwControl/libs/i2c -IhwControl/libs/onion-debug -IhwControl -Iactuators -IkehopsCom -IkehopsCom/libs/lib_json -IkehopsCom/libs/lib_mqtt -IhwControl/device_drivers -include buildNumber.h -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/hwControl/boardHWsimu.o hwControl/boardHWsimu.c
-
 ${OBJECTDIR}/hwControl/device_drivers/bh1745.o: hwControl/device_drivers/bh1745.c
 	${MKDIR} -p ${OBJECTDIR}/hwControl/device_drivers
 	${RM} "$@.d"
@@ -201,6 +184,11 @@ ${OBJECTDIR}/hwControl/device_drivers/pca9685.o: hwControl/device_drivers/pca968
 	${MKDIR} -p ${OBJECTDIR}/hwControl/device_drivers
 	${RM} "$@.d"
 	$(COMPILE.c) -g -IhwControl/libs/i2c -IhwControl/libs/onion-debug -IhwControl -Iactuators -IkehopsCom -IkehopsCom/libs/lib_json -IkehopsCom/libs/lib_mqtt -IhwControl/device_drivers -include buildNumber.h -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/hwControl/device_drivers/pca9685.o hwControl/device_drivers/pca9685.c
+
+${OBJECTDIR}/hwControl/hardwareDrivers.o: hwControl/hardwareDrivers.c
+	${MKDIR} -p ${OBJECTDIR}/hwControl
+	${RM} "$@.d"
+	$(COMPILE.c) -g -IhwControl/libs/i2c -IhwControl/libs/onion-debug -IhwControl -Iactuators -IkehopsCom -IkehopsCom/libs/lib_json -IkehopsCom/libs/lib_mqtt -IhwControl/device_drivers -include buildNumber.h -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/hwControl/hardwareDrivers.o hwControl/hardwareDrivers.c
 
 ${OBJECTDIR}/hwControl/hwManager.o: hwControl/hwManager.c
 	${MKDIR} -p ${OBJECTDIR}/hwControl

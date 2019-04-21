@@ -68,9 +68,7 @@ int EFM8BB_getChannel(device_efm8McuKehops *efm8bbconfig, unsigned char channel)
         
         default:    break;
     }
-    
-    //printf("EFM8BB_getChannel() -> CH#%d  REGISTER: H [0x%2x] L [0x%2x]\n", channel, deviceReg_msb,deviceReg_lsb);
-    
+        
     err += i2c_readByte(0, deviceAddress, deviceReg_lsb, &data_lsb);
     
     if(deviceReg_msb >0);
@@ -109,8 +107,7 @@ int EFM8BB_clearWheelDistance(device_efm8McuKehops *efm8bbconfig, unsigned char 
         case    10   : deviceReg_lsb = ENC_CNT1_RESET; break;
         default:    break;
     }
-        
-    printf("EFM8BB_clearWheelDistance() -> CH#%d  REGISTER: L [0x%2x]\n", channel, deviceReg_lsb);
+
     err += i2c_readByte(0, deviceAddress, deviceReg_lsb, &dummy);
     
     return err;
@@ -122,7 +119,8 @@ int EFM8BB_clearWheelDistance(device_efm8McuKehops *efm8bbconfig, unsigned char 
  * \return code error
  */
 int EFM8BB_init(device_efm8McuKehops *efm8bbconfig){
-    EFM8BB_clearWheelDistance(efm8bbconfig, 9);
-    EFM8BB_clearWheelDistance(efm8bbconfig, 10);
-    return 1;
+    char err=0;
+    err += EFM8BB_clearWheelDistance(efm8bbconfig, 9);
+    err += EFM8BB_clearWheelDistance(efm8bbconfig, 10);
+    return err;
 }

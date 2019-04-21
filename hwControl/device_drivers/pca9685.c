@@ -120,8 +120,6 @@ char pca9685_init(device_pca9685 *pca9685config){
 
 	// Write MODE 1 register, system ready (no sleep, no allcall_adr)
         err+= i2c_write(0, deviceAddr, MODE1, 0x81);
-        
-        printf("Kehops I2C PCA9685 device initialization with %d error\n", err);
                 
         // Return configuration error in priority
         if(!config_error)

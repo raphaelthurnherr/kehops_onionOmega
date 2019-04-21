@@ -4,6 +4,8 @@
  * and open the template in the editor.
  */
 
+//#define DEBUG_INFO
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -27,10 +29,10 @@ char LoadConfig(void){
         
     srcDataBuffer = OpenConfigFromFile("kehops.cfg");         
     extractKehopsConfig(srcDataBuffer);
-    
-    printf("\n\n ********\n Config extracted from \"kehops.cfg\" : \n MOTORS: %d   STEPPERS: %d  PWM: %d   LED: %d   DIN: %d   AIN: %d   WHEEL: %d  BUTTON: %d  SONAR: %d  COLOR RGB: %d\n*********\n\n",
+#ifdef DEBUG_INFO
+    printf("\n\n Config extracted from \"kehops.cfg\" : \n MOTORS: %d   STEPPERS: %d  PWM: %d   LED: %d   DIN: %d   AIN: %d   WHEEL: %d  BUTTON: %d  SONAR: %d  COLOR RGB: %d\n",
     NBMOTOR, NBSTEPPER, NBPWM, NBLED, NBDIN, NBAIN, NBWHEEL, NBBTN, NBSONAR, NBRGBC);
-        
+#endif        
     // Get the config file and setup the structure board device
     // in the deviceMappingFile
     srcDataBuffer = OpenConfigFromFile("devices.cfg"); 

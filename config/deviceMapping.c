@@ -15,7 +15,7 @@
  * 
  */
 
-#define PRINT_INFO
+//#define PRINT_INFO
 
 #define MAX_MQTT_BUFF 8192
 
@@ -503,18 +503,18 @@ unsigned char printBoardData(int partsNb, struct device * device){
             
             if(!strcmp(device->sw_driver.dc_motor.enable.interface, "I2C")){
                 printf("    |__ Enable\n       |__ Interface: %s\n       |__ Driver\n         |__ name: %s\n         |__ attributes\n            |__ channel: %d\n"
-                , device->sw_driver.dc_motor.enable.interface, device->hw_driver.name, device->sw_driver.dc_motor.enable.hw_driver.attributes.device_channel);  
+                , device->sw_driver.dc_motor.enable.interface, device->sw_driver.dc_motor.enable.hw_driver.name, device->sw_driver.dc_motor.enable.hw_driver.attributes.device_channel);  
 
                 
                 printf("    |__ CW\n       |__ Interface: %s\n       |__ Driver\n         |__ name: %s\n         |__ attributes\n            |__ channel: %d\n"
-                , device->sw_driver.dc_motor.cw.interface, device->hw_driver.name, device->sw_driver.dc_motor.cw.hw_driver.attributes.device_channel);  
+                , device->sw_driver.dc_motor.cw.interface, device->sw_driver.dc_motor.cw.hw_driver.name, device->sw_driver.dc_motor.cw.hw_driver.attributes.device_channel);  
 
                                 
                 printf("    |__ CCW\n       |__ Interface: %s\n       |__ Driver\n        |__ name: %s\n         |__ attributes\n            |__ channel: %d\n"
-                , device->sw_driver.dc_motor.ccw.interface, device->hw_driver.name, device->sw_driver.dc_motor.ccw.hw_driver.attributes.device_channel);  
+                , device->sw_driver.dc_motor.ccw.interface, device->sw_driver.dc_motor.ccw.hw_driver.name, device->sw_driver.dc_motor.ccw.hw_driver.attributes.device_channel);  
                                                 
                 printf("    |__ Speed\n       |__ Interface: %s\n       |__ Driver\n         |__ name: %s\n         |__ attributes\n            |__ channel: %d\n"
-                , device->sw_driver.dc_motor.speed.interface, device->hw_driver.name, device->sw_driver.dc_motor.speed.hw_driver.attributes.device_channel);  
+                , device->sw_driver.dc_motor.speed.interface, device->sw_driver.dc_motor.speed.hw_driver.name, device->sw_driver.dc_motor.speed.hw_driver.attributes.device_channel);  
 
             }
         }    

@@ -96,7 +96,7 @@ typedef struct device_drivers{
 } hwDeviceDriver;
 
 typedef struct generic_drivers{
-    int device_id;
+    //int device_id;
     char interface[MAX_DRIVERS_PER_TYPE];
     hwDeviceDriver hw_driver;
 } genericDriver;

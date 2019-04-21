@@ -32,6 +32,7 @@ extern int getColorValue(unsigned char sensorID, unsigned char color);      // R
 
 extern int setMotorSpeed(int motorName, int ratio);
 extern int setMotorDirection(char motorName, int direction);
+extern int setMotorState(char motorName, int state);
 
 extern void setServoPosition(unsigned char smName, char position);
 extern void setLedPower(unsigned char ledID, unsigned char power);

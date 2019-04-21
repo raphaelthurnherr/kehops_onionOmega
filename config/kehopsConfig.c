@@ -356,7 +356,6 @@ void extractKehopsConfig(char * srcDataBuffer){
                     NBPWM++;
                     kehops.pwm[deviceId].config.defaultPower = jRead_int((char *)srcDataBuffer, FILE_KEY_CONFIG_PWM_POWER, &i);
                     kehops.pwm[deviceId].config.dout_id = jRead_int((char *)srcDataBuffer, FILE_KEY_CONFIG_PWM_MAP_ID, &i);
-                    printf("KEHOPS PWM #%d:   dout_id: %d\n", i, kehops.pwm[deviceId].config.dout_id);
                     jRead_string((char *)srcDataBuffer, FILE_KEY_CONFIG_PWM_STATE, dataValue, 15, &i );
                     if(!strcmp(dataValue, "on")){
                         kehops.pwm[deviceId].config.defaultState = 1;

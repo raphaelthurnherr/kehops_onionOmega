@@ -1,4 +1,4 @@
-#define FIRMWARE_VERSION "0.8.2"
+#define FIRMWARE_VERSION "1.0.0"
 
 #define DEFAULT_EVENT_STATE 1   
 
@@ -2513,6 +2513,7 @@ void resetConfig(void){
         // Load config data
         int configStatus = -1;
         configStatus = LoadConfig();
+        
         if(configStatus<0){
             printf("#[CORE] Load configuration file from \"kehops.cfg\": ERROR\n");
         }else
@@ -2536,9 +2537,14 @@ void resetConfig(void){
                 setPwmPower(i, 0);
         }
         
+        for(i=0;i<NBMOTOR;i++){
+            // Enable the motors
+            setMotorState(i, 1);
+        }
+        
+        
         sysApp.info.startUpTime = 0;
         sysApp.kehops.resetConfig = 0;
-        
 }
 
 int getStartupArg(int count, char *arg[]){

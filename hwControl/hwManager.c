@@ -12,24 +12,20 @@
 
 #include "pthread.h"
 #include <unistd.h>
+#include "string.h"
 #include <stdio.h>
 #include "hwManager.h"
 #include "../kehops_main.h"
 #include "../config/kehopsConfig.h"
 
+#include "hardwareDrivers.h"
 
-#ifdef I2CSIMU
-#include "boardHWsimu.h"
-#define POOLTIME 20000
-#else
-#include "boardHWctrl.h"
-#include "actuatorsDrivers.h"
 #define POOLTIME 1000
-#endif
 
 #include "../buggy_descriptor.h"
 #include "../config/deviceMapping.h"
 #include "../type.h"
+
 
 // Device drivers declaration
 #include "pca9685.h"
@@ -37,6 +33,8 @@
 #include "efm8_mcu_kehops.h"
 #include "mcp23008.h"
 #include "bh1745.h"
+
+
 
 
 // Thread Messager
@@ -165,10 +163,6 @@ int getBatteryVoltage(unsigned char ainID);					// Retourne la tension battery e
 
 int getColorValue(unsigned char sensorID, unsigned char color);      // Retourne la valeur de la couleur d�finie sur le capteur d�fini
 
-//char getOrganNumber(int organName);		// Retourne le num�ro du moteur 0..xx selon le nom d'organe sp�cifi�
-
-unsigned char getOrganI2Cregister(char organType, unsigned char organName); // Retourne l'adresse du registre correspondant au nom de l'organe
-
 int setMotorSpeed(int motorName, int ratio);
 int setMotorDirection(char motorName, int direction);
 
@@ -196,16 +190,24 @@ int resetHardware(t_sysConf * Config);
 // Programme principale TIMER
 // ------------------------------------------
 void *hwTask (void * arg){
-        char dinState=0;
         int i;
-        
-	if(buggyBoardInit() && boardHWinit() == 0){       
+        int initResult;
+
+	//if(buggyBoardInit() && boardHWinit() == 0){   
+        initResult = boardHWinit();
+        if(initResult == 0){
 		printf("\n#[HW MANAGER] Initialisation carte HW: OK\n");
 		sendMqttReport(0,"#[HW MANAGER] Initialisation carte HW: OK\n");
 	}
 	else{
+            if(initResult > 0){
 		printf("#[HW MANAGER] Initialisation carte HW: ERREUR \n");
 		sendMqttReport(0,"#[HW MANAGER] Initialisation carte HW: ERREUR\n");
+            }
+            else{
+                    printf("#[HW MANAGER] Initialisation carte HW: AVERTISSEMENT \n");
+                    sendMqttReport(0,"#[HW MANAGER] Initialisation carte HW: AVERTISSEMENT\n");
+                }
 	}
         
         
@@ -214,9 +216,7 @@ void *hwTask (void * arg){
         BoardInfo.mcuVersion=actuator_getFirmwareVersion();
         BoardInfo.HWrevision=actuator_getBoardId();
 
- ****************/
-
-        
+ ****************/        
 	while(1){
             
 		// Sequencage des messages sur bus I2C à interval régulier
@@ -228,8 +228,8 @@ void *hwTask (void * arg){
                         case 5	: //sensor.counter[MOTOR_ENCODER_LEFT].counter = actuator_getCounterPulses(MOTOR_ENCODER_LEFT);
                                   //sensor.counter[MOTOR_ENCODER_RIGHT].counter = actuator_getCounterPulses(MOTOR_ENCODER_RIGHT);
                                   for(i=0;i<NBWHEEL;i++){
-                                      sensor.counter[i].counter = actuator_getCounterPulses(i);
-                                      sensor.counter[i].frequency = actuator_getCounterFrequency(i);
+                                      sensor.counter[i].counter = actuator_getCounterPulses(kehops.dcWheel[i].config.encoder.pulseCounter_id);
+                                      sensor.counter[i].frequency = actuator_getCounterFrequency(kehops.dcWheel[i].config.encoder.freqCounter_id);
                                   }
 
                                 //printf("Pulses left: %d - ",sensor.counter[MOTOR_ENCODER_LEFT].pulseFromStartup);
@@ -252,14 +252,14 @@ void *hwTask (void * arg){
 
                         case 20	:   
                                     for(i = 0;i<NBAIN;i++){
-                                        sensor.ain[i].value = actuator_getVoltage(i);        // Conversion de distance mm en cm
+                                        sensor.ain[i].value = actuator_getVoltage(kehops.battery[i].config.ain_id);        // Conversion de distance mm en cm
                                         //printf("    sensor.ain[%d].value: %d\n",i, sensor.ain[i].value);
                                     }
                                     
                                     break;
                                     
 			case 25	:   for(i = 0;i<NBSONAR;i++){
-                                        sensor.distance[i].value = actuator_getDistance(i);        // Conversion de distance mm en cm
+                                        sensor.distance[i].value = actuator_getDistance(kehops.sonar[i].config.distanceSensor_id);        // Conversion de distance mm en cm
                                         //printf("    sensor.ain[%d].value: %d\n",i, sensor.ain[i].value);
                                     }
                                     break;
@@ -273,7 +273,7 @@ void *hwTask (void * arg){
                                     break;                         
 
                         case 35 :   for(i = 0;i<NBRGBC;i++){
-                                        actuator_getRGBColor(i, &sensor.rgbc[i]);        // Get RGB Sensor value
+                                        actuator_getRGBColor(i, &sensor.rgbc[kehops.rgb[i].config.rgbID]);        // Get RGB Sensor value
                                     }
                                     break; 
 
@@ -377,25 +377,17 @@ int getColorValue(unsigned char sensorID, unsigned char color){
 // ---------------------------------------------------------------------------
 int setMotorSpeed(int motorName, int ratio){
 
-     	unsigned char motorAdress;
-	motorAdress = getOrganI2Cregister(MOTOR, motorName);
-        
     	// V�rification ratio max et min comprise entre 0..100%
 	if(ratio > 100)
 		ratio = 100;
 	if (ratio<0)
 		ratio = 0;
+ 
+        int motorId = kehops.dcWheel[motorName].config.motor.dc_motor_id; 
+        if(!strcmp(kehopsActuators.dc_motor[motorId].interface, IFACE_GEN_HBRIDGE_MOTOR)){
+            set_i2c_command_queue(&actuator_genericHBridge_motorSpeed, motorId, ratio, NULL);
+        }
         
-        set_i2c_command_queue(&PCA9685_DCmotorSetSpeed, motorAdress, ratio, NULL);
-        
-        
-        /*
-        // USING THE NEW DRIVER
-        int motorID = kehops.dcWheel[motorName].config.motor.dc_motor_id;
-        int kehopsActuators.dc_motor[motorID].id;
-        
-        set_i2c_command_queue(&actuator_setDoutValue, doutID, ratio, NULL);   
-        */
 	return(1);
 }
 
@@ -405,18 +397,32 @@ int setMotorSpeed(int motorName, int ratio){
 // !!!!!!!!!!!!! FONCTION A RETRAVAILLER !!!!!!!!!!!!!!!!!!!
 // ---------------------------------------------------------------------------
 int setMotorDirection(char motorName, int direction){
-	unsigned char motorAdress;
 
-        // Check if motor inversion requiered and modify if necessary
-        if(kehops.dcWheel[motorName].config.motor.inverted)
-            direction *= -1;
+    // Check if motor inversion requiered and modify if necessary
+    if(kehops.dcWheel[motorName].config.motor.inverted)
+        direction *= -1;
 
-	// Conversion No de moteur en adresse du registre du PWM controleur
-	motorAdress=getOrganI2Cregister(MOTOR, motorName);
+    int motorId = kehops.dcWheel[motorName].config.motor.dc_motor_id; 
 
-        set_i2c_command_queue(&MCP2308_DCmotorSetRotation, motorAdress, direction, NULL);
-        
-	return(1);
+    if(!strcmp(kehopsActuators.dc_motor[motorId].interface, IFACE_GEN_HBRIDGE_MOTOR)){
+        set_i2c_command_queue(&actuator_genericHBridge_motorDirection, motorId, direction, NULL);
+    }        
+
+    return(1);
+}
+
+// ---------------------------------------------------------------------------
+// SETMOTORSTATE
+// !!!!!!!!!!!!! FONCTION A RETRAVAILLER !!!!!!!!!!!!!!!!!!!
+// ---------------------------------------------------------------------------
+
+int setMotorState(char motorName, int state){
+    int motorId = kehops.dcWheel[motorName].config.motor.dc_motor_id; 
+
+    if(!strcmp(kehopsActuators.dc_motor[motorId].interface, IFACE_GEN_HBRIDGE_MOTOR)){
+        set_i2c_command_queue(&actuator_genericHBridge_motorState, motorId, state, NULL);
+    }  
+    return (1);
 }
 
 // ---------------------------------------------------------------------------
@@ -442,19 +448,14 @@ int getMcuFirmware(void){
 // - nombre de pas
 // -------------------------------------------------------------------
 
-int setStepperStepAction(int motorNumber, int direction, int stepCount){
-    // USING THE NEW DRIVER
-    //set_i2c_command_queue(&actuator_setStepperStepAction, motorNumber, direction);
-    
+int setStepperStepAction(int motorNumber, int direction, int stepCount){      
     printf("\n-------- SET STEPPER STEP ACTION -------------   %d STEPS\n", stepCount);
-    //actuator_setStepperStepAction(motorNumber, direction, stepCount);
     
     // Check if motor inversion requiered and modify if necessary
     if(kehops.stepperWheel[motorNumber].config.motor.inverted)
         direction *= -1;
-    
+
     int stepper_id = kehops.stepperWheel[motorNumber].config.motor.stepper_motor_id;
-    
     set_i2c_command_queue(&actuator_setStepperStepAction, stepper_id, direction, stepCount);
     return (0);
 } 
@@ -467,7 +468,6 @@ int setStepperStepAction(int motorNumber, int direction, int stepCount){
 // -------------------------------------------------------------------
 int setStepperSpeed(int motorNumber, int speed){
     printf("\n-------- SET STEPPER SPEED -------------\n");
-    // USING THE NEW DRIVER
     int stepper_id = kehops.stepperWheel[motorNumber].config.motor.stepper_motor_id; 
     set_i2c_command_queue(&actuator_setStepperSpeed, stepper_id, speed, NULL);
     
@@ -548,23 +548,7 @@ void processCommandQueue(void){
 }
 
 
-// ------------------------------------------------------------------------------------
-// getOrganAdress: Conversion du non d'organe en adresse I2C
-// Retourne l'adresse du registre correspondant au nom de l'organe
-// ------------------------------------------------------------------------------------
-unsigned char getOrganI2Cregister(char organType, unsigned char organName){
-	unsigned char organAdr;
 
-	if(organType == MOTOR){
-		switch(organName){
-			case MOTOR_0 : organAdr = PCA_DCM0; break;
-			case MOTOR_1 : organAdr = PCA_DCM1; break;
-			default :	organAdr = UNKNOWN; break;
-		}
-	}
-
-	return organAdr;
-}
 
 // -------------------------------------------------------------------
 // RESET HARDFWARE
@@ -576,6 +560,7 @@ int resetHardware(t_sysConf * Config){
     
     // Etat initial des moteur
     for(i=0;i<NBMOTOR;i++){
+        //actuator_genericHBridge_motorState(i, 1);
         /*
         setMotorSpeed(i, 0);
         setMotorDirection(i, BUGGY_FORWARD);

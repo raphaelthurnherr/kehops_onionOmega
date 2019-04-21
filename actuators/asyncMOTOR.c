@@ -220,7 +220,7 @@ void checkDCmotorPower(void){
             actualRpmInPercent = rpmToPercent(i, kehops.dcWheel[i].measure.rpm);
             
             if(kehops.dcWheel[i].motor.userSpeedSetPoint <= 0){   
-                setMotorSpeed(i, 0);
+                //setMotorSpeed(i, 0);
             }else{
                 
                 if(kehops.dcWheel[i].config.pidReg.enable > 0){

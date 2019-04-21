@@ -21,7 +21,7 @@
 #include <string.h>
 #include <ctype.h>
 
-#include "actuatorsDrivers.h"
+#include "hardwareDrivers.h"
 #include "../configManager.h"
 #include "../config/deviceMapping.h"
 #include "../kehops_main.h"
@@ -60,6 +60,8 @@ int getEFM8BBconfig_ptr(char * name);
 int getMCP23008config_ptr(char * name);
 int getBH1745config_ptr(char * name);
 
+int driverSelector_SetDOUT(char * driverType, char * driverName, int channel, int value);
+
 /**
  * \fn char boardHWinit()
  * \brief Initialize the devices IC of the board and the 
@@ -70,14 +72,20 @@ int getBH1745config_ptr(char * name);
 
 int boardHWinit(void){
     int err = 0;
+    int warning = 0;
+    int NoDriverFound=1;
+    
     int i;
-    //usleep(100000);
 
+    printf("#[HW DRIVER] Board devices drivers initialization: ");
+                
     for(i=0; boardDevice[i].address >= 0 && i<MAX_BOARD_DEVICE; i++){
+            NoDriverFound = 1;                          
+            printf("\n                                                      [%s - %s] : ",boardDevice[i].name, boardDevice[i].type);
         // DEVICES TYPE PCA9585 PWM DRIVER CONFIGURATION
-            if(!strcmp(boardDevice[i].type, "pca9685")){              
+            
+            if(!strcmp(boardDevice[i].type, DRIVER_PCA9685)){              
                 // Setting up the pca9685 device
-                printf("\n\n Configuring PCA9629  [%s]\n----------------------------------\n",boardDevice[i].name);
                 strcpy(dev_pca9685[pca9685_count].deviceName, boardDevice[i].name);
                 if(boardDevice[i].attributes.frequency <= 0)
                     dev_pca9685[pca9685_count].frequency =200;
@@ -85,57 +93,99 @@ int boardHWinit(void){
                     dev_pca9685[pca9685_count].frequency = boardDevice[i].attributes.frequency;     
                 dev_pca9685[pca9685_count].totemPoleOutput=1;                 
                 dev_pca9685[pca9685_count].deviceAddress = boardDevice[i].address;                
-                err += pca9685_init(&dev_pca9685[pca9685_count]);
-                //printDeviceData(i, &boardDevice[i]);
+                if(pca9685_init(&dev_pca9685[pca9685_count]) != 0){
+                    err++;
+                    printf(" -> ERROR");
+                }else
+                    printf(" -> OK");   
+                
+            #ifdef INFO_DEBUG
+                    printDeviceData(i, &boardDevice[i]);
+            #endif
                 pca9685_count++;
+                NoDriverFound=0;
             }
             
         // DEVICES TYPE PCA9529 STEPPER MOTOR DRIVER CONFIGURATION
-            if(!strcmp(boardDevice[i].type, "pca9629")){              
+            if(!strcmp(boardDevice[i].type, DRIVER_PCA9629)){              
                 // Setting up the pca9629 device               
-                printf("\n\n Configuring PCA9629  [%s]\n----------------------------------\n", boardDevice[i].name);
                 strcpy(dev_pca9629[pca9629_count].deviceName, boardDevice[i].name);
                 dev_pca9629[pca9629_count].deviceAddress = boardDevice[i].address;
-                err += pca9629_init(&dev_pca9629[pca9629_count]);
-                //printDeviceData(i, &boardDevice[i]);
+                if(pca9629_init(&dev_pca9629[pca9629_count]) != 0){
+                    err++;
+                    printf(" -> ERROR");
+                }else
+                    printf(" -> OK");                
+            #ifdef INFO_DEBUG
+                printDeviceData(i, &boardDevice[i]);
+            #endif                
                 pca9629_count++;
+                NoDriverFound=0;
             }
             
             // DEVICES TYPE EFM8 MICROCONTROLER KEHOPS FIRMWARE CONFIGURATION
-            if(!strcmp(boardDevice[i].type, "efm8bb")){              
+            if(!strcmp(boardDevice[i].type, DRIVER_EFM8BB)){              
                 // Setting up the efm8bb MCU device               
-                printf("\n\n Configuring EFM8BB  [%s]\n----------------------------------\n",boardDevice[i].name);
                 strcpy(dev_efm8bb[efm8bb_count].deviceName, boardDevice[i].name);
                 dev_efm8bb[efm8bb_count].deviceAddress = boardDevice[i].address;
-                EFM8BB_init(&dev_efm8bb[efm8bb_count]);
-                //printDeviceData(i, &boardDevice[i]);
+                if(EFM8BB_init(&dev_efm8bb[efm8bb_count]) != 0){
+                    err++;
+                    printf(" -> ERROR");
+                }else
+                    printf(" -> OK");                  
+            #ifdef INFO_DEBUG                
+                printDeviceData(i, &boardDevice[i]);
+            #endif                
                 efm8bb_count++;
+                NoDriverFound=0;                
             }
             
             // DEVICES TYPE MCP23008 GPIO EXTENDER CONFIGURATION
-            if(!strcmp(boardDevice[i].type, "mcp23008")){              
+            if(!strcmp(boardDevice[i].type, DRIVER_MCP23008)){              
                 // Setting up the mcp23008 GPIO extender              
-                printf("\n\n Configuring MCP23008  [%s]\n----------------------------------\n",boardDevice[i].name);
                 strcpy(dev_mcp23008[mcp23008_count].deviceName, boardDevice[i].name);
                 dev_mcp23008[mcp23008_count].deviceAddress = boardDevice[i].address;
                 dev_mcp23008[mcp23008_count].pullupEnable  = 0xff;                   // NEED TO BE DEFINE VIA CONFIG DEVICE.CFG
                 dev_mcp23008[mcp23008_count].gpioDirection = 0x60;                  // NEED TO BE DEFINE VIA CONFIG DEVICE.CFG
-                mcp23008_init(&dev_mcp23008[mcp23008_count]);
+                if(mcp23008_init(&dev_mcp23008[mcp23008_count]) != 0){
+                    err++;
+                    printf(" -> ERROR");
+                }else
+                    printf(" -> OK");                  
+            #ifdef INFO_DEBUG                
                 printDeviceData(i, &boardDevice[i]);
+            #endif                
                 mcp23008_count++;
+                NoDriverFound=0;                
             }     
             
             // DEVICES TYPE BH1745 RGB SENSOR CONFIGURATION
-            if(!strcmp(boardDevice[i].type, "bh1745")){              
+            if(!strcmp(boardDevice[i].type, DRIVER_BH1745)){              
                 // Setting up the bh1745 rgb sensor
-                printf("\n\n Configuring BH1745  [%s]\n----------------------------------\n",boardDevice[i].name);
                 strcpy(dev_bh1745[bh1745_count].deviceName, boardDevice[i].name);
                 dev_bh1745[bh1745_count].deviceAddress = boardDevice[i].address;
-                bh1745nuc_init(&dev_bh1745[bh1745_count]);
+                if(bh1745nuc_init(&dev_bh1745[bh1745_count]) != 0){
+                    err++;
+                    printf(" -> ERROR");
+                }else
+                    printf(" -> OK");                 
+                
+            #ifdef INFO_DEBUG                
                 printDeviceData(i, &boardDevice[i]);
+            #endif                
                 bh1745_count++;
-            }             
+                NoDriverFound=0;                
+            }
+            
+            if(NoDriverFound > 0)
+                warning++;
+                
     }
+     printf("\n");
+     
+     if(warning && !err)
+         return -1;
+         
     return err;
 }
 
@@ -148,31 +198,29 @@ int boardHWinit(void){
  */
 
 char actuator_setDoutValue(int doutID, int value){
-    
     int channel = kehopsActuators.dout[doutID].hw_driver.attributes.device_channel;
     int ptrDev; 
-
+    
     // USE DRIVER FOR PCA9685
     if(!strcmp(kehopsActuators.dout[doutID].hw_driver.type, DRIVER_PCA9685)){
         ptrDev = getPCA9685config_ptr(kehopsActuators.dout[doutID].hw_driver.name);
         if(ptrDev>=0){
-            printf("SET DOUT VALUE FROM <%s> DRIVERS:  NAME:%s TYPE:%s I2C add: 0x%2x    dout_id: %d     channel: %d     power: %d     frequency: %d\n",DRIVER_PCA9685, kehopsActuators.dout[doutID].hw_driver.name, kehopsActuators.dout[doutID].hw_driver.type, dev_pca9685[ptrDev].deviceAddress, doutID, channel, value, dev_pca9685[ptrDev].frequency);        
+    #ifdef INFO_DEBUG
+            printf("SET DOUT VALUE FROM <%s> DRIVERS:  NAME:%s TYPE:%s I2C add: 0x%2x    dout_id: %d     channel: %d     ratio: %d\n",DRIVER_PCA9685, kehopsActuators.dout[doutID].hw_driver.name, kehopsActuators.dout[doutID].hw_driver.type, dev_pca9685[ptrDev].deviceAddress, doutID, channel, value);        
+    #endif
             pca9685_setPWMdutyCycle(&dev_pca9685[ptrDev], channel, value);
         }else 
             printf ("#! Function [actuator_setDoutValue] -> Unknown driver name: %s\n", kehopsActuators.dout[doutID].hw_driver.name);
-        printf ("#! NOW USING  DRIVER 'PCA9685' for DOUT #%d\n", doutID);
     }
     
     // USE DRIVER FOR MCP23008
     if(!strcmp(kehopsActuators.dout[doutID].hw_driver.type, DRIVER_MCP23008)){
         ptrDev = getMCP23008config_ptr(kehopsActuators.dout[doutID].hw_driver.name);
         if(ptrDev>=0){
-            printf("SET DOUT VALUE FROM <%s> DRIVERS:  NAME:%s TYPE:%s I2C add: 0x%2x    dout_id: %d     channel: %d     power: %d\n",DRIVER_MCP23008, kehopsActuators.dout[doutID].hw_driver.name, kehopsActuators.dout[doutID].hw_driver.type, dev_mcp23008[ptrDev].deviceAddress, doutID, channel, value);        
+            printf("SET DOUT VALUE FROM <%s> DRIVERS:  NAME:%s TYPE:%s I2C add: 0x%2x    dout_id: %d     channel: %d     state: %d\n",DRIVER_MCP23008, kehopsActuators.dout[doutID].hw_driver.name, kehopsActuators.dout[doutID].hw_driver.type, dev_mcp23008[ptrDev].deviceAddress, doutID, channel, value);        
             mcp23008_setChannel(&dev_mcp23008[ptrDev], channel, value);
         }else 
             printf ("#! Function [actuator_setDoutValue] -> Unknown driver name: %s\n", kehopsActuators.dout[doutID].hw_driver.name);
-        
-            printf ("#! NOW USING  DRIVER 'MCP23008' for DOUT #%d\n", doutID);
     }
     
 }
@@ -209,7 +257,6 @@ char actuator_setServoPosition(int doutID, int position){
             printf("SET SERVO POSITION FROM NEW DRIVERS: NAME: %s TYPE:%s  I2Cadd: 0x%2x    dout_id: %d     channel: %d     position: %d     time: %.2f\n",kehopsActuators.dout[doutID].hw_driver.name,kehopsActuators.dout[doutID].hw_driver.type, dev_pca9685[ptrDev].deviceAddress, doutID, channel, position, time_ms);    
             pca9685_setPulseWidthTime(&dev_pca9685[ptrDev], channel, time_ms);
         }else printf ("#! Function [actuator_setServoPosition] -> Unknown driver name: %s\n", kehopsActuators.dout[doutID].hw_driver.name);
-        printf ("#! NOW USING  DRIVER 'PCA9685' for Servomotor #%d\n", doutID);
     }
 }
 
@@ -225,7 +272,6 @@ char actuator_setServoPosition(int doutID, int position){
 int actuator_setStepperStepAction(int stepperID, int direction, int stepCount){
     int ptrDev;
      
-   
     // USE DRIVER FOR PCA9629
      if(!strcmp(kehopsActuators.stepper_motors[stepperID].hw_driver.type, DRIVER_PCA9629)){
         unsigned char ctrlData = 0;
@@ -257,7 +303,6 @@ int actuator_setStepperStepAction(int stepperID, int direction, int stepCount){
             PCA9629_StepperMotorSetStep(&dev_pca9629[ptrDev], stepCount);
             PCA9629_StepperMotorControl(&dev_pca9629[ptrDev], ctrlData);
         }else printf ("#! Function [actuator_setStepperStepAction] -> Unknown driver name: %s\n", kehopsActuators.stepper_motors[stepperID].hw_driver.name);
-        printf ("#! NOW USING  DRIVER 'PCA9629' for Stepper motor #%d\n", stepperID);
  }
     
     return (0);
@@ -293,7 +338,6 @@ int actuator_setStepperSpeed(int stepperID, int speed){
             printf("SET STEPPER STEP SPEED FROM NEW DRIVERS: NAME: %s TYPE:%s  I2Cadd: 0x%2x    stepper_id: %d     SPEED: %d \n", kehopsActuators.stepper_motors[stepperID].hw_driver.name,kehopsActuators.stepper_motors[stepperID].hw_driver.type, dev_pca9685[ptrDev].deviceAddress, stepperID, speed);    
             PCA9629_StepperMotorPulseWidth(&dev_pca9629[ptrDev], regData);
         }else printf ("#! Function [actuator_setStepperSpeed] -> Unknown driver name: %s\n", kehopsActuators.stepper_motors[stepperID].hw_driver.name);
-        printf ("#! NOW USING  DRIVER 'PCA9629' for Stepper motor #%d\n", stepperID);
      }
          
     return (1);
@@ -327,33 +371,34 @@ int actuator_getStepperState(int stepperID){
 // ------------------------------------------------------------------------------------
 //EFM8
 // ------------------------------------------------------------------------------------
-int actuator_getCounterPulses(unsigned char wheelID){
+int actuator_getCounterPulses(unsigned char pulseCounterID){
     int counterPulses;
     int ptrDev;
-    
-    int counter_id = kehops.dcWheel[wheelID].config.encoder.pulseCounter_id; 
-    
-    ptrDev = getEFM8BBconfig_ptr(kehopsActuators.pulsesCounter[counter_id].hw_driver.name);
-    if(ptrDev>=0){
-        //printf("GET COUNTER FROM NEW DRIVERS: NAME: %s   I2Cadd: 0x%2x    counter_id: %d\n", kehopsActuators.pulsesCounter[counter_id].hw_driver.name, dev_efm8bb[ptrDev].deviceAddress, counter_id);    
-        counterPulses = EFM8BB_getChannel(&dev_efm8bb[ptrDev], kehopsActuators.pulsesCounter[counter_id].hw_driver.attributes.device_channel);
-    }else printf ("#! Function [actuator_getCounterPulses] -> Unknown driver name: %s\n", kehopsActuators.pulsesCounter[counter_id].hw_driver.name);
+        // USE DRIVER FOR EFM8BB
+    if(!strcmp(kehopsActuators.pulsesCounter[pulseCounterID].hw_driver.type, DRIVER_EFM8BB)){
+        ptrDev = getEFM8BBconfig_ptr(kehopsActuators.pulsesCounter[pulseCounterID].hw_driver.name);
+        if(ptrDev>=0){
+            //printf("GET COUNTER FROM NEW DRIVERS: NAME: %s   I2Cadd: 0x%2x    counter_id: %d\n", kehopsActuators.pulsesCounter[counter_id].hw_driver.name, dev_efm8bb[ptrDev].deviceAddress, counter_id);    
+            counterPulses = EFM8BB_getChannel(&dev_efm8bb[ptrDev], kehopsActuators.pulsesCounter[pulseCounterID].hw_driver.attributes.device_channel);
+        }else printf ("#! Function [actuator_getCounterPulses] -> Unknown driver name: %s\n", kehopsActuators.pulsesCounter[pulseCounterID].hw_driver.name);
+    }
     return counterPulses;
 }
 
 
 
-int actuator_getCounterFrequency(unsigned char wheelID){
+int actuator_getCounterFrequency(unsigned char freqCounterID){
     int frequency;
     int ptrDev;
     
-    int freq_id = kehops.dcWheel[wheelID].config.encoder.freqCounter_id;
-        
-    ptrDev = getEFM8BBconfig_ptr(kehopsActuators.freqCounter[freq_id].hw_driver.name);
-    if(ptrDev>=0){
-        //printf("GET FREQ FROM NEW DRIVERS: NAME: %s   I2Cadd: 0x%2x    counter_id: %d\n", kehopsActuators.freqCounter[freq_id].hw_driver.name, dev_efm8bb[ptrDev].deviceAddress, freq_id);    
-        frequency = EFM8BB_getChannel(&dev_efm8bb[ptrDev], kehopsActuators.freqCounter[freq_id].hw_driver.attributes.device_channel);
-    }else printf ("#! Function [actuator_getCounterFrequency] -> Unknown driver name: %s\n", kehopsActuators.freqCounter[freq_id].hw_driver.name);
+    // USE DRIVER FOR EFM8BB
+    if(!strcmp(kehopsActuators.freqCounter[freqCounterID].hw_driver.type, DRIVER_EFM8BB)){
+        ptrDev = getEFM8BBconfig_ptr(kehopsActuators.freqCounter[freqCounterID].hw_driver.name);
+        if(ptrDev>=0){
+            //printf("GET FREQ FROM NEW DRIVERS: NAME: %s   I2Cadd: 0x%2x    counter_id: %d\n", kehopsActuators.freqCounter[freq_id].hw_driver.name, dev_efm8bb[ptrDev].deviceAddress, freq_id);    
+            frequency = EFM8BB_getChannel(&dev_efm8bb[ptrDev], kehopsActuators.freqCounter[freqCounterID].hw_driver.attributes.device_channel);
+        }else printf ("#! Function [actuator_getCounterFrequency] -> Unknown driver name: %s\n", kehopsActuators.freqCounter[freqCounterID].hw_driver.name);
+    }
     
     return frequency;
 }
@@ -361,7 +406,6 @@ int actuator_getCounterFrequency(unsigned char wheelID){
 int actuator_getDigitalInput(unsigned char dinID){
     char value;
     int ptrDev;    
-    //int din_id = kehops.proximity[dinID].config.din_id; 
         
     // USE DRIVER FOR EFM8BB
     if(!strcmp(kehopsActuators.din[dinID].hw_driver.type, DRIVER_EFM8BB)){
@@ -386,27 +430,23 @@ int actuator_getDigitalInput(unsigned char dinID){
         }
         //printf ("#! NOW USING  DRIVER 'MCP23008' for DIN #%d\n", dinID);
     }
-    
-    // USE DRIVER FOR TARTEMPION TEST
-    if(!strcmp(kehopsActuators.din[dinID].hw_driver.type, DRIVER_TARTEMPION)){
-         //printf ("#! NOW USING OTHER DRIVER 'TARTEMPION' for DIN #%d\n", dinID);
-         value = -1;
-    }
-    
+   
     return value;
 }
 
 int actuator_getDistance(unsigned char distanceSensorID){
     int distance_mm =-1;
     int ptrDev;    
-    int dist_id = kehops.sonar[distanceSensorID].config.distanceSensor_id; 
-        
-    ptrDev = getEFM8BBconfig_ptr(kehopsActuators.distanceSensor[dist_id].hw_driver.name);
-    if(ptrDev>=0){
-        distance_mm = EFM8BB_getChannel(&dev_efm8bb[ptrDev], kehopsActuators.distanceSensor[dist_id].hw_driver.attributes.device_channel);
-    }else{
-            printf ("#! Function [actuator_getDistance] -> Unknown driver name: %s\n", kehopsActuators.distanceSensor[dist_id].hw_driver.name);
-            distance_mm = -1;
+
+    // USE DRIVER FOR EFM8BB
+    if(!strcmp(kehopsActuators.distanceSensor[distanceSensorID].hw_driver.type, DRIVER_EFM8BB)){
+        ptrDev = getEFM8BBconfig_ptr(kehopsActuators.distanceSensor[distanceSensorID].hw_driver.name);
+        if(ptrDev>=0){
+            distance_mm = EFM8BB_getChannel(&dev_efm8bb[ptrDev], kehopsActuators.distanceSensor[distanceSensorID].hw_driver.attributes.device_channel);
+        }else{
+                printf ("#! Function [actuator_getDistance] -> Unknown driver name: %s\n", kehopsActuators.distanceSensor[distanceSensorID].hw_driver.name);
+                distance_mm = -1;
+        }
     }
     return distance_mm;
 }
@@ -414,31 +454,32 @@ int actuator_getDistance(unsigned char distanceSensorID){
 int actuator_getVoltage(unsigned char ainID){
     int voltage_mv;
     int ptrDev;    
-    int ain_id = kehops.battery[ainID].config.ain_id; 
-                
-    ptrDev = getEFM8BBconfig_ptr(kehopsActuators.ain[ain_id].hw_driver.name);
-    
-    if(ptrDev>=0){
-        voltage_mv = EFM8BB_getChannel(&dev_efm8bb[ptrDev], kehopsActuators.ain[ain_id].hw_driver.attributes.device_channel);
-    }else{
-            printf ("#! Function [actuator_getVoltage] -> Unknown driver name: %s\n", kehopsActuators.ain[ain_id].hw_driver.name);
-            voltage_mv = -1;
+              
+    // USE DRIVER FOR EFM8BB
+    if(!strcmp(kehopsActuators.ain[ainID].hw_driver.type, DRIVER_EFM8BB)){
+        ptrDev = getEFM8BBconfig_ptr(kehopsActuators.ain[ainID].hw_driver.name);
+
+        if(ptrDev>=0){
+            voltage_mv = EFM8BB_getChannel(&dev_efm8bb[ptrDev], kehopsActuators.ain[ainID].hw_driver.attributes.device_channel);
+        }else{
+                printf ("#! Function [actuator_getVoltage] -> Unknown driver name: %s\n", kehopsActuators.ain[ainID].hw_driver.name);
+                voltage_mv = -1;
+        }
     }
     return voltage_mv;
 }
 
 int actuator_getRGBColor(unsigned char rgbID, RGB_COLOR * rgbColor){
     int ptrDev;    
-    int rgb_id = kehops.rgb[rgbID].config.rgbID; 
     
-    ptrDev = getBH1745config_ptr(kehopsActuators.rgbSensor[rgb_id].hw_driver.name);
+    ptrDev = getBH1745config_ptr(kehopsActuators.rgbSensor[rgbID].hw_driver.name);
     if(ptrDev>=0){
         rgbColor->red = bh1745nuc_getChannelRGBvalue(&dev_bh1745[ptrDev], RED);
         rgbColor->green = bh1745nuc_getChannelRGBvalue(&dev_bh1745[ptrDev], GREEN);
         rgbColor->blue = bh1745nuc_getChannelRGBvalue(&dev_bh1745[ptrDev], BLUE);
         rgbColor->clear = bh1745nuc_getChannelRGBvalue(&dev_bh1745[ptrDev], CLEAR);
     }else{
-            printf ("#! Function [actuator_getColor] -> Unknown driver name: %s\n", kehopsActuators.rgbSensor[rgb_id].hw_driver.name);
+            printf ("#! Function [actuator_getColor] -> Unknown driver name: %s\n", kehopsActuators.rgbSensor[rgbID].hw_driver.name);
     }
     
     if(rgbColor->red >= 0 && rgbColor->green >= 0 && rgbColor->blue >= 0 && rgbColor->clear >= 0)
@@ -580,4 +621,147 @@ int getBH1745config_ptr(char * name){
         }
     }       
     return refFound;
+}
+
+
+
+/*
+ * \fn char actuator_genericHBridge_motorDirection()
+ * \brief Get the DC MOTOR hardware id of and setup the direction
+ *
+ * \param motorNumber, direction
+ * \return -
+ */
+
+int actuator_genericHBridge_motorDirection(int motorID, int direction){ 
+    int cw_channel, ccw_channel;
+    char cw_driverType[25], cw_driverName[25];
+    char ccw_driverType[25], ccw_driverName[25];
+    
+
+// GET THE DEVICES IC INFORMATIONS (CHANNEL, TYPE AND NAME)
+    cw_channel = kehopsActuators.dc_motor[motorID].sw_driver.dc_motor.cw.hw_driver.attributes.device_channel;    
+    strcpy(cw_driverType, kehopsActuators.dc_motor[motorID].sw_driver.dc_motor.cw.hw_driver.type);
+    strcpy(cw_driverName, kehopsActuators.dc_motor[motorID].sw_driver.dc_motor.cw.hw_driver.name);
+
+    ccw_channel = kehopsActuators.dc_motor[motorID].sw_driver.dc_motor.ccw.hw_driver.attributes.device_channel;
+    strcpy(ccw_driverType, kehopsActuators.dc_motor[motorID].sw_driver.dc_motor.ccw.hw_driver.type);
+    strcpy(ccw_driverName, kehopsActuators.dc_motor[motorID].sw_driver.dc_motor.ccw.hw_driver.name);
+
+// STOP THE MOTOR, NO CW OR CCW SELECTED
+    driverSelector_SetDOUT(cw_driverType, cw_driverName, cw_channel, 0);
+    driverSelector_SetDOUT(cw_driverType, ccw_driverName, ccw_channel, 0);
+
+// Wait for 20mS
+    usleep(20000);
+    
+// APPLY THE VALUE ON THE DIRECTION OUTPUT
+    if(direction >0 )
+        driverSelector_SetDOUT(cw_driverType, cw_driverName, cw_channel, 100);
+    else 
+        if(direction <0 )
+            driverSelector_SetDOUT(ccw_driverType, ccw_driverName, ccw_channel, 100);
+    
+    return 0;
+}
+
+/*
+ * \fn char actuator_genericHBridge_motorState(int motorID, int state)
+ * \brief to do
+ *
+ * \param motorID, state
+ * \return -
+ */
+int actuator_genericHBridge_motorState(int motorID, int state){
+    int en_channel;
+    char en_driverType[25], en_driverName[25];
+    
+    // GET THE DEVICES IC INFORMATIONS (CHANNEL, TYPE AND NAME)
+    en_channel = kehopsActuators.dc_motor[motorID].sw_driver.dc_motor.enable.hw_driver.attributes.device_channel;    
+    strcpy(en_driverType, kehopsActuators.dc_motor[motorID].sw_driver.dc_motor.enable.hw_driver.type);
+    strcpy(en_driverName, kehopsActuators.dc_motor[motorID].sw_driver.dc_motor.enable.hw_driver.name);
+    
+    // APPLY THE VALUE ON THE DIRECTION OUTPUT
+    driverSelector_SetDOUT(en_driverType, en_driverName, en_channel, state);
+    return 0;
+}
+
+/*
+ * \fn char actuator_genericHBridge_motorSpeed()
+ * \brief Get the DC MOTOR hardware id of and setup the speed
+ *
+ * \param motorNumber, speed
+ * \return -
+ */
+
+int actuator_genericHBridge_motorSpeed(int motorID, int speed){
+    int ptrDev;
+    char driverType[25], driverName[25];
+    int result;
+    int channel = kehopsActuators.dc_motor[motorID].sw_driver.dc_motor.speed.hw_driver.attributes.device_channel;
+    strcpy(driverType, kehopsActuators.dc_motor[motorID].sw_driver.dc_motor.speed.hw_driver.type);
+    strcpy(driverName, kehopsActuators.dc_motor[motorID].sw_driver.dc_motor.speed.hw_driver.name);
+    
+    // APPLY THE VALUE ON THE DIRECTION OUTPUT
+    result = driverSelector_SetDOUT(driverType, driverName, channel, speed);
+    
+    if(result)
+        printf("SET MOTOR SPEED VALUE FROM DRIVERS:  NAME:%s TYPE:%s   motor_id: %d     channel: %d     ratio: %d\n", driverName, driverType, motorID, channel, speed);                
+    
+    /*
+    // USE DRIVER FOR PCA9685
+    if(!strcmp(kehopsActuators.dc_motor[motorID].sw_driver.dc_motor.speed.hw_driver.type, DRIVER_PCA9685)){
+        ptrDev = getPCA9685config_ptr(kehopsActuators.dc_motor[motorID].sw_driver.dc_motor.speed.hw_driver.name);
+        
+        if(ptrDev>=0){
+            printf("SET MOTOR SPEED VALUE FROM <%s> DRIVERS:  NAME:%s TYPE:%s I2C add: 0x%2x    motor_id: %d     channel: %d     ratio: %d\n",DRIVER_PCA9685, kehopsActuators.dc_motor[motorID].sw_driver.dc_motor.speed.hw_driver.name, kehopsActuators.dc_motor[motorID].sw_driver.dc_motor.speed.hw_driver.type, dev_pca9685[ptrDev].deviceAddress, motorID, channel, speed);        
+            pca9685_setPWMdutyCycle(&dev_pca9685[ptrDev], channel, speed);
+        }else 
+            printf ("#! Function [actuator_setDoutValue] -> Unknown driver name: %s\n", kehopsActuators.dc_motor[motorID].sw_driver.dc_motor.speed.hw_driver.name);
+    }
+    
+    // USE DRIVER FOR MCP23008
+    if(!strcmp(kehopsActuators.dc_motor[motorID].sw_driver.dc_motor.speed.hw_driver.type, DRIVER_MCP23008)){
+        ptrDev = getMCP23008config_ptr(kehopsActuators.dc_motor[motorID].sw_driver.dc_motor.speed.hw_driver.name);
+        if(ptrDev>=0){
+            printf("SET MOTOR SPEED VALUE FROM <%s> DRIVERS:  NAME:%s TYPE:%s I2C add: 0x%2x    motor_id: %d     channel: %d     state: %d\n",DRIVER_MCP23008, kehopsActuators.dc_motor[motorID].sw_driver.dc_motor.speed.hw_driver.name, kehopsActuators.dc_motor[motorID].sw_driver.dc_motor.speed.hw_driver.type, dev_mcp23008[ptrDev].deviceAddress, motorID, channel, speed);        
+            mcp23008_setChannel(&dev_mcp23008[ptrDev], channel, speed);
+        }else 
+            printf ("#! Function [actuator_genericHBridge_motorSpeed] -> Unknown driver name: %s\n", kehopsActuators.dc_motor[motorID].sw_driver.dc_motor.speed.hw_driver.name);
+    }
+*/
+    return 0;
+}
+
+
+/*
+ * \fn char driverSelector_SetDOUT(char * driverType, char * driverName, int channel, int value)
+ * \brief to do
+ *
+ * \param driverType, driverName, channel, value
+ * \return -
+ */
+int driverSelector_SetDOUT(char * driverType, char * driverName, int channel, int value){
+    int ptrDev=-1;
+    
+    // USE DRIVER FOR PCA9685
+    if(!strcmp(driverType, DRIVER_PCA9685)){
+        ptrDev = getPCA9685config_ptr(driverName);
+        if(ptrDev>=0){
+            pca9685_setPWMdutyCycle(&dev_pca9685[ptrDev], channel, value);
+        }
+    }
+        
+    // USE DRIVER FOR MCP23008
+    if(!strcmp(driverType, DRIVER_MCP23008)){
+        ptrDev = getMCP23008config_ptr(driverName);
+        if(ptrDev>=0){
+            mcp23008_setChannel(&dev_mcp23008[ptrDev], channel, value);
+        }
+    }    
+    
+    if(ptrDev<0)
+        printf ("#! Function [driverSelector_SetDOUT] -> Unknown driver name: %s\n", driverName);
+    
+    return ptrDev;
 }
