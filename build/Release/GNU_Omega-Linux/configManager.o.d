@@ -1,16 +1,10 @@
-build/Release/GNU_Omega-Linux/configManager.o: configManager.c \
- kehopsCom/type.h kehopsCom/../buggy_descriptor.h \
- kehopsCom/libs/lib_json/jRead.h kehopsCom/libs/lib_json/jWrite.h \
- kehops_main.h kehopsCom/type.h
+build/Release/GNU_Omega-Linux/configManager.o: configManager.c fileIO.h \
+ config/kehopsConfig.h config/deviceMapping.h configManager.h
 
-kehopsCom/type.h:
+fileIO.h:
 
-kehopsCom/../buggy_descriptor.h:
+config/kehopsConfig.h:
 
-kehopsCom/libs/lib_json/jRead.h:
+config/deviceMapping.h:
 
-kehopsCom/libs/lib_json/jWrite.h:
-
-kehops_main.h:
-
-kehopsCom/type.h:
+configManager.h:
