@@ -1,0 +1,25 @@
+,
+    {
+      "name": "IC88",
+      "type": "mcp4725",
+      "address": "0x60"
+    }
+
+,
+    {
+      "name": "IC99",
+      "type": "vl53l0x",
+      "address": "0x29",
+      "sub-driver": {
+        "name": "XX",
+        "attributes": {
+          "channel": 2
+        }
+      }
+    }
+,
+    {
+      "name": "IC77",
+      "type": "tca9548a",
+      "address": "0x70"
+    }

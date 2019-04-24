@@ -43,16 +43,54 @@
         <logicalFolder name="device_drivers"
                        displayName="device_drivers"
                        projectFiles="true">
+          <logicalFolder name="api" displayName="api" projectFiles="true">
+            <logicalFolder name="ssd1306" displayName="ssd1306" projectFiles="true">
+              <itemPath>hwControl/device_drivers/api/ssd1306/SSD1306_OLED.c</itemPath>
+              <itemPath>hwControl/device_drivers/api/ssd1306/SSD1306_OLED.h</itemPath>
+              <itemPath>hwControl/device_drivers/api/ssd1306/gfxfont.h</itemPath>
+              <itemPath>hwControl/device_drivers/api/ssd1306/readme.txt</itemPath>
+            </logicalFolder>
+            <logicalFolder name="vl53l0x" displayName="vl53l0x" projectFiles="true">
+              <itemPath>hwControl/device_drivers/api/vl53l0x/vl53l0x_api.c</itemPath>
+              <itemPath>hwControl/device_drivers/api/vl53l0x/vl53l0x_api.h</itemPath>
+              <itemPath>hwControl/device_drivers/api/vl53l0x/vl53l0x_api_calibration.c</itemPath>
+              <itemPath>hwControl/device_drivers/api/vl53l0x/vl53l0x_api_calibration.h</itemPath>
+              <itemPath>hwControl/device_drivers/api/vl53l0x/vl53l0x_api_core.c</itemPath>
+              <itemPath>hwControl/device_drivers/api/vl53l0x/vl53l0x_api_core.h</itemPath>
+              <itemPath>hwControl/device_drivers/api/vl53l0x/vl53l0x_api_ranging.c</itemPath>
+              <itemPath>hwControl/device_drivers/api/vl53l0x/vl53l0x_api_ranging.h</itemPath>
+              <itemPath>hwControl/device_drivers/api/vl53l0x/vl53l0x_api_strings.c</itemPath>
+              <itemPath>hwControl/device_drivers/api/vl53l0x/vl53l0x_api_strings.h</itemPath>
+              <itemPath>hwControl/device_drivers/api/vl53l0x/vl53l0x_def.h</itemPath>
+              <itemPath>hwControl/device_drivers/api/vl53l0x/vl53l0x_device.h</itemPath>
+              <itemPath>hwControl/device_drivers/api/vl53l0x/vl53l0x_i2c_platform.c</itemPath>
+              <itemPath>hwControl/device_drivers/api/vl53l0x/vl53l0x_i2c_platform.h</itemPath>
+              <itemPath>hwControl/device_drivers/api/vl53l0x/vl53l0x_interrupt_threshold_settings.h</itemPath>
+              <itemPath>hwControl/device_drivers/api/vl53l0x/vl53l0x_platform.c</itemPath>
+              <itemPath>hwControl/device_drivers/api/vl53l0x/vl53l0x_platform.h</itemPath>
+              <itemPath>hwControl/device_drivers/api/vl53l0x/vl53l0x_platform_log.h</itemPath>
+              <itemPath>hwControl/device_drivers/api/vl53l0x/vl53l0x_tuning.h</itemPath>
+              <itemPath>hwControl/device_drivers/api/vl53l0x/vl53l0x_types.h</itemPath>
+            </logicalFolder>
+          </logicalFolder>
           <itemPath>hwControl/device_drivers/bh1745.c</itemPath>
           <itemPath>hwControl/device_drivers/bh1745.h</itemPath>
           <itemPath>hwControl/device_drivers/efm8_mcu_kehops.c</itemPath>
           <itemPath>hwControl/device_drivers/efm8_mcu_kehops.h</itemPath>
+          <itemPath>hwControl/device_drivers/k_vl53l0x.c</itemPath>
+          <itemPath>hwControl/device_drivers/k_vl53l0x.h</itemPath>
           <itemPath>hwControl/device_drivers/mcp23008.c</itemPath>
           <itemPath>hwControl/device_drivers/mcp23008.h</itemPath>
+          <itemPath>hwControl/device_drivers/mcp4725.c</itemPath>
+          <itemPath>hwControl/device_drivers/mcp4725.h</itemPath>
           <itemPath>hwControl/device_drivers/pca9629.c</itemPath>
           <itemPath>hwControl/device_drivers/pca9629.h</itemPath>
           <itemPath>hwControl/device_drivers/pca9685.c</itemPath>
           <itemPath>hwControl/device_drivers/pca9685.h</itemPath>
+          <itemPath>hwControl/device_drivers/ssd1306.c</itemPath>
+          <itemPath>hwControl/device_drivers/ssd1306.h</itemPath>
+          <itemPath>hwControl/device_drivers/tca9548a.c</itemPath>
+          <itemPath>hwControl/device_drivers/tca9548a.h</itemPath>
         </logicalFolder>
         <logicalFolder name="libs" displayName="libs" projectFiles="true">
           <logicalFolder name="i2c" displayName="i2c" projectFiles="true">
@@ -174,16 +212,11 @@
       <itemPath>Makefile</itemPath>
     </logicalFolder>
     <itemPath>hwControl/changeLog.txt</itemPath>
+    <itemPath>dist/Debug/GNU_Omega-Linux/temp</itemPath>
     <itemPath>toDo</itemPath>
     <itemPath>dist/Debug/GNU_Omega-Linux/wifi</itemPath>
   </logicalFolder>
   <sourceRootList>
-    <Elem>actuators</Elem>
-    <Elem>hwControl</Elem>
-    <Elem>kehopsCom</Elem>
-    <Elem>actuators</Elem>
-    <Elem>hwControl</Elem>
-    <Elem>kehopsCom</Elem>
     <Elem>actuators</Elem>
     <Elem>hwControl</Elem>
     <Elem>kehopsCom</Elem>
@@ -268,6 +301,8 @@
       </item>
       <item path="configManager.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="dist/Debug/GNU_Omega-Linux/temp" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="dist/Debug/GNU_Omega-Linux/wifi" ex="false" tool="3" flavor2="0">
       </item>
       <item path="fileIO.c" ex="false" tool="0" flavor2="0">
@@ -275,6 +310,126 @@
       <item path="fileIO.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="hwControl/changeLog.txt" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/api/ssd1306/SSD1306_OLED.c"
+            ex="false"
+            tool="0"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/api/ssd1306/SSD1306_OLED.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/api/ssd1306/gfxfont.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/api/ssd1306/readme.txt"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/api/vl53l0x/vl53l0x_api.c"
+            ex="false"
+            tool="0"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/api/vl53l0x/vl53l0x_api.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/api/vl53l0x/vl53l0x_api_calibration.c"
+            ex="false"
+            tool="0"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/api/vl53l0x/vl53l0x_api_calibration.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/api/vl53l0x/vl53l0x_api_core.c"
+            ex="false"
+            tool="0"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/api/vl53l0x/vl53l0x_api_core.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/api/vl53l0x/vl53l0x_api_ranging.c"
+            ex="false"
+            tool="0"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/api/vl53l0x/vl53l0x_api_ranging.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/api/vl53l0x/vl53l0x_api_strings.c"
+            ex="false"
+            tool="0"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/api/vl53l0x/vl53l0x_api_strings.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/api/vl53l0x/vl53l0x_def.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/api/vl53l0x/vl53l0x_device.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/api/vl53l0x/vl53l0x_i2c_platform.c"
+            ex="false"
+            tool="0"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/api/vl53l0x/vl53l0x_i2c_platform.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/api/vl53l0x/vl53l0x_interrupt_threshold_settings.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/api/vl53l0x/vl53l0x_platform.c"
+            ex="false"
+            tool="0"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/api/vl53l0x/vl53l0x_platform.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/api/vl53l0x/vl53l0x_platform_log.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/api/vl53l0x/vl53l0x_tuning.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/api/vl53l0x/vl53l0x_types.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
       </item>
       <item path="hwControl/device_drivers/bh1745.c" ex="false" tool="0" flavor2="0">
       </item>
@@ -290,344 +445,12 @@
             tool="3"
             flavor2="0">
       </item>
-      <item path="hwControl/device_drivers/mcp23008.c"
+      <item path="hwControl/device_drivers/k_vl53l0x.c"
             ex="false"
             tool="0"
             flavor2="0">
       </item>
-      <item path="hwControl/device_drivers/mcp23008.h"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="hwControl/device_drivers/pca9629.c" ex="false" tool="0" flavor2="0">
-      </item>
-      <item path="hwControl/device_drivers/pca9629.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="hwControl/device_drivers/pca9685.c" ex="false" tool="0" flavor2="0">
-      </item>
-      <item path="hwControl/device_drivers/pca9685.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="hwControl/hardwareDrivers.c" ex="false" tool="0" flavor2="0">
-      </item>
-      <item path="hwControl/hardwareDrivers.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="hwControl/hwManager.c" ex="false" tool="0" flavor2="0">
-      </item>
-      <item path="hwControl/hwManager.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="hwControl/libs/i2c/onion-i2c.c" ex="false" tool="0" flavor2="0">
-      </item>
-      <item path="hwControl/libs/i2c/onion-i2c.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="hwControl/libs/onion-debug/onion-debug.c"
-            ex="false"
-            tool="0"
-            flavor2="0">
-      </item>
-      <item path="hwControl/libs/onion-debug/onion-debug.h"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="hwControl/networkManager.c" ex="false" tool="0" flavor2="0">
-      </item>
-      <item path="hwControl/networkManager.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="hwControl/wifi_json.c" ex="false" tool="0" flavor2="0">
-      </item>
-      <item path="hwControl/wifi_json.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="kehopsCom/libs/lib_json/jRead.c" ex="false" tool="0" flavor2="0">
-      </item>
-      <item path="kehopsCom/libs/lib_json/jRead.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="kehopsCom/libs/lib_json/jWrite.c" ex="false" tool="0" flavor2="0">
-      </item>
-      <item path="kehopsCom/libs/lib_json/jWrite.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="kehopsCom/libs/lib_mqtt/Clients.c" ex="false" tool="0" flavor2="0">
-      </item>
-      <item path="kehopsCom/libs/lib_mqtt/Clients.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="kehopsCom/libs/lib_mqtt/Heap.c" ex="false" tool="0" flavor2="0">
-      </item>
-      <item path="kehopsCom/libs/lib_mqtt/Heap.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="kehopsCom/libs/lib_mqtt/LinkedList.c"
-            ex="false"
-            tool="0"
-            flavor2="0">
-      </item>
-      <item path="kehopsCom/libs/lib_mqtt/LinkedList.h"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="kehopsCom/libs/lib_mqtt/Log.c" ex="false" tool="0" flavor2="0">
-      </item>
-      <item path="kehopsCom/libs/lib_mqtt/Log.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="kehopsCom/libs/lib_mqtt/MQTTClient.c"
-            ex="false"
-            tool="0"
-            flavor2="0">
-      </item>
-      <item path="kehopsCom/libs/lib_mqtt/MQTTClient.h"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="kehopsCom/libs/lib_mqtt/MQTTClientPersistence.h"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="kehopsCom/libs/lib_mqtt/MQTTPacket.c"
-            ex="false"
-            tool="0"
-            flavor2="0">
-      </item>
-      <item path="kehopsCom/libs/lib_mqtt/MQTTPacket.h"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="kehopsCom/libs/lib_mqtt/MQTTPacketOut.c"
-            ex="false"
-            tool="0"
-            flavor2="0">
-      </item>
-      <item path="kehopsCom/libs/lib_mqtt/MQTTPacketOut.h"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="kehopsCom/libs/lib_mqtt/MQTTPersistence.c"
-            ex="false"
-            tool="0"
-            flavor2="0">
-      </item>
-      <item path="kehopsCom/libs/lib_mqtt/MQTTPersistence.h"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="kehopsCom/libs/lib_mqtt/MQTTPersistenceDefault.c"
-            ex="false"
-            tool="0"
-            flavor2="0">
-      </item>
-      <item path="kehopsCom/libs/lib_mqtt/MQTTPersistenceDefault.h"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="kehopsCom/libs/lib_mqtt/MQTTProtocol.h"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="kehopsCom/libs/lib_mqtt/MQTTProtocolClient.c"
-            ex="false"
-            tool="0"
-            flavor2="0">
-      </item>
-      <item path="kehopsCom/libs/lib_mqtt/MQTTProtocolClient.h"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="kehopsCom/libs/lib_mqtt/MQTTProtocolOut.c"
-            ex="false"
-            tool="0"
-            flavor2="0">
-      </item>
-      <item path="kehopsCom/libs/lib_mqtt/MQTTProtocolOut.h"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="kehopsCom/libs/lib_mqtt/Messages.c" ex="false" tool="0" flavor2="0">
-      </item>
-      <item path="kehopsCom/libs/lib_mqtt/Messages.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="kehopsCom/libs/lib_mqtt/SSLSocket.c"
-            ex="false"
-            tool="0"
-            flavor2="0">
-      </item>
-      <item path="kehopsCom/libs/lib_mqtt/SSLSocket.h"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="kehopsCom/libs/lib_mqtt/Socket.c" ex="false" tool="0" flavor2="0">
-      </item>
-      <item path="kehopsCom/libs/lib_mqtt/Socket.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="kehopsCom/libs/lib_mqtt/SocketBuffer.c"
-            ex="false"
-            tool="0"
-            flavor2="0">
-      </item>
-      <item path="kehopsCom/libs/lib_mqtt/SocketBuffer.h"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="kehopsCom/libs/lib_mqtt/StackTrace.c"
-            ex="false"
-            tool="0"
-            flavor2="0">
-      </item>
-      <item path="kehopsCom/libs/lib_mqtt/StackTrace.h"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="kehopsCom/libs/lib_mqtt/Thread.c" ex="false" tool="0" flavor2="0">
-      </item>
-      <item path="kehopsCom/libs/lib_mqtt/Thread.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="kehopsCom/libs/lib_mqtt/Tree.c" ex="false" tool="0" flavor2="0">
-      </item>
-      <item path="kehopsCom/libs/lib_mqtt/Tree.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="kehopsCom/libs/lib_mqtt/utf-8.c" ex="false" tool="0" flavor2="0">
-      </item>
-      <item path="kehopsCom/libs/lib_mqtt/utf-8.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="kehopsCom/linux_JSON.c" ex="false" tool="0" flavor2="0">
-      </item>
-      <item path="kehopsCom/linux_json.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="kehopsCom/messagesManager.c" ex="false" tool="0" flavor2="0">
-      </item>
-      <item path="kehopsCom/messagesManager.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="kehopsCom/mqttProtocol.c" ex="false" tool="0" flavor2="0">
-      </item>
-      <item path="kehopsCom/mqttProtocol.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="kehopsCom/udpPublish.c" ex="false" tool="0" flavor2="0">
-      </item>
-      <item path="kehopsCom/udpPublish.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="kehops_main.c" ex="false" tool="0" flavor2="0">
-      </item>
-      <item path="timerManager.c" ex="false" tool="0" flavor2="0">
-      </item>
-      <item path="toDo" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="tools.c" ex="false" tool="0" flavor2="0">
-      </item>
-      <item path="type.h" ex="false" tool="3" flavor2="0">
-      </item>
-    </conf>
-    <conf name="Release" type="1">
-      <toolsSet>
-        <compilerSet>GNU_Omega|GNU</compilerSet>
-        <dependencyChecking>true</dependencyChecking>
-        <rebuildPropChanged>false</rebuildPropChanged>
-      </toolsSet>
-      <compileType>
-        <cTool>
-          <developmentMode>5</developmentMode>
-          <incDir>
-            <pElem>hwControl/libs/i2c</pElem>
-            <pElem>hwControl/libs/onion-debug</pElem>
-            <pElem>hwControl</pElem>
-            <pElem>actuators</pElem>
-            <pElem>kehopsCom</pElem>
-            <pElem>kehopsCom/libs/lib_json</pElem>
-            <pElem>kehopsCom/libs/lib_mqtt</pElem>
-            <pElem>hwControl/device_drivers</pElem>
-          </incDir>
-          <commandLine>-pthread -lm</commandLine>
-        </cTool>
-        <ccTool>
-          <developmentMode>5</developmentMode>
-        </ccTool>
-        <fortranCompilerTool>
-          <developmentMode>5</developmentMode>
-        </fortranCompilerTool>
-        <asmTool>
-          <developmentMode>5</developmentMode>
-        </asmTool>
-        <linkerTool>
-          <output>${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/kehops</output>
-          <commandLine>-pthread -lm</commandLine>
-        </linkerTool>
-      </compileType>
-      <item path="AlgoidCom/typeNew.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="actuators/asyncLED.c" ex="false" tool="0" flavor2="0">
-      </item>
-      <item path="actuators/asyncLED.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="actuators/asyncMOTOR.c" ex="false" tool="0" flavor2="0">
-      </item>
-      <item path="actuators/asyncMOTOR.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="actuators/asyncPWM.c" ex="false" tool="0" flavor2="0">
-      </item>
-      <item path="actuators/asyncPWM.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="actuators/asyncSERVO.c" ex="false" tool="0" flavor2="0">
-      </item>
-      <item path="actuators/asyncSERVO.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="actuators/asyncSTEPPER.c" ex="false" tool="0" flavor2="0">
-      </item>
-      <item path="actuators/asyncSTEPPER.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="actuators/asyncTools.c" ex="false" tool="0" flavor2="0">
-      </item>
-      <item path="actuators/asyncTools.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="algobotManager.sh.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="asyncTools/asyncLED.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="asyncTools/asyncMOTOR.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="asyncTools/asyncSTEPPER.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="asyncTools/asyncTools.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="config/deviceMapping.c" ex="false" tool="0" flavor2="0">
-      </item>
-      <item path="config/deviceMapping.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="config/deviceMapping_jsonKeys.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="config/kehopsConfig.c" ex="false" tool="0" flavor2="0">
-      </item>
-      <item path="config/kehopsConfig.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="configManager.c" ex="false" tool="0" flavor2="0">
-      </item>
-      <item path="configManager.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="dist/Debug/GNU_Omega-Linux/wifi" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="fileIO.c" ex="false" tool="0" flavor2="0">
-      </item>
-      <item path="fileIO.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="hwControl/changeLog.txt" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="hwControl/device_drivers/bh1745.c" ex="false" tool="0" flavor2="0">
-      </item>
-      <item path="hwControl/device_drivers/bh1745.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="hwControl/device_drivers/efm8_mcu_kehops.c"
-            ex="false"
-            tool="0"
-            flavor2="0">
-      </item>
-      <item path="hwControl/device_drivers/efm8_mcu_kehops.h"
+      <item path="hwControl/device_drivers/k_vl53l0x.h"
             ex="false"
             tool="3"
             flavor2="0">
@@ -642,6 +465,10 @@
             tool="3"
             flavor2="0">
       </item>
+      <item path="hwControl/device_drivers/mcp4725.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/mcp4725.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="hwControl/device_drivers/pca9629.c" ex="false" tool="0" flavor2="0">
       </item>
       <item path="hwControl/device_drivers/pca9629.h" ex="false" tool="3" flavor2="0">
@@ -649,6 +476,20 @@
       <item path="hwControl/device_drivers/pca9685.c" ex="false" tool="0" flavor2="0">
       </item>
       <item path="hwControl/device_drivers/pca9685.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/ssd1306.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/ssd1306.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/tca9548a.c"
+            ex="false"
+            tool="0"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/tca9548a.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
       </item>
       <item path="hwControl/hardwareDrivers.c" ex="false" tool="0" flavor2="0">
       </item>
@@ -945,6 +786,8 @@
       </item>
       <item path="configManager.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="dist/Debug/GNU_Omega-Linux/temp" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="dist/Debug/GNU_Omega-Linux/wifi" ex="false" tool="3" flavor2="0">
       </item>
       <item path="fileIO.c" ex="false" tool="0" flavor2="0">
@@ -952,6 +795,126 @@
       <item path="fileIO.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="hwControl/changeLog.txt" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/api/ssd1306/SSD1306_OLED.c"
+            ex="false"
+            tool="0"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/api/ssd1306/SSD1306_OLED.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/api/ssd1306/gfxfont.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/api/ssd1306/readme.txt"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/api/vl53l0x/vl53l0x_api.c"
+            ex="false"
+            tool="0"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/api/vl53l0x/vl53l0x_api.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/api/vl53l0x/vl53l0x_api_calibration.c"
+            ex="false"
+            tool="0"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/api/vl53l0x/vl53l0x_api_calibration.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/api/vl53l0x/vl53l0x_api_core.c"
+            ex="false"
+            tool="0"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/api/vl53l0x/vl53l0x_api_core.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/api/vl53l0x/vl53l0x_api_ranging.c"
+            ex="false"
+            tool="0"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/api/vl53l0x/vl53l0x_api_ranging.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/api/vl53l0x/vl53l0x_api_strings.c"
+            ex="false"
+            tool="0"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/api/vl53l0x/vl53l0x_api_strings.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/api/vl53l0x/vl53l0x_def.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/api/vl53l0x/vl53l0x_device.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/api/vl53l0x/vl53l0x_i2c_platform.c"
+            ex="false"
+            tool="0"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/api/vl53l0x/vl53l0x_i2c_platform.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/api/vl53l0x/vl53l0x_interrupt_threshold_settings.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/api/vl53l0x/vl53l0x_platform.c"
+            ex="false"
+            tool="0"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/api/vl53l0x/vl53l0x_platform.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/api/vl53l0x/vl53l0x_platform_log.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/api/vl53l0x/vl53l0x_tuning.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/api/vl53l0x/vl53l0x_types.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
       </item>
       <item path="hwControl/device_drivers/bh1745.c" ex="false" tool="0" flavor2="0">
       </item>
@@ -967,6 +930,16 @@
             tool="3"
             flavor2="0">
       </item>
+      <item path="hwControl/device_drivers/k_vl53l0x.c"
+            ex="false"
+            tool="0"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/k_vl53l0x.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
       <item path="hwControl/device_drivers/mcp23008.c"
             ex="false"
             tool="0"
@@ -977,6 +950,10 @@
             tool="3"
             flavor2="0">
       </item>
+      <item path="hwControl/device_drivers/mcp4725.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/mcp4725.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="hwControl/device_drivers/pca9629.c" ex="false" tool="0" flavor2="0">
       </item>
       <item path="hwControl/device_drivers/pca9629.h" ex="false" tool="3" flavor2="0">
@@ -984,6 +961,20 @@
       <item path="hwControl/device_drivers/pca9685.c" ex="false" tool="0" flavor2="0">
       </item>
       <item path="hwControl/device_drivers/pca9685.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/ssd1306.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/ssd1306.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/tca9548a.c"
+            ex="false"
+            tool="0"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/tca9548a.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
       </item>
       <item path="hwControl/hardwareDrivers.c" ex="false" tool="0" flavor2="0">
       </item>
@@ -1281,6 +1272,8 @@
       </item>
       <item path="configManager.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="dist/Debug/GNU_Omega-Linux/temp" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="dist/Debug/GNU_Omega-Linux/wifi" ex="false" tool="3" flavor2="0">
       </item>
       <item path="fileIO.c" ex="false" tool="0" flavor2="0">
@@ -1288,6 +1281,126 @@
       <item path="fileIO.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="hwControl/changeLog.txt" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/api/ssd1306/SSD1306_OLED.c"
+            ex="false"
+            tool="0"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/api/ssd1306/SSD1306_OLED.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/api/ssd1306/gfxfont.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/api/ssd1306/readme.txt"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/api/vl53l0x/vl53l0x_api.c"
+            ex="false"
+            tool="0"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/api/vl53l0x/vl53l0x_api.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/api/vl53l0x/vl53l0x_api_calibration.c"
+            ex="false"
+            tool="0"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/api/vl53l0x/vl53l0x_api_calibration.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/api/vl53l0x/vl53l0x_api_core.c"
+            ex="false"
+            tool="0"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/api/vl53l0x/vl53l0x_api_core.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/api/vl53l0x/vl53l0x_api_ranging.c"
+            ex="false"
+            tool="0"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/api/vl53l0x/vl53l0x_api_ranging.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/api/vl53l0x/vl53l0x_api_strings.c"
+            ex="false"
+            tool="0"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/api/vl53l0x/vl53l0x_api_strings.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/api/vl53l0x/vl53l0x_def.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/api/vl53l0x/vl53l0x_device.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/api/vl53l0x/vl53l0x_i2c_platform.c"
+            ex="false"
+            tool="0"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/api/vl53l0x/vl53l0x_i2c_platform.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/api/vl53l0x/vl53l0x_interrupt_threshold_settings.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/api/vl53l0x/vl53l0x_platform.c"
+            ex="false"
+            tool="0"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/api/vl53l0x/vl53l0x_platform.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/api/vl53l0x/vl53l0x_platform_log.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/api/vl53l0x/vl53l0x_tuning.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/api/vl53l0x/vl53l0x_types.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
       </item>
       <item path="hwControl/device_drivers/bh1745.c" ex="false" tool="0" flavor2="0">
       </item>
@@ -1303,6 +1416,16 @@
             tool="3"
             flavor2="0">
       </item>
+      <item path="hwControl/device_drivers/k_vl53l0x.c"
+            ex="false"
+            tool="0"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/k_vl53l0x.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
       <item path="hwControl/device_drivers/mcp23008.c"
             ex="false"
             tool="0"
@@ -1313,6 +1436,10 @@
             tool="3"
             flavor2="0">
       </item>
+      <item path="hwControl/device_drivers/mcp4725.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/mcp4725.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="hwControl/device_drivers/pca9629.c" ex="false" tool="0" flavor2="0">
       </item>
       <item path="hwControl/device_drivers/pca9629.h" ex="false" tool="3" flavor2="0">
@@ -1320,6 +1447,20 @@
       <item path="hwControl/device_drivers/pca9685.c" ex="false" tool="0" flavor2="0">
       </item>
       <item path="hwControl/device_drivers/pca9685.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/ssd1306.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/ssd1306.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/tca9548a.c"
+            ex="false"
+            tool="0"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/tca9548a.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
       </item>
       <item path="hwControl/hardwareDrivers.c" ex="false" tool="0" flavor2="0">
       </item>
@@ -1524,6 +1665,491 @@
       <item path="kehopsCom/mqttProtocol.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="kehopsCom/udpPublish.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="kehopsCom/udpPublish.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="kehops_main.c" ex="false" tool="0" flavor2="9">
+      </item>
+      <item path="timerManager.c" ex="false" tool="0" flavor2="9">
+      </item>
+      <item path="toDo" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="tools.c" ex="false" tool="0" flavor2="9">
+      </item>
+      <item path="type.h" ex="false" tool="3" flavor2="0">
+      </item>
+    </conf>
+    <conf name="Release" type="1">
+      <toolsSet>
+        <compilerSet>GNU_Omega|GNU</compilerSet>
+        <dependencyChecking>true</dependencyChecking>
+        <rebuildPropChanged>false</rebuildPropChanged>
+      </toolsSet>
+      <compileType>
+        <cTool>
+          <incDir>
+            <pElem>hwControl/libs/i2c</pElem>
+            <pElem>hwControl/libs/onion-debug</pElem>
+            <pElem>hwControl</pElem>
+            <pElem>actuators</pElem>
+            <pElem>kehopsCom</pElem>
+            <pElem>kehopsCom/libs/lib_json</pElem>
+            <pElem>kehopsCom/libs/lib_mqtt</pElem>
+            <pElem>hwControl/device_drivers</pElem>
+          </incDir>
+          <incFile>
+            <pElem>buildNumber.h</pElem>
+          </incFile>
+          <commandLine>-pthread -lm</commandLine>
+        </cTool>
+        <linkerTool>
+          <output>${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/kehops</output>
+          <commandLine>-pthread -lm</commandLine>
+        </linkerTool>
+      </compileType>
+      <item path="AlgoidCom/typeNew.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="actuators/asyncLED.c" ex="false" tool="0" flavor2="9">
+      </item>
+      <item path="actuators/asyncLED.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="actuators/asyncMOTOR.c" ex="false" tool="0" flavor2="9">
+      </item>
+      <item path="actuators/asyncMOTOR.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="actuators/asyncPWM.c" ex="false" tool="0" flavor2="9">
+      </item>
+      <item path="actuators/asyncPWM.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="actuators/asyncSERVO.c" ex="false" tool="0" flavor2="9">
+      </item>
+      <item path="actuators/asyncSERVO.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="actuators/asyncSTEPPER.c" ex="false" tool="0" flavor2="9">
+      </item>
+      <item path="actuators/asyncSTEPPER.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="actuators/asyncTools.c" ex="false" tool="0" flavor2="9">
+      </item>
+      <item path="actuators/asyncTools.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="algobotManager.sh.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="asyncTools/asyncLED.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="asyncTools/asyncMOTOR.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="asyncTools/asyncSTEPPER.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="asyncTools/asyncTools.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="config/deviceMapping.c" ex="false" tool="0" flavor2="9">
+      </item>
+      <item path="config/deviceMapping.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="config/deviceMapping_jsonKeys.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="config/kehopsConfig.c" ex="false" tool="0" flavor2="9">
+      </item>
+      <item path="config/kehopsConfig.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="configManager.c" ex="false" tool="0" flavor2="9">
+      </item>
+      <item path="configManager.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="dist/Debug/GNU_Omega-Linux/temp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="dist/Debug/GNU_Omega-Linux/wifi" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="fileIO.c" ex="false" tool="0" flavor2="9">
+      </item>
+      <item path="fileIO.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="hwControl/changeLog.txt" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/api/ssd1306/SSD1306_OLED.c"
+            ex="false"
+            tool="0"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/api/ssd1306/SSD1306_OLED.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/api/ssd1306/gfxfont.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/api/ssd1306/readme.txt"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/api/vl53l0x/vl53l0x_api.c"
+            ex="false"
+            tool="0"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/api/vl53l0x/vl53l0x_api.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/api/vl53l0x/vl53l0x_api_calibration.c"
+            ex="false"
+            tool="0"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/api/vl53l0x/vl53l0x_api_calibration.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/api/vl53l0x/vl53l0x_api_core.c"
+            ex="false"
+            tool="0"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/api/vl53l0x/vl53l0x_api_core.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/api/vl53l0x/vl53l0x_api_ranging.c"
+            ex="false"
+            tool="0"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/api/vl53l0x/vl53l0x_api_ranging.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/api/vl53l0x/vl53l0x_api_strings.c"
+            ex="false"
+            tool="0"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/api/vl53l0x/vl53l0x_api_strings.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/api/vl53l0x/vl53l0x_def.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/api/vl53l0x/vl53l0x_device.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/api/vl53l0x/vl53l0x_i2c_platform.c"
+            ex="false"
+            tool="0"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/api/vl53l0x/vl53l0x_i2c_platform.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/api/vl53l0x/vl53l0x_interrupt_threshold_settings.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/api/vl53l0x/vl53l0x_platform.c"
+            ex="false"
+            tool="0"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/api/vl53l0x/vl53l0x_platform.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/api/vl53l0x/vl53l0x_platform_log.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/api/vl53l0x/vl53l0x_tuning.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/api/vl53l0x/vl53l0x_types.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/bh1745.c" ex="false" tool="0" flavor2="9">
+      </item>
+      <item path="hwControl/device_drivers/bh1745.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/efm8_mcu_kehops.c"
+            ex="false"
+            tool="0"
+            flavor2="9">
+      </item>
+      <item path="hwControl/device_drivers/efm8_mcu_kehops.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/k_vl53l0x.c"
+            ex="false"
+            tool="0"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/k_vl53l0x.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/mcp23008.c"
+            ex="false"
+            tool="0"
+            flavor2="9">
+      </item>
+      <item path="hwControl/device_drivers/mcp23008.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/mcp4725.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/mcp4725.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/pca9629.c" ex="false" tool="0" flavor2="9">
+      </item>
+      <item path="hwControl/device_drivers/pca9629.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/pca9685.c" ex="false" tool="0" flavor2="9">
+      </item>
+      <item path="hwControl/device_drivers/pca9685.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/ssd1306.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/ssd1306.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/tca9548a.c"
+            ex="false"
+            tool="0"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/tca9548a.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="hwControl/hardwareDrivers.c" ex="false" tool="0" flavor2="9">
+      </item>
+      <item path="hwControl/hardwareDrivers.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="hwControl/hwManager.c" ex="false" tool="0" flavor2="9">
+      </item>
+      <item path="hwControl/hwManager.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="hwControl/libs/i2c/onion-i2c.c" ex="false" tool="0" flavor2="9">
+      </item>
+      <item path="hwControl/libs/i2c/onion-i2c.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="hwControl/libs/onion-debug/onion-debug.c"
+            ex="false"
+            tool="0"
+            flavor2="9">
+      </item>
+      <item path="hwControl/libs/onion-debug/onion-debug.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="hwControl/networkManager.c" ex="false" tool="0" flavor2="9">
+      </item>
+      <item path="hwControl/networkManager.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="hwControl/wifi_json.c" ex="false" tool="0" flavor2="9">
+      </item>
+      <item path="hwControl/wifi_json.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_json/jRead.c" ex="false" tool="0" flavor2="9">
+      </item>
+      <item path="kehopsCom/libs/lib_json/jRead.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_json/jWrite.c" ex="false" tool="0" flavor2="9">
+      </item>
+      <item path="kehopsCom/libs/lib_json/jWrite.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/Clients.c" ex="false" tool="0" flavor2="9">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/Clients.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/Heap.c" ex="false" tool="0" flavor2="9">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/Heap.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/LinkedList.c"
+            ex="false"
+            tool="0"
+            flavor2="9">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/LinkedList.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/Log.c" ex="false" tool="0" flavor2="9">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/Log.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/MQTTClient.c"
+            ex="false"
+            tool="0"
+            flavor2="9">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/MQTTClient.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/MQTTClientPersistence.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/MQTTPacket.c"
+            ex="false"
+            tool="0"
+            flavor2="9">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/MQTTPacket.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/MQTTPacketOut.c"
+            ex="false"
+            tool="0"
+            flavor2="9">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/MQTTPacketOut.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/MQTTPersistence.c"
+            ex="false"
+            tool="0"
+            flavor2="9">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/MQTTPersistence.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/MQTTPersistenceDefault.c"
+            ex="false"
+            tool="0"
+            flavor2="9">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/MQTTPersistenceDefault.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/MQTTProtocol.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/MQTTProtocolClient.c"
+            ex="false"
+            tool="0"
+            flavor2="9">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/MQTTProtocolClient.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/MQTTProtocolOut.c"
+            ex="false"
+            tool="0"
+            flavor2="9">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/MQTTProtocolOut.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/Messages.c" ex="false" tool="0" flavor2="9">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/Messages.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/SSLSocket.c"
+            ex="false"
+            tool="0"
+            flavor2="9">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/SSLSocket.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/Socket.c" ex="false" tool="0" flavor2="9">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/Socket.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/SocketBuffer.c"
+            ex="false"
+            tool="0"
+            flavor2="9">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/SocketBuffer.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/StackTrace.c"
+            ex="false"
+            tool="0"
+            flavor2="9">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/StackTrace.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/Thread.c" ex="false" tool="0" flavor2="9">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/Thread.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/Tree.c" ex="false" tool="0" flavor2="9">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/Tree.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/utf-8.c" ex="false" tool="0" flavor2="9">
+      </item>
+      <item path="kehopsCom/libs/lib_mqtt/utf-8.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="kehopsCom/linux_JSON.c" ex="false" tool="0" flavor2="9">
+      </item>
+      <item path="kehopsCom/linux_json.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="kehopsCom/messagesManager.c" ex="false" tool="0" flavor2="9">
+      </item>
+      <item path="kehopsCom/messagesManager.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="kehopsCom/mqttProtocol.c" ex="false" tool="0" flavor2="9">
+      </item>
+      <item path="kehopsCom/mqttProtocol.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="kehopsCom/udpPublish.c" ex="false" tool="0" flavor2="9">
       </item>
       <item path="kehopsCom/udpPublish.h" ex="false" tool="3" flavor2="0">
       </item>

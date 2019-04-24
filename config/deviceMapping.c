@@ -27,21 +27,6 @@
 #include "jWrite.h"
 #include "deviceMapping_jsonKeys.h"
 #include "deviceMapping.h"
-/*
-//********  NEED TO BE REWORK !!!!!!
-unsigned char DRV_NBMOTOR=0;
-unsigned char DRV_NBSTEPPER=0;
-unsigned char DRV_NBDOUT=0;
-unsigned char DRV_NBDIN=0;
-unsigned char DRV_NBAIN=0;
-
-unsigned char DRV_NBSONAR=0;
-unsigned char DRV_NBFCOUNTER=0;
-unsigned char DRV_NBPCOUNTER=0;
-unsigned char DRV_NBRGBC=0;
-unsigned char DRV_DISTSENSOR=0;
-//********  END NEED TO BE REWORK !!!!!!
-*/
 
 char * getDriverTypeByName(char * name);
 
@@ -542,8 +527,7 @@ unsigned char printBoardData(int partsNb, struct device * device){
  */
 
 unsigned char printDeviceData(int deviceNb, devices_list * device){
-    int i, j;
-    
+    int i,j;
     
     printf("\n#%d \n |__ Name: %s\n |__ Type: %s\n |__ Address: 0x%2x\n", deviceNb,device->name, device->type, device->address);
     if(device->attributes.deviceInit[0].regAddr > 0){

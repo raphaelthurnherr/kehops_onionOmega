@@ -208,6 +208,20 @@ extern unsigned char printDeviceData(int deviceNb, devices_list * device);
 
 extern unsigned char printBoardData(int partsNb, struct device * device);
 
+/**
+ * \fn unsigned char getDriverTypeByName(char * name)
+ * \brief Find in the component board list (devices_list structure) the type of the integrated circuit
+ * designed by the name.
+ * 
+ * \param char * name, Pointer to the device name
+ *
+ * \return pointer to the string containing the type
+ * 
+ */
+extern char * getDriverTypeByName(char * name);
+
+
+
 // Create the structure for hardware description
 //and get the setting from configs file
 

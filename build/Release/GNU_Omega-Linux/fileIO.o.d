@@ -1,3 +1,5 @@
-build/Release/GNU_Omega-Linux/fileIO.o: fileIO.c fileIO.h
+build/Release/GNU_Omega-Linux/fileIO.o: fileIO.c buildNumber.h fileIO.h
+
+buildNumber.h:
 
 fileIO.h:

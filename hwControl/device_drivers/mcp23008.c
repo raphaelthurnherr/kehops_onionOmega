@@ -24,7 +24,6 @@
 #define GPIO    0x09		// General purpose IO port register
 #define OLAT    0x0A		// Output latch register, (Use to modify the outputs)
 
-#endif
 
 #include "mcp23008.h"
 #include <onion-i2c.h>
@@ -40,8 +39,6 @@ int mcp23008_init(device_mcp23008 *mcp23008config){
     unsigned char gpioDirection = mcp23008config->gpioDirection;
     unsigned char invertedInput = mcp23008config->invertedInput;
     unsigned char pullupEnable = mcp23008config->pullupEnable;
-    
-    char dataReg = 
     
     // Disable auto-incrementation
     err+= i2c_write(0, deviceAddress, IOCON, 0x20);
@@ -146,3 +143,5 @@ int mcp23008_getPort(device_mcp23008 *mcp23008config){
     else 
         return -1;      
 }
+
+#endif

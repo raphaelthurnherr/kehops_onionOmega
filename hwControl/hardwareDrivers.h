@@ -22,7 +22,10 @@
 #define DRIVER_MCP23008 "mcp23008"
 #define DRIVER_PCA9685 "pca9685"
 #define DRIVER_PCA9629 "pca9629"
-
+#define DRIVER_VL53L0X "vl53l0x"
+#define DRIVER_MCP4725 "mcp4725"
+#define DRIVER_TCA9548A "tca9548a"
+#define DRIVER_SSD1306 "ssd1306"
 
 #define IFACE_GEN_HBRIDGE_MOTOR "generic_hbridge"
 

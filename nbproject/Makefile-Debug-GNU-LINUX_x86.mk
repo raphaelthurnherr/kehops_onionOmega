@@ -45,11 +45,23 @@ OBJECTFILES= \
 	${OBJECTDIR}/config/kehopsConfig.o \
 	${OBJECTDIR}/configManager.o \
 	${OBJECTDIR}/fileIO.o \
+	${OBJECTDIR}/hwControl/device_drivers/api/ssd1306/SSD1306_OLED.o \
+	${OBJECTDIR}/hwControl/device_drivers/api/vl53l0x/vl53l0x_api.o \
+	${OBJECTDIR}/hwControl/device_drivers/api/vl53l0x/vl53l0x_api_calibration.o \
+	${OBJECTDIR}/hwControl/device_drivers/api/vl53l0x/vl53l0x_api_core.o \
+	${OBJECTDIR}/hwControl/device_drivers/api/vl53l0x/vl53l0x_api_ranging.o \
+	${OBJECTDIR}/hwControl/device_drivers/api/vl53l0x/vl53l0x_api_strings.o \
+	${OBJECTDIR}/hwControl/device_drivers/api/vl53l0x/vl53l0x_i2c_platform.o \
+	${OBJECTDIR}/hwControl/device_drivers/api/vl53l0x/vl53l0x_platform.o \
 	${OBJECTDIR}/hwControl/device_drivers/bh1745.o \
 	${OBJECTDIR}/hwControl/device_drivers/efm8_mcu_kehops.o \
+	${OBJECTDIR}/hwControl/device_drivers/k_vl53l0x.o \
 	${OBJECTDIR}/hwControl/device_drivers/mcp23008.o \
+	${OBJECTDIR}/hwControl/device_drivers/mcp4725.o \
 	${OBJECTDIR}/hwControl/device_drivers/pca9629.o \
 	${OBJECTDIR}/hwControl/device_drivers/pca9685.o \
+	${OBJECTDIR}/hwControl/device_drivers/ssd1306.o \
+	${OBJECTDIR}/hwControl/device_drivers/tca9548a.o \
 	${OBJECTDIR}/hwControl/hardwareDrivers.o \
 	${OBJECTDIR}/hwControl/hwManager.o \
 	${OBJECTDIR}/hwControl/libs/i2c/onion-i2c.o \
@@ -160,6 +172,46 @@ ${OBJECTDIR}/fileIO.o: fileIO.c
 	${RM} "$@.d"
 	$(COMPILE.c) -g -DI2CSIMU -IhwControl/libs/i2c -IhwControl/libs/onion-debug -IhwControl -IkehopsCom/libs/lib_json -IkehopsCom/libs/lib_mqtt -IkehopsCom -Iactuators -IhwControl/device_drivers -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/fileIO.o fileIO.c
 
+${OBJECTDIR}/hwControl/device_drivers/api/ssd1306/SSD1306_OLED.o: hwControl/device_drivers/api/ssd1306/SSD1306_OLED.c
+	${MKDIR} -p ${OBJECTDIR}/hwControl/device_drivers/api/ssd1306
+	${RM} "$@.d"
+	$(COMPILE.c) -g -DI2CSIMU -IhwControl/libs/i2c -IhwControl/libs/onion-debug -IhwControl -IkehopsCom/libs/lib_json -IkehopsCom/libs/lib_mqtt -IkehopsCom -Iactuators -IhwControl/device_drivers -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/hwControl/device_drivers/api/ssd1306/SSD1306_OLED.o hwControl/device_drivers/api/ssd1306/SSD1306_OLED.c
+
+${OBJECTDIR}/hwControl/device_drivers/api/vl53l0x/vl53l0x_api.o: hwControl/device_drivers/api/vl53l0x/vl53l0x_api.c
+	${MKDIR} -p ${OBJECTDIR}/hwControl/device_drivers/api/vl53l0x
+	${RM} "$@.d"
+	$(COMPILE.c) -g -DI2CSIMU -IhwControl/libs/i2c -IhwControl/libs/onion-debug -IhwControl -IkehopsCom/libs/lib_json -IkehopsCom/libs/lib_mqtt -IkehopsCom -Iactuators -IhwControl/device_drivers -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/hwControl/device_drivers/api/vl53l0x/vl53l0x_api.o hwControl/device_drivers/api/vl53l0x/vl53l0x_api.c
+
+${OBJECTDIR}/hwControl/device_drivers/api/vl53l0x/vl53l0x_api_calibration.o: hwControl/device_drivers/api/vl53l0x/vl53l0x_api_calibration.c
+	${MKDIR} -p ${OBJECTDIR}/hwControl/device_drivers/api/vl53l0x
+	${RM} "$@.d"
+	$(COMPILE.c) -g -DI2CSIMU -IhwControl/libs/i2c -IhwControl/libs/onion-debug -IhwControl -IkehopsCom/libs/lib_json -IkehopsCom/libs/lib_mqtt -IkehopsCom -Iactuators -IhwControl/device_drivers -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/hwControl/device_drivers/api/vl53l0x/vl53l0x_api_calibration.o hwControl/device_drivers/api/vl53l0x/vl53l0x_api_calibration.c
+
+${OBJECTDIR}/hwControl/device_drivers/api/vl53l0x/vl53l0x_api_core.o: hwControl/device_drivers/api/vl53l0x/vl53l0x_api_core.c
+	${MKDIR} -p ${OBJECTDIR}/hwControl/device_drivers/api/vl53l0x
+	${RM} "$@.d"
+	$(COMPILE.c) -g -DI2CSIMU -IhwControl/libs/i2c -IhwControl/libs/onion-debug -IhwControl -IkehopsCom/libs/lib_json -IkehopsCom/libs/lib_mqtt -IkehopsCom -Iactuators -IhwControl/device_drivers -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/hwControl/device_drivers/api/vl53l0x/vl53l0x_api_core.o hwControl/device_drivers/api/vl53l0x/vl53l0x_api_core.c
+
+${OBJECTDIR}/hwControl/device_drivers/api/vl53l0x/vl53l0x_api_ranging.o: hwControl/device_drivers/api/vl53l0x/vl53l0x_api_ranging.c
+	${MKDIR} -p ${OBJECTDIR}/hwControl/device_drivers/api/vl53l0x
+	${RM} "$@.d"
+	$(COMPILE.c) -g -DI2CSIMU -IhwControl/libs/i2c -IhwControl/libs/onion-debug -IhwControl -IkehopsCom/libs/lib_json -IkehopsCom/libs/lib_mqtt -IkehopsCom -Iactuators -IhwControl/device_drivers -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/hwControl/device_drivers/api/vl53l0x/vl53l0x_api_ranging.o hwControl/device_drivers/api/vl53l0x/vl53l0x_api_ranging.c
+
+${OBJECTDIR}/hwControl/device_drivers/api/vl53l0x/vl53l0x_api_strings.o: hwControl/device_drivers/api/vl53l0x/vl53l0x_api_strings.c
+	${MKDIR} -p ${OBJECTDIR}/hwControl/device_drivers/api/vl53l0x
+	${RM} "$@.d"
+	$(COMPILE.c) -g -DI2CSIMU -IhwControl/libs/i2c -IhwControl/libs/onion-debug -IhwControl -IkehopsCom/libs/lib_json -IkehopsCom/libs/lib_mqtt -IkehopsCom -Iactuators -IhwControl/device_drivers -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/hwControl/device_drivers/api/vl53l0x/vl53l0x_api_strings.o hwControl/device_drivers/api/vl53l0x/vl53l0x_api_strings.c
+
+${OBJECTDIR}/hwControl/device_drivers/api/vl53l0x/vl53l0x_i2c_platform.o: hwControl/device_drivers/api/vl53l0x/vl53l0x_i2c_platform.c
+	${MKDIR} -p ${OBJECTDIR}/hwControl/device_drivers/api/vl53l0x
+	${RM} "$@.d"
+	$(COMPILE.c) -g -DI2CSIMU -IhwControl/libs/i2c -IhwControl/libs/onion-debug -IhwControl -IkehopsCom/libs/lib_json -IkehopsCom/libs/lib_mqtt -IkehopsCom -Iactuators -IhwControl/device_drivers -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/hwControl/device_drivers/api/vl53l0x/vl53l0x_i2c_platform.o hwControl/device_drivers/api/vl53l0x/vl53l0x_i2c_platform.c
+
+${OBJECTDIR}/hwControl/device_drivers/api/vl53l0x/vl53l0x_platform.o: hwControl/device_drivers/api/vl53l0x/vl53l0x_platform.c
+	${MKDIR} -p ${OBJECTDIR}/hwControl/device_drivers/api/vl53l0x
+	${RM} "$@.d"
+	$(COMPILE.c) -g -DI2CSIMU -IhwControl/libs/i2c -IhwControl/libs/onion-debug -IhwControl -IkehopsCom/libs/lib_json -IkehopsCom/libs/lib_mqtt -IkehopsCom -Iactuators -IhwControl/device_drivers -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/hwControl/device_drivers/api/vl53l0x/vl53l0x_platform.o hwControl/device_drivers/api/vl53l0x/vl53l0x_platform.c
+
 ${OBJECTDIR}/hwControl/device_drivers/bh1745.o: hwControl/device_drivers/bh1745.c
 	${MKDIR} -p ${OBJECTDIR}/hwControl/device_drivers
 	${RM} "$@.d"
@@ -170,10 +222,20 @@ ${OBJECTDIR}/hwControl/device_drivers/efm8_mcu_kehops.o: hwControl/device_driver
 	${RM} "$@.d"
 	$(COMPILE.c) -g -DI2CSIMU -IhwControl/libs/i2c -IhwControl/libs/onion-debug -IhwControl -IkehopsCom/libs/lib_json -IkehopsCom/libs/lib_mqtt -IkehopsCom -Iactuators -IhwControl/device_drivers -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/hwControl/device_drivers/efm8_mcu_kehops.o hwControl/device_drivers/efm8_mcu_kehops.c
 
+${OBJECTDIR}/hwControl/device_drivers/k_vl53l0x.o: hwControl/device_drivers/k_vl53l0x.c
+	${MKDIR} -p ${OBJECTDIR}/hwControl/device_drivers
+	${RM} "$@.d"
+	$(COMPILE.c) -g -DI2CSIMU -IhwControl/libs/i2c -IhwControl/libs/onion-debug -IhwControl -IkehopsCom/libs/lib_json -IkehopsCom/libs/lib_mqtt -IkehopsCom -Iactuators -IhwControl/device_drivers -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/hwControl/device_drivers/k_vl53l0x.o hwControl/device_drivers/k_vl53l0x.c
+
 ${OBJECTDIR}/hwControl/device_drivers/mcp23008.o: hwControl/device_drivers/mcp23008.c
 	${MKDIR} -p ${OBJECTDIR}/hwControl/device_drivers
 	${RM} "$@.d"
 	$(COMPILE.c) -g -DI2CSIMU -IhwControl/libs/i2c -IhwControl/libs/onion-debug -IhwControl -IkehopsCom/libs/lib_json -IkehopsCom/libs/lib_mqtt -IkehopsCom -Iactuators -IhwControl/device_drivers -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/hwControl/device_drivers/mcp23008.o hwControl/device_drivers/mcp23008.c
+
+${OBJECTDIR}/hwControl/device_drivers/mcp4725.o: hwControl/device_drivers/mcp4725.c
+	${MKDIR} -p ${OBJECTDIR}/hwControl/device_drivers
+	${RM} "$@.d"
+	$(COMPILE.c) -g -DI2CSIMU -IhwControl/libs/i2c -IhwControl/libs/onion-debug -IhwControl -IkehopsCom/libs/lib_json -IkehopsCom/libs/lib_mqtt -IkehopsCom -Iactuators -IhwControl/device_drivers -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/hwControl/device_drivers/mcp4725.o hwControl/device_drivers/mcp4725.c
 
 ${OBJECTDIR}/hwControl/device_drivers/pca9629.o: hwControl/device_drivers/pca9629.c
 	${MKDIR} -p ${OBJECTDIR}/hwControl/device_drivers
@@ -184,6 +246,16 @@ ${OBJECTDIR}/hwControl/device_drivers/pca9685.o: hwControl/device_drivers/pca968
 	${MKDIR} -p ${OBJECTDIR}/hwControl/device_drivers
 	${RM} "$@.d"
 	$(COMPILE.c) -g -DI2CSIMU -IhwControl/libs/i2c -IhwControl/libs/onion-debug -IhwControl -IkehopsCom/libs/lib_json -IkehopsCom/libs/lib_mqtt -IkehopsCom -Iactuators -IhwControl/device_drivers -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/hwControl/device_drivers/pca9685.o hwControl/device_drivers/pca9685.c
+
+${OBJECTDIR}/hwControl/device_drivers/ssd1306.o: hwControl/device_drivers/ssd1306.c
+	${MKDIR} -p ${OBJECTDIR}/hwControl/device_drivers
+	${RM} "$@.d"
+	$(COMPILE.c) -g -DI2CSIMU -IhwControl/libs/i2c -IhwControl/libs/onion-debug -IhwControl -IkehopsCom/libs/lib_json -IkehopsCom/libs/lib_mqtt -IkehopsCom -Iactuators -IhwControl/device_drivers -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/hwControl/device_drivers/ssd1306.o hwControl/device_drivers/ssd1306.c
+
+${OBJECTDIR}/hwControl/device_drivers/tca9548a.o: hwControl/device_drivers/tca9548a.c
+	${MKDIR} -p ${OBJECTDIR}/hwControl/device_drivers
+	${RM} "$@.d"
+	$(COMPILE.c) -g -DI2CSIMU -IhwControl/libs/i2c -IhwControl/libs/onion-debug -IhwControl -IkehopsCom/libs/lib_json -IkehopsCom/libs/lib_mqtt -IkehopsCom -Iactuators -IhwControl/device_drivers -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/hwControl/device_drivers/tca9548a.o hwControl/device_drivers/tca9548a.c
 
 ${OBJECTDIR}/hwControl/hardwareDrivers.o: hwControl/hardwareDrivers.c
 	${MKDIR} -p ${OBJECTDIR}/hwControl

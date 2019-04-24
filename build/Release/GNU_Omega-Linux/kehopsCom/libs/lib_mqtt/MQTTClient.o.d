@@ -1,5 +1,5 @@
 build/Release/GNU_Omega-Linux/kehopsCom/libs/lib_mqtt/MQTTClient.o: \
- kehopsCom/libs/lib_mqtt/MQTTClient.c \
+ kehopsCom/libs/lib_mqtt/MQTTClient.c buildNumber.h \
  kehopsCom/libs/lib_mqtt/MQTTClient.h \
  kehopsCom/libs/lib_mqtt/MQTTClientPersistence.h \
  kehopsCom/libs/lib_mqtt/MQTTPersistence.h \
@@ -12,6 +12,8 @@ build/Release/GNU_Omega-Linux/kehopsCom/libs/lib_mqtt/MQTTClient.o: \
  kehopsCom/libs/lib_mqtt/MQTTProtocolClient.h \
  kehopsCom/libs/lib_mqtt/Thread.h kehopsCom/libs/lib_mqtt/SocketBuffer.h \
  kehopsCom/libs/lib_mqtt/StackTrace.h kehopsCom/libs/lib_mqtt/Heap.h
+
+buildNumber.h:
 
 kehopsCom/libs/lib_mqtt/MQTTClient.h:
 

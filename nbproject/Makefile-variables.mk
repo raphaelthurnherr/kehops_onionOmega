@@ -14,14 +14,6 @@ CND_ARTIFACT_PATH_Debug=dist/Debug/GNU_Omega-Linux/kehops
 CND_PACKAGE_DIR_Debug=dist/Debug/GNU_Omega-Linux/package
 CND_PACKAGE_NAME_Debug=kehopsonionomega.tar
 CND_PACKAGE_PATH_Debug=dist/Debug/GNU_Omega-Linux/package/kehopsonionomega.tar
-# Release configuration
-CND_PLATFORM_Release=GNU_Omega-Linux
-CND_ARTIFACT_DIR_Release=dist/Release/GNU_Omega-Linux
-CND_ARTIFACT_NAME_Release=kehops
-CND_ARTIFACT_PATH_Release=dist/Release/GNU_Omega-Linux/kehops
-CND_PACKAGE_DIR_Release=dist/Release/GNU_Omega-Linux/package
-CND_PACKAGE_NAME_Release=kehopsonionomega.tar
-CND_PACKAGE_PATH_Release=dist/Release/GNU_Omega-Linux/package/kehopsonionomega.tar
 # Debug-GNU-LINUX configuration
 CND_PLATFORM_Debug-GNU-LINUX=GNU-Linux
 CND_ARTIFACT_DIR_Debug-GNU-LINUX=dist/Debug-GNU-LINUX/GNU-Linux
@@ -38,6 +30,14 @@ CND_ARTIFACT_PATH_Debug-GNU-LINUX_x86=dist/Debug-GNU-LINUX_x86/GNU-Linux/kehops_
 CND_PACKAGE_DIR_Debug-GNU-LINUX_x86=dist/Debug-GNU-LINUX_x86/GNU-Linux/package
 CND_PACKAGE_NAME_Debug-GNU-LINUX_x86=kehopsonionomega.tar
 CND_PACKAGE_PATH_Debug-GNU-LINUX_x86=dist/Debug-GNU-LINUX_x86/GNU-Linux/package/kehopsonionomega.tar
+# Release configuration
+CND_PLATFORM_Release=GNU_Omega-Linux
+CND_ARTIFACT_DIR_Release=dist/Release/GNU_Omega-Linux
+CND_ARTIFACT_NAME_Release=kehops
+CND_ARTIFACT_PATH_Release=dist/Release/GNU_Omega-Linux/kehops
+CND_PACKAGE_DIR_Release=dist/Release/GNU_Omega-Linux/package
+CND_PACKAGE_NAME_Release=kehopsonionomega.tar
+CND_PACKAGE_PATH_Release=dist/Release/GNU_Omega-Linux/package/kehopsonionomega.tar
 #
 # include compiler specific variables
 #

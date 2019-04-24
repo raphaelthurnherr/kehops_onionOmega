@@ -9,6 +9,8 @@
  * 
  */
 
+#ifndef I2CSIMU
+
 // REGISTER DEFINITION FOR EFM8 MICROCONTROLLER
 
 #define BOARDTYPE_REG                       0x00
@@ -124,3 +126,5 @@ int EFM8BB_init(device_efm8McuKehops *efm8bbconfig){
     err += EFM8BB_clearWheelDistance(efm8bbconfig, 10);
     return err;
 }
+
+#endif

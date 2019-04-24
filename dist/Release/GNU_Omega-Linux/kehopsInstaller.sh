@@ -173,9 +173,6 @@ restart(){
 
     cd /root/
     ./kehopsmanager&
-    
-    cd /root/kehops/
-    ./kehops&
 } 
 
 ##-------------------------------------------------------------
