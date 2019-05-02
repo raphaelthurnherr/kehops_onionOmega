@@ -18,13 +18,8 @@ echo "RunRemote.sh DEBUG"
 #tar -cvf dist/Debug/kehops.tar -C dist/Debug/GNU_Omega-Linux/ deviceMap.cfg devices.cfg kehops.cfg kehops_wifi.sh kehops kehops.md5
 
 echo "Transfere des fichiers binaire..."
-<<<<<<< HEAD
 rsync -a /home/raph/ownCloud/dev/Projets/kehops_onionOmega/dist/Debug/GNU_Omega-Linux/kehops root@192.168.3.1:~/kehops
 #rsync -a /home/raph-pnp/ownCloud/dev/Projets/kehops_onionOmega/dist/Debug/GNU_Omega-Linux/kehops root@192.168.3.1:~/kehops
-=======
-#rsync -a /home/raph/ownCloud/dev/Projets/kehops_onionOmega/dist/Debug/GNU_Omega-Linux/kehops root@192.168.3.1:~/kehops
-rsync -a /home/raph-pnp/ownCloud/dev/Projets/kehops_onionOmega/dist/Debug/GNU_Omega-Linux/kehops root@192.168.3.1:~/kehops
->>>>>>> 413101f3277cdf793fdbb7f9e91ceb8e8f51a1d9
 
 #echo "Transfere des fichiers de configuration..."
 #rsync -a /home/raph/ownCloud/dev/Projets/kehops_onionOmega/dist/Debug/GNU_Omega-Linux/devices.cfg root@192.168.3.1:~/kehops

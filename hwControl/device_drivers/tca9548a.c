@@ -1,10 +1,6 @@
 /**
  * \file tca9548a.h
-<<<<<<< HEAD
  * \brief TCA9548A I2C Switch driver
-=======
- * \brief MCP4725 Digital analog converter with eeprom memory driver
->>>>>>> 413101f3277cdf793fdbb7f9e91ceb8e8f51a1d9
  *  I2C default address: 0xE0 (7 bit)
  * \author Raphael Thurnherr
  * \version 0.1
@@ -51,11 +47,7 @@ int tca9548a_init(device_tca9548a *tca9548aconfig){
  * \brief TCA9548A set channel state
  * \param pointer on the configuration structure
  * \param channel selection
-<<<<<<< HEAD
  * \param channel state (ON/OFF)
-=======
- * \param channel state (ON/OFF/XON)
->>>>>>> 413101f3277cdf793fdbb7f9e91ceb8e8f51a1d9
  * \return code error
  */
 
@@ -69,18 +61,10 @@ int tca9548a_setChannelState(device_tca9548a *tca9548aconfig, unsigned char chan
     err += i2c_readRaw(0, deviceAddress, controlRegisterValue, 1);
     
     switch(state){
-<<<<<<< HEAD
         case 0 : controlRegisterValue[0] &= ~(1 << channel); break;
         case 1 :  controlRegisterValue[0] |= (1 << channel); break;
         default: break;
     }
-=======
-        case STATE_ON :  controlRegisterValue[0] |= (1 << channel); break;
-        case STATE_OFF : controlRegisterValue[0] &= ~(1 << channel); break;
-        default: break;
-    }
-   
->>>>>>> 413101f3277cdf793fdbb7f9e91ceb8e8f51a1d9
     err += i2c_writeBufferRaw(0, deviceAddress, controlRegisterValue, 1);
     
         // Test read

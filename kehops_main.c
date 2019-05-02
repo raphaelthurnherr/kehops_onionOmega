@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 #define FIRMWARE_VERSION "1.1.0"
-=======
-#define FIRMWARE_VERSION "1.0.1"
->>>>>>> 413101f3277cdf793fdbb7f9e91ceb8e8f51a1d9
 
 #define DEFAULT_EVENT_STATE 1   
 
