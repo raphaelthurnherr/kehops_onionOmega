@@ -26,7 +26,10 @@
 #define DRIVER_MCP4725 "mcp4725"
 #define DRIVER_TCA9548A "tca9548a"
 #define DRIVER_SSD1306 "ssd1306"
+<<<<<<< HEAD
 #define DRIVER_ADS101X "ads101x"
+=======
+>>>>>>> 413101f3277cdf793fdbb7f9e91ceb8e8f51a1d9
 
 #define IFACE_GEN_HBRIDGE_MOTOR "generic_hbridge"
 #define IFACE_DEVICE_I2C "I2C"

@@ -40,6 +40,15 @@
                        displayName="device_drivers"
                        projectFiles="true">
           <logicalFolder name="api" displayName="api" projectFiles="true">
+<<<<<<< HEAD
+=======
+            <logicalFolder name="ssd1306" displayName="ssd1306" projectFiles="true">
+              <itemPath>hwControl/device_drivers/api/ssd1306/SSD1306_OLED.c</itemPath>
+              <itemPath>hwControl/device_drivers/api/ssd1306/SSD1306_OLED.h</itemPath>
+              <itemPath>hwControl/device_drivers/api/ssd1306/gfxfont.h</itemPath>
+              <itemPath>hwControl/device_drivers/api/ssd1306/readme.txt</itemPath>
+            </logicalFolder>
+>>>>>>> 413101f3277cdf793fdbb7f9e91ceb8e8f51a1d9
             <logicalFolder name="vl53l0x" displayName="vl53l0x" projectFiles="true">
               <itemPath>hwControl/device_drivers/api/vl53l0x/vl53l0x_api.c</itemPath>
               <itemPath>hwControl/device_drivers/api/vl53l0x/vl53l0x_api.h</itemPath>
@@ -63,8 +72,11 @@
               <itemPath>hwControl/device_drivers/api/vl53l0x/vl53l0x_types.h</itemPath>
             </logicalFolder>
           </logicalFolder>
+<<<<<<< HEAD
           <itemPath>hwControl/device_drivers/ads101x.c</itemPath>
           <itemPath>hwControl/device_drivers/ads101x.h</itemPath>
+=======
+>>>>>>> 413101f3277cdf793fdbb7f9e91ceb8e8f51a1d9
           <itemPath>hwControl/device_drivers/bh1745.c</itemPath>
           <itemPath>hwControl/device_drivers/bh1745.h</itemPath>
           <itemPath>hwControl/device_drivers/efm8_mcu_kehops.c</itemPath>
@@ -296,9 +308,31 @@
       </item>
       <item path="hwControl/changeLog.txt" ex="false" tool="3" flavor2="0">
       </item>
+<<<<<<< HEAD
       <item path="hwControl/device_drivers/ads101x.c" ex="false" tool="0" flavor2="0">
       </item>
       <item path="hwControl/device_drivers/ads101x.h" ex="false" tool="3" flavor2="0">
+=======
+      <item path="hwControl/device_drivers/api/ssd1306/SSD1306_OLED.c"
+            ex="false"
+            tool="0"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/api/ssd1306/SSD1306_OLED.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/api/ssd1306/gfxfont.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/api/ssd1306/readme.txt"
+            ex="false"
+            tool="3"
+            flavor2="0">
+>>>>>>> 413101f3277cdf793fdbb7f9e91ceb8e8f51a1d9
       </item>
       <item path="hwControl/device_drivers/api/vl53l0x/vl53l0x_api.c"
             ex="false"
@@ -759,9 +793,31 @@
       </item>
       <item path="hwControl/changeLog.txt" ex="false" tool="3" flavor2="0">
       </item>
+<<<<<<< HEAD
       <item path="hwControl/device_drivers/ads101x.c" ex="false" tool="0" flavor2="0">
       </item>
       <item path="hwControl/device_drivers/ads101x.h" ex="false" tool="3" flavor2="0">
+=======
+      <item path="hwControl/device_drivers/api/ssd1306/SSD1306_OLED.c"
+            ex="false"
+            tool="0"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/api/ssd1306/SSD1306_OLED.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/api/ssd1306/gfxfont.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/api/ssd1306/readme.txt"
+            ex="false"
+            tool="3"
+            flavor2="0">
+>>>>>>> 413101f3277cdf793fdbb7f9e91ceb8e8f51a1d9
       </item>
       <item path="hwControl/device_drivers/api/vl53l0x/vl53l0x_api.c"
             ex="false"
@@ -1223,7 +1279,131 @@
       </item>
       <item path="hwControl/changeLog.txt" ex="false" tool="3" flavor2="0">
       </item>
+<<<<<<< HEAD
       <item path="hwControl/device_drivers/ads101x.c" ex="false" tool="0" flavor2="0">
+=======
+      <item path="hwControl/device_drivers/api/ssd1306/SSD1306_OLED.c"
+            ex="false"
+            tool="0"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/api/ssd1306/SSD1306_OLED.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/api/ssd1306/gfxfont.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/api/ssd1306/readme.txt"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/api/vl53l0x/vl53l0x_api.c"
+            ex="false"
+            tool="0"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/api/vl53l0x/vl53l0x_api.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/api/vl53l0x/vl53l0x_api_calibration.c"
+            ex="false"
+            tool="0"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/api/vl53l0x/vl53l0x_api_calibration.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/api/vl53l0x/vl53l0x_api_core.c"
+            ex="false"
+            tool="0"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/api/vl53l0x/vl53l0x_api_core.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/api/vl53l0x/vl53l0x_api_ranging.c"
+            ex="false"
+            tool="0"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/api/vl53l0x/vl53l0x_api_ranging.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/api/vl53l0x/vl53l0x_api_strings.c"
+            ex="false"
+            tool="0"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/api/vl53l0x/vl53l0x_api_strings.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/api/vl53l0x/vl53l0x_def.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/api/vl53l0x/vl53l0x_device.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/api/vl53l0x/vl53l0x_i2c_platform.c"
+            ex="false"
+            tool="0"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/api/vl53l0x/vl53l0x_i2c_platform.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/api/vl53l0x/vl53l0x_interrupt_threshold_settings.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/api/vl53l0x/vl53l0x_platform.c"
+            ex="false"
+            tool="0"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/api/vl53l0x/vl53l0x_platform.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/api/vl53l0x/vl53l0x_platform_log.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/api/vl53l0x/vl53l0x_tuning.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/api/vl53l0x/vl53l0x_types.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/bh1745.c" ex="false" tool="0" flavor2="0">
+>>>>>>> 413101f3277cdf793fdbb7f9e91ceb8e8f51a1d9
       </item>
       <item path="hwControl/device_drivers/ads101x.h" ex="false" tool="3" flavor2="0">
       </item>
@@ -1337,6 +1517,16 @@
             flavor2="0">
       </item>
       <item path="hwControl/device_drivers/efm8_mcu_kehops.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/k_vl53l0x.c"
+            ex="false"
+            tool="0"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/k_vl53l0x.h"
             ex="false"
             tool="3"
             flavor2="0">
@@ -1636,8 +1826,11 @@
       </compileType>
       <item path="actuators/asyncAOUT.c" ex="false" tool="0" flavor2="0">
       </item>
+<<<<<<< HEAD
       <item path="actuators/asyncAOUT.h" ex="false" tool="3" flavor2="0">
       </item>
+=======
+>>>>>>> 413101f3277cdf793fdbb7f9e91ceb8e8f51a1d9
       <item path="actuators/asyncLED.c" ex="false" tool="0" flavor2="9">
       </item>
       <item path="actuators/asyncLED.h" ex="false" tool="3" flavor2="0">
@@ -1662,6 +1855,19 @@
       </item>
       <item path="actuators/asyncTools.h" ex="false" tool="3" flavor2="0">
       </item>
+<<<<<<< HEAD
+=======
+      <item path="algobotManager.sh.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="asyncTools/asyncLED.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="asyncTools/asyncMOTOR.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="asyncTools/asyncSTEPPER.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="asyncTools/asyncTools.h" ex="false" tool="3" flavor2="0">
+      </item>
+>>>>>>> 413101f3277cdf793fdbb7f9e91ceb8e8f51a1d9
       <item path="config/deviceMapping.c" ex="false" tool="0" flavor2="9">
       </item>
       <item path="config/deviceMapping.h" ex="false" tool="3" flavor2="0">
@@ -1686,9 +1892,31 @@
       </item>
       <item path="hwControl/changeLog.txt" ex="false" tool="3" flavor2="0">
       </item>
+<<<<<<< HEAD
       <item path="hwControl/device_drivers/ads101x.c" ex="false" tool="0" flavor2="0">
       </item>
       <item path="hwControl/device_drivers/ads101x.h" ex="false" tool="3" flavor2="0">
+=======
+      <item path="hwControl/device_drivers/api/ssd1306/SSD1306_OLED.c"
+            ex="false"
+            tool="0"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/api/ssd1306/SSD1306_OLED.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/api/ssd1306/gfxfont.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/api/ssd1306/readme.txt"
+            ex="false"
+            tool="3"
+            flavor2="0">
+>>>>>>> 413101f3277cdf793fdbb7f9e91ceb8e8f51a1d9
       </item>
       <item path="hwControl/device_drivers/api/vl53l0x/vl53l0x_api.c"
             ex="false"

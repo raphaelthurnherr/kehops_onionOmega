@@ -36,6 +36,7 @@
 #include "mcp4725.h"
 #include "tca9548a.h"
 #include "ssd1306.h"
+<<<<<<< HEAD
 #include "ads101x.h"
 
 // Device variable déclaration
@@ -53,6 +54,29 @@ device_tca9548a dev_tca9548a[MAX_IC_DEVICE_PER_TYPE];
 device_ssd1306 dev_ssd1306[MAX_IC_DEVICE_PER_TYPE];
 device_ads101x dev_ads101x[MAX_IC_DEVICE_PER_TYPE];
 
+=======
+
+// Device variable déclaration
+#define MAX_PCA9685_DEVICE 8
+#define MAX_PCA9629_DEVICE 8
+#define MAX_EFM8BB_DEVICE 8
+#define MAX_MCP23008_DEVICE 8
+#define MAX_BH1745_DEVICE 8
+#define MAX_VL53L0X_DEVICE 8
+#define MAX_MCP4725_DEVICE 8
+#define MAX_TCA9548A_DEVICE 8
+#define MAX_SSD1306_DEVICE 8
+
+device_pca9685 dev_pca9685[MAX_PCA9685_DEVICE];
+device_pca9629 dev_pca9629[MAX_PCA9629_DEVICE];
+device_efm8McuKehops dev_efm8bb[MAX_EFM8BB_DEVICE];
+device_mcp23008 dev_mcp23008[MAX_MCP23008_DEVICE];
+device_bh1745 dev_bh1745[MAX_BH1745_DEVICE];
+device_vl53l0x dev_vl53l0x[MAX_VL53L0X_DEVICE];
+device_mcp4725 dev_mcp4725[MAX_MCP4725_DEVICE];
+device_tca9548a dev_tca9548a[MAX_TCA9548A_DEVICE];
+device_ssd1306 dev_ssd1306[MAX_SSD1306_DEVICE];
+>>>>>>> 413101f3277cdf793fdbb7f9e91ceb8e8f51a1d9
 
 unsigned char pca9685_count=0;
 unsigned char pca9629_count=0;
@@ -63,6 +87,7 @@ unsigned char vl53l0x_count=0;
 unsigned char mcp4725_count=0;
 unsigned char tca9548a_count=0;
 unsigned char ssd1306_count=0;
+<<<<<<< HEAD
 unsigned char ads101x_count=0;
 
 int getDriverConfig_ptr(char * driverType, char * name);
@@ -72,6 +97,24 @@ struct device_subdrivers getSubdriverSettingsByName(char * driverName);
 
 int subDriver_preAction(char * driverName);
 int subDriver_postAction(char * driverName);
+=======
+
+
+//int getDriverTypeByName(char * name); // Get the device type from the name and convert it to local definition
+
+int getPCA9685config_ptr(char * name);
+int getPCA9629config_ptr(char * name);
+int getEFM8BBconfig_ptr(char * name);
+int getMCP23008config_ptr(char * name);
+int getBH1745config_ptr(char * name);
+int getVL53l0xconfig_ptr(char * name);
+int getMCP4725config_ptr(char * name);
+int getTCA9548Aconfig_ptr(char * name);
+int getSSD1306config_ptr(char * name);
+
+int driverSelector_SetDOUT(char * driverType, char * driverName, int channel, int value);
+int subDriver_SetAction(char * driverType, char * driverName, int channel, int value);
+>>>>>>> 413101f3277cdf793fdbb7f9e91ceb8e8f51a1d9
 
 /**
  * \fn char boardHWinit()
@@ -91,6 +134,7 @@ int boardHWinit(void){
     int i;
 
     printf("#[HW DRIVER] Board devices drivers initialization: \n");
+<<<<<<< HEAD
     usleep(10000);            
     for(i=0; boardDevice[i].address >= 0 && i<MAX_BOARD_DEVICE; i++){
             
@@ -110,6 +154,28 @@ int boardHWinit(void){
             else
                 printf(" -> OK)");
         }
+=======
+                
+    for(i=0; boardDevice[i].address >= 0 && i<MAX_BOARD_DEVICE; i++){
+            char * subDriverType;
+            NoDriverFound = 1;                          
+            printf("\n              [%s - %s] :",boardDevice[i].name, boardDevice[i].type);
+            
+            
+        // SUB-DRIVER PRE ACTION Find if sub-driver action is necessary and defined before working
+            if(strcmp(boardDevice[i].sub_driver.name, "")){
+                printf(" (SUB-DRIVER: %s", boardDevice[i].sub_driver.name);
+                subDriverType = getDriverTypeByName(boardDevice[i].sub_driver.name);
+                status = subDriver_SetAction(subDriverType, boardDevice[i].sub_driver.name,
+                        boardDevice[i].sub_driver.attributes.device_channel, STATE_ON);
+                if(status != 0){
+                    printf(" -> ERROR [%d])", status);
+                    warning++;
+                }
+                else
+                    printf(" -> OK)");
+            }
+>>>>>>> 413101f3277cdf793fdbb7f9e91ceb8e8f51a1d9
             
         // DEVICES TYPE PCA9585 PWM DRIVER CONFIGURATION
             
@@ -213,7 +279,11 @@ int boardHWinit(void){
                 dev_vl53l0x[vl53l0x_count].deviceAddress = boardDevice[i].address;
                 if(vl53l0x_init(&dev_vl53l0x[vl53l0x_count]) != 0){
                     err++;
+<<<<<<< HEAD
                     printf(" -> NOT YET IMPLEMENTED");
+=======
+                    printf(" -> ERROR");
+>>>>>>> 413101f3277cdf793fdbb7f9e91ceb8e8f51a1d9
                 }else
                     printf(" -> OK");                 
                 
@@ -230,6 +300,7 @@ int boardHWinit(void){
                 strcpy(dev_mcp4725[mcp4725_count].deviceName, boardDevice[i].name);
                 dev_mcp4725[mcp4725_count].deviceAddress = boardDevice[i].address;
                 dev_mcp4725[mcp4725_count].vref_mv = 3300;
+<<<<<<< HEAD
                 
                 if(mcp4725_init(&dev_mcp4725[mcp4725_count]) != 0){
                     err++;
@@ -251,6 +322,10 @@ int boardHWinit(void){
                 dev_tca9548a[tca9548a_count].deviceAddress = boardDevice[i].address;
                 
                 if(tca9548a_init(&dev_tca9548a[tca9548a_count]) != 0){
+=======
+                
+                if(mcp4725_init(&dev_mcp4725[mcp4725_count]) != 0){
+>>>>>>> 413101f3277cdf793fdbb7f9e91ceb8e8f51a1d9
                     err++;
                     printf(" -> ERROR");
                 }else{
@@ -259,6 +334,7 @@ int boardHWinit(void){
             #ifdef INFO_DEBUG                
                 printDeviceData(i, &boardDevice[i]);
             #endif                
+<<<<<<< HEAD
                 tca9548a_count++;
                 NoDriverFound=0;                
             }
@@ -272,11 +348,29 @@ int boardHWinit(void){
                     err++;
                     printf(" -> NOT YET IMPLEMENTED");
                 }else{
+=======
+                mcp4725_count++;
+                NoDriverFound=0;                
+            }
+            
+            // DEVICES TYPE TCA9548A 8 CHANNELS I2C  SWITCH
+            if(!strcmp(boardDevice[i].type, DRIVER_TCA9548A)){              
+                // Setting up the tca9548a I2C switch
+                strcpy(dev_tca9548a[tca9548a_count].deviceName, boardDevice[i].name);
+                dev_tca9548a[tca9548a_count].deviceAddress = boardDevice[i].address;
+                
+                if(tca9548a_init(&dev_tca9548a[tca9548a_count]) != 0){
+                    err++;
+                    printf(" -> ERROR");
+                }else{
+                    //tca9548a_setChannelState(&dev_tca9548a[tca9548a_count], 0, STATE_ON);
+>>>>>>> 413101f3277cdf793fdbb7f9e91ceb8e8f51a1d9
                     printf(" -> OK");                  
                 }
             #ifdef INFO_DEBUG                
                 printDeviceData(i, &boardDevice[i]);
             #endif                
+<<<<<<< HEAD
                 ssd1306_count++;
                 NoDriverFound=0;                
             }            
@@ -287,6 +381,18 @@ int boardHWinit(void){
                 strcpy(dev_ads101x[ads101x_count].deviceName, boardDevice[i].name);
                 dev_ads101x[ads101x_count].deviceAddress = boardDevice[i].address;
                 if(ads101x_init(&dev_ads101x[ads101x_count]) != 0){
+=======
+                tca9548a_count++;
+                NoDriverFound=0;                
+            }
+            
+            // DEVICES TYPE DRIVER_SSD1306 GRAPHICAL DISPLAY
+            if(!strcmp(boardDevice[i].type, DRIVER_SSD1306)){              
+                // Setting up the ssd1306 Graphic display
+                strcpy(dev_ssd1306[ssd1306_count].deviceName, boardDevice[i].name);
+                dev_ssd1306[ssd1306_count].deviceAddress = boardDevice[i].address;
+                if(ssd1306_init(&dev_ssd1306[ssd1306_count]) != 0){
+>>>>>>> 413101f3277cdf793fdbb7f9e91ceb8e8f51a1d9
                     err++;
                     printf(" -> ERROR");
                 }else{
@@ -295,20 +401,35 @@ int boardHWinit(void){
             #ifdef INFO_DEBUG                
                 printDeviceData(i, &boardDevice[i]);
             #endif                
+<<<<<<< HEAD
                 ads101x_count++;
                 NoDriverFound=0;                
             }
             
             // - END OF DRIVER INITIALIZATION -
+=======
+                ssd1306_count++;
+                NoDriverFound=0;                
+            }            
+            
+>>>>>>> 413101f3277cdf793fdbb7f9e91ceb8e8f51a1d9
             
             // Check if driver was found for this part
             if(NoDriverFound > 0){
                 warning++;    
             }
             
+<<<<<<< HEAD
             // SUB-DRIVER POST ACTION Find if sub-driver action was necessary and finish action            
             subDriver_postAction(boardDevice[i].name);
  
+=======
+            // SUB-DRIVER POST ACTION Find if sub-driver action was necessary and finish action
+            if(strcmp(boardDevice[i].sub_driver.name, "")){
+                subDriver_SetAction(subDriverType, boardDevice[i].sub_driver.name,
+                        boardDevice[i].sub_driver.attributes.device_channel, STATE_OFF);
+            }
+>>>>>>> 413101f3277cdf793fdbb7f9e91ceb8e8f51a1d9
     }
      printf("\n");
      
@@ -852,6 +973,77 @@ int getDriverConfig_ptr(char * driverType, char * name){
     return refFound;
 }
 
+/**
+ * \brief int getVL53l0xconfig_ptr(char * name), Search in the device table
+ * list of VL53L0x TOF sensors the configuration structure correspondant
+ * to the device name (Like IC3) and return a pointer of this structure.
+ * \param char * name , name of the device (like IC3, U5, etc...)
+ * \return pointer of the correspondant configuration stucture
+ */ 
+int getVL53l0xconfig_ptr(char * name){
+    int i, refFound=-1;
+    
+    for(i=0; refFound<0 && i<vl53l0x_count ;i++){
+        if(!strcmp(dev_vl53l0x[i].deviceName, name)){
+            refFound = i;
+        }
+    }       
+    return refFound;
+}
+
+/**
+ * \brief int getMCP4725config_ptr(char * name), Search in the device table
+ * list of MCP4725 Digital analog converter the configuration structure correspondant
+ * to the device name (Like IC3) and return a pointer of this structure.
+ * \param char * name , name of the device (like IC3, U5, etc...)
+ * \return pointer of the correspondant configuration stucture
+ */ 
+int getMCP4725config_ptr(char * name){
+    int i, refFound=-1;
+    
+    for(i=0; refFound<0 && i<mcp4725_count ;i++){
+        if(!strcmp(dev_mcp4725[i].deviceName, name)){
+            refFound = i;
+        }
+    }       
+    return refFound;
+}
+
+/**
+ * \brief int getTCA9548Aconfig_ptr(char * name), Search in the device table
+ * list of TCA9548A 8 channels I2C switch
+ * to the device name (Like IC3) and return a pointer of this structure.
+ * \param char * name , name of the device (like IC3, U5, etc...)
+ * \return pointer of the correspondant configuration stucture
+ */ 
+int getTCA9548Aconfig_ptr(char * name){
+    int i, refFound=-1;
+    
+    for(i=0; refFound<0 && i<tca9548a_count ;i++){
+        if(!strcmp(dev_tca9548a[i].deviceName, name)){
+            refFound = i;
+        }
+    }       
+    return refFound;
+}
+
+/**
+ * \brief int getSSD1306config_ptr(char * name), Search in the device table
+ * list of SSD1306 graphic display
+ * to the device name (Like IC3) and return a pointer of this structure.
+ * \param char * name , name of the device (like IC3, U5, etc...)
+ * \return pointer of the correspondant configuration stucture
+ */ 
+int getSSD1306config_ptr(char * name){
+    int i, refFound=-1;
+    
+    for(i=0; refFound<0 && i<ssd1306_count ;i++){
+        if(!strcmp(dev_ssd1306[i].deviceName, name)){
+            refFound = i;
+        }
+    }       
+    return refFound;
+}
 
 /*
  * \fn char actuator_genericHBridge_motorDirection()
@@ -936,6 +1128,31 @@ int actuator_genericHBridge_motorSpeed(int motorID, int speed){
     if(result)
         printf("SET MOTOR SPEED VALUE FROM DRIVERS:  NAME:%s TYPE:%s   motor_id: %d     channel: %d     ratio: %d\n", driverName, driverType, motorID, channel, speed);                
     
+<<<<<<< HEAD
+=======
+    /*   FUNCTIONS REPLACED BY "driverSelector_SetDOUT"
+    // USE DRIVER FOR PCA9685
+    if(!strcmp(kehopsActuators.dc_motor[motorID].sw_driver.dc_motor.speed.hw_driver.type, DRIVER_PCA9685)){
+        ptrDev = getPCA9685config_ptr(kehopsActuators.dc_motor[motorID].sw_driver.dc_motor.speed.hw_driver.name);
+        
+        if(ptrDev>=0){
+            printf("SET MOTOR SPEED VALUE FROM <%s> DRIVERS:  NAME:%s TYPE:%s I2C add: 0x%2x    motor_id: %d     channel: %d     ratio: %d\n",DRIVER_PCA9685, kehopsActuators.dc_motor[motorID].sw_driver.dc_motor.speed.hw_driver.name, kehopsActuators.dc_motor[motorID].sw_driver.dc_motor.speed.hw_driver.type, dev_pca9685[ptrDev].deviceAddress, motorID, channel, speed);        
+            pca9685_setPWMdutyCycle(&dev_pca9685[ptrDev], channel, speed);
+        }else 
+            printf ("#! Function [actuator_setDoutValue] -> Unknown driver name: %s\n", kehopsActuators.dc_motor[motorID].sw_driver.dc_motor.speed.hw_driver.name);
+    }
+    
+    // USE DRIVER FOR MCP23008
+    if(!strcmp(kehopsActuators.dc_motor[motorID].sw_driver.dc_motor.speed.hw_driver.type, DRIVER_MCP23008)){
+        ptrDev = getMCP23008config_ptr(kehopsActuators.dc_motor[motorID].sw_driver.dc_motor.speed.hw_driver.name);
+        if(ptrDev>=0){
+            printf("SET MOTOR SPEED VALUE FROM <%s> DRIVERS:  NAME:%s TYPE:%s I2C add: 0x%2x    motor_id: %d     channel: %d     state: %d\n",DRIVER_MCP23008, kehopsActuators.dc_motor[motorID].sw_driver.dc_motor.speed.hw_driver.name, kehopsActuators.dc_motor[motorID].sw_driver.dc_motor.speed.hw_driver.type, dev_mcp23008[ptrDev].deviceAddress, motorID, channel, speed);        
+            mcp23008_setChannel(&dev_mcp23008[ptrDev], channel, speed);
+        }else 
+            printf ("#! Function [actuator_genericHBridge_motorSpeed] -> Unknown driver name: %s\n", kehopsActuators.dc_motor[motorID].sw_driver.dc_motor.speed.hw_driver.name);
+    }
+*/
+>>>>>>> 413101f3277cdf793fdbb7f9e91ceb8e8f51a1d9
     return 0;
 }
 
@@ -979,12 +1196,17 @@ int driverSelector_SetDOUT(char * driverType, char * driverName, int channel, in
 }
 
 /*
+<<<<<<< HEAD
  * \fn char setDeviceChannelByName(char * driverType, char * driverName, int channel, int value)
+=======
+ * \fn char subDriver_SetAction(char * driverType, char * driverName, int channel, int value)
+>>>>>>> 413101f3277cdf793fdbb7f9e91ceb8e8f51a1d9
  * \brief to do
  *
  * \param driverType, driverName, channel, value
  * \return -
  */
+<<<<<<< HEAD
 int setDeviceChannelByName(char * deviceName, int channel, int value){
     int ptrDev=-1;
     int err=0;
@@ -995,12 +1217,22 @@ int setDeviceChannelByName(char * deviceName, int channel, int value){
             
     // USE DRIVER FOR TCA9548A I2C SWITCH
     if(!strcmp(subDriverType, DRIVER_TCA9548A)){
+=======
+int subDriver_SetAction(char * driverType, char * driverName, int channel, int value){
+    int ptrDev=-1;
+    int err=0;
+    
+    // USE DRIVER FOR PCA9685
+    if(!strcmp(driverType, DRIVER_TCA9548A)){
+        ptrDev = getTCA9548Aconfig_ptr(driverName);
+>>>>>>> 413101f3277cdf793fdbb7f9e91ceb8e8f51a1d9
         if(ptrDev>=0){
             err += tca9548a_setChannelState(&dev_tca9548a[ptrDev], channel, value);
         }
     }
     
     if(ptrDev<0)
+<<<<<<< HEAD
         printf ("#! Function [setDeviceChannelByName] -> Unknown device name: %s\n", deviceName);
     
     return err;
@@ -1079,4 +1311,9 @@ int subDriver_postAction(char * driverName){
         status = setDeviceChannelByName(subDriverSettings.name, subDriverSettings.attributes.device_channel, 0);
     }    
     return status;
+=======
+        printf ("#! Function [subDriver_SetAction] -> Unknown driver name: %s\n", driverName);
+     
+    return err;
+>>>>>>> 413101f3277cdf793fdbb7f9e91ceb8e8f51a1d9
 }

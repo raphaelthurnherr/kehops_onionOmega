@@ -110,7 +110,11 @@ unsigned char vl53l0x_init(device_vl53l0x *vl53l0xConfig){
     err++;
     
     if(err){
+<<<<<<< HEAD
         printf("Kehops I2C TOF VL53l0x device initialization with %d error\n", err);
+=======
+        //printf("Kehops I2C TOF VL53l0x device initialization with %d error\n", err);
+>>>>>>> 413101f3277cdf793fdbb7f9e91ceb8e8f51a1d9
     }
     return err;    
 }

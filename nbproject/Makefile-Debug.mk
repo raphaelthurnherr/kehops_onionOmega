@@ -46,7 +46,11 @@ OBJECTFILES= \
 	${OBJECTDIR}/config/kehopsConfig.o \
 	${OBJECTDIR}/configManager.o \
 	${OBJECTDIR}/fileIO.o \
+<<<<<<< HEAD
 	${OBJECTDIR}/hwControl/device_drivers/ads101x.o \
+=======
+	${OBJECTDIR}/hwControl/device_drivers/api/ssd1306/SSD1306_OLED.o \
+>>>>>>> 413101f3277cdf793fdbb7f9e91ceb8e8f51a1d9
 	${OBJECTDIR}/hwControl/device_drivers/api/vl53l0x/vl53l0x_api.o \
 	${OBJECTDIR}/hwControl/device_drivers/api/vl53l0x/vl53l0x_api_calibration.o \
 	${OBJECTDIR}/hwControl/device_drivers/api/vl53l0x/vl53l0x_api_core.o \
@@ -178,10 +182,17 @@ ${OBJECTDIR}/fileIO.o: fileIO.c
 	${RM} "$@.d"
 	$(COMPILE.c) -g -IhwControl/libs/i2c -IhwControl/libs/onion-debug -IhwControl -Iactuators -IkehopsCom -IkehopsCom/libs/lib_json -IkehopsCom/libs/lib_mqtt -IhwControl/device_drivers -include buildNumber.h -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/fileIO.o fileIO.c
 
+<<<<<<< HEAD
 ${OBJECTDIR}/hwControl/device_drivers/ads101x.o: hwControl/device_drivers/ads101x.c
 	${MKDIR} -p ${OBJECTDIR}/hwControl/device_drivers
 	${RM} "$@.d"
 	$(COMPILE.c) -g -IhwControl/libs/i2c -IhwControl/libs/onion-debug -IhwControl -Iactuators -IkehopsCom -IkehopsCom/libs/lib_json -IkehopsCom/libs/lib_mqtt -IhwControl/device_drivers -include buildNumber.h -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/hwControl/device_drivers/ads101x.o hwControl/device_drivers/ads101x.c
+=======
+${OBJECTDIR}/hwControl/device_drivers/api/ssd1306/SSD1306_OLED.o: hwControl/device_drivers/api/ssd1306/SSD1306_OLED.c
+	${MKDIR} -p ${OBJECTDIR}/hwControl/device_drivers/api/ssd1306
+	${RM} "$@.d"
+	$(COMPILE.c) -g -IhwControl/libs/i2c -IhwControl/libs/onion-debug -IhwControl -Iactuators -IkehopsCom -IkehopsCom/libs/lib_json -IkehopsCom/libs/lib_mqtt -IhwControl/device_drivers -include buildNumber.h -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/hwControl/device_drivers/api/ssd1306/SSD1306_OLED.o hwControl/device_drivers/api/ssd1306/SSD1306_OLED.c
+>>>>>>> 413101f3277cdf793fdbb7f9e91ceb8e8f51a1d9
 
 ${OBJECTDIR}/hwControl/device_drivers/api/vl53l0x/vl53l0x_api.o: hwControl/device_drivers/api/vl53l0x/vl53l0x_api.c
 	${MKDIR} -p ${OBJECTDIR}/hwControl/device_drivers/api/vl53l0x
