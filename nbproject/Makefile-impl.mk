@@ -31,7 +31,7 @@ DEFAULTCONF=Debug
 CONF=${DEFAULTCONF}
 
 # All Configurations
-ALLCONFS=Debug Release Debug-GNU-LINUX Debug-GNU-LINUX_x86 
+ALLCONFS=Debug Debug-GNU-LINUX Debug-GNU-LINUX_x86 Release 
 
 
 # build

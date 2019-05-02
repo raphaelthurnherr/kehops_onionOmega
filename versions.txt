@@ -1,0 +1,7 @@
+Versions:
+
+1.1.0 - 02.05.2019
+- [NEW] Add support for use the sub-driver hardware devices based on TCA9548
+- [NEW] Add new drivers for analog digital converter (ads101x)
+- [BUG] Drivers for display (ssd1306) & TOF distance sensors not yet supported
+- [FIX] Battery/AIN request and status send now MQTT message with all battery / AIN known

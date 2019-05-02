@@ -32,7 +32,7 @@ typedef enum msgtype{
 // DEFINITION DES PARAMETRES DE TYPE PARAMETRE
 typedef enum msgparam{
         ERR_HEADER,     // Not use
-	ERR_PARAM,      // Not use
+	ERR_PARAM,     
 	STOP,           // Not use
 	MOVE,           // Not use
 	MOTORS,
@@ -41,6 +41,7 @@ typedef enum msgparam{
 	BATTERY,
 	pPWM,
 	pLED,
+        pAOUT,
         pSERVO,
 	STATUS,
         BUTTON,
@@ -138,10 +139,17 @@ struct mLedConfig{
         char isServoMode[25];
 };
 
+struct mAoutConfig{
+        int id;
+	char state[25];
+	int power;
+};
+
 struct mConfig{
         int motValueCnt;
         int ledValueCnt;
         int pwmValueCnt;
+        int aoutValueCnt;
         int btnValueCnt;
         int dinValueCnt;
         int sonarValueCnt;
@@ -157,6 +165,7 @@ struct mConfig{
         struct mStepperConfig stepper[10];
         struct mLedConfig led[10];
         struct mLedConfig pwm[10];
+        struct mAoutConfig Aout[10];
         struct mDin btn[10];
         struct mDin din[10];
         struct mAin sonar[10];
@@ -183,6 +192,13 @@ struct mPwm{
 	int id;
 	char state[50];
 	int angle;
+};
+
+struct mAout{
+	int id;
+	char state[50];
+	int powerPercent;
+        int value;
 };
 
 struct mLed{
@@ -274,6 +290,7 @@ typedef struct JsonCommand{
 	struct mBattery BATTsens[20];
 	struct mLed PWMarray[20];
         struct mLed LEDarray[20]; // LED (internal board pwm)
+        struct mAout Aout[20];
         struct mRGB RGBsens[20];
         struct mConfig Config;
         struct mSystemCmd System;
@@ -293,6 +310,7 @@ typedef struct JsonResponse{
 	struct m2wd MOTresponse;
         struct mStepper STEPPERresponse;
         struct mLed PWMresponse;
+        struct mAout AOUTresponse;
         struct mLed LEDresponse;
         struct mDin BTNresponse;
         struct mRGB RGBresponse; 

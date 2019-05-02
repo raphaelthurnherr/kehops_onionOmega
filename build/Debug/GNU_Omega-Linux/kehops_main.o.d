@@ -6,7 +6,7 @@ build/Debug/GNU_Omega-Linux/kehops_main.o: kehops_main.c buildNumber.h \
  timerManager.h hwControl/hwManager.h hwControl/../type.h \
  actuators/asyncTools.h actuators/asyncPWM.h actuators/asyncSERVO.h \
  actuators/asyncLED.h actuators/asyncMOTOR.h actuators/asyncSTEPPER.h \
- configManager.h hwControl/wifi_json.h
+ actuators/asyncAOUT.h configManager.h hwControl/wifi_json.h
 
 buildNumber.h:
 
@@ -49,6 +49,8 @@ actuators/asyncLED.h:
 actuators/asyncMOTOR.h:
 
 actuators/asyncSTEPPER.h:
+
+actuators/asyncAOUT.h:
 
 configManager.h:
 

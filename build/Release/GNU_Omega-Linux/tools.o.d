@@ -1,12 +1,12 @@
-build/Release/GNU_Omega-Linux/tools.o: tools.c tools.h kehopsCom/type.h \
- kehopsCom/../buggy_descriptor.h kehops_main.h kehopsCom/type.h
+build/Release/GNU_Omega-Linux/tools.o: tools.c buildNumber.h tools.h \
+ type.h hwControl/../buggy_descriptor.h kehops_main.h
+
+buildNumber.h:
 
 tools.h:
 
-kehopsCom/type.h:
+type.h:
 
-kehopsCom/../buggy_descriptor.h:
+hwControl/../buggy_descriptor.h:
 
 kehops_main.h:
-
-kehopsCom/type.h:

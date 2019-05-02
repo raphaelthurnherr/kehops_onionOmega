@@ -9,6 +9,7 @@
  * 
  */
 
+#ifndef I2CSIMU
 
 // REGISTER DEFINITION FOR PCA9629 IC
 
@@ -173,3 +174,4 @@ int PCA9629_StepperMotorPulseWidth(device_pca9629 *pca9629config, int data){
         err+= i2c_write(0, devAddress, 0x19, (data & 0xFF00)>>8);    // CCWPWH
         return(err);
 }
+#endif

@@ -8,6 +8,8 @@
  * Setup and drive the 16 bit RGB color sensor
  */
 
+#ifndef I2CSIMU
+
 // REGISTER DEFINITION FOR BH1745NUC IC
 
 #define SYSTEM_CONTROL  0x40 // System control
@@ -100,3 +102,5 @@ int bh1745nuc_getChannelRGBvalue(device_bh1745 * bh1745Config, int channel){
             return -1;
         }
 }
+
+#endif

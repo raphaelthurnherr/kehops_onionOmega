@@ -56,7 +56,7 @@ int setAsyncStepperAction(int actionNumber, int motorNb, int veloc, char unit, i
                                     steps = -1;
                                     
                                     break;
-		default: printf("\n!!! ERROR Function [setAsyncStepperAction] -> unknown mode");break;
+		default: printf("\n!!! ERROR Function [setAsyncStepperAction] -> unknown mode"); break;
 	}
 
 

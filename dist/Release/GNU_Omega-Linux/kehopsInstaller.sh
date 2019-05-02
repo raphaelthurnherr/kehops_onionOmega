@@ -5,11 +5,11 @@
 # Required-Stop:   $local_fs $syslog $network
 # Default-Start:     2 3 4 5
 # Default-Stop:      0 1 6
-# Short-Description: start Algobot daemon
+# Short-Description: start kehops daemon
 ### END INIT INFO
 
-# ALGOBOT MANAGER VERSION 16.04.2019 / Get binary file and config file from TAR
-# ALGOBOT MANAGER VERSION 24.10.2018 / Initial version
+# kehops MANAGER VERSION 16.04.2019 / Get binary file and config file from TAR
+# kehops MANAGER VERSION 24.10.2018 / Initial version
 
 ##-------------------------------------------------------------
 ## checkApp()
@@ -31,7 +31,7 @@ checkApp(){
 
 # TRY TO DOWNLOAD MD5 FILE FROM SERVER
         echo "Start download application MD5 from server..."
-        CMD=`wget -P /root/update/ -q https://raw.githubusercontent.com/raphaelthurnherr/kehops_onionOmega/master/dist/Debug/GNU_Omega-Linux/kehops_onionomega.md5`
+        CMD=`wget -P /root/update/ -q https://raw.githubusercontent.com/raphaelthurnherr/kehops_onionOmega/master/dist/Release/GNU_Omega-Linux/kehops.md5`
 
         if [ $? -eq 0 ];
 # MD5 FILE OF THE APPLICATION WAS DOWNLOADED SUCCESSFULLY
@@ -40,7 +40,7 @@ checkApp(){
                 
         # COMPARE THE MD5 FILE OF THE LOCAL APPLICATION AND THE MD5 FILE ON THE SERVER
         # IF THE FILES ARE THE SAME, NO UPDATE AVAILABLE
-		cmp  /root/update/kehops_onionomega.md5 /root/kehops/kehops_onionomega.md5 1>/dev/null 2>&1; resultat=$?
+		cmp  /root/update/kehops.md5 /root/kehops/kehops.md5 1>/dev/null 2>&1; resultat=$?
                                                                                 
        	        if [ $resultat -eq 0 ];                                         
                	then                                                            
@@ -84,7 +84,7 @@ checkManager(){
 
 # TRY TO DOWNLOAD MD5 FILE OF MANAGER BINARY FROM SERVER
         echo "Start download manager application MD5 from server..."
-        CMD=`wget -P /root/update/ -q https://github.com/raphaelthurnherr/algobot_manager/blob/master/dist/Debug/GNU_Omega-Linux/algobotmanager.md5`
+        CMD=`wget -P /root/update/ -q https://github.com/raphaelthurnherr/kehops_manager/blob/master/dist/Release/GNU_Omega-Linux/kehopsmanager.md5`
 
         if [ $? -eq 0 ];
 # MD5 FILE OF THE APPLICATION WAS DOWNLOADED SUCCESSFULLY
@@ -93,12 +93,12 @@ checkManager(){
                                                
         # COMPARE THE MD5 FILE OF THE LOCAL APPLICATION AND THE MD5 FILE ON THE SERVER
         # IF THE FILES ARE THE SAME, NO UPDATE AVAILABLE                     
-		cmp  /root/update/algobotmanager.md5 /root/algobotmanager.md5 1>/dev/null 2>&1; resultat=$?
+		cmp  /root/update/kehopsmanager.md5 /root/kehopsmanager.md5 1>/dev/null 2>&1; resultat=$?
                                                                                 
        	        if [ $resultat -eq 0 ];                                         
                	then                     
                 # MD5 FILE ARE THE SAME, NO UPDATE TO DO
-                       	echo "Algobot manager firmware version is last, no update !"            
+                       	echo "kehops manager firmware version is last, no update !"            
                        	status=11                                           
                 elif [ $resultat -eq 1 ];                                       
        	        then                     
@@ -106,7 +106,7 @@ checkManager(){
                	        echo "New manager firmware found !"                            
 			status=10 
                 else                                                            
-       	                echo "Algobot manager MD5 file is missing, please update application"
+       	                echo "kehops manager MD5 file is missing, please update application"
 			status=12
                	fi                      
         else
@@ -128,15 +128,15 @@ checkManager(){
 install_update_app(){                                                                                                                                                                                                                                                                                                            
     echo "Starting application firmware upgrade... ";   
 # KILL THE APPLICATION PROCESSUS
-    killall kehops_onionomega;                                                                                                                                             
+    killall kehops;                                                                                                                                             
     sleep 1;                    
 # REMOVE THE OLD BINARY
     rm /root/kehops/* 
 # COPY THE NEW BINARY FILE
     tar -xvf /root/update/kehops.tar -C /root/kehops/ kehops kehops.md5
-    #cp /root/update/kehops_onion* /root/kehops/                                                                                                                                                    
+    #cp /root/update/kehops* /root/kehops/                                                                                                                                                    
 # APPLY THE EXECUTION RIGHTS
-    chmod +x /root/kehops/kehops_onionomega                                                                                                                                     
+    chmod +x /root/kehops/kehops                                                                                                                                     
 } 
 
 ##-------------------------------------------------------------
@@ -149,14 +149,14 @@ install_update_app(){
 install_update_manager(){   
     echo "Starting manager firmware upgrade... ";                                                                                                                                   
 # KILL THE APPLICATION PROCESSUS
-    killall algobotmanager;                                                                                                                                             
+    killall kehopsmanager;                                                                                                                                             
     sleep 1;                    
 # REMOVE THE OLD BINARY
-    rm /root/algobotmanager*                
+    rm /root/kehopsmanager*                
 # COPY THE NEW BINARY FILE
-    cp /root/update/algobotmanager* /root/     
+    cp /root/update/kehopsmanager* /root/     
 # APPLY THE EXECUTION RIGHTS    
-    chmod +x /root/algobotmanager                                                                                                                                   
+    chmod +x /root/kehopsmanager                                                                                                                                   
 } 
 
 ##-------------------------------------------------------------
@@ -166,16 +166,13 @@ install_update_manager(){
 ## RETURN VALUES: ------
 ##-------------------------------------------------------------
 restart(){                                                                              
-    killall kehops_onionomega;
-    killall algobotmanager;
+    killall kehops;
+    killall kehopsmanager;
     sleep 2;                                                                            
-    echo "Restarting algobot application and manager process... ";
+    echo "Restarting kehops application and manager process... ";
 
     cd /root/
-    ./algobotmanager&
-    
-    cd /root/kehops/
-    ./kehops_onionomega&
+    ./kehopsmanager&
 } 
 
 ##-------------------------------------------------------------
@@ -209,7 +206,7 @@ updateApp(){
 	# TRY TO DOWNLOAD BINARY FROM SERVER                                                                                                                                                  
         	echo "Start download TAR firmware from server..."                                                 
                 
-                CMD=`wget -P /root/update/ -q https://raw.githubusercontent.com/raphaelthurnherr/kehops_onionOmega/master/dist/Debug/GNU_Omega-Linux/kehops.tar`
+                CMD=`wget -P /root/update/ -q https://raw.githubusercontent.com/raphaelthurnherr/kehops_onionOmega/master/dist/Release/GNU_Omega-Linux/kehops.tar`
                 
 		if [ $? -eq 0 ];
 		then
@@ -271,7 +268,7 @@ updateManager(){
 
 	# TRY TO DOWNLOAD BINARY FROM SERVER                                                                                                                                                     
         	echo "Start download binary manager firmware from server..."                                                                                                                 
-	        CMD=`wget -P /root/update/ -q https://github.com/raphaelthurnherr/algobot_manager/raw/master/dist/Debug/GNU_Omega-Linux/algobotmanager`
+	        CMD=`wget -P /root/update/ -q https://github.com/raphaelthurnherr/kehops_manager/raw/master/dist/Release/GNU_Omega-Linux/kehopsmanager`
 		if [ $? -eq 0 ];
 		then
                 # SUCCESSFULLY DOWNLOAD
@@ -340,10 +337,10 @@ install_npm_ws(){
 ## - Install the mosquitto brocker
 ## - Install the NPM application
 ## -- Install the NPM Websocket/TCP bridge
-## -- Configuring etc/rc.local for launch TCP/WS Bridge and algobotManager.sh (this bashfile file)
+## -- Configuring etc/rc.local for launch TCP/WS Bridge and kehopsInstaller.sh (this bashfile file)
 ## - Update the manager application file from SDCARD 
 ## - Update the kehops application file from SDCARD
-## - Update the algobotManager.sh bashfile from SDCARD (This file)
+## - Update the kehopsInstaller.sh bashfile from SDCARD (This file)
 ## - Configuring / Copying the WEB APP FILE to EEPROM
 ##
 ## RETURN VALUES:
@@ -395,26 +392,27 @@ base_install(){
 		sed -i '3 a # CALL THE kehops LAUNCHER APPLICATION' /etc/rc.local
                 sed -i '4 a ws-tcp-bridge --method=ws2tcp --lport=9001 --rhost=127.0.0.1:1883&' /etc/rc.local
                 sed -i '5 a ws-tcp-bridge --method=tcp2ws --lport=1883 --rhost=ws://127.0.0.1:9001&' /etc/rc.local
-                sed -i '6 a sh /root/algobotManager.sh restart >> /root/autostartLog.txt 2>&1' /etc/rc.local
+                sed -i '6 a sh /root/kehopsInstaller.sh restart >> /root/autostartLog.txt 2>&1' /etc/rc.local
 		$result=$?
     
     echo "- Adding kehops files to root..."
     # Update the manager bash file from SDCARD
-    rm /root/algobotManager.sh  
-    cp /tmp/mounts/SD-P1/bin/algobotManager.sh /root/
+    rm /root/kehopsInstaller.sh  
+    cp /tmp/mounts/SD-P1/bin/kehopsInstaller.sh /root/
 
     # Update the manager application from SDCARD
-    rm /root/algobotmanager
-    rm /root/algobotmanager.md5
-    cp /tmp/mounts/SD-P1/bin/algobotmanager /root/
-    cp /tmp/mounts/SD-P1/bin/algobotmanager.md5 /root/
-
-    # Update the algobot application from SDCARD
-#    rm /root/kehops/kehops_onionomega.md5
-#    rm /root/kehops/kehops_onionomega
+    rm /root/kehopsmanager
+    rm /root/kehopsmanager.md5
+    cp /tmp/mounts/SD-P1/bin/kehopsmanager /root/
+    cp /tmp/mounts/SD-P1/bin/kehopsmanager.md5 /root/
+	cp /tmp/mounts/SD-P1/bin/kehopsInstaller.sh /root/
+	
+    # Update the kehops application from SDCARD
+#    rm /root/kehops/kehops.md5
+#    rm /root/kehops/kehops
     rm /root/kehops/*
-    #cp /tmp/mounts/SD-P1/bin/kehops/kehops_onionomega /root/kehops
-    #cp /tmp/mounts/SD-P1/bin/kehops/kehops_onionomega.md5 /root/kehops
+    #cp /tmp/mounts/SD-P1/bin/kehops/kehops /root/kehops
+    #cp /tmp/mounts/SD-P1/bin/kehops/kehops.md5 /root/kehops
     tar -xvf /tmp/mounts/SD-P1/bin/kehops/kehops.tar -C /root/kehops/
 
     echo "- Configuring Web App"   
@@ -457,16 +455,16 @@ base_install(){
 
 if [ -d "/root/kehops" ]; then 
  echo "kehops directory ok"
- if [ -f /root/kehops/kehops_onionomega.md5 ]; then
+ if [ -f /root/kehops/kehops.md5 ]; then
   echo "MD5 file is present"
  else 
-  touch /root/kehops/kehops_onionomega.md5
+  touch /root/kehops/kehops.md5
   echo "MD5 not existing and was created"
  fi
 else 
  echo "Create directory for application" 
  mkdir /root/kehops
- touch /root/kehops/kehops_onionomega.md5
+ touch /root/kehops/kehops.md5
 fi
 
 # Will check the existance of "update" directory for the application firmware
@@ -480,10 +478,10 @@ else
  mkdir /root/update                                                                                                     
 fi 
 
- if [ -f /root/algobotmanager.md5 ]; then
+ if [ -f /root/kehopsmanager.md5 ]; then
   echo "MD5 file is present"
  else 
-  touch /root/algobotmanager.md5
+  touch /root/kehopsmanager.md5
  fi
                                                                                                                                                                                                                                                                                 
 # This part get all the parameters give by the user and will

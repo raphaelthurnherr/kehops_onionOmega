@@ -27,21 +27,6 @@
 #include "jWrite.h"
 #include "deviceMapping_jsonKeys.h"
 #include "deviceMapping.h"
-/*
-//********  NEED TO BE REWORK !!!!!!
-unsigned char DRV_NBMOTOR=0;
-unsigned char DRV_NBSTEPPER=0;
-unsigned char DRV_NBDOUT=0;
-unsigned char DRV_NBDIN=0;
-unsigned char DRV_NBAIN=0;
-
-unsigned char DRV_NBSONAR=0;
-unsigned char DRV_NBFCOUNTER=0;
-unsigned char DRV_NBPCOUNTER=0;
-unsigned char DRV_NBRGBC=0;
-unsigned char DRV_DISTSENSOR=0;
-//********  END NEED TO BE REWORK !!!!!!
-*/
 
 char * getDriverTypeByName(char * name);
 
@@ -60,7 +45,7 @@ char LoadDevicesDescriptor(char * srcDataBuffer, devices_list * boardDevice);
 char LoadBoardDescriptor(char * srcDataBuffer, kehopsParts * kparts, devices_list * boardDevice);
 
 /**
- * \fn char LoadDriversDescriptor(char * fileName)
+ * \fn char LoadDevicesDescriptor(char * fileName)
  * \brief Extract the file config content of IC devices and store the JSON result convertion
  *  to the structure.
  * 
@@ -176,7 +161,6 @@ char LoadDevicesDescriptor(char * srcDataBuffer, devices_list * boardDevice){
                         // string or a number, if string, convert to number
                         jRead((char *)deviceData.pValue, KEY_DRIVER_OBJ_SUBDRIVER, &deviceSetting);
                         if(deviceSetting.dataType == JREAD_OBJECT){
-                            
                             if(jRead_string((char *)deviceSetting.pValue, KEY_DRIVER_STR_NAME, strValue, 25, NULL )>0){
                                 strcpy(boardDevice[i].sub_driver.name, strValue);
                             } else strcpy(boardDevice[i].sub_driver.name, "");
@@ -187,9 +171,13 @@ char LoadDevicesDescriptor(char * srcDataBuffer, devices_list * boardDevice){
                             if(deviceSetting.dataType == JREAD_OBJECT){
                                 // Get the channel attibute of the driver
                                 data=jRead_int((char *)deviceSetting.pValue, KEY_DRIVER_STR_CHANNEL, NULL);
-                                if(data>=0){
+                                if(data>=0)
                                     boardDevice[i].sub_driver.attributes.device_channel = data;
-                                }
+                                
+                                // Get the value attibute of the driver
+                                data=jRead_int((char *)deviceSetting.pValue, KEY_DRIVER_STR_STATE, NULL);
+                                if(data>=0)
+                                    boardDevice[i].sub_driver.attributes.value = data;
                             }
                         }
                         else 
@@ -208,7 +196,7 @@ char LoadDevicesDescriptor(char * srcDataBuffer, devices_list * boardDevice){
 }
 
 /**
- * \fn char LoadDevicesDescriptor(char * fileName)
+ * \fn char LoadBoardDescriptor(char * fileName)
  * \brief Extract the file content of Device parts from buffer and dispatch the settings to the
  * kehops structure.
  *
@@ -231,6 +219,7 @@ char LoadBoardDescriptor(char * srcDataBuffer, kehopsParts * kparts, devices_lis
         getSettings(srcDataBuffer, KEY_ARRAY_CNT_PULSES, kparts->pulsesCounter, &boardDevice[0]);
         getSettings(srcDataBuffer, KEY_ARRAY_RGB, kparts->rgbSensor, &boardDevice[0]);
         getSettings(srcDataBuffer, KEY_ARRAY_DISTANCE, kparts->distanceSensor, &boardDevice[0]);
+        getSettings(srcDataBuffer, KEY_ARRAY_AOUT, kparts->aout, &boardDevice[0]);
      }
   
     return -1;
@@ -257,9 +246,7 @@ char LoadBoardDescriptor(char * srcDataBuffer, kehopsParts * kparts, devices_lis
  *     |__ address: 0x02
  *     |__ type: PCA9685
  *     |__ attributes
- *        |__ channel: 5
- * 
- * 
+ *        |__ channel: 5 
  */
 
 int getSettings(char * buffer, char * deviceType, struct device * mydevice, devices_list * icDevice){
@@ -295,7 +282,6 @@ int getSettings(char * buffer, char * deviceType, struct device * mydevice, devi
                 
                 if(!strcmp(mydevice[deviceId].interface, "generic_hbridge")){       
                     getGenericHBridgeSettings(&myDevice, &mydevice[deviceId].sw_driver, icDevice);
-//                    printf("\n------- ENABLE: ID %d  TYPE:  %s  ATT. CHANNEL: %d\n", mydevice[deviceId].sw_driver.dc_motor.enable.hw_driver.device_id, mydevice[deviceId].sw_driver.dc_motor.enable.hw_driver.device_type, mydevice[deviceId].sw_driver.dc_motor.enable.hw_driver.attributes.device_channel);
                 }
 
              }
@@ -339,9 +325,7 @@ char strValue[25];
 // GET THE DEVICE DRIVER
 // Get the DRIVER settings
     jRead((char *)myDevice->pValue, KEY_DEVICE_OBJ_DRIVER, &deviceDriver);
-
     if(deviceDriver.dataType == JREAD_OBJECT){
-
         // Get the device BUS ADDRESS AND THE TYPE OF IC 
         // in the stored 
         driverAddress = -1;
@@ -363,6 +347,12 @@ char strValue[25];
                             if(data>=0){
                                 hwDevice->attributes.device_channel = data;
                             }
+                            
+                            // Get the value attibute of the driver
+                            data=jRead_int((char *)driverAttributes.pValue, KEY_DRIVER_STR_STATE, NULL);
+                            if(data>=0){
+                                hwDevice->attributes.value = data;
+                            }                            
                         }
                     }
                 }
@@ -534,16 +524,18 @@ unsigned char printBoardData(int partsNb, struct device * device){
  * 
  * deviceArray[partsNb] 
  * |__ ID: 5
- *   |__ Type: _tca9546
- *   |__ Address: 0xe0
-  *  |__ Attributes:{Not implemented}
- * 
- * 
+ *    |__ Name: IC5
+ *    |__ Type: tca9546
+ *    |__ Address: 0xe0
+ *    |__ Sub-driver:
+ *       |__ Name: IC2
+ *       |__ Attributes: 
+ *          |__ Channel: 1
+ *          |__ Value:  0
  */
 
 unsigned char printDeviceData(int deviceNb, devices_list * device){
-    int i, j;
-    
+    int i,j;
     
     printf("\n#%d \n |__ Name: %s\n |__ Type: %s\n |__ Address: 0x%2x\n", deviceNb,device->name, device->type, device->address);
     if(device->attributes.deviceInit[0].regAddr > 0){
@@ -558,8 +550,8 @@ unsigned char printDeviceData(int deviceNb, devices_list * device){
     
     if(strcmp(device->sub_driver.name, "")){
         // Check if the IC use a sub-driver
-    printf(" |__ Sub-driver:\n     |__Name: %s \n     |__Attribute:\n        |__Channel %d\n",
-            device->sub_driver.name, device->sub_driver.attributes.device_channel);
+    printf(" |__ Sub-driver:\n     |__Name: %s \n     |__Attribute:\n        |__Channel %d\n        |__Value %d\n",
+            device->sub_driver.name, device->sub_driver.attributes.device_channel, device->sub_driver.attributes.value);
     }
 }
 
@@ -576,6 +568,9 @@ void clearBoardSettings(kehopsParts * kparts){
     for(i=0;i<MAX_DRIVERS_PER_TYPE; i++){
         kparts->dout[i].id=-1;
         kparts->dout[i].hw_driver.attributes.device_channel = -1;
+        
+        kparts->aout[i].id=-1;
+        kparts->aout[i].hw_driver.attributes.device_channel = -1;
         
         kparts->din[i].id = -1;
         kparts->din[i].hw_driver.attributes.device_channel = -1;

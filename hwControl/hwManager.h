@@ -38,6 +38,8 @@ extern void setServoPosition(unsigned char smName, char position);
 extern void setLedPower(unsigned char ledID, unsigned char power);
 extern void setPwmPower(unsigned char pwmID, unsigned char power);
 
+extern void setAnalogValue(unsigned char analogID, int value);
+
 extern int setStepperStepAction(int motorNumber, int direction, int stepCount);      // Effectue une action sur le moteur pas à pas (direction, nombre de pas)
 extern int setStepperSpeed(int motorNumber, int speed);     // Configuration de la vitesse du moteur pas à pas
 

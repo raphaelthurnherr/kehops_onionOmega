@@ -24,18 +24,11 @@
 
 struct driverAttribute{
     int device_channel;
+    int value;
 };
 
 struct device_subdrivers{
     char name[15];
-    struct driverAttribute attributes;
-};
-
-
-struct driver_subdrivers{
-    char name[15];
-    int address;
-    char device_type[15];
     struct driverAttribute attributes;
 };
 
@@ -93,6 +86,7 @@ typedef struct device_drivers{
     char name[15];
     char type[25];
     struct driverAttribute attributes;
+    
 } hwDeviceDriver;
 
 typedef struct generic_drivers{
@@ -144,6 +138,7 @@ typedef struct parts_list{
     struct device pulsesCounter[MAX_DRIVERS_PER_TYPE];
     struct device rgbSensor[MAX_DRIVERS_PER_TYPE];
     struct device distanceSensor[MAX_DRIVERS_PER_TYPE];
+    struct device aout[MAX_DRIVERS_PER_TYPE];
 }kehopsParts;
 
 
@@ -207,6 +202,20 @@ extern unsigned char printDeviceData(int deviceNb, devices_list * device);
  */
 
 extern unsigned char printBoardData(int partsNb, struct device * device);
+
+/**
+ * \fn unsigned char getDriverTypeByName(char * name)
+ * \brief Find in the component board list (devices_list structure) the type of the integrated circuit
+ * designed by the name.
+ * 
+ * \param char * name, Pointer to the device name
+ *
+ * \return pointer to the string containing the type
+ * 
+ */
+extern char * getDriverTypeByName(char * name);
+
+
 
 // Create the structure for hardware description
 //and get the setting from configs file

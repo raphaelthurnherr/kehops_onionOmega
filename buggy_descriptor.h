@@ -14,60 +14,14 @@ typedef enum o_type{
 	MOTOR,
         STEPMOTOR,
 	PWM,
-	LED
+	LED,
+        AOUT
 }t_type;
 
-typedef enum o_encoder{
-	MOTOR_ENCODER_LEFT,
-	MOTOR_ENCODER_RIGHT,
-	NBCOUNTER_
-}t_encoder;
-
-typedef enum o_din{
-	DIN_0,
-	DIN_1,
-        DIN_2,
-        DIN_3,
-        DIN_4,
-        DIN_5,
-	NBDIN_
-}t_din;
-
-typedef enum o_btn{
-	BTN_0,
-	BTN_1,
-	NBBTN_
-}t_btn;
-
-typedef enum o_colorSens{
-	RGBC_SENS_0,
-	RGBC_SENS_1,
-	NBRGBC_
-}t_rgbc;
-
-typedef enum o_ain{
-	BATT_0,
-	NBAIN_
-}t_ain;
-
-typedef enum o_sonar{
-	SONAR_0,
-	NBSONAR_
-}t_sonar;
-
-typedef enum o_motor{
-	MOTOR_0,
-	MOTOR_1,
-	NBMOTOR_
-}t_motor;
-
-typedef enum o_stepper{
-	STEPPER_0,
-        NBSTEPPER_
-}t_stepper;
 
 #define MAXPWM 64
 #define MAXLED 64
+#define MAXAOUT 64
 #define MAXAIN 32
 #define MAXBTN 32
 #define MAXSONAR 16
