@@ -159,11 +159,11 @@ struct s_son_config{
     int  distanceSensor_id;
 };
 
-struct s_batt_config{
+struct s_ain_config{
     int  ain_id;
 };
 
-struct s_battery_meas{
+struct s_ain_meas{
     int  voltage_mV;
     int  capacity;
 };
@@ -172,11 +172,11 @@ struct s_sonar_meas{
     int  distance_cm;
 };
 
-typedef struct robotBattery{
-    struct s_batt_config config;
-    struct s_battery_meas measure;
+typedef struct robotAin{
+    struct s_ain_config config;
+    struct s_ain_meas measure;
     struct s_eventAnalog event;
-}robot_battery;
+}robot_ain;
 
 typedef struct robotSonar{
     struct s_son_config config;
@@ -305,7 +305,7 @@ typedef struct robotAnalog{
     int value;
     struct s_aout_config config;
     //struct s_aout_action action;
-}robot_analog;
+}robot_aout;
 
 typedef struct robotRgb{
     struct s_rgb_meas color;
@@ -314,13 +314,13 @@ typedef struct robotRgb{
 
 
 typedef struct robotKehops{
-    robot_battery battery[MAXAIN];
+    robot_ain analogInput[MAXAIN];
     robot_button button[MAXBTN];
     robot_stepperwheel stepperWheel[MAXSTEPPER];
     robot_dcwheel dcWheel[MAXMOTOR];
     robot_pwm led[MAXLED];
     robot_pwm pwm[MAXPWM];
-    robot_analog aout[MAXAOUT];
+    robot_aout aout[MAXAOUT];
     robot_prox proximity[MAXDIN];
     robot_sonar sonar[MAXSONAR];
     robot_rgb rgb[MAXRGBC];

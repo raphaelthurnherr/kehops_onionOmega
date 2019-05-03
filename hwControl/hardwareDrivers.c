@@ -88,9 +88,7 @@ int boardHWinit(void){
     int err = 0;
     int warning = 0;
     int status = 0;
-    int NoDriverFound=1;
-    struct device_subdrivers subDriverSettings;
-    
+    int NoDriverFound=1;    
     int i;
 
     printf("#[HW DRIVER] Board devices drivers initialization: \n");
@@ -107,11 +105,11 @@ int boardHWinit(void){
             status = subDriver_onActivate(boardDevice[i].name);
 
             if(status != 0){
-                printf(" -> ERROR [%d])", status);
+                printf(" (SUBDRIVER -> ERROR [%d])", status);
                 warning++;
             }
             else
-                printf(" -> OK)");
+                printf(" (SUBDRIVER -> OK)");
         }
             
         // DEVICES TYPE PCA9585 PWM DRIVER CONFIGURATION
@@ -840,7 +838,7 @@ int actuator_getRGBColor(unsigned char rgbID, RGB_COLOR * rgbColor){
 
 int actuator_getFirmwareVersion(void){
     /*
-    ptrDev = getEFM8BBconfig_ptr(kehops.battery[0].config.ain_id);
+    ptrDev = getEFM8BBconfig_ptr(kehops.analogInput[0].config.ain_id);
     voltage_mv = EFM8BB_getChannel(&dev_efm8bb[ptrDev]);
      */
 }
@@ -855,7 +853,7 @@ int actuator_getFirmwareVersion(void){
 int actuator_getBoardId(void){
     int ptrDev;  
 /*    
-    ptrDev = getEFM8BBconfig_ptr(kehops.battery[0].config.ain_id);
+    ptrDev = getEFM8BBconfig_ptr(kehops.analogInput[0].config.ain_id);
     EFM8BB_getBoardType();
 */
 }

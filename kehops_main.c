@@ -242,8 +242,8 @@ int main(int argc, char *argv[]) {
                                         										// Cont�le les valeur RGB des capteurs
                         
                         for(i=0;i<NBAIN;i++){
-                            kehops.battery[i].measure.voltage_mV = getBatteryVoltage(i);
-                            kehops.battery[i].measure.capacity =(kehops.battery[i].measure.voltage_mV-3500)/((4210-3500)/100);
+                            kehops.analogInput[i].measure.voltage_mV = getAinVoltage(i);
+                            kehops.analogInput[i].measure.capacity =(kehops.analogInput[i].measure.voltage_mV-3500)/((4210-3500)/100);
                         }
                         batteryEventCheck();
                                                 // R�cup�ration des couleur mesur�e sur les capteurs
@@ -692,34 +692,34 @@ int processmessage(void){
                                             messageResponse[valCnt].CONFIGresponse.sonar[i].id=-1;
                                     }
 
-                                    // CONFIG COMMAND FOR BATTERY SETTING
+                                    // CONFIG COMMAND FOR VOLTAGE SETTING
                                     for(i=0;i<message.Config.battValueCnt; i++){
                                         messageResponse[valCnt].CONFIGresponse.battValueCnt=message.Config.battValueCnt;
                                         
-                                        // Check if BATTERY exist...
-                                        if(message.Config.battery[i].id >= 0 && message.Config.battery[i].id <NBAIN){
+                                        // Check if AIN exist...
+                                        if(message.Config.ain[i].id >= 0 && message.Config.ain[i].id <NBAIN){
 
-                                            // Save config for BATTERY event State
-                                            if(!strcmp(message.Config.battery[i].event_state, "on")){
-                                                kehops.battery[message.Config.battery[i].id].event.enable = 1;
-                                                strcpy(messageResponse[valCnt].CONFIGresponse.battery[i].event_state, "on");
+                                            // Save config for AIN event State
+                                            if(!strcmp(message.Config.ain[i].event_state, "on")){
+                                                kehops.analogInput[message.Config.ain[i].id].event.enable = 1;
+                                                strcpy(messageResponse[valCnt].CONFIGresponse.ain[i].event_state, "on");
                                             }
-                                            else if(!strcmp(message.Config.battery[i].event_state, "off")){
-                                                kehops.battery[message.Config.battery[i].id].event.enable = 0;
-                                                strcpy(messageResponse[valCnt].CONFIGresponse.battery[i].event_state, "off");
+                                            else if(!strcmp(message.Config.ain[i].event_state, "off")){
+                                                kehops.analogInput[message.Config.ain[i].id].event.enable = 0;
+                                                strcpy(messageResponse[valCnt].CONFIGresponse.ain[i].event_state, "off");
                                             }
                                             // Save config for SONAR event LOW, HIGH and HYSTERESIS
-                                            kehops.battery[message.Config.battery[i].id].event.low = message.Config.battery[i].event_low;
-                                            kehops.battery[message.Config.battery[i].id].event.high = message.Config.battery[i].event_high;
-                                            kehops.battery[message.Config.battery[i].id].event.hysteresis = message.Config.battery[i].event_hyst;
+                                            kehops.analogInput[message.Config.ain[i].id].event.low = message.Config.ain[i].event_low;
+                                            kehops.analogInput[message.Config.ain[i].id].event.high = message.Config.ain[i].event_high;
+                                            kehops.analogInput[message.Config.ain[i].id].event.hysteresis = message.Config.ain[i].event_hyst;
                                             
-                                            messageResponse[valCnt].CONFIGresponse.battery[i].id = message.Config.battery[i].id;
-                                            messageResponse[valCnt].CONFIGresponse.battery[i].event_low = message.Config.battery[i].event_low;
-                                            messageResponse[valCnt].CONFIGresponse.battery[i].event_high = message.Config.battery[i].event_high;
-                                            messageResponse[valCnt].CONFIGresponse.battery[i].event_hyst = message.Config.battery[i].event_hyst;
+                                            messageResponse[valCnt].CONFIGresponse.ain[i].id = message.Config.ain[i].id;
+                                            messageResponse[valCnt].CONFIGresponse.ain[i].event_low = message.Config.ain[i].event_low;
+                                            messageResponse[valCnt].CONFIGresponse.ain[i].event_high = message.Config.ain[i].event_high;
+                                            messageResponse[valCnt].CONFIGresponse.ain[i].event_hyst = message.Config.ain[i].event_hyst;
                                         }
                                         else
-                                            messageResponse[valCnt].CONFIGresponse.battery[i].id=-1;
+                                            messageResponse[valCnt].CONFIGresponse.ain[i].id=-1;
                                     }
                                     
                                 // CONFIG COMMAND FOR SAVE
@@ -910,7 +910,7 @@ int processAlgoidRequest(void){
 		case DISTANCE : makeDistanceRequest();					// Requete de distance
 						break;
 
-		case BATTERY :  makeBatteryRequest();					// Requete de tension batterie
+		case VOLTAGE :  makeBatteryRequest();					// Requete de tension batterie
 						break;
 
 		case DINPUT :	makeSensorsRequest();					// Requete d'�tat des entr�es digitale
@@ -1678,8 +1678,8 @@ int makeStatusRequest(int msgType){
         strcpy(messageResponse[ptrData].SYSresponse.firmwareVersion,FIRMWARE_VERSION);
         strcpy(messageResponse[ptrData].SYSresponse.mcuVersion,fv);
         strcpy(messageResponse[ptrData].SYSresponse.HWrevision,hv);
-        messageResponse[ptrData].SYSresponse.battVoltage = kehops.battery[0].measure.voltage_mV;
-        messageResponse[ptrData].SYSresponse.battPercent = kehops.battery[0].measure.capacity;
+        messageResponse[ptrData].SYSresponse.battVoltage = kehops.analogInput[0].measure.voltage_mV;
+        messageResponse[ptrData].SYSresponse.battPercent = kehops.analogInput[0].measure.capacity;
         ptrData++;
 
 	for(i=0;i<NBDIN;i++){
@@ -1750,10 +1750,10 @@ int makeStatusRequest(int msgType){
         
         for(i=0;i<NBAIN;i++){
                 messageResponse[ptrData].BATTesponse.id=i;
-                messageResponse[ptrData].value = kehops.battery[i].measure.voltage_mV;
-                messageResponse[ptrData].BATTesponse.event_low = kehops.battery[i].event.low;
-                messageResponse[ptrData].BATTesponse.event_high = kehops.battery[i].event.high;                
-                if(kehops.battery[i].event.enable) strcpy(messageResponse[ptrData].BATTesponse.event_state, "on");
+                messageResponse[ptrData].value = kehops.analogInput[i].measure.voltage_mV;
+                messageResponse[ptrData].BATTesponse.event_low = kehops.analogInput[i].event.low;
+                messageResponse[ptrData].BATTesponse.event_high = kehops.analogInput[i].event.high;                
+                if(kehops.analogInput[i].event.enable) strcpy(messageResponse[ptrData].BATTesponse.event_state, "on");
                 else strcpy(messageResponse[ptrData].BATTesponse.event_state, "off");
                 ptrData++;
 	}
@@ -1935,56 +1935,56 @@ int makeRgbRequest(void){
 			messageResponse[i].RGBresponse.id=i;
 		}
 	}else
-			// ENREGISTREMENT DES NOUVEAUX PARAMETRES RECUS
-			for(i=0;i<message.msgValueCnt; i++){
-				messageResponse[i].RGBresponse.id=message.RGBsens[i].id;
+            // ENREGISTREMENT DES NOUVEAUX PARAMETRES RECUS
+            for(i=0;i<message.msgValueCnt; i++){
+                    messageResponse[i].RGBresponse.id=message.RGBsens[i].id;
 
-				if(message.RGBsens[i].id <NBRGBC){
+                    if(message.RGBsens[i].id <NBRGBC){
 
-					// PARAMETRAGE DE L'ENVOIE DES MESSAGES SUR EVENEMENTS.
-					if(!strcmp(message.RGBsens[i].event_state, "on")){
-                                            kehops.rgb[message.RGBsens[i].id].config.event.enable = 1;
-                                            saveSenderOfMsgId(message.msgID, message.msgFrom);
-					}
-					else if(!strcmp(message.RGBsens[i].event_state, "off")){
-                                            kehops.rgb[message.RGBsens[i].id].config.event.enable = 0;
-                                            removeSenderOfMsgId(message.msgID);
-					}
+                            // PARAMETRAGE DE L'ENVOIE DES MESSAGES SUR EVENEMENTS.
+                            if(!strcmp(message.RGBsens[i].event_state, "on")){
+                                kehops.rgb[message.RGBsens[i].id].config.event.enable = 1;
+                                saveSenderOfMsgId(message.msgID, message.msgFrom);
+                            }
+                            else if(!strcmp(message.RGBsens[i].event_state, "off")){
+                                kehops.rgb[message.RGBsens[i].id].config.event.enable = 0;
+                                removeSenderOfMsgId(message.msgID);
+                            }
 
-                                        // Param�tre capteur ROUGE
-					// Evemenent haut
-					if(message.RGBsens[i].red.event_high!=0)
-                                            kehops.rgb[message.RGBsens[i].id].color.red.event.high=message.RGBsens[i].red.event_high;
-					// Evemenent bas
-					if(message.RGBsens[i].red.event_low!=0)
-                                            kehops.rgb[message.RGBsens[i].id].color.red.event.low=message.RGBsens[i].red.event_low;
-                                        
-                                        // Param�tre capteur VERT
-                                        // Evemenent haut
-					if(message.RGBsens[i].green.event_high!=0)
-                                            kehops.rgb[message.RGBsens[i].id].color.green.event.high = message.RGBsens[i].green.event_high;
-					// Evemenent bas
-					if(message.RGBsens[i].green.event_low!=0)
-                                            kehops.rgb[message.RGBsens[i].id].color.green.event.low=message.RGBsens[i].green.event_low;
-                                        
-                                        // Param�tre capteur BLEU
-                                        // Evemenent haut
-					if(message.RGBsens[i].blue.event_high!=0)
-                                            kehops.rgb[message.RGBsens[i].id].color.blue.event.high=message.RGBsens[i].blue.event_high;
-					// Evemenent bas
-					if(message.RGBsens[i].blue.event_low!=0)
-                                            kehops.rgb[message.RGBsens[i].id].color.blue.event.low=message.RGBsens[i].blue.event_low;
+                            // Param�tre capteur ROUGE
+                            // Evemenent haut
+                            if(message.RGBsens[i].red.event_high!=0)
+                                kehops.rgb[message.RGBsens[i].id].color.red.event.high=message.RGBsens[i].red.event_high;
+                            // Evemenent bas
+                            if(message.RGBsens[i].red.event_low!=0)
+                                kehops.rgb[message.RGBsens[i].id].color.red.event.low=message.RGBsens[i].red.event_low;
 
-                                        // Param�tre capteur CLEAR
-                                        // Evemenent haut
-					if(message.RGBsens[i].clear.event_high!=0)
-                                            kehops.rgb[message.RGBsens[i].id].color.clear.event.high=message.RGBsens[i].clear.event_high;
-					// Evemenent bas
-					if(message.RGBsens[i].clear.event_low!=0)
-                                            kehops.rgb[message.RGBsens[i].id].color.clear.event.low = message.RGBsens[i].clear.event_low;
-				} else
-					messageResponse[i].value = -1;
-			};
+                            // Param�tre capteur VERT
+                            // Evemenent haut
+                            if(message.RGBsens[i].green.event_high!=0)
+                                kehops.rgb[message.RGBsens[i].id].color.green.event.high = message.RGBsens[i].green.event_high;
+                            // Evemenent bas
+                            if(message.RGBsens[i].green.event_low!=0)
+                                kehops.rgb[message.RGBsens[i].id].color.green.event.low=message.RGBsens[i].green.event_low;
+
+                            // Param�tre capteur BLEU
+                            // Evemenent haut
+                            if(message.RGBsens[i].blue.event_high!=0)
+                                kehops.rgb[message.RGBsens[i].id].color.blue.event.high=message.RGBsens[i].blue.event_high;
+                            // Evemenent bas
+                            if(message.RGBsens[i].blue.event_low!=0)
+                                kehops.rgb[message.RGBsens[i].id].color.blue.event.low=message.RGBsens[i].blue.event_low;
+
+                            // Param�tre capteur CLEAR
+                            // Evemenent haut
+                            if(message.RGBsens[i].clear.event_high!=0)
+                                kehops.rgb[message.RGBsens[i].id].color.clear.event.high=message.RGBsens[i].clear.event_high;
+                            // Evemenent bas
+                            if(message.RGBsens[i].clear.event_low!=0)
+                                kehops.rgb[message.RGBsens[i].id].color.clear.event.low = message.RGBsens[i].clear.event_low;
+                    } else
+                            messageResponse[i].value = -1;
+            };
 
 	for(i=0;i<message.msgValueCnt; i++){
 		// RETOURNE EN REPONSE LES PARAMETRES ENREGISTRES
@@ -2040,41 +2040,41 @@ int makeBatteryRequest(void){
 
 	// Pas de param�tres sp�cifi� dans le message, retourne l'ensemble des �tats des batteries
 	if(message.msgValueCnt==0){
-		message.msgValueCnt=1;
-		for(i=0;i<2;i++){
-			messageResponse[i].BATTesponse.id=i;
-		}
+            message.msgValueCnt=NBAIN;
+            for(i=0;i<NBAIN;i++){
+                    messageResponse[i].BATTesponse.id=i;
+            }
 	}else
-			for(i=0;i<message.msgValueCnt; i++){
-				messageResponse[i].BATTesponse.id=message.BATTsens[i].id;
+            for(i=0;i<message.msgValueCnt; i++){
+                    messageResponse[i].BATTesponse.id=message.BATTsens[i].id;
 
-				if(message.BATTsens[i].id <NBAIN){
-					// ENREGISTREMENT DES NOUVEAUX PARAMETRES RECUS
-					// Recherche de param�tres suppl�mentaires
-					// Evenement activ�es
-					if(!strcmp(message.BATTsens[i].event_state, "on")){
-                                                kehops.battery[message.BATTsens[i].id].event.enable = 1;
-						saveSenderOfMsgId(message.msgID, message.msgFrom);
-					}
-					else if(!strcmp(message.BATTsens[i].event_state, "off")){
-                                                kehops.battery[message.BATTsens[i].id].event.enable = 0;
-						removeSenderOfMsgId(message.msgID);
-					}
-					// Evemenent haut
-					if(message.BATTsens[i].event_high!=0) kehops.battery[message.BATTsens[i].id].event.high = message.BATTsens[i].event_high;
-					if(message.BATTsens[i].event_low!=0) kehops.battery[message.BATTsens[i].id].event.low = message.BATTsens[i].event_low;
-				}else
-					messageResponse[i].value = -1;
-			};
+                    if(message.BATTsens[i].id <NBAIN){
+                            // ENREGISTREMENT DES NOUVEAUX PARAMETRES RECUS
+                            // Recherche de param�tres suppl�mentaires
+                            // Evenement activ�es
+                            if(!strcmp(message.BATTsens[i].event_state, "on")){
+                                    kehops.analogInput[message.BATTsens[i].id].event.enable = 1;
+                                    saveSenderOfMsgId(message.msgID, message.msgFrom);
+                            }
+                            else if(!strcmp(message.BATTsens[i].event_state, "off")){
+                                    kehops.analogInput[message.BATTsens[i].id].event.enable = 0;
+                                    removeSenderOfMsgId(message.msgID);
+                            }
+                            // Evemenent haut
+                            if(message.BATTsens[i].event_high!=0) kehops.analogInput[message.BATTsens[i].id].event.high = message.BATTsens[i].event_high;
+                            if(message.BATTsens[i].event_low!=0) kehops.analogInput[message.BATTsens[i].id].event.low = message.BATTsens[i].event_low;
+                    }else
+                            messageResponse[i].value = -1;
+            };
 
 	for(i=0;i<message.msgValueCnt; i++){
 		// RETOURNE EN REPONSE LES PARAMETRES ENREGISTRES
 		int temp = messageResponse[i].BATTesponse.id;
 
 		if(message.BATTsens[i].id <NBAIN){
-                        messageResponse[i].value=kehops.battery[temp].measure.voltage_mV;                        
+                        messageResponse[i].value=kehops.analogInput[temp].measure.voltage_mV;                        
 
-                        if(kehops.battery[temp].event.enable){
+                        if(kehops.analogInput[temp].event.enable){
 				strcpy(messageResponse[i].BATTesponse.event_state, "on");
 				saveSenderOfMsgId(message.msgID, message.msgFrom);
 			}
@@ -2082,13 +2082,13 @@ int makeBatteryRequest(void){
 				strcpy(messageResponse[i].BATTesponse.event_state, "off");
 				removeSenderOfMsgId(message.msgID);
 			}
-                        messageResponse[i].BATTesponse.event_high = kehops.battery[temp].event.high;
-                        messageResponse[i].BATTesponse.event_low = kehops.battery[temp].event.low;
+                        messageResponse[i].BATTesponse.event_high = kehops.analogInput[temp].event.high;
+                        messageResponse[i].BATTesponse.event_low = kehops.analogInput[temp].event.low;
 		} else
 			messageResponse[i].value = -1;
 	};
 	// Envoie de la r�ponse MQTT
-	sendResponse(message.msgID, message.msgFrom, RESPONSE, BATTERY, message.msgValueCnt);
+	sendResponse(message.msgID, message.msgFrom, RESPONSE, VOLTAGE, message.msgValueCnt);
 		return 1;
 }
 
@@ -2209,30 +2209,30 @@ void batteryEventCheck(void){
 	unsigned char i;
 	// Contr�le periodique des mesures de tension batterie pour envoie d'evenement
 	for(i=0;i<NBAIN;i++){
-		if(kehops.battery[i].event.enable){
+		if(kehops.analogInput[i].event.enable){
 
 			int event_low_disable, event_high_disable, battLowDetected, battHighDetected;
 
 			// Contr�le l' individuelle des evenements ( = si valeur < 0)
-			if(kehops.battery[i].event.low < 0) event_low_disable = 1;
+			if(kehops.analogInput[i].event.low < 0) event_low_disable = 1;
 			else event_low_disable = 0;
 
-			if(kehops.battery[i].event.high < 0) event_high_disable = 1;
+			if(kehops.analogInput[i].event.high < 0) event_high_disable = 1;
 			else event_high_disable = 0;
 
 			// Detection des seuils d'alarme
-			if(kehops.battery[i].measure.voltage_mV < kehops.battery[i].event.low) battLowDetected = 1;
+			if(kehops.analogInput[i].measure.voltage_mV < kehops.analogInput[i].event.low) battLowDetected = 1;
 			else battLowDetected = 0;
 
-			if(kehops.battery[i].measure.voltage_mV > kehops.battery[i].event.high) battHighDetected = 1;
+			if(kehops.analogInput[i].measure.voltage_mV > kehops.analogInput[i].event.high) battHighDetected = 1;
 			else battHighDetected = 0;
 
 			// Evaluation des alarmes � envoyer
 			if((battLowDetected && !event_low_disable) || (battHighDetected && !event_high_disable)){				// Mesure tension hors plage
                             if(battWarningSended[i]==0){														// N'envoie qu'une seule fois l'EVENT
                                 messageResponse[i].BATTesponse.id=i;
-                                messageResponse[i].value = kehops.battery[i].measure.voltage_mV;
-                                sendResponse(message.msgID, message.msgFrom, EVENT, BATTERY, 1);
+                                messageResponse[i].value = kehops.analogInput[i].measure.voltage_mV;
+                                sendResponse(message.msgID, message.msgFrom, EVENT, VOLTAGE, 1);
                                 battWarningSended[i]=1;
 
                                 // Si evenement pour stream activ�, envoie une trame de type status
@@ -2241,11 +2241,11 @@ void batteryEventCheck(void){
                             }
 			}
 			// Envoie un �venement Fin de niveau bas (+50mV Hysterese)
-			else if (battWarningSended[i]==1 && kehops.battery[i].measure.voltage_mV > (kehops.battery[i].event.low + kehops.battery[i].event.hysteresis)){				// Mesure tension dans la plage
+			else if (battWarningSended[i]==1 && kehops.analogInput[i].measure.voltage_mV > (kehops.analogInput[i].event.low + kehops.analogInput[i].event.hysteresis)){				// Mesure tension dans la plage
                                 messageResponse[i].BATTesponse.id=i;											// n'envoie qu'une seule fois apr�s
-                                messageResponse[i].value = kehops.battery[i].measure.voltage_mV;
+                                messageResponse[i].value = kehops.analogInput[i].measure.voltage_mV;
                                 // une hysterese de 50mV
-                                sendResponse(message.msgID, message.msgFrom, EVENT, BATTERY, 1);
+                                sendResponse(message.msgID, message.msgFrom, EVENT, VOLTAGE, 1);
                                 battWarningSended[i]=0;
 
                                 // Si evenement pour stream activ�, envoie une trame de type status
@@ -2557,9 +2557,9 @@ void resetConfig(void){
     /*
     	// Init robot membre
 	for(i=0;i<NBAIN;i++){
-            kehops.battery[i].event.enable = DEFAULT_EVENT_STATE;
-            kehops.battery[i].event.high=65535;
-            kehops.battery[i].event.low=0;
+            kehops.analogInput[i].event.enable = DEFAULT_EVENT_STATE;
+            kehops.analogInput[i].event.high=65535;
+            kehops.analogInput[i].event.low=0;
 	}
     
 	for(i=0;i<NBDIN;i++){
@@ -2904,16 +2904,16 @@ int makeConfigRequest(void){
     // Récupération de la config des BATTERIE
     messageResponse[ptrData].CONFIGresponse.sonarValueCnt = NBAIN;
     for(i=0;i<NBAIN; i++){
-        messageResponse[ptrData].CONFIGresponse.battery[i].id = i;        
+        messageResponse[ptrData].CONFIGresponse.ain[i].id = i;        
         
-        if(kehops.battery[i].event.enable)
-            strcpy(messageResponse[ptrData].CONFIGresponse.battery[i].event_state, "on");
+        if(kehops.analogInput[i].event.enable)
+            strcpy(messageResponse[ptrData].CONFIGresponse.ain[i].event_state, "on");
         else 
-            strcpy(messageResponse[ptrData].CONFIGresponse.battery[i].event_state, "off");
+            strcpy(messageResponse[ptrData].CONFIGresponse.ain[i].event_state, "off");
         
-        messageResponse[ptrData].CONFIGresponse.battery[i].event_low = kehops.battery[i].event.low;
-        messageResponse[ptrData].CONFIGresponse.battery[i].event_high = kehops.battery[i].event.high;
-        messageResponse[ptrData].CONFIGresponse.battery[i].event_hyst = kehops.battery[i].event.hysteresis;
+        messageResponse[ptrData].CONFIGresponse.ain[i].event_low = kehops.analogInput[i].event.low;
+        messageResponse[ptrData].CONFIGresponse.ain[i].event_high = kehops.analogInput[i].event.high;
+        messageResponse[ptrData].CONFIGresponse.ain[i].event_hyst = kehops.analogInput[i].event.hysteresis;
     }     
  
     // Envoie du message de réponse de la configuration

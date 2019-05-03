@@ -106,12 +106,12 @@ extern int actuator_genericHBridge_motorState(int motorID, int state);
 extern int actuator_getFirmwareVersion(void);
 extern int actuator_getBoardId(void);
 
-extern int actuator_getCounterFrequency(unsigned char freqCounterID);          // Retourne la fr�quence actuelle mesuree sur l'encodeur
-extern int actuator_getCounterPulses(unsigned char pulseCounterID);             // Retourne le nombre d'impulsion d'encodeur moteur depuis le d�marrage
+extern int actuator_getCounterFrequency(unsigned char freqCounterID);    // Retourne la fr�quence actuelle mesuree sur l'encodeur
+extern int actuator_getCounterPulses(unsigned char pulseCounterID);      // Retourne le nombre d'impulsion d'encodeur moteur depuis le d�marrage
 extern int actuator_getDigitalInput(unsigned char dinID);                // Retourne l'état de l'entrée numérique spécifiée
-extern int actuator_getDistance(unsigned char distanceSensorID);					// Retourne la distance en cm
-extern int actuator_getVoltage(unsigned char ainID);			// Retourne la tension battery en mV
-extern int actuator_getRGBColor(unsigned char rgbID, RGB_COLOR * rgbColor);			// Retourne la tension battery en mV
+extern int actuator_getDistance(unsigned char distanceSensorID);	 // Retourne la distance en cm
+extern int actuator_getVoltage(unsigned char ainID);			 // Retourne la tension en mV
+extern int actuator_getRGBColor(unsigned char rgbID, RGB_COLOR * rgbColor);	 // Lecture RGB sur capteur
 extern void actuator_clearWheel(unsigned char Id);
 extern int actuator_getStepperState(int stepperID);                   // 
 

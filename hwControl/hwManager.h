@@ -26,7 +26,7 @@ extern int getMotorFrequency(unsigned char motorNb);	// Retourne la fr�quence 
 extern int getMotorPulses(unsigned char motorNb);		// Retourne le nombre d'impulsion d'encodeur moteur depuis le d�marrage
 extern char getDigitalInput(unsigned char inputNb);	// Retourne l'�tat de l'entr�e num�rique sp�cifi�e
 extern int getSonarDistance(unsigned char distanceSensorID);						// Retourne la distance en cm
-extern int getBatteryVoltage(unsigned char ainID);					// Retourne la tension battery en mV
+extern int getAinVoltage(unsigned char ainID);					// Retourne la tension en mV
 extern char getButtonInput(unsigned char buttonNumber);
 extern int getColorValue(unsigned char sensorID, unsigned char color);      // Retourne la valeur de la couleur d�finie sur le capteur d�fini
 

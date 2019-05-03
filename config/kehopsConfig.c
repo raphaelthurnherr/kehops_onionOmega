@@ -477,12 +477,12 @@ void extractKehopsConfig(char * srcDataBuffer){
             }
         }
 
-        // BATTERY Setting
+        // VOLTAGE Setting
         jRead((char *)srcDataBuffer, FILE_KEY_CONFIG_BATTERY, &cfg_devices_list );
 
         // RECHERCHE DATA DE TYPE ARRAY
         if(cfg_devices_list.dataType == JREAD_ARRAY ){
-            // Get the number of BATTERY in array
+            // Get the number of VOLTAGE AIN in array
             nbOfDeviceInConf = cfg_devices_list.elements;
             for(i=0; i < nbOfDeviceInConf; i++){ 
                 deviceId=-1;
@@ -490,17 +490,17 @@ void extractKehopsConfig(char * srcDataBuffer){
 
                 if(deviceId >= 0){
                     NBAIN++;
-                    kehops.battery[deviceId].config.ain_id = jRead_int((char *)srcDataBuffer, FILE_KEY_CONFIG_BATTERY_MAP_ID, &i); 
+                    kehops.analogInput[deviceId].config.ain_id = jRead_int((char *)srcDataBuffer, FILE_KEY_CONFIG_BATTERY_MAP_ID, &i); 
                     jRead_string((char *)srcDataBuffer, FILE_KEY_CONFIG_BATTERY_EVENT_STATE, dataValue, 15, &i );
                     if(!strcmp(dataValue, "on")){
-                        kehops.battery[deviceId].event.enable = 1;
+                        kehops.analogInput[deviceId].event.enable = 1;
                     }else
                         if(!strcmp(dataValue, "off")){
-                            kehops.battery[deviceId].event.enable = 0;
+                            kehops.analogInput[deviceId].event.enable = 0;
                         }
-                    kehops.battery[deviceId].event.low = jRead_int((char *)srcDataBuffer, FILE_KEY_CONFIG_BATTERY_EVENT_LOW, &i); 
-                    kehops.battery[deviceId].event.high = jRead_int((char *)srcDataBuffer, FILE_KEY_CONFIG_BATTERY_EVENT_HIGH, &i); 
-                    kehops.battery[deviceId].event.hysteresis = jRead_int((char *)srcDataBuffer, FILE_KEY_CONFIG_BATTERY_EVENT_HYST, &i); 
+                    kehops.analogInput[deviceId].event.low = jRead_int((char *)srcDataBuffer, FILE_KEY_CONFIG_BATTERY_EVENT_LOW, &i); 
+                    kehops.analogInput[deviceId].event.high = jRead_int((char *)srcDataBuffer, FILE_KEY_CONFIG_BATTERY_EVENT_HIGH, &i); 
+                    kehops.analogInput[deviceId].event.hysteresis = jRead_int((char *)srcDataBuffer, FILE_KEY_CONFIG_BATTERY_EVENT_HYST, &i); 
                 }
             }
         }            
@@ -733,20 +733,20 @@ char SaveKehopsConfig(char * fileName){
                 } 
             jwEnd(); 
             
-        // CREATE JSON CONFIG FOR BATTERY CONFIG
+        // CREATE JSON CONFIG FOR VOLTAGE CONFIG
             jwObj_array("battery");
                 for(i=0;i<NBAIN;i++){
                     jwArr_object();
                         jwObj_int( "battery", i);
-                        jwObj_int( "ain_id", kehops.battery[i].config.ain_id);
-                        if(kehops.battery[i].event.enable == 0)
+                        jwObj_int( "ain_id", kehops.analogInput[i].config.ain_id);
+                        if(kehops.analogInput[i].event.enable == 0)
                             jwObj_string("event", "off");
                         else 
-                            if(kehops.battery[i].event.enable == 1)
+                            if(kehops.analogInput[i].event.enable == 1)
                                 jwObj_string("event", "on");
-                        jwObj_int( "event_lower", kehops.battery[i].event.low);
-                        jwObj_int( "event_higher", kehops.battery[i].event.high);
-                        jwObj_int( "event_hysteresis", kehops.battery[i].event.hysteresis);
+                        jwObj_int( "event_lower", kehops.analogInput[i].event.low);
+                        jwObj_int( "event_higher", kehops.analogInput[i].event.high);
+                        jwObj_int( "event_hysteresis", kehops.analogInput[i].event.hysteresis);
                     jwEnd();
                 } 
             jwEnd();             

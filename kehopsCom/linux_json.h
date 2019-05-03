@@ -38,7 +38,7 @@ typedef enum msgparam{
 	MOTORS,
 	DINPUT,
 	DISTANCE,
-	BATTERY,
+	VOLTAGE,
 	pPWM,
 	pLED,
         pAOUT,
@@ -169,7 +169,7 @@ struct mConfig{
         struct mDin btn[10];
         struct mDin din[10];
         struct mAin sonar[10];
-        struct mAin battery[10];
+        struct mAin ain[10];
 };
 
 struct mDistance{

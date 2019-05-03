@@ -77,7 +77,7 @@ int ads101x_getVoltage_mv(device_ads101x *ads101xconfig, unsigned char channel){
     
     // Read Conversion register for selected channel... !!! Convertion time unknown !!!
     err += i2c_read(0, deviceAddr, CVRTREG, data, 2);
-    
+    //printf("JE VIENS LIRE CES VALEURS:    address: 0x%2x    REG: 0x%2x    CHANNEL: %d RESULT: %d\n", deviceAddr, CVRTREG, channel,result);
     if(!err){
         result = ((data[0] << 4) | ((data[1] & 0xf0) >> 4)) * 3;  // Register value * 3mV Resolution for FSR = 0 (Max 6.144V)
         //printf("JE VIENS LIRE CES VALEURS:    address: 0x%2x    REG: 0x%2x    CHANNEL: %d RESULT: %d\n", deviceAddr, CVRTREG, channel,result);

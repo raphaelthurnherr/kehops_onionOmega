@@ -165,7 +165,7 @@ int getMotorPulses(unsigned char motorName);                    // Retourne le n
 char getDigitalInput(unsigned char inputNumber);                // Retourne l'�tat de l'entr�e num�rique sp�cifi�e
 char getButtonInput(unsigned char buttonNumber);                // Retourne l'�tat du bouton
 int getSonarDistance(unsigned char distanceSensorID);					// Retourne la distance en cm
-int getBatteryVoltage(unsigned char ainID);					// Retourne la tension battery en mV
+int getAinVoltage(unsigned char ainID);					// Retourne la tension en mV
 
 int getColorValue(unsigned char sensorID, unsigned char color);      // Retourne la valeur de la couleur d�finie sur le capteur d�fini
 
@@ -260,7 +260,7 @@ void *hwTask (void * arg){
 
                         case 20	:   
                                     for(i = 0;i<NBAIN;i++){
-                                        sensor.ain[i].value = actuator_getVoltage(kehops.battery[i].config.ain_id);        // Conversion de distance mm en cm
+                                        sensor.ain[i].value = actuator_getVoltage(kehops.analogInput[i].config.ain_id);        // Conversion de distance mm en cm
                                         //printf("    sensor.ain[%d].value: %d\n",i, sensor.ain[i].value);
                                     }
                                     
@@ -272,9 +272,7 @@ void *hwTask (void * arg){
                                     }
                                     break;
                         
-                        case 30	:   //sensor.din[DIN_4].value = MCP2308_ReadGPIO(BTN_0);
-                                    //sensor.din[DIN_5].value = MCP2308_ReadGPIO(BTN_1);
-                                    for(i = 0;i<NBBTN;i++){
+                        case 30	:   for(i = 0;i<NBBTN;i++){
                                         if(actuator_getDigitalInput(kehops.button[i].config.din_id) > 0) sensor.button[i].value = 1;
                                         else sensor.button[i].value = 0;
                                     }
@@ -359,7 +357,7 @@ int getSonarDistance(unsigned char distanceSensorID){
     return sensor.distance[distanceSensorID].value;
 }
 
-int getBatteryVoltage(unsigned char ainID){
+int getAinVoltage(unsigned char ainID){
     return sensor.ain[ainID].value;
 }
 
