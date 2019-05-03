@@ -235,7 +235,6 @@ typedef struct robotProx{
     struct s_prox_config config;
     struct s_prox_meas measure;
     struct s_eventBool event;
-    
 }robot_prox;
 
 // COmmunication & MQTT 
@@ -286,12 +285,27 @@ struct s_pwm_config{
     int  defaultState;
 };
 
+struct s_aout_config{
+    int  aout_id;
+    int  mode;
+    int  defaultPower;
+    int  defaultState;
+};
+
 typedef struct robotPwm{
     int state;
     int power;
     struct s_pwm_config config;
     struct s_pwm_action action;
 }robot_pwm;
+
+typedef struct robotAnalog{
+    int state;
+    int power;
+    int value;
+    struct s_aout_config config;
+    //struct s_aout_action action;
+}robot_analog;
 
 typedef struct robotRgb{
     struct s_rgb_meas color;
@@ -306,6 +320,7 @@ typedef struct robotKehops{
     robot_dcwheel dcWheel[MAXMOTOR];
     robot_pwm led[MAXLED];
     robot_pwm pwm[MAXPWM];
+    robot_analog aout[MAXAOUT];
     robot_prox proximity[MAXDIN];
     robot_sonar sonar[MAXSONAR];
     robot_rgb rgb[MAXRGBC];

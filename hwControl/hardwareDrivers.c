@@ -36,27 +36,25 @@
 #include "mcp4725.h"
 #include "tca9548a.h"
 #include "ssd1306.h"
+#include "ads101x.h"
+#include "ads111x.h"
 
 // Device variable déclaration
-#define MAX_PCA9685_DEVICE 8
-#define MAX_PCA9629_DEVICE 8
-#define MAX_EFM8BB_DEVICE 8
-#define MAX_MCP23008_DEVICE 8
-#define MAX_BH1745_DEVICE 8
-#define MAX_VL53L0X_DEVICE 8
-#define MAX_MCP4725_DEVICE 8
-#define MAX_TCA9548A_DEVICE 8
-#define MAX_SSD1306_DEVICE 8
+#define MAX_IC_DEVICE_PER_TYPE 8
 
-device_pca9685 dev_pca9685[MAX_PCA9685_DEVICE];
-device_pca9629 dev_pca9629[MAX_PCA9629_DEVICE];
-device_efm8McuKehops dev_efm8bb[MAX_EFM8BB_DEVICE];
-device_mcp23008 dev_mcp23008[MAX_MCP23008_DEVICE];
-device_bh1745 dev_bh1745[MAX_BH1745_DEVICE];
-device_vl53l0x dev_vl53l0x[MAX_VL53L0X_DEVICE];
-device_mcp4725 dev_mcp4725[MAX_MCP4725_DEVICE];
-device_tca9548a dev_tca9548a[MAX_TCA9548A_DEVICE];
-device_ssd1306 dev_ssd1306[MAX_SSD1306_DEVICE];
+
+device_pca9685 dev_pca9685[MAX_IC_DEVICE_PER_TYPE];
+device_pca9629 dev_pca9629[MAX_IC_DEVICE_PER_TYPE];
+device_efm8McuKehops dev_efm8bb[MAX_IC_DEVICE_PER_TYPE];
+device_mcp23008 dev_mcp23008[MAX_IC_DEVICE_PER_TYPE];
+device_bh1745 dev_bh1745[MAX_IC_DEVICE_PER_TYPE];
+device_vl53l0x dev_vl53l0x[MAX_IC_DEVICE_PER_TYPE];
+device_mcp4725 dev_mcp4725[MAX_IC_DEVICE_PER_TYPE];
+device_tca9548a dev_tca9548a[MAX_IC_DEVICE_PER_TYPE];
+device_ssd1306 dev_ssd1306[MAX_IC_DEVICE_PER_TYPE];
+device_ads101x dev_ads101x[MAX_IC_DEVICE_PER_TYPE];
+device_ads111x dev_ads111x[MAX_IC_DEVICE_PER_TYPE];
+
 
 unsigned char pca9685_count=0;
 unsigned char pca9629_count=0;
@@ -67,22 +65,16 @@ unsigned char vl53l0x_count=0;
 unsigned char mcp4725_count=0;
 unsigned char tca9548a_count=0;
 unsigned char ssd1306_count=0;
+unsigned char ads101x_count=0;
+unsigned char ads111x_count=0;
 
-
-//int getDriverTypeByName(char * name); // Get the device type from the name and convert it to local definition
-
-int getPCA9685config_ptr(char * name);
-int getPCA9629config_ptr(char * name);
-int getEFM8BBconfig_ptr(char * name);
-int getMCP23008config_ptr(char * name);
-int getBH1745config_ptr(char * name);
-int getVL53l0xconfig_ptr(char * name);
-int getMCP4725config_ptr(char * name);
-int getTCA9548Aconfig_ptr(char * name);
-int getSSD1306config_ptr(char * name);
-
+int getDriverConfig_ptr(char * driverType, char * name);
 int driverSelector_SetDOUT(char * driverType, char * driverName, int channel, int value);
-int subDriver_SetAction(char * driverType, char * driverName, int channel, int value);
+int setDeviceChannelByName(char * deviceName, int channel, int value);
+struct device_subdrivers getSubdriverSettingsByName(char * driverName);
+
+int subDriver_onActivate(char * driverName);
+int subDriver_onDeactivate(char * driverName);
 
 /**
  * \fn char boardHWinit()
@@ -97,30 +89,30 @@ int boardHWinit(void){
     int warning = 0;
     int status = 0;
     int NoDriverFound=1;
+    struct device_subdrivers subDriverSettings;
     
     int i;
 
     printf("#[HW DRIVER] Board devices drivers initialization: \n");
-                
+    usleep(10000);            
     for(i=0; boardDevice[i].address >= 0 && i<MAX_BOARD_DEVICE; i++){
-            char * subDriverType;
-            NoDriverFound = 1;                          
-            printf("\n              [%s - %s] :",boardDevice[i].name, boardDevice[i].type);
+            
+        NoDriverFound = 1;                          
+        printf("\n              [%s - %s] :",boardDevice[i].name, boardDevice[i].type);
             
             
         // SUB-DRIVER PRE ACTION Find if sub-driver action is necessary and defined before working
-            if(strcmp(boardDevice[i].sub_driver.name, "")){
-                printf(" (SUB-DRIVER: %s", boardDevice[i].sub_driver.name);
-                subDriverType = getDriverTypeByName(boardDevice[i].sub_driver.name);
-                status = subDriver_SetAction(subDriverType, boardDevice[i].sub_driver.name,
-                        boardDevice[i].sub_driver.attributes.device_channel, STATE_ON);
-                if(status != 0){
-                    printf(" -> ERROR [%d])", status);
-                    warning++;
-                }
-                else
-                    printf(" -> OK)");
+
+        if(strcmp(boardDevice[i].sub_driver.name, "")){
+            status = subDriver_onActivate(boardDevice[i].name);
+
+            if(status != 0){
+                printf(" -> ERROR [%d])", status);
+                warning++;
             }
+            else
+                printf(" -> OK)");
+        }
             
         // DEVICES TYPE PCA9585 PWM DRIVER CONFIGURATION
             
@@ -136,6 +128,7 @@ int boardHWinit(void){
                 if(pca9685_init(&dev_pca9685[pca9685_count]) != 0){
                     err++;
                     printf(" -> ERROR");
+                    dev_pca9685[pca9685_count].deviceAddress = 0; // Set address to unvalid
                 }else
                     printf(" -> OK");   
                 
@@ -154,6 +147,7 @@ int boardHWinit(void){
                 if(pca9629_init(&dev_pca9629[pca9629_count]) != 0){
                     err++;
                     printf(" -> ERROR");
+                    dev_pca9629[pca9629_count].deviceAddress = 0; // Set address to unvalid
                 }else
                     printf(" -> OK");                
             #ifdef INFO_DEBUG
@@ -171,6 +165,7 @@ int boardHWinit(void){
                 if(EFM8BB_init(&dev_efm8bb[efm8bb_count]) != 0){
                     err++;
                     printf(" -> ERROR");
+                    dev_efm8bb[efm8bb_count].deviceAddress = 0; // Set address to unvalid
                 }else
                     printf(" -> OK");                  
             #ifdef INFO_DEBUG                
@@ -186,10 +181,11 @@ int boardHWinit(void){
                 strcpy(dev_mcp23008[mcp23008_count].deviceName, boardDevice[i].name);
                 dev_mcp23008[mcp23008_count].deviceAddress = boardDevice[i].address;
                 dev_mcp23008[mcp23008_count].pullupEnable  = 0xff;                   // NEED TO BE DEFINE VIA CONFIG DEVICE.CFG
-                dev_mcp23008[mcp23008_count].gpioDirection = 0x60;                  // NEED TO BE DEFINE VIA CONFIG DEVICE.CFG
+                dev_mcp23008[mcp23008_count].gpioDirection = 0x60;                   // NEED TO BE DEFINE VIA CONFIG DEVICE.CFG
                 if(mcp23008_init(&dev_mcp23008[mcp23008_count]) != 0){
                     err++;
                     printf(" -> ERROR");
+                    dev_mcp23008[mcp23008_count].deviceAddress = 0; // Set address to unvalid
                 }else
                     printf(" -> OK");                  
             #ifdef INFO_DEBUG                
@@ -207,6 +203,7 @@ int boardHWinit(void){
                 if(bh1745nuc_init(&dev_bh1745[bh1745_count]) != 0){
                     err++;
                     printf(" -> ERROR");
+                    dev_bh1745[bh1745_count].deviceAddress = 0; // Set address to unvalid
                 }else
                     printf(" -> OK");                 
                 
@@ -224,7 +221,8 @@ int boardHWinit(void){
                 dev_vl53l0x[vl53l0x_count].deviceAddress = boardDevice[i].address;
                 if(vl53l0x_init(&dev_vl53l0x[vl53l0x_count]) != 0){
                     err++;
-                    printf(" -> ERROR");
+                    printf(" -> NOT YET IMPLEMENTED");
+                    dev_vl53l0x[vl53l0x_count].deviceAddress = 0; // Set address to unvalid                    
                 }else
                     printf(" -> OK");                 
                 
@@ -245,6 +243,7 @@ int boardHWinit(void){
                 if(mcp4725_init(&dev_mcp4725[mcp4725_count]) != 0){
                     err++;
                     printf(" -> ERROR");
+                    dev_mcp4725[mcp4725_count].deviceAddress = 0;
                 }else{
                     printf(" -> OK");                  
                 }
@@ -264,8 +263,8 @@ int boardHWinit(void){
                 if(tca9548a_init(&dev_tca9548a[tca9548a_count]) != 0){
                     err++;
                     printf(" -> ERROR");
+                    dev_tca9548a[tca9548a_count].deviceAddress = 0; // Set address to unvalid
                 }else{
-                    //tca9548a_setChannelState(&dev_tca9548a[tca9548a_count], 0, STATE_ON);
                     printf(" -> OK");                  
                 }
             #ifdef INFO_DEBUG                
@@ -282,7 +281,8 @@ int boardHWinit(void){
                 dev_ssd1306[ssd1306_count].deviceAddress = boardDevice[i].address;
                 if(ssd1306_init(&dev_ssd1306[ssd1306_count]) != 0){
                     err++;
-                    printf(" -> ERROR");
+                    printf(" -> NOT YET IMPLEMENTED");
+                    dev_ssd1306[ssd1306_count].deviceAddress = 0; // Set address to unvalid
                 }else{
                     printf(" -> OK");                  
                 }
@@ -293,17 +293,54 @@ int boardHWinit(void){
                 NoDriverFound=0;                
             }            
             
+            // DEVICES TYPE DRIVER_ADS101X 12 BIT ANALOG DIGITAL CONVERTER
+            if(!strcmp(boardDevice[i].type, DRIVER_ADS101X)){              
+                // Setting up the ads101x AD Converter
+                strcpy(dev_ads101x[ads101x_count].deviceName, boardDevice[i].name);
+                dev_ads101x[ads101x_count].deviceAddress = boardDevice[i].address;
+                if(ads101x_init(&dev_ads101x[ads101x_count]) != 0){
+                    err++;
+                    printf(" -> ERROR");
+                    dev_ads101x[ads101x_count].deviceAddress = 0; // Set address to unvalid                    
+                }else{
+                    printf(" -> OK");                  
+                }
+            #ifdef INFO_DEBUG                
+                printDeviceData(i, &boardDevice[i]);
+            #endif                
+                ads101x_count++;
+                NoDriverFound=0;                
+            }
+
+            // DEVICES TYPE DRIVER_ADS111X 16 BIT ANALOG DIGITAL CONVERTER
+            if(!strcmp(boardDevice[i].type, DRIVER_ADS111X)){              
+                // Setting up the ads111x AD Converter
+                strcpy(dev_ads111x[ads111x_count].deviceName, boardDevice[i].name);
+                dev_ads111x[ads111x_count].deviceAddress = boardDevice[i].address;
+                if(ads111x_init(&dev_ads111x[ads111x_count]) != 0){
+                    err++;
+                    printf(" -> ERROR");
+                    dev_ads111x[ads111x_count].deviceAddress = 0; // Set address to unvalid                    
+                }else{
+                    printf(" -> OK");                  
+                }
+            #ifdef INFO_DEBUG                
+                printDeviceData(i, &boardDevice[i]);
+            #endif                
+                ads111x_count++;
+                NoDriverFound=0;                
+            }        
+            
+            // - END OF DRIVER INITIALIZATION -
             
             // Check if driver was found for this part
             if(NoDriverFound > 0){
                 warning++;    
             }
             
-            // SUB-DRIVER POST ACTION Find if sub-driver action was necessary and finish action
-            if(strcmp(boardDevice[i].sub_driver.name, "")){
-                subDriver_SetAction(subDriverType, boardDevice[i].sub_driver.name,
-                        boardDevice[i].sub_driver.attributes.device_channel, STATE_OFF);
-            }
+            // SUB-DRIVER POST ACTION Find if sub-driver action was necessary and finish action            
+            subDriver_onDeactivate(boardDevice[i].name);
+ 
     }
      printf("\n");
      
@@ -325,28 +362,78 @@ char actuator_setDoutValue(int doutID, int value){
     int channel = kehopsActuators.dout[doutID].hw_driver.attributes.device_channel;
     int ptrDev; 
     
+    // SUBDRIVER ACTION Check if driver IC need a subdriver and make a pre-action if required
+    subDriver_onActivate(kehopsActuators.dout[doutID].hw_driver.name);
+    
     // USE DRIVER FOR PCA9685
     if(!strcmp(kehopsActuators.dout[doutID].hw_driver.type, DRIVER_PCA9685)){
-        ptrDev = getPCA9685config_ptr(kehopsActuators.dout[doutID].hw_driver.name);
+        ptrDev = getDriverConfig_ptr(DRIVER_PCA9685, kehopsActuators.dout[doutID].hw_driver.name);
         if(ptrDev>=0){
     #ifdef INFO_DEBUG
             printf("SET DOUT VALUE FROM <%s> DRIVERS:  NAME:%s TYPE:%s I2C add: 0x%2x    dout_id: %d     channel: %d     ratio: %d\n",DRIVER_PCA9685, kehopsActuators.dout[doutID].hw_driver.name, kehopsActuators.dout[doutID].hw_driver.type, dev_pca9685[ptrDev].deviceAddress, doutID, channel, value);        
     #endif
-            pca9685_setPWMdutyCycle(&dev_pca9685[ptrDev], channel, value);
+            if(dev_pca9685[ptrDev].deviceAddress > 0)
+                pca9685_setPWMdutyCycle(&dev_pca9685[ptrDev], channel, value);
+            else
+                printf("#! Function [actuator_setDoutValue] -> I2C Error: Bad address or device not connected\n");
+            
         }else 
             printf ("#! Function [actuator_setDoutValue] -> Unknown driver name: %s\n", kehopsActuators.dout[doutID].hw_driver.name);
     }
     
     // USE DRIVER FOR MCP23008
     if(!strcmp(kehopsActuators.dout[doutID].hw_driver.type, DRIVER_MCP23008)){
-        ptrDev = getMCP23008config_ptr(kehopsActuators.dout[doutID].hw_driver.name);
+        ptrDev = getDriverConfig_ptr(DRIVER_MCP23008, kehopsActuators.dout[doutID].hw_driver.name);
         if(ptrDev>=0){
+    #ifdef INFO_DEBUG            
             printf("SET DOUT VALUE FROM <%s> DRIVERS:  NAME:%s TYPE:%s I2C add: 0x%2x    dout_id: %d     channel: %d     state: %d\n",DRIVER_MCP23008, kehopsActuators.dout[doutID].hw_driver.name, kehopsActuators.dout[doutID].hw_driver.type, dev_mcp23008[ptrDev].deviceAddress, doutID, channel, value);        
-            mcp23008_setChannel(&dev_mcp23008[ptrDev], channel, value);
+    #endif            
+            if(dev_mcp23008[ptrDev].deviceAddress > 0)
+                mcp23008_setChannel(&dev_mcp23008[ptrDev], channel, value);
+            else
+                printf("#! Function [actuator_setDoutValue] -> I2C Error: Bad address or device not connected\n");
+            
         }else 
             printf ("#! Function [actuator_setDoutValue] -> Unknown driver name: %s\n", kehopsActuators.dout[doutID].hw_driver.name);
     }
     
+    // SUBDRIVER ACTION Check if driver IC need a subdriver and make a post-action if required
+    subDriver_onDeactivate(kehopsActuators.dout[doutID].hw_driver.name);
+    
+}
+
+/**
+ * \fn char actuator_setAnalogValue()
+ * \brief Get the Analog hardware id of the output from config and apply the
+ *  PWM settings if available, else boolean value is apply
+ * \param pwmID, power
+ * \return -
+ */
+
+char actuator_setAnalogValue(int aoutID, int value){
+    int channel = kehopsActuators.aout[aoutID].hw_driver.attributes.device_channel;
+    int ptrDev; 
+        
+    // SUBDRIVER ACTION Check if driver IC need a subdriver and make a pre-action if required
+    subDriver_onActivate(kehopsActuators.aout[aoutID].hw_driver.name);
+    
+    // USE DRIVER FOR MCP4725
+    if(!strcmp(kehopsActuators.aout[aoutID].hw_driver.type, DRIVER_MCP4725)){
+        ptrDev = getDriverConfig_ptr(DRIVER_MCP4725, kehopsActuators.aout[aoutID].hw_driver.name);
+        if(ptrDev>=0){
+    #ifdef INFO_DEBUG
+            printf("SET ANALOG VALUE FROM <%s> DRIVERS:  NAME:%s TYPE:%s I2C add: 0x%2x    aout_id: %d     channel: %d     value: %d\n",DRIVER_MCP4725, kehopsActuators.aout[aoutID].hw_driver.name, kehopsActuators.aout[aoutID].hw_driver.type, dev_mcp4725[ptrDev].deviceAddress, aoutID, channel, value);        
+    #endif
+            if(dev_mcp4725[ptrDev].deviceAddress > 0)
+                mcp4725_setDACOutput_mV(&dev_mcp4725[ptrDev], value);
+            else
+                printf("#! Function [actuator_setAnalogValue] -> I2C Error: Bad address or device not connected\n");
+        }else 
+            printf ("#! Function [actuator_setAnalogValue] -> Unknown driver name: %s\n", kehopsActuators.aout[aoutID].hw_driver.name);
+    }
+    
+    // SUBDRIVER ACTION Check if driver IC need a subdriver and make a post-action if required
+    subDriver_onDeactivate(kehopsActuators.aout[aoutID].hw_driver.name);    
 }
 
 /**
@@ -373,15 +460,26 @@ char actuator_setServoPosition(int doutID, int position){
     else
         time_ms = 0.0;                    // Turn off the servomotor (no refresh)   
         
+    // SUBDRIVER ACTION Check if driver IC need a subdriver and make a pre-action if required
+    subDriver_onActivate(kehopsActuators.dout[doutID].hw_driver.name);
+    
     // USE DRIVER FOR PCA9685
     if(!strcmp(kehopsActuators.dout[doutID].hw_driver.type, DRIVER_PCA9685)){
-        ptrDev = getPCA9685config_ptr(kehopsActuators.dout[doutID].hw_driver.name);
-
+        ptrDev = getDriverConfig_ptr(DRIVER_PCA9685, kehopsActuators.dout[doutID].hw_driver.name);
         if(ptrDev>=0){
-            printf("SET SERVO POSITION FROM NEW DRIVERS: NAME: %s TYPE:%s  I2Cadd: 0x%2x    dout_id: %d     channel: %d     position: %d     time: %.2f\n",kehopsActuators.dout[doutID].hw_driver.name,kehopsActuators.dout[doutID].hw_driver.type, dev_pca9685[ptrDev].deviceAddress, doutID, channel, position, time_ms);    
-            pca9685_setPulseWidthTime(&dev_pca9685[ptrDev], channel, time_ms);
+    #ifdef INFO_DEBUG            
+            printf("SET SERVO POSITION FROM NEW DRIVERS: NAME: %s TYPE:%s  I2Cadd: 0x%2x    dout_id: %d     channel: %d     position: %d     time: %.2f\n",kehopsActuators.dout[doutID].hw_driver.name,kehopsActuators.dout[doutID].hw_driver.type, dev_pca9685[ptrDev].deviceAddress, doutID, channel, position, time_ms);
+    #endif
+            if(dev_pca9685[ptrDev].deviceAddress > 0)
+                pca9685_setPulseWidthTime(&dev_pca9685[ptrDev], channel, time_ms);
+            else
+                printf("#! Function [actuator_setServoPosition] -> I2C Error: Bad address or device not connected\n");
+            
         }else printf ("#! Function [actuator_setServoPosition] -> Unknown driver name: %s\n", kehopsActuators.dout[doutID].hw_driver.name);
     }
+    
+    // SUBDRIVER ACTION Check if driver IC need a subdriver and make a post-action if required
+    subDriver_onDeactivate(kehopsActuators.dout[doutID].hw_driver.name);
 }
 
 
@@ -396,6 +494,9 @@ char actuator_setServoPosition(int doutID, int position){
 int actuator_setStepperStepAction(int stepperID, int direction, int stepCount){
     int ptrDev;
      
+    // SUBDRIVER ACTION Check if driver IC need a subdriver and make a pre-action if required
+    subDriver_onActivate(kehopsActuators.stepper_motors[stepperID].hw_driver.name);
+    
     // USE DRIVER FOR PCA9629
      if(!strcmp(kehopsActuators.stepper_motors[stepperID].hw_driver.type, DRIVER_PCA9629)){
         unsigned char ctrlData = 0;
@@ -414,20 +515,31 @@ int actuator_setStepperStepAction(int stepperID, int direction, int stepCount){
             // Configuration du driver pour une action unique
             PMAmode = 0x01;
 
-        ptrDev = getPCA9629config_ptr(kehopsActuators.stepper_motors[stepperID].hw_driver.name);
-
+        ptrDev = getDriverConfig_ptr(DRIVER_PCA9629, kehopsActuators.stepper_motors[stepperID].hw_driver.name);
+        
         if(ptrDev>=0){
+    #ifdef INFO_DEBUG
             printf("SET STEPPER STEP ACTION FROM NEW DRIVERS: NAME: %s TYPE:%s  I2Cadd: 0x%2x    stepper_id: %d     STEPS: %d \n", kehopsActuators.stepper_motors[stepperID].hw_driver.name,kehopsActuators.stepper_motors[stepperID].hw_driver.type,  dev_pca9685[ptrDev].deviceAddress, stepperID, stepCount);    
-            // Reset le registre de contronle
-            // (Indispensable pour une nouvelle action après une action infinie)
-            PCA9629_StepperMotorControl(&dev_pca9629[ptrDev], 0x00);
+    #endif
+            if(dev_pca9629[ptrDev].deviceAddress > 0){
+                // Reset le registre de contronle
+                // (Indispensable pour une nouvelle action après une action infinie)
+                PCA9629_StepperMotorControl(&dev_pca9629[ptrDev], 0x00);
 
-            // Assignation du mode action continu ou unique
-            PCA9629_StepperMotorMode(&dev_pca9629[ptrDev], PMAmode);
-            PCA9629_StepperMotorSetStep(&dev_pca9629[ptrDev], stepCount);
-            PCA9629_StepperMotorControl(&dev_pca9629[ptrDev], ctrlData);
+                // Assignation du mode action continu ou unique
+                PCA9629_StepperMotorMode(&dev_pca9629[ptrDev], PMAmode);
+                PCA9629_StepperMotorSetStep(&dev_pca9629[ptrDev], stepCount);
+                PCA9629_StepperMotorControl(&dev_pca9629[ptrDev], ctrlData);
+            }
+            else
+                printf("#! Function [actuator_setStepperStepAction] -> I2C Error: Bad address or device not connected\n");
+            
+
         }else printf ("#! Function [actuator_setStepperStepAction] -> Unknown driver name: %s\n", kehopsActuators.stepper_motors[stepperID].hw_driver.name);
  }
+    
+    // SUBDRIVER ACTION Check if driver IC need a subdriver and make a post-action if required
+    subDriver_onDeactivate(kehopsActuators.stepper_motors[stepperID].hw_driver.name);    
     
     return (0);
 } 
@@ -448,6 +560,10 @@ int actuator_setStepperSpeed(int stepperID, int speed){
 		speed = 100;
 	if (speed<0)
 		speed = 1;
+        
+    // SUBDRIVER ACTION Check if driver IC need a subdriver and make a pre-action if required
+    subDriver_onActivate(kehopsActuators.stepper_motors[stepperID].hw_driver.name);
+    
     // USE DRIVER FOR PCA9629
      if(!strcmp(kehopsActuators.stepper_motors[stepperID].hw_driver.type, DRIVER_PCA9629)){    
         int regData;
@@ -456,14 +572,22 @@ int actuator_setStepperSpeed(int stepperID, int speed){
         // Periode minimum (2mS) + vitesse en % (max 22.5mS)
         regData = 0x029A + ((100-speed) * 75);
 
-        ptrDev = getPCA9629config_ptr(kehopsActuators.stepper_motors[stepperID].hw_driver.name);
-
+        ptrDev = getDriverConfig_ptr(DRIVER_PCA9629, kehopsActuators.stepper_motors[stepperID].hw_driver.name);
         if(ptrDev>=0){
+#ifdef INFO_DEBUG
             printf("SET STEPPER STEP SPEED FROM NEW DRIVERS: NAME: %s TYPE:%s  I2Cadd: 0x%2x    stepper_id: %d     SPEED: %d \n", kehopsActuators.stepper_motors[stepperID].hw_driver.name,kehopsActuators.stepper_motors[stepperID].hw_driver.type, dev_pca9685[ptrDev].deviceAddress, stepperID, speed);    
+#endif            
+            if(dev_pca9629[ptrDev].deviceAddress > 0)
             PCA9629_StepperMotorPulseWidth(&dev_pca9629[ptrDev], regData);
+            else
+                printf("#! Function [actuator_setStepperSpeed] -> I2C Error: Bad address or device not connected\n");
+            
         }else printf ("#! Function [actuator_setStepperSpeed] -> Unknown driver name: %s\n", kehopsActuators.stepper_motors[stepperID].hw_driver.name);
      }
-         
+
+    // SUBDRIVER ACTION Check if driver IC need a subdriver and make a post-action if required
+    subDriver_onDeactivate(kehopsActuators.stepper_motors[stepperID].hw_driver.name);
+    
     return (1);
 }
 
@@ -476,19 +600,29 @@ int actuator_setStepperSpeed(int stepperID, int speed){
  */
 
 int actuator_getStepperState(int stepperID){
-    int state;    
+    int state=-1;    
+    
+    // SUBDRIVER ACTION Check if driver IC need a subdriver and make a pre-action if required
+    subDriver_onActivate(kehopsActuators.stepper_motors[stepperID].hw_driver.name);
     
      // USE DRIVER FOR PCA9629
      if(!strcmp(kehopsActuators.stepper_motors[stepperID].hw_driver.type, DRIVER_PCA9629)){    
-        int ptrDev = getPCA9629config_ptr(kehopsActuators.stepper_motors[stepperID].hw_driver.name);
+        int ptrDev = getDriverConfig_ptr(DRIVER_PCA9629, kehopsActuators.stepper_motors[stepperID].hw_driver.name);
+        
         if(ptrDev>=0){
-            state = PCA9629_ReadMotorState(&dev_pca9629[ptrDev]);
+            if(dev_pca9629[ptrDev].deviceAddress > 0)
+                state = PCA9629_ReadMotorState(&dev_pca9629[ptrDev]);
+            else
+                printf("#! Function [actuator_getStepperState] -> I2C Error: Bad address or device not connected\n");            
         }else{
             printf ("#! Function [actuator_getStepperState] -> Unknown driver name: %s\n", kehopsActuators.stepper_motors[stepperID].hw_driver.name);
             state = 0;
         }
-        //printf ("#! NOW USING  DRIVER 'PCA9629' for Stepper motor #%d\n", stepperID);
      }
+    
+    // SUBDRIVER ACTION Check if driver IC need a subdriver and make a post-action if required
+    subDriver_onDeactivate(kehopsActuators.stepper_motors[stepperID].hw_driver.name);
+    
     return state;
 }
 
@@ -496,46 +630,72 @@ int actuator_getStepperState(int stepperID){
 //EFM8
 // ------------------------------------------------------------------------------------
 int actuator_getCounterPulses(unsigned char pulseCounterID){
-    int counterPulses;
+    int counterPulses = -1;
     int ptrDev;
-        // USE DRIVER FOR EFM8BB
+    
+    // SUBDRIVER ACTION Check if driver IC need a subdriver and make a pre-action if required
+    subDriver_onActivate(kehopsActuators.pulsesCounter[pulseCounterID].hw_driver.name);
+    
+    // USE DRIVER FOR EFM8BB
     if(!strcmp(kehopsActuators.pulsesCounter[pulseCounterID].hw_driver.type, DRIVER_EFM8BB)){
-        ptrDev = getEFM8BBconfig_ptr(kehopsActuators.pulsesCounter[pulseCounterID].hw_driver.name);
+        ptrDev = getDriverConfig_ptr(DRIVER_EFM8BB, kehopsActuators.pulsesCounter[pulseCounterID].hw_driver.name);
         if(ptrDev>=0){
             //printf("GET COUNTER FROM NEW DRIVERS: NAME: %s   I2Cadd: 0x%2x    counter_id: %d\n", kehopsActuators.pulsesCounter[counter_id].hw_driver.name, dev_efm8bb[ptrDev].deviceAddress, counter_id);    
-            counterPulses = EFM8BB_getChannel(&dev_efm8bb[ptrDev], kehopsActuators.pulsesCounter[pulseCounterID].hw_driver.attributes.device_channel);
+            if(dev_efm8bb[ptrDev].deviceAddress > 0)
+                counterPulses = EFM8BB_getChannel(&dev_efm8bb[ptrDev], kehopsActuators.pulsesCounter[pulseCounterID].hw_driver.attributes.device_channel);
+            else
+                printf("#! Function [actuator_getCounterPulses] -> I2C Error: Bad address or device not connected\n");                        
         }else printf ("#! Function [actuator_getCounterPulses] -> Unknown driver name: %s\n", kehopsActuators.pulsesCounter[pulseCounterID].hw_driver.name);
     }
+    
+    // SUBDRIVER ACTION Check if driver IC need a subdriver and make a post-action if required
+    subDriver_onDeactivate(kehopsActuators.pulsesCounter[pulseCounterID].hw_driver.name);
+    
     return counterPulses;
 }
 
 
 
 int actuator_getCounterFrequency(unsigned char freqCounterID){
-    int frequency;
+    int frequency = -1;
     int ptrDev;
+    
+    // SUBDRIVER ACTION Check if driver IC need a subdriver and make a pre-action if required
+    subDriver_onActivate(kehopsActuators.freqCounter[freqCounterID].hw_driver.name);
     
     // USE DRIVER FOR EFM8BB
     if(!strcmp(kehopsActuators.freqCounter[freqCounterID].hw_driver.type, DRIVER_EFM8BB)){
-        ptrDev = getEFM8BBconfig_ptr(kehopsActuators.freqCounter[freqCounterID].hw_driver.name);
+        ptrDev = getDriverConfig_ptr(DRIVER_EFM8BB, kehopsActuators.freqCounter[freqCounterID].hw_driver.name);        
         if(ptrDev>=0){
             //printf("GET FREQ FROM NEW DRIVERS: NAME: %s   I2Cadd: 0x%2x    counter_id: %d\n", kehopsActuators.freqCounter[freq_id].hw_driver.name, dev_efm8bb[ptrDev].deviceAddress, freq_id);    
-            frequency = EFM8BB_getChannel(&dev_efm8bb[ptrDev], kehopsActuators.freqCounter[freqCounterID].hw_driver.attributes.device_channel);
+            if(dev_efm8bb[ptrDev].deviceAddress > 0)
+                frequency = EFM8BB_getChannel(&dev_efm8bb[ptrDev], kehopsActuators.freqCounter[freqCounterID].hw_driver.attributes.device_channel);
+            else
+                printf("#! Function [actuator_getCounterFrequency] -> I2C Error: Bad address or device not connected\n");        
         }else printf ("#! Function [actuator_getCounterFrequency] -> Unknown driver name: %s\n", kehopsActuators.freqCounter[freqCounterID].hw_driver.name);
     }
+    
+    // SUBDRIVER ACTION Check if driver IC need a subdriver and make a post-action if required
+    subDriver_onDeactivate(kehopsActuators.freqCounter[freqCounterID].hw_driver.name);
     
     return frequency;
 }
 
 int actuator_getDigitalInput(unsigned char dinID){
-    char value;
+    char value = -1;
     int ptrDev;    
         
+    // SUBDRIVER ACTION Check if driver IC need a subdriver and make a pre-action if required
+    subDriver_onActivate(kehopsActuators.din[dinID].hw_driver.name);
+    
     // USE DRIVER FOR EFM8BB
     if(!strcmp(kehopsActuators.din[dinID].hw_driver.type, DRIVER_EFM8BB)){
-        ptrDev = getEFM8BBconfig_ptr(kehopsActuators.din[dinID].hw_driver.name);
+        ptrDev = getDriverConfig_ptr(DRIVER_EFM8BB, kehopsActuators.din[dinID].hw_driver.name);                
         if(ptrDev>=0){
-            value = EFM8BB_getChannel(&dev_efm8bb[ptrDev], kehopsActuators.din[dinID].hw_driver.attributes.device_channel);
+            if(dev_efm8bb[ptrDev].deviceAddress > 0)
+                value = EFM8BB_getChannel(&dev_efm8bb[ptrDev], kehopsActuators.din[dinID].hw_driver.attributes.device_channel);
+            else
+                printf("#! Function [actuator_getDigitalInput] -> I2C Error: Bad address or device not connected\n");                    
         }else{
                 printf ("#! Function [actuator_getDigitalInput] -> Unknown driver name: %s\n", kehopsActuators.din[dinID].hw_driver.name);
                 value = -1;
@@ -545,9 +705,12 @@ int actuator_getDigitalInput(unsigned char dinID){
 
     // USE DRIVER FOR MCP23008
     if(!strcmp(kehopsActuators.din[dinID].hw_driver.type, DRIVER_MCP23008)){
-        ptrDev = getMCP23008config_ptr(kehopsActuators.din[dinID].hw_driver.name);
+        ptrDev = getDriverConfig_ptr(DRIVER_MCP23008, kehopsActuators.din[dinID].hw_driver.name);                
         if(ptrDev>=0){
-            value = mcp23008_getChannel(&dev_mcp23008[ptrDev], kehopsActuators.din[dinID].hw_driver.attributes.device_channel);
+            if(dev_mcp23008[ptrDev].deviceAddress > 0)
+                value = mcp23008_getChannel(&dev_mcp23008[ptrDev], kehopsActuators.din[dinID].hw_driver.attributes.device_channel);
+            else
+                printf("#! Function [actuator_getDigitalInput] -> I2C Error: Bad address or device not connected\n");              
         }else{
                 printf ("#! Function [actuator_getDigitalInput] -> Unknown driver name: %s\n", kehopsActuators.din[dinID].hw_driver.name);
                 value = -1;
@@ -555,53 +718,108 @@ int actuator_getDigitalInput(unsigned char dinID){
         //printf ("#! NOW USING  DRIVER 'MCP23008' for DIN #%d\n", dinID);
     }
    
+    // SUBDRIVER ACTION Check if driver IC need a subdriver and make a post-action if required
+    subDriver_onDeactivate(kehopsActuators.din[dinID].hw_driver.name);
+    
     return value;
 }
 
 int actuator_getDistance(unsigned char distanceSensorID){
-    int distance_mm =-1;
+    int distance_mm = -1;
     int ptrDev;    
 
+    // SUBDRIVER ACTION Check if driver IC need a subdriver and make a pre-action if required
+    subDriver_onActivate(kehopsActuators.distanceSensor[distanceSensorID].hw_driver.name);
+    
     // USE DRIVER FOR EFM8BB
     if(!strcmp(kehopsActuators.distanceSensor[distanceSensorID].hw_driver.type, DRIVER_EFM8BB)){
-        ptrDev = getEFM8BBconfig_ptr(kehopsActuators.distanceSensor[distanceSensorID].hw_driver.name);
+        ptrDev = getDriverConfig_ptr(DRIVER_EFM8BB, kehopsActuators.distanceSensor[distanceSensorID].hw_driver.name);                        
         if(ptrDev>=0){
-            distance_mm = EFM8BB_getChannel(&dev_efm8bb[ptrDev], kehopsActuators.distanceSensor[distanceSensorID].hw_driver.attributes.device_channel);
+            if(dev_efm8bb[ptrDev].deviceAddress > 0)
+                distance_mm = EFM8BB_getChannel(&dev_efm8bb[ptrDev], kehopsActuators.distanceSensor[distanceSensorID].hw_driver.attributes.device_channel);
+            else
+                printf("#! Function [actuator_getDistance] -> I2C Error: Bad address or device not connected\n");               
         }else{
                 printf ("#! Function [actuator_getDistance] -> Unknown driver name: %s\n", kehopsActuators.distanceSensor[distanceSensorID].hw_driver.name);
                 distance_mm = -1;
         }
     }
+    
+    // SUBDRIVER ACTION Check if driver IC need a subdriver and make a pre-action if required
+    subDriver_onDeactivate(kehopsActuators.distanceSensor[distanceSensorID].hw_driver.name);
+    
     return distance_mm;
 }
 
 int actuator_getVoltage(unsigned char ainID){
-    int voltage_mv;
-    int ptrDev;    
+    int voltage_mv = -1;
+    int  ptrDev;    
+    
+    // Check if driver IC need a subdriver and make a pre-action if required
+    subDriver_onActivate(kehopsActuators.ain[ainID].hw_driver.name);
               
     // USE DRIVER FOR EFM8BB
     if(!strcmp(kehopsActuators.ain[ainID].hw_driver.type, DRIVER_EFM8BB)){
-        ptrDev = getEFM8BBconfig_ptr(kehopsActuators.ain[ainID].hw_driver.name);
-
+        ptrDev = getDriverConfig_ptr(DRIVER_EFM8BB, kehopsActuators.ain[ainID].hw_driver.name);                        
         if(ptrDev>=0){
-            voltage_mv = EFM8BB_getChannel(&dev_efm8bb[ptrDev], kehopsActuators.ain[ainID].hw_driver.attributes.device_channel);
+            if(dev_efm8bb[ptrDev].deviceAddress > 0)
+                voltage_mv = EFM8BB_getChannel(&dev_efm8bb[ptrDev], kehopsActuators.ain[ainID].hw_driver.attributes.device_channel);
+            else
+                printf("#! Function [actuator_getVoltage] -> I2C Error: Bad address or device not connected\n");                           
+
         }else{
                 printf ("#! Function [actuator_getVoltage] -> Unknown driver name: %s\n", kehopsActuators.ain[ainID].hw_driver.name);
                 voltage_mv = -1;
         }
     }
+    
+    // USE DRIVER FOR ADS101x ADC Converter
+    if(!strcmp(kehopsActuators.ain[ainID].hw_driver.type, DRIVER_ADS101X)){
+        ptrDev = getDriverConfig_ptr(DRIVER_ADS101X, kehopsActuators.ain[ainID].hw_driver.name);
+        if(ptrDev>=0){
+            if(dev_ads101x[ptrDev].deviceAddress > 0)
+                voltage_mv = ads101x_getVoltage_mv(&dev_ads101x[ptrDev], kehopsActuators.ain[ainID].hw_driver.attributes.device_channel);
+            else
+                printf("#! Function [actuator_getVoltage] -> I2C Error: Bad address or device not connected\n");                                       
+        }else{
+                printf ("#! Function [actuator_getVoltage] -> Unknown driver name: %s\n", kehopsActuators.ain[ainID].hw_driver.name);
+                voltage_mv = -1;
+        }
+    }
+    
+    // USE DRIVER FOR ADS111x ADC Converter
+    if(!strcmp(kehopsActuators.ain[ainID].hw_driver.type, DRIVER_ADS111X)){
+        ptrDev = getDriverConfig_ptr(DRIVER_ADS111X, kehopsActuators.ain[ainID].hw_driver.name);
+        if(ptrDev>=0){
+            if(dev_ads111x[ptrDev].deviceAddress > 0)
+                voltage_mv = ads111x_getVoltage_mv(&dev_ads111x[ptrDev], kehopsActuators.ain[ainID].hw_driver.attributes.device_channel);
+            else
+                printf("#! Function [actuator_getVoltage] -> I2C Error: Bad address or device not connected\n");                                       
+        }else{
+                printf ("#! Function [actuator_getVoltage] -> Unknown driver name: %s\n", kehopsActuators.ain[ainID].hw_driver.name);
+                voltage_mv = -1;
+        }
+    }    
+    
+    // Check if driver IC need a subdriver and make a post-action if required
+    subDriver_onDeactivate(kehopsActuators.ain[ainID].hw_driver.name);
+    
     return voltage_mv;
 }
 
 int actuator_getRGBColor(unsigned char rgbID, RGB_COLOR * rgbColor){
     int ptrDev;    
     
-    ptrDev = getBH1745config_ptr(kehopsActuators.rgbSensor[rgbID].hw_driver.name);
+    ptrDev = getDriverConfig_ptr(DRIVER_BH1745, kehopsActuators.rgbSensor[rgbID].hw_driver.name);
     if(ptrDev>=0){
-        rgbColor->red = bh1745nuc_getChannelRGBvalue(&dev_bh1745[ptrDev], RED);
-        rgbColor->green = bh1745nuc_getChannelRGBvalue(&dev_bh1745[ptrDev], GREEN);
-        rgbColor->blue = bh1745nuc_getChannelRGBvalue(&dev_bh1745[ptrDev], BLUE);
-        rgbColor->clear = bh1745nuc_getChannelRGBvalue(&dev_bh1745[ptrDev], CLEAR);
+            if(dev_bh1745[ptrDev].deviceAddress > 0){
+                rgbColor->red = bh1745nuc_getChannelRGBvalue(&dev_bh1745[ptrDev], RED);
+                rgbColor->green = bh1745nuc_getChannelRGBvalue(&dev_bh1745[ptrDev], GREEN);
+                rgbColor->blue = bh1745nuc_getChannelRGBvalue(&dev_bh1745[ptrDev], BLUE);
+                rgbColor->clear = bh1745nuc_getChannelRGBvalue(&dev_bh1745[ptrDev], CLEAR);                
+            }
+            else
+                printf("#! Function [actuator_getColor] -> I2C Error: Bad address or device not connected\n"); 
     }else{
             printf ("#! Function [actuator_getColor] -> Unknown driver name: %s\n", kehopsActuators.rgbSensor[rgbID].hw_driver.name);
     }
@@ -655,167 +873,96 @@ void actuator_clearWheel(unsigned char Id){
     //EFM8BB_clearWheelDistance(&dev_efm8bb[ptrDev], Id);
 }
 
-
 /**
- * \brief int getPCA9685config_ptr(char * name), Search in the device table
- * list of PCA9685 PWM driver the configuration structure correspondant to the
- * device name (Like IC3) and return a pointer of this structure.
- * \param char * name , name of the device (like IC3, U5, etc...)
- * \return pointer of the correspondant configuration stucture
- */  
-
-int getPCA9685config_ptr(char * name){
-    int i, refFound=-1;
-    
-    for(i=0; refFound<0 && i<pca9685_count ;i++){
-        if(!strcmp(dev_pca9685[i].deviceName, name)){
-            refFound = i;
-        }
-    }       
-    return refFound;
-}
-
-/**
- * \brief int getPCA9629config_ptr(char * name), Search in the device table
- * list of PCA9629 STEPPER MOTOR DRIVER the configuration structure correspondant
- * to the device name (Like IC3) and return a pointer of this structure.
- * \param char * name , name of the device (like IC3, U5, etc...)
- * \return pointer of the correspondant configuration stucture
- */   
-int getPCA9629config_ptr(char * name){
-    int i, refFound=-1;
-    
-    for(i=0; refFound<0 && i<pca9629_count ;i++){
-        if(!strcmp(dev_pca9629[i].deviceName, name)){
-            refFound = i;
-        }
-    }       
-    return refFound;
-}
-
-/**
- * \brief int getEFM8BBconfig_ptr(char * name), Search in the device table
- * list of EFM8BB microcontroller the configuration structure correspondant
- * to the device name (Like IC3) and return a pointer of this structure.
+ * \brief int getDriverConfig_ptr(char * driverType, char * name), Search in the table
+ * the configuration structure correspondant to the driver selected by type and by name 
+ * and return a pointer of this structure.
  * \param char * name , name of the device (like IC3, U5, etc...)
  * \return pointer of the correspondant configuration stucture
  */ 
-int getEFM8BBconfig_ptr(char * name){
+int getDriverConfig_ptr(char * driverType, char * name){
     int i, refFound=-1;
     
-    for(i=0; refFound<0 && i<efm8bb_count ;i++){
-        if(!strcmp(dev_efm8bb[i].deviceName, name)){
-            refFound = i;
+    if(!strcmp(driverType, DRIVER_PCA9685)){
+        for(i=0; refFound<0 && i<pca9685_count ;i++){
+            if(!strcmp(dev_pca9685[i].deviceName, name)){
+                refFound = i;
+            }
         }
-    }       
-    return refFound;
-}
+    }
+    
+    if(!strcmp(driverType, DRIVER_BH1745)){
+        for(i=0; refFound<0 && i<bh1745_count ;i++){
+            if(!strcmp(dev_bh1745[i].deviceName, name)){
+                refFound = i;
+            }
+        }
+    }
 
-/**
- * \brief int getMCP23008config_ptr(char * name), Search in the device table
- * list of MCP23008 GPIO Extender the configuration structure correspondant
- * to the device name (Like IC3) and return a pointer of this structure.
- * \param char * name , name of the device (like IC3, U5, etc...)
- * \return pointer of the correspondant configuration stucture
- */ 
-int getMCP23008config_ptr(char * name){
-    int i, refFound=-1;
-    
-    for(i=0; refFound<0 && i<mcp23008_count ;i++){
-        if(!strcmp(dev_mcp23008[i].deviceName, name)){
-            refFound = i;
-        }
-    }       
-    return refFound;
-}
+    if(!strcmp(driverType, DRIVER_EFM8BB)){
+        for(i=0; refFound<0 && i<efm8bb_count ;i++){
+            if(!strcmp(dev_efm8bb[i].deviceName, name)){
+                refFound = i;
+            }
+        }        
+    }
+    if(!strcmp(driverType, DRIVER_MCP23008)){
+        for(i=0; refFound<0 && i<mcp23008_count ;i++){
+            if(!strcmp(dev_mcp23008[i].deviceName, name)){
+                refFound = i;
+            }
+        }        
+    }
+    if(!strcmp(driverType, DRIVER_PCA9629)){
+        for(i=0; refFound<0 && i<pca9629_count ;i++){
+            if(!strcmp(dev_pca9629[i].deviceName, name)){
+                refFound = i;
+            }
+        }        
+    }
+    if(!strcmp(driverType, DRIVER_VL53L0X)){
+        for(i=0; refFound<0 && i<vl53l0x_count ;i++){
+            if(!strcmp(dev_vl53l0x[i].deviceName, name)){
+                refFound = i;
+            }
+        }        
+    }
+    if(!strcmp(driverType, DRIVER_MCP4725)){
+        for(i=0; refFound<0 && i<mcp4725_count ;i++){
+            if(!strcmp(dev_mcp4725[i].deviceName, name)){
+                refFound = i;
+            }
+        }        
+    }
+    if(!strcmp(driverType, DRIVER_TCA9548A)){
+        for(i=0; refFound<0 && i<tca9548a_count ;i++){
+            if(!strcmp(dev_tca9548a[i].deviceName, name)){
+                refFound = i;
+            }
+        }        
+    }    
+    if(!strcmp(driverType, DRIVER_SSD1306)){
+        for(i=0; refFound<0 && i<ssd1306_count ;i++){
+            if(!strcmp(dev_ssd1306[i].deviceName, name)){
+                refFound = i;
+            }
+        }        
+    }
+    if(!strcmp(driverType, DRIVER_ADS101X)){
+        for(i=0; refFound<0 && i < ads101x_count ;i++){
+            if(!strcmp(dev_ads101x[i].deviceName, name)){
+                refFound = i;
+            }
+        }        
+    }
+    if(!strcmp(driverType, DRIVER_ADS111X)){
+        for(i=0; refFound<0 && i < ads111x_count ;i++){
+            if(!strcmp(dev_ads111x[i].deviceName, name)){
+                refFound = i;
+            }
+        }        
+    }    
 
-/**
- * \brief int getMCP23008config_ptr(char * name), Search in the device table
- * list of MCP23008 GPIO Extender the configuration structure correspondant
- * to the device name (Like IC3) and return a pointer of this structure.
- * \param char * name , name of the device (like IC3, U5, etc...)
- * \return pointer of the correspondant configuration stucture
- */ 
-int getBH1745config_ptr(char * name){
-    int i, refFound=-1;
-    
-    for(i=0; refFound<0 && i<bh1745_count ;i++){
-        if(!strcmp(dev_bh1745[i].deviceName, name)){
-            refFound = i;
-        }
-    }       
-    return refFound;
-}
-
-/**
- * \brief int getVL53l0xconfig_ptr(char * name), Search in the device table
- * list of VL53L0x TOF sensors the configuration structure correspondant
- * to the device name (Like IC3) and return a pointer of this structure.
- * \param char * name , name of the device (like IC3, U5, etc...)
- * \return pointer of the correspondant configuration stucture
- */ 
-int getVL53l0xconfig_ptr(char * name){
-    int i, refFound=-1;
-    
-    for(i=0; refFound<0 && i<vl53l0x_count ;i++){
-        if(!strcmp(dev_vl53l0x[i].deviceName, name)){
-            refFound = i;
-        }
-    }       
-    return refFound;
-}
-
-/**
- * \brief int getMCP4725config_ptr(char * name), Search in the device table
- * list of MCP4725 Digital analog converter the configuration structure correspondant
- * to the device name (Like IC3) and return a pointer of this structure.
- * \param char * name , name of the device (like IC3, U5, etc...)
- * \return pointer of the correspondant configuration stucture
- */ 
-int getMCP4725config_ptr(char * name){
-    int i, refFound=-1;
-    
-    for(i=0; refFound<0 && i<mcp4725_count ;i++){
-        if(!strcmp(dev_mcp4725[i].deviceName, name)){
-            refFound = i;
-        }
-    }       
-    return refFound;
-}
-
-/**
- * \brief int getTCA9548Aconfig_ptr(char * name), Search in the device table
- * list of TCA9548A 8 channels I2C switch
- * to the device name (Like IC3) and return a pointer of this structure.
- * \param char * name , name of the device (like IC3, U5, etc...)
- * \return pointer of the correspondant configuration stucture
- */ 
-int getTCA9548Aconfig_ptr(char * name){
-    int i, refFound=-1;
-    
-    for(i=0; refFound<0 && i<tca9548a_count ;i++){
-        if(!strcmp(dev_tca9548a[i].deviceName, name)){
-            refFound = i;
-        }
-    }       
-    return refFound;
-}
-
-/**
- * \brief int getSSD1306config_ptr(char * name), Search in the device table
- * list of SSD1306 graphic display
- * to the device name (Like IC3) and return a pointer of this structure.
- * \param char * name , name of the device (like IC3, U5, etc...)
- * \return pointer of the correspondant configuration stucture
- */ 
-int getSSD1306config_ptr(char * name){
-    int i, refFound=-1;
-    
-    for(i=0; refFound<0 && i<ssd1306_count ;i++){
-        if(!strcmp(dev_ssd1306[i].deviceName, name)){
-            refFound = i;
-        }
-    }       
     return refFound;
 }
 
@@ -903,28 +1050,6 @@ int actuator_genericHBridge_motorSpeed(int motorID, int speed){
     if(result)
         printf("SET MOTOR SPEED VALUE FROM DRIVERS:  NAME:%s TYPE:%s   motor_id: %d     channel: %d     ratio: %d\n", driverName, driverType, motorID, channel, speed);                
     
-    /*   FUNCTIONS REPLACED BY "driverSelector_SetDOUT"
-    // USE DRIVER FOR PCA9685
-    if(!strcmp(kehopsActuators.dc_motor[motorID].sw_driver.dc_motor.speed.hw_driver.type, DRIVER_PCA9685)){
-        ptrDev = getPCA9685config_ptr(kehopsActuators.dc_motor[motorID].sw_driver.dc_motor.speed.hw_driver.name);
-        
-        if(ptrDev>=0){
-            printf("SET MOTOR SPEED VALUE FROM <%s> DRIVERS:  NAME:%s TYPE:%s I2C add: 0x%2x    motor_id: %d     channel: %d     ratio: %d\n",DRIVER_PCA9685, kehopsActuators.dc_motor[motorID].sw_driver.dc_motor.speed.hw_driver.name, kehopsActuators.dc_motor[motorID].sw_driver.dc_motor.speed.hw_driver.type, dev_pca9685[ptrDev].deviceAddress, motorID, channel, speed);        
-            pca9685_setPWMdutyCycle(&dev_pca9685[ptrDev], channel, speed);
-        }else 
-            printf ("#! Function [actuator_setDoutValue] -> Unknown driver name: %s\n", kehopsActuators.dc_motor[motorID].sw_driver.dc_motor.speed.hw_driver.name);
-    }
-    
-    // USE DRIVER FOR MCP23008
-    if(!strcmp(kehopsActuators.dc_motor[motorID].sw_driver.dc_motor.speed.hw_driver.type, DRIVER_MCP23008)){
-        ptrDev = getMCP23008config_ptr(kehopsActuators.dc_motor[motorID].sw_driver.dc_motor.speed.hw_driver.name);
-        if(ptrDev>=0){
-            printf("SET MOTOR SPEED VALUE FROM <%s> DRIVERS:  NAME:%s TYPE:%s I2C add: 0x%2x    motor_id: %d     channel: %d     state: %d\n",DRIVER_MCP23008, kehopsActuators.dc_motor[motorID].sw_driver.dc_motor.speed.hw_driver.name, kehopsActuators.dc_motor[motorID].sw_driver.dc_motor.speed.hw_driver.type, dev_mcp23008[ptrDev].deviceAddress, motorID, channel, speed);        
-            mcp23008_setChannel(&dev_mcp23008[ptrDev], channel, speed);
-        }else 
-            printf ("#! Function [actuator_genericHBridge_motorSpeed] -> Unknown driver name: %s\n", kehopsActuators.dc_motor[motorID].sw_driver.dc_motor.speed.hw_driver.name);
-    }
-*/
     return 0;
 }
 
@@ -939,21 +1064,33 @@ int actuator_genericHBridge_motorSpeed(int motorID, int speed){
 int driverSelector_SetDOUT(char * driverType, char * driverName, int channel, int value){
     int ptrDev=-1;
     
+    ptrDev = getDriverConfig_ptr(driverType, driverName);
+
+    // SUBDRIVER ACTION Check if driver IC need a subdriver and make a pre-action if required
+    subDriver_onActivate(driverName);
+    
     // USE DRIVER FOR PCA9685
     if(!strcmp(driverType, DRIVER_PCA9685)){
-        ptrDev = getPCA9685config_ptr(driverName);
         if(ptrDev>=0){
-            pca9685_setPWMdutyCycle(&dev_pca9685[ptrDev], channel, value);
+            if(dev_pca9685[ptrDev].deviceAddress > 0)
+                pca9685_setPWMdutyCycle(&dev_pca9685[ptrDev], channel, value);
+            else
+                printf("#! Function [driverSelector_SetDOUT] -> I2C Error: Bad address or device not connected\n");             
         }
     }
         
     // USE DRIVER FOR MCP23008
     if(!strcmp(driverType, DRIVER_MCP23008)){
-        ptrDev = getMCP23008config_ptr(driverName);
         if(ptrDev>=0){
-            mcp23008_setChannel(&dev_mcp23008[ptrDev], channel, value);
+            if(dev_mcp23008[ptrDev].deviceAddress > 0)
+                mcp23008_setChannel(&dev_mcp23008[ptrDev], channel, value);
+            else
+                printf("#! Function [driverSelector_SetDOUT] -> I2C Error: Bad address or device not connected\n");
         }
     }    
+    
+    // SUBDRIVER ACTION Check if driver IC need a subdriver and make a post-action if required
+    subDriver_onDeactivate(driverName);
     
     if(ptrDev<0)
         printf ("#! Function [driverSelector_SetDOUT] -> Unknown driver name: %s\n", driverName);
@@ -962,26 +1099,105 @@ int driverSelector_SetDOUT(char * driverType, char * driverName, int channel, in
 }
 
 /*
- * \fn char subDriver_SetAction(char * driverType, char * driverName, int channel, int value)
+ * \fn char setDeviceChannelByName(char * driverType, char * driverName, int channel, int value)
  * \brief to do
  *
  * \param driverType, driverName, channel, value
  * \return -
  */
-int subDriver_SetAction(char * driverType, char * driverName, int channel, int value){
+int setDeviceChannelByName(char * deviceName, int channel, int value){
     int ptrDev=-1;
     int err=0;
-    
-    // USE DRIVER FOR PCA9685
-    if(!strcmp(driverType, DRIVER_TCA9548A)){
-        ptrDev = getTCA9548Aconfig_ptr(driverName);
+    char * subDriverType;
+                
+    subDriverType = getDriverTypeByName(deviceName);
+    ptrDev = getDriverConfig_ptr(subDriverType, deviceName);
+            
+    // USE DRIVER FOR TCA9548A I2C SWITCH
+    if(!strcmp(subDriverType, DRIVER_TCA9548A)){
         if(ptrDev>=0){
-            err += tca9548a_setChannelState(&dev_tca9548a[ptrDev], channel, value);
+            if(dev_tca9548a[ptrDev].deviceAddress > 0)
+                err += tca9548a_setChannelState(&dev_tca9548a[ptrDev], channel, value);
+            else
+                printf("#! Function [setDeviceChannelByName] -> I2C Error: Bad address or device not connected\n");            
         }
     }
-    
+
     if(ptrDev<0)
-        printf ("#! Function [subDriver_SetAction] -> Unknown driver name: %s\n", driverName);
-     
+        printf ("#! Function [setDeviceChannelByName] -> Unknown device name: %s\n", deviceName);
+    
     return err;
+}
+
+/*
+ * \fn char * getSubdriverSettingsByName(char * driverName)
+ * \brief search in the boardDeviceList if the component specified by name use
+ *  a sub-driver and return the name of this subdriver if found.
+ *
+ * \param driverType, driverName, channel, value
+ * \return -
+ */
+struct device_subdrivers getSubdriverSettingsByName(char * driverName){
+    int i;
+    struct device_subdrivers dummySubdriverData;;
+    
+    strcpy(dummySubdriverData.name, "");
+    dummySubdriverData.attributes.device_channel=-1;
+    dummySubdriverData.attributes.onActivate=-1;
+    dummySubdriverData.attributes.onDeactivate=-1;
+    
+    for(i=0; boardDevice[i].address >= 0 && i<MAX_BOARD_DEVICE; i++){
+        if(!strcmp(boardDevice[i].name, driverName))
+            if(strcmp(boardDevice[i].sub_driver.name, ""))
+                return boardDevice[i].sub_driver;
+    }
+    
+    return dummySubdriverData;
+}
+
+
+
+/*
+ * \fn int subDriver_onActivate(char * driverName)
+ * \brief search if the component specified by name use
+ *  a sub-driver and set a pre action if found;
+ *
+ * \param driverName
+ * \return -
+ */
+
+int subDriver_onActivate(char * driverName){
+    struct device_subdrivers subDriverSettings;
+    int status=0;;
+    
+    // Check if a subdriver is requiered
+    subDriverSettings = getSubdriverSettingsByName(driverName);
+    if(strcmp(subDriverSettings.name, "")){
+        status = setDeviceChannelByName(subDriverSettings.name, subDriverSettings.attributes.device_channel, subDriverSettings.attributes.onActivate);
+    }
+    return status;
+}
+
+/*
+ * \fn int subDriver_onDeactivate(char * driverName)
+ * \brief search if the component specified by name use
+ *  a sub-driver and set a post action if found;
+ *
+ * \param driverName
+ * \return -
+ */
+
+int subDriver_onDeactivate(char * driverName){
+    struct device_subdrivers subDriverSettings;
+    int status = 0;
+        
+    // Check if a subdriver is requiered
+    subDriverSettings = getSubdriverSettingsByName(driverName);
+    if(strcmp(subDriverSettings.name, "")){
+        //printf("\nSUBDRIVER POST ACTION FOR [%s]: NAME: %s, CHANNEL: %d, VALUE: %d\n", driverName, subDriverSettings.name,
+        //    subDriverSettings.attributes.device_channel, 0);  
+            
+        status = setDeviceChannelByName(subDriverSettings.name, subDriverSettings.attributes.device_channel, subDriverSettings.attributes.onDeactivate);
+    }    
+    return status;
 }

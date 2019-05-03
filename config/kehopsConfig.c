@@ -39,6 +39,11 @@
 #define FILE_KEY_CONFIG_DIN_MAP_ID "{'din'[*{'din_id'"
 #define FILE_KEY_CONFIG_DIN_EVENT_STATE "{'din'[*{'event'"
 
+#define FILE_KEY_CONFIG_AOUT "{'aout'"
+#define FILE_KEY_CONFIG_AOUT_ID "{'aout'[*{'aout'"
+#define FILE_KEY_CONFIG_AOUT_MAP_ID "{'aout'[*{'aout_id'"
+#define FILE_KEY_CONFIG_AOUT_EVENT_STATE "{'aout'[*{'event'"
+
 #define FILE_KEY_CONFIG_BTN "{'button'"
 #define FILE_KEY_CONFIG_BTN_ID "{'button'[*{'btn'"
 #define FILE_KEY_CONFIG_BTN_MAP_ID "{'button'[*{'din_id'"
@@ -118,6 +123,7 @@ unsigned char NBRGBC=0;
 unsigned char NBBTN=0;
 unsigned char NBDIN=0;
 unsigned char NBWHEEL=0;
+unsigned char NBAOUT=0;
 
 /**
  * \brief Extract JSON configuration from FileBuffer to the kehops structrue configuration
@@ -126,7 +132,7 @@ unsigned char NBWHEEL=0;
  */  
 void extractKehopsConfig(char * srcDataBuffer){
 
-    NBPWM = NBLED = NBAIN = NBSONAR = NBSTEPPER = NBSTEPPER = NBMOTOR = NBRGBC = NBBTN = NBDIN = NBWHEEL =0;
+    NBPWM = NBLED = NBAIN = NBSONAR = NBSTEPPER = NBSTEPPER = NBMOTOR = NBRGBC = NBBTN = NBDIN = NBWHEEL = NBAOUT =0;
     
     
     struct jReadElement cfg_devices_list, cfg_mqtt_list, cfg_devices;
@@ -391,6 +397,32 @@ void extractKehopsConfig(char * srcDataBuffer){
                 }
             }
         }
+        
+    // AOUT Setting
+        jRead((char *)srcDataBuffer, FILE_KEY_CONFIG_AOUT, &cfg_devices_list );
+
+        // RECHERCHE DATA DE TYPE ARRAY
+        if(cfg_devices_list.dataType == JREAD_ARRAY ){
+            // Get the number of AOUT in array
+            nbOfDeviceInConf = cfg_devices_list.elements;
+
+            // EXTRACT ANALOG SETTINGS FROM CONFIG    
+              for(i=0;i<nbOfDeviceInConf;i++){
+                  kehops.aout[i].config.aout_id = -1;
+                  kehops.aout[i].config.defaultPower = 0;
+                  kehops.aout[i].config.defaultState = 0;
+                  kehops.aout[i].config.mode = 0;
+              }
+            
+            for(i=0; i < nbOfDeviceInConf; i++){ 
+                deviceId=-1;
+                deviceId = jRead_int((char *)srcDataBuffer, FILE_KEY_CONFIG_AOUT_ID, &i); 
+                if(deviceId >= 0){
+                    NBAOUT++;
+                    kehops.aout[deviceId].config.aout_id = jRead_int((char *)srcDataBuffer, FILE_KEY_CONFIG_AOUT_MAP_ID, &i);
+                }
+            }
+        }        
 
     // BTN Setting
         jRead((char *)srcDataBuffer, FILE_KEY_CONFIG_BTN, &cfg_devices_list );

@@ -120,10 +120,16 @@ struct actuator_dout{
     struct s_dout_config config;
 };
 
+struct actuator_aout{
+    struct s_dout_sp setpoint;
+    struct s_aout_config config;
+};
+
 typedef struct t_actuator{
     struct actuator_motor motor[MAXMOTOR];
     struct actuator_stepper stepperMotor[MAXSTEPPER];
     struct actuator_dout digitalOutput[MAXPWM+MAXLED];
+    struct actuator_aout analogOutput[MAXAOUT];
 }ACTUATORS;
 
 typedef struct t_sensor{
@@ -174,6 +180,8 @@ int getStepperState(int motorNumber);                                         //
 void setServoPosition(unsigned char smName, char position);
 void setLedPower(unsigned char ledID, unsigned char power);
 void setPwmPower(unsigned char pwmID, unsigned char power);
+
+void setAnalogValue(unsigned char analogID, int value);
 
 void processCommandQueue(void);
 void execCommand(void (*ptrFunc)(char, int, int), char adr, int cmd, int param);
@@ -384,17 +392,23 @@ int setMotorSpeed(int motorName, int ratio){
 		ratio = 0;
  
         int motorId = kehops.dcWheel[motorName].config.motor.dc_motor_id; 
-        if(!strcmp(kehopsActuators.dc_motor[motorId].interface, IFACE_GEN_HBRIDGE_MOTOR)){
-            set_i2c_command_queue(&actuator_genericHBridge_motorSpeed, motorId, ratio, NULL);
-        }
-        
+
+    if(!strcmp(kehopsActuators.dc_motor[motorId].interface, ""))
+        printf("[hwManager] Error! no interface found for MOTOR [ID#%d], please check the config file <deviceMap.cfg>\n", motorId);
+    else{
+            if(!strcmp(kehopsActuators.dc_motor[motorId].interface, IFACE_DEVICE_I2C)) 
+                printf("[hwManager] Error! no interface driver I2C for motor [ID#%d]\n", motorId);
+
+            if(!strcmp(kehopsActuators.dc_motor[motorId].interface, IFACE_GEN_HBRIDGE_MOTOR)){
+                set_i2c_command_queue(&actuator_genericHBridge_motorSpeed, motorId, ratio, NULL);
+            }
+    }
 	return(1);
 }
 
 
 // ---------------------------------------------------------------------------
 // SETMOTORDIRECTION
-// !!!!!!!!!!!!! FONCTION A RETRAVAILLER !!!!!!!!!!!!!!!!!!!
 // ---------------------------------------------------------------------------
 int setMotorDirection(char motorName, int direction){
 
@@ -404,9 +418,15 @@ int setMotorDirection(char motorName, int direction){
 
     int motorId = kehops.dcWheel[motorName].config.motor.dc_motor_id; 
 
-    if(!strcmp(kehopsActuators.dc_motor[motorId].interface, IFACE_GEN_HBRIDGE_MOTOR)){
-        set_i2c_command_queue(&actuator_genericHBridge_motorDirection, motorId, direction, NULL);
-    }        
+    if(!strcmp(kehopsActuators.dc_motor[motorId].interface, ""))
+        printf("[hwManager] Error! no interface found for MOTOR [ID#%d], please check the config file <deviceMap.cfg>\n", motorId);
+    else{
+        if(!strcmp(kehopsActuators.dc_motor[motorId].interface, IFACE_DEVICE_I2C)) 
+            printf("[hwManager] Error! no interface driver I2C for motor [ID#%d]\n", motorId);
+        if(!strcmp(kehopsActuators.dc_motor[motorId].interface, IFACE_GEN_HBRIDGE_MOTOR)){
+            set_i2c_command_queue(&actuator_genericHBridge_motorDirection, motorId, direction, NULL);
+        }
+    }
 
     return(1);
 }
@@ -419,9 +439,17 @@ int setMotorDirection(char motorName, int direction){
 int setMotorState(char motorName, int state){
     int motorId = kehops.dcWheel[motorName].config.motor.dc_motor_id; 
 
-    if(!strcmp(kehopsActuators.dc_motor[motorId].interface, IFACE_GEN_HBRIDGE_MOTOR)){
-        set_i2c_command_queue(&actuator_genericHBridge_motorState, motorId, state, NULL);
-    }  
+    if(!strcmp(kehopsActuators.dc_motor[motorId].interface, ""))
+        printf("[hwManager] Error! no interface found for MOTOR [ID#%d], please check the config file <deviceMap.cfg>\n", motorId);
+    else{
+        if(!strcmp(kehopsActuators.dc_motor[motorId].interface, IFACE_DEVICE_I2C)){
+            printf("[hwManager] Error! no interface driver I2C for motor [ID#%d] \n", motorId);
+        }  
+
+        if(!strcmp(kehopsActuators.dc_motor[motorId].interface, IFACE_GEN_HBRIDGE_MOTOR)){
+            set_i2c_command_queue(&actuator_genericHBridge_motorState, motorId, state, NULL);
+        }
+    }
     return (1);
 }
 
@@ -449,14 +477,18 @@ int getMcuFirmware(void){
 // -------------------------------------------------------------------
 
 int setStepperStepAction(int motorNumber, int direction, int stepCount){      
-    printf("\n-------- SET STEPPER STEP ACTION -------------   %d STEPS\n", stepCount);
     
     // Check if motor inversion requiered and modify if necessary
     if(kehops.stepperWheel[motorNumber].config.motor.inverted)
         direction *= -1;
 
     int stepper_id = kehops.stepperWheel[motorNumber].config.motor.stepper_motor_id;
-    set_i2c_command_queue(&actuator_setStepperStepAction, stepper_id, direction, stepCount);
+    
+    if(!strcmp(kehopsActuators.stepper_motors[stepper_id].interface, ""))
+        printf("[hwManager] Error! no interface found for STEPPER [ID#%d], please check the config file <deviceMap.cfg>\n", stepper_id);
+    else
+        if(!strcmp(kehopsActuators.stepper_motors[stepper_id].interface, IFACE_DEVICE_I2C))       
+            set_i2c_command_queue(&actuator_setStepperStepAction, stepper_id, direction, stepCount);
     return (0);
 } 
 
@@ -467,9 +499,13 @@ int setStepperStepAction(int motorNumber, int direction, int stepCount){
 // - vitesse 0..100%
 // -------------------------------------------------------------------
 int setStepperSpeed(int motorNumber, int speed){
-    printf("\n-------- SET STEPPER SPEED -------------\n");
-    int stepper_id = kehops.stepperWheel[motorNumber].config.motor.stepper_motor_id; 
-    set_i2c_command_queue(&actuator_setStepperSpeed, stepper_id, speed, NULL);
+    int stepper_id = kehops.stepperWheel[motorNumber].config.motor.stepper_motor_id;
+    
+    if(!strcmp(kehopsActuators.stepper_motors[stepper_id].interface, ""))
+        printf("[hwManager] Error! no interface found for STEPPER [ID#%d], please check the config file <deviceMap.cfg>\n", stepper_id);
+    else
+        if(!strcmp(kehopsActuators.stepper_motors[stepper_id].interface, IFACE_DEVICE_I2C))    
+            set_i2c_command_queue(&actuator_setStepperSpeed, stepper_id, speed, NULL);
     
     return (1);
 }                           
@@ -505,20 +541,45 @@ int set_i2c_command_queue(int (*callback)(char, int, int),char adr, int cmd, int
 }
 
 void setLedPower(unsigned char ledID, unsigned char power){
-        // USING THE NEW DRIVER
         int doutID = kehops.led[ledID].config.dout_id;
-        set_i2c_command_queue(&actuator_setDoutValue, doutID, power, NULL);        
+
+        if(!strcmp(kehopsActuators.dout[doutID].interface, ""))
+            printf("[hwManager] Error! no interface found for DOUT [ID#%d], please check the config file <deviceMap.cfg>\n", doutID);
+        else
+            if(!strcmp(kehopsActuators.dout[doutID].interface, IFACE_DEVICE_I2C))        
+                set_i2c_command_queue(&actuator_setDoutValue, doutID, power, NULL);        
 }
 
 void setPwmPower(unsigned char pwmID, unsigned char power){
-        // USING THE NEW DRIVER
         int doutID = kehops.pwm[pwmID].config.dout_id;
-        set_i2c_command_queue(&actuator_setDoutValue, doutID, power, NULL);        
+
+        if(!strcmp(kehopsActuators.dout[doutID].interface, ""))
+            printf("[hwManager] Error! no interface found for DOUT [ID#%d], please check the config file <deviceMap.cfg>\n", doutID);
+        else
+            if(!strcmp(kehopsActuators.dout[doutID].interface, IFACE_DEVICE_I2C))
+                set_i2c_command_queue(&actuator_setDoutValue, doutID, power, NULL);        
+}
+
+void setAnalogValue(unsigned char analogID, int value){
+        int aoutID = kehops.aout[analogID].config.aout_id;
+        
+        if(!strcmp(kehopsActuators.aout[aoutID].interface, ""))
+            printf("[hwManager] Error! no interface found for AOUT [ID#%d], please check the config file <deviceMap.cfg>\n", aoutID);
+        else
+            if(!strcmp(kehopsActuators.aout[aoutID].interface, IFACE_DEVICE_I2C)){
+                set_i2c_command_queue(&actuator_setAnalogValue, aoutID, value, NULL);
+            }
+            
 }
 
 void setServoPosition(unsigned char ID, char position){
         int doutID = kehops.pwm[ID].config.dout_id;
-        set_i2c_command_queue(&actuator_setServoPosition, doutID, position, NULL);
+        
+        if(!strcmp(kehopsActuators.dout[doutID].interface, ""))
+            printf("[hwManager] Error! no interface found for DOUT [ID#%d], please check the config file <deviceMap.cfg>\n", doutID);
+        else
+            if(!strcmp(kehopsActuators.dout[doutID].interface, IFACE_DEVICE_I2C))        
+                set_i2c_command_queue(&actuator_setServoPosition, doutID, position, NULL);
 }
 
 // ------------------------------------------------------------------------------------

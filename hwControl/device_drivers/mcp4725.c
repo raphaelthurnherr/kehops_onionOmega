@@ -1,6 +1,8 @@
 /**
  * \file mcp4725.h
  * \brief MCP4725 Digital analog converter with eeprom memory driver
+ *  I2C default address: 0x60 when ADR connected to GND
+ *  I2C default address: 0x61 when ADR connected to VCC
  * \author Raphael Thurnherr
  * \version 0.1
  * \date 24.04.2019
@@ -12,13 +14,14 @@
 #ifndef I2CSIMU
 
 // user Definitions
-#define RESOLUTION  4096
+#define RESOLUTION  4095
 
 
 
 #include "mcp4725.h"
 #include <onion-i2c.h>
 #include "stdio.h"
+#include "math.h"
 
 /**
  * \brief MCP4725 driver initialization
@@ -52,19 +55,25 @@ int mcp4725_setDACOutput_mV(device_mcp4725 *mcp4725config, int value_mv){
     unsigned char err =0;
     unsigned char deviceAddress = mcp4725config->deviceAddress;
     unsigned int vref = mcp4725config->vref_mv;
-    unsigned int regData;
+    unsigned int regData =0;
+    float resolution_mv;
     
-    regData = (vref / RESOLUTION) * value_mv;
+    resolution_mv = (float)vref / RESOLUTION;
     
+    regData = round((float)value_mv / resolution_mv);
+
     unsigned char data[32];
     
     // Write only DAC Register: (C2, C1, C0) = (0,1,0) and  POWERDOWN =0;
     data[0] = 0x40;
     
-    data[1] = (regData & 0xff00) >> 8;
-    data[2] = regData & 0x00f0;
-    err += i2c_writeBufferRaw(0,deviceAddress, data, 3);
+    // Loading buffer with 12bit register value
+    data[1] = (regData & 0x0ff0) >> 4;        // MSB
+    data[2] = (regData & 0x000f) << 4;        // LSB
     
+    err += i2c_writeBufferRaw(0, deviceAddress, data, 3);
+    
+    printf("Write I2C mcp4725_setDACOutput_mV:     valueMV: %d     Address:   0x%2x", value_mv,  deviceAddress );
     err++;
     return err;
 }
@@ -86,9 +95,9 @@ int mcp4725_setDAC_12bitValue(device_mcp4725 *mcp4725config, int value){
     data[0] = 0x40;
     
     // Loading buffer with 12bit register value
-    data[1] = (value & 0xff00) >> 8;
-    data[2] = (value & 0x00f0);
-    
+    data[1] = (value & 0x0ff0) >> 4;        // MSB
+    data[2] = (value & 0x000f) << 4;        // LSB
+
     err += i2c_writeBufferRaw(0, deviceAddress, data, 3);
     
     err++;

@@ -35,6 +35,7 @@ OBJECTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}
 
 # Object Files
 OBJECTFILES= \
+	${OBJECTDIR}/actuators/asyncAOUT.o \
 	${OBJECTDIR}/actuators/asyncLED.o \
 	${OBJECTDIR}/actuators/asyncMOTOR.o \
 	${OBJECTDIR}/actuators/asyncPWM.o \
@@ -45,7 +46,8 @@ OBJECTFILES= \
 	${OBJECTDIR}/config/kehopsConfig.o \
 	${OBJECTDIR}/configManager.o \
 	${OBJECTDIR}/fileIO.o \
-	${OBJECTDIR}/hwControl/device_drivers/api/ssd1306/SSD1306_OLED.o \
+	${OBJECTDIR}/hwControl/device_drivers/ads101x.o \
+	${OBJECTDIR}/hwControl/device_drivers/ads111x.o \
 	${OBJECTDIR}/hwControl/device_drivers/api/vl53l0x/vl53l0x_api.o \
 	${OBJECTDIR}/hwControl/device_drivers/api/vl53l0x/vl53l0x_api_calibration.o \
 	${OBJECTDIR}/hwControl/device_drivers/api/vl53l0x/vl53l0x_api_core.o \
@@ -122,6 +124,11 @@ ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/kehops_x64: ${OBJECTFILES}
 	${MKDIR} -p ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}
 	${LINK.c} -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/kehops_x64 ${OBJECTFILES} ${LDLIBSOPTIONS} -pthread -lm
 
+${OBJECTDIR}/actuators/asyncAOUT.o: actuators/asyncAOUT.c
+	${MKDIR} -p ${OBJECTDIR}/actuators
+	${RM} "$@.d"
+	$(COMPILE.c) -g -DI2CSIMU -IhwControl/libs/i2c -IhwControl/libs/onion-debug -IhwControl -Iactuators -IkehopsCom -IkehopsCom/libs/lib_json -IkehopsCom/libs/lib_mqtt -IhwControl/device_drivers -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/actuators/asyncAOUT.o actuators/asyncAOUT.c
+
 ${OBJECTDIR}/actuators/asyncLED.o: actuators/asyncLED.c
 	${MKDIR} -p ${OBJECTDIR}/actuators
 	${RM} "$@.d"
@@ -172,10 +179,15 @@ ${OBJECTDIR}/fileIO.o: fileIO.c
 	${RM} "$@.d"
 	$(COMPILE.c) -g -DI2CSIMU -IhwControl/libs/i2c -IhwControl/libs/onion-debug -IhwControl -Iactuators -IkehopsCom -IkehopsCom/libs/lib_json -IkehopsCom/libs/lib_mqtt -IhwControl/device_drivers -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/fileIO.o fileIO.c
 
-${OBJECTDIR}/hwControl/device_drivers/api/ssd1306/SSD1306_OLED.o: hwControl/device_drivers/api/ssd1306/SSD1306_OLED.c
-	${MKDIR} -p ${OBJECTDIR}/hwControl/device_drivers/api/ssd1306
+${OBJECTDIR}/hwControl/device_drivers/ads101x.o: hwControl/device_drivers/ads101x.c
+	${MKDIR} -p ${OBJECTDIR}/hwControl/device_drivers
 	${RM} "$@.d"
-	$(COMPILE.c) -g -DI2CSIMU -IhwControl/libs/i2c -IhwControl/libs/onion-debug -IhwControl -Iactuators -IkehopsCom -IkehopsCom/libs/lib_json -IkehopsCom/libs/lib_mqtt -IhwControl/device_drivers -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/hwControl/device_drivers/api/ssd1306/SSD1306_OLED.o hwControl/device_drivers/api/ssd1306/SSD1306_OLED.c
+	$(COMPILE.c) -g -DI2CSIMU -IhwControl/libs/i2c -IhwControl/libs/onion-debug -IhwControl -Iactuators -IkehopsCom -IkehopsCom/libs/lib_json -IkehopsCom/libs/lib_mqtt -IhwControl/device_drivers -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/hwControl/device_drivers/ads101x.o hwControl/device_drivers/ads101x.c
+
+${OBJECTDIR}/hwControl/device_drivers/ads111x.o: hwControl/device_drivers/ads111x.c
+	${MKDIR} -p ${OBJECTDIR}/hwControl/device_drivers
+	${RM} "$@.d"
+	$(COMPILE.c) -g -DI2CSIMU -IhwControl/libs/i2c -IhwControl/libs/onion-debug -IhwControl -Iactuators -IkehopsCom -IkehopsCom/libs/lib_json -IkehopsCom/libs/lib_mqtt -IhwControl/device_drivers -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/hwControl/device_drivers/ads111x.o hwControl/device_drivers/ads111x.c
 
 ${OBJECTDIR}/hwControl/device_drivers/api/vl53l0x/vl53l0x_api.o: hwControl/device_drivers/api/vl53l0x/vl53l0x_api.c
 	${MKDIR} -p ${OBJECTDIR}/hwControl/device_drivers/api/vl53l0x

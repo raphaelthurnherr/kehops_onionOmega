@@ -1,0 +1,12 @@
+Versions:
+
+1.1.1 - 03.05.2019
+- [NEW] I2C devices drivers functions are not called if the device fail on initialization.
+- [NEW] Add attributes "onActivate" and "onDeactivate" values to the subdrivers config file. 
+- [NEW] Add new drivers for 16 bit analog digital converter (ads111x)
+
+1.1.0 - 02.05.2019
+- [NEW] Add support for use the sub-driver hardware devices based on TCA9548
+- [NEW] Add new drivers for 12 bit analog digital converter (ads101x)
+- [BUG] Drivers for display (ssd1306) & TOF distance sensors not yet supported
+- [FIX] Battery/AIN request and status send now MQTT message with all battery / AIN known

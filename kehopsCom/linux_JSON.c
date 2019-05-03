@@ -27,7 +27,9 @@
 
 #define KEY_MESSAGE_VALUE_PWM "{'MsgData'{'MsgValue'[*{'pwm'"
 #define KEY_MESSAGE_VALUE_LED "{'MsgData'{'MsgValue'[*{'led'"
+#define KEY_MESSAGE_VALUE_AOUT "{'MsgData'{'MsgValue'[*{'aout'"
 #define KEY_MESSAGE_VALUE_POWER "{'MsgData'{'MsgValue'[*{'power'"
+#define KEY_MESSAGE_VALUE_VALUE "{'MsgData'{'MsgValue'[*{'value'"
 #define KEY_MESSAGE_VALUE_STATE "{'MsgData'{'MsgValue'[*{'state'"
 #define KEY_MESSAGE_VALUE_COUNT "{'MsgData'{'MsgValue'[*{'count'"
 #define KEY_MESSAGE_VALUE_POSPERCENT "{'MsgData'{'MsgValue'[*{'position'"
@@ -94,6 +96,11 @@
 #define KEY_MESSAGE_VALUE_CFG_PWM_ID "{'MsgData'{'MsgValue'[{'pwm'[*{'pwm'"
 #define KEY_MESSAGE_VALUE_CFG_PWM_STATE "{'MsgData'{'MsgValue'[{'pwm'[*{'state'"
 #define KEY_MESSAGE_VALUE_CFG_PWM_POWER "{'MsgData'{'MsgValue'[{'pwm'[*{'power'"
+
+#define KEY_MESSAGE_VALUE_CFG_AOUT "{'MsgData'{'MsgValue'[*{'aout'"
+#define KEY_MESSAGE_VALUE_CFG_AOUT_ID "{'MsgData'{'MsgValue'[{'aout'[*{'aout'"
+#define KEY_MESSAGE_VALUE_CFG_AOUT_STATE "{'MsgData'{'MsgValue'[{'aout'[*{'state'"
+#define KEY_MESSAGE_VALUE_CFG_AOUT_POWER "{'MsgData'{'MsgValue'[{'aout'[*{'power'"
 
 #define KEY_MESSAGE_VALUE_CFG_BTN "{'MsgData'{'MsgValue'[*{'button'"
 #define KEY_MESSAGE_VALUE_CFG_BTN_ID "{'MsgData'{'MsgValue'[{'button'[*{'btn'"
@@ -185,7 +192,7 @@ char GetAlgoidMsg(ALGOID *destMessage, char *srcBuffer){
 				for(i=0;i<20;i++) myDataString[i]=0;
 				jRead_string((char *)srcBuffer,  KEY_MESSAGE_PARAM,myDataString,15, NULL);
 
-				destMessage->msgParam=ERR_PARAM;
+				destMessage->msgParam = ERR_PARAM;
 					if(!strcmp(myDataString, "stop")) destMessage->msgParam = STOP;
 					if(!strcmp(myDataString, "motor")) destMessage->msgParam = MOTORS;
 					if(!strcmp(myDataString, "pwm")) destMessage->msgParam = pPWM;
@@ -200,6 +207,7 @@ char GetAlgoidMsg(ALGOID *destMessage, char *srcBuffer){
                                         if(!strcmp(myDataString, "config")) destMessage->msgParam = CONFIG;
                                         if(!strcmp(myDataString, "system")) destMessage->msgParam = SYSTEM;
                                         if(!strcmp(myDataString, "stepper")) destMessage->msgParam = STEPPER;
+                                        if(!strcmp(myDataString, "aout")) destMessage->msgParam = pAOUT;
 
 				  jRead((char *)srcBuffer, KEY_MESSAGE_VALUE, &element );
 
@@ -298,6 +306,19 @@ char GetAlgoidMsg(ALGOID *destMessage, char *srcBuffer){
                                                   destMessage->PWMarray[i].time= jRead_long((char *)srcBuffer, KEY_MESSAGE_VALUE_TIME, &i);
                                                   destMessage->PWMarray[i].blinkCount= jRead_long((char *)srcBuffer, KEY_MESSAGE_VALUE_COUNT, &i);
 				    	  }
+                                          
+                                          // AOUT
+				    	  if(destMessage->msgParam == pAOUT){
+                                                  destMessage->Aout[i].powerPercent=-1;
+                                                  strcpy(destMessage->Aout[i].state,"null");
+                                                  destMessage->Aout[i].value=-1;
+				    		  
+                                                  jRead_string((char *)srcBuffer, KEY_MESSAGE_VALUE_STATE, destMessage->Aout[i].state, 15, &i );
+				    		  int aoutId=jRead_long((char *)srcBuffer, KEY_MESSAGE_VALUE_AOUT, &i);
+				    		  destMessage->Aout[i].id=aoutId;
+				    		  destMessage->Aout[i].powerPercent= jRead_long((char *)srcBuffer, KEY_MESSAGE_VALUE_POWER, &i);                                                  
+                                                  destMessage->Aout[i].value= jRead_long((char *)srcBuffer, KEY_MESSAGE_VALUE_VALUE, &i);
+				    	  }                                          
                                           
                                           // SERVO
 				    	  if(destMessage->msgParam == pSERVO){
@@ -417,7 +438,23 @@ char GetAlgoidMsg(ALGOID *destMessage, char *srcBuffer){
                                                         destMessage->Config.pwm[i_dev].power=jRead_long((char *)srcBuffer, KEY_MESSAGE_VALUE_CFG_PWM_POWER, &i_dev); 
                                                         jRead_string((char *)srcBuffer, KEY_MESSAGE_VALUE_CFG_PWM_STATE, destMessage->Config.pwm[i_dev].state, 15, &i_dev ); 
                                                     }
-                                                } 
+                                                }
+                                                
+                                                // AOUT Setting
+                                                jRead((char *)srcBuffer, KEY_MESSAGE_VALUE_CFG_AOUT, &cfg_device_list );
+
+                                                // RECHERCHE DATA DE TYPE ARRAY
+                                                if(cfg_device_list.dataType == JREAD_ARRAY ){
+                                                    // Get the number of AOUT in array
+                                                    nbOfdeviceInConf=cfg_device_list.elements;
+                                                    destMessage->Config.aoutValueCnt = nbOfdeviceInConf;
+                                                    
+                                                    for(i_dev=0; i_dev < nbOfdeviceInConf; i_dev++){
+                                                        destMessage->Config.Aout[i_dev].id=jRead_long((char *)srcBuffer, KEY_MESSAGE_VALUE_CFG_AOUT_ID, &i_dev); 
+                                                        destMessage->Config.Aout[i_dev].power=jRead_long((char *)srcBuffer, KEY_MESSAGE_VALUE_CFG_AOUT_POWER, &i_dev); 
+                                                        jRead_string((char *)srcBuffer, KEY_MESSAGE_VALUE_CFG_AOUT_STATE, destMessage->Config.Aout[i_dev].state, 15, &i_dev ); 
+                                                    }
+                                                }                                                 
                                                 
                                                 // DIN Setting
                                                 jRead((char *)srcBuffer, KEY_MESSAGE_VALUE_CFG_DIN, &cfg_device_list );
@@ -681,7 +718,6 @@ void jsonBuilder(char * buffer, int msgId, char* to, char* from, char* msgType, 
 							case BUTTON :                  
                                                                             jwObj_int("btn",messageResponse[i].BTNresponse.id);	
                                                                                if(messageResponse[i].value >= 0){
-
                                                                                                         // add object key:value pairs
                                                                                     if(messageResponse[i].value >= 0){
                                                                                             jwObj_int( "state", messageResponse[i].value);				// add object key:value pairs
@@ -862,6 +898,25 @@ void jsonBuilder(char * buffer, int msgId, char* to, char* from, char* msgType, 
                                                                             }
                                                                             break;
 
+                                                        case pAOUT :             
+                                                                            switch(messageResponse[i].responseType){
+                                                                                case EVENT_ACTION_ERROR :   jwObj_string("action", "error");break;
+                                                                                case EVENT_ACTION_END  :   jwObj_string("action", "end"); break;
+                                                                                case EVENT_ACTION_BEGIN  :   jwObj_string("action", "begin"); break;
+                                                                                case EVENT_ACTION_RUN  :   jwObj_string("action", "run"); break;
+                                                                                case EVENT_ACTION_ABORT  :   jwObj_string("action", "abort"); break;
+                                                                                case RESP_STD_MESSAGE  :   if(messageResponse[i].AOUTresponse.id>=0)
+                                                                                                jwObj_int( "aout", messageResponse[i].AOUTresponse.id);
+                                                                                            else
+                                                                                                jwObj_string("aout", "unknown");
+                                                                                            jwObj_string( "state", messageResponse[i].AOUTresponse.state);				
+                                                                                            jwObj_int( "power", messageResponse[i].AOUTresponse.powerPercent);				
+                                                                                            jwObj_int("value", messageResponse[i].AOUTresponse.value);
+                                                                                            break;
+                                                                                default :   jwObj_string("error", "unknown");break;
+                                                                            }
+                                                                            break;
+                                                                            
                                                         case pSERVO :             
                                                                             switch(messageResponse[i].responseType){
                                                                                 case EVENT_ACTION_ERROR :   jwObj_string("action", "error");break;
@@ -999,6 +1054,19 @@ void jsonBuilder(char * buffer, int msgId, char* to, char* from, char* msgType, 
                                                                                                                     } 
                                                                                                                 jwEnd();                                             
                                                                                                             }                                                                                                            
+
+                                                                                                        // CREATE JSON CONFIG FOR AOUT
+                                                                                                            if(messageResponse[i].CONFIGresponse.aoutValueCnt > 0){
+                                                                                                                jwObj_array("aout");
+                                                                                                                    for(j=0;j<messageResponse[i].CONFIGresponse.aoutValueCnt;j++){
+                                                                                                                        jwArr_object();
+                                                                                                                            jwObj_int( "aout", messageResponse[i].CONFIGresponse.Aout[j].id);
+                                                                                                                            jwObj_string("state", messageResponse[i].CONFIGresponse.Aout[j].state);
+                                                                                                                            jwObj_int( "power", messageResponse[i].CONFIGresponse.Aout[j].power);
+                                                                                                                        jwEnd();
+                                                                                                                    } 
+                                                                                                                jwEnd();                                             
+                                                                                                            } 
                                                                                                             
                                                                                                         // CREATE JSON CONFIG FOR DIN CONFIG
                                                                                                             if(messageResponse[i].CONFIGresponse.dinValueCnt > 0){

@@ -17,17 +17,20 @@
 #ifndef ACTUATORSDRIVERS_H
 #define ACTUATORSDRIVERS_H
 
+#define DRIVER_PCA9685 "pca9685"
 #define DRIVER_BH1745 "bh1745"
 #define DRIVER_EFM8BB "efm8bb"
 #define DRIVER_MCP23008 "mcp23008"
-#define DRIVER_PCA9685 "pca9685"
 #define DRIVER_PCA9629 "pca9629"
 #define DRIVER_VL53L0X "vl53l0x"
 #define DRIVER_MCP4725 "mcp4725"
 #define DRIVER_TCA9548A "tca9548a"
 #define DRIVER_SSD1306 "ssd1306"
+#define DRIVER_ADS101X "ads101x"
+#define DRIVER_ADS111X "ads111x"
 
 #define IFACE_GEN_HBRIDGE_MOTOR "generic_hbridge"
+#define IFACE_DEVICE_I2C "I2C"
 
 typedef struct s_color{
         int red;
@@ -55,6 +58,15 @@ extern int boardHWinit();
  */
 extern char actuator_setDoutValue(int doutID, int value);
 
+/**
+ * \fn char actuator_setAnalogValue()
+ * \brief Get the AOUT hardware id of the output from config and apply the
+ *  AOUT settings if available, else boolean value is apply
+ *
+ * \param ledID, powerr
+ * \return -
+ */
+extern char actuator_setAnalogValue(int aoutID, int value);
 
 /**
  * \fn char actuator_setsetServoPosition()

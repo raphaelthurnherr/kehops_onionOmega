@@ -1,6 +1,6 @@
 /**
  * \file tca9548a.h
- * \brief MCP4725 Digital analog converter with eeprom memory driver
+ * \brief TCA9548A I2C Switch driver
  *  I2C default address: 0xE0 (7 bit)
  * \author Raphael Thurnherr
  * \version 0.1
@@ -14,9 +14,8 @@
 #ifndef TCA9548A_H
 #define TCA9548A_H
 
-#define STATE_ON   0            // ON state
-#define STATE_OFF  1            // OFF state
-#define STATE_XON  2            // Exclusive ON state, other channels temporary off
+#define STATE_OFF  0            // OFF state
+#define STATE_ON  !STATE_OFF    // ON state
 
 /**
  * \struct tca9548a [tca9548a.h] Configuration structure definition

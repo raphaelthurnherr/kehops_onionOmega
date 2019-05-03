@@ -56,76 +56,68 @@ char pca9685_setPWMdutyCycle(device_pca9685 *pca9685config, unsigned char channe
 
 char pca9685_init(device_pca9685 *pca9685config){
     char err=0;
-/*        
-        printf("Device Adr: %d \n", pca9685config->deviceAddress);
-        printf("Device OutStates: %d \n", pca9685config->defaultOutputStates);
-        printf("Device Freq: %d \n", pca9685config->frequency);
-        printf("Device Totem: %d \n", pca9685config->totemPoleOutput);
-        printf("Device EXTCLK: %d \n", pca9685config->useExternalClock);
-        
-        pca9685config->useExternalClock=123;
-*/
-        unsigned char deviceAddr = pca9685config->deviceAddress;
-        unsigned char freq = pca9685config->frequency;
-        unsigned char totemPole = pca9685config->totemPoleOutput;
-        unsigned char invertedOut = pca9685config->invertedOutput;
-        long extClkMHz = pca9685config->externalClock;
-        
-        long clockFreq;
 
-        unsigned char data, config_error;
-        
-                    
-	// MODE1 register, sleep before config
-        err+= i2c_write(0, deviceAddr, MODE1, 0x10);
-        
-        
-        // MODE1 register setup and maintain sleep mode
-        data=0x10;
-        
-        clockFreq = INTERNAL_CLK_FREQ;                      // default value is 25MHz
-                
-        if(extClkMHz>0){                                    // Check if external clock is used
-            if(extClkMHz < 50000000){
-                data |= 0x40;                                   
-                clockFreq = extClkMHz;
-            }
-            else
-                config_error=1;
+    unsigned char deviceAddr = pca9685config->deviceAddress;
+    unsigned char freq = pca9685config->frequency;
+    unsigned char totemPole = pca9685config->totemPoleOutput;
+    unsigned char invertedOut = pca9685config->invertedOutput;
+    long extClkMHz = pca9685config->externalClock;
+
+    long clockFreq;
+
+    unsigned char data, config_error;
+
+
+    // MODE1 register, sleep before config
+    err+= i2c_write(0, deviceAddr, MODE1, 0x10);
+
+
+    // MODE1 register setup and maintain sleep mode
+    data=0x10;
+
+    clockFreq = INTERNAL_CLK_FREQ;                      // default value is 25MHz
+
+    if(extClkMHz>0){                                    // Check if external clock is used
+        if(extClkMHz < 50000000){
+            data |= 0x40;                                   
+            clockFreq = extClkMHz;
         }
-        
-        // Write MODE1 Register
-        err+= i2c_write(0, deviceAddr, MODE1, data);
-        
-	// Prescaler config for user frequency operation
-        unsigned char prescale_value = (((clockFreq/4096) / freq)-1);
-        
-        // Write PRE_SCALE Register
-        err+= i2c_write(0, deviceAddr, PRE_SCALE, prescale_value);
-        
-	// Setup MODE 2 register (inverted output and output type)
-        data=0;
-        
-        if(invertedOut)
-            data |= 0x10;
-        if(totemPole)
-            data |= 0x04;
-        
-        // Write MODE2 Register
-        err+= i2c_write(0, deviceAddr, MODE2, data);
-        
-        // All outputs turn-on on clock 0
-        err+= i2c_write(0, deviceAddr, ALLLED_ON_L, 0x00);
-        err+= i2c_write(0, deviceAddr, ALLLED_ON_H, 0x00);
+        else
+            config_error=1;
+    }
 
-	// Write MODE 1 register, system ready (no sleep, no allcall_adr)
-        err+= i2c_write(0, deviceAddr, MODE1, 0x81);
-                
-        // Return configuration error in priority
-        if(!config_error)
-            return err;    
-        else 
-            return -1;
+    // Write MODE1 Register
+    err+= i2c_write(0, deviceAddr, MODE1, data);
+
+    // Prescaler config for user frequency operation
+    unsigned char prescale_value = (((clockFreq/4096) / freq)-1);
+
+    // Write PRE_SCALE Register
+    err+= i2c_write(0, deviceAddr, PRE_SCALE, prescale_value);
+
+    // Setup MODE 2 register (inverted output and output type)
+    data=0;
+
+    if(invertedOut)
+        data |= 0x10;
+    if(totemPole)
+        data |= 0x04;
+
+    // Write MODE2 Register
+    err+= i2c_write(0, deviceAddr, MODE2, data);
+
+    // All outputs turn-on on clock 0
+    err+= i2c_write(0, deviceAddr, ALLLED_ON_L, 0x00);
+    err+= i2c_write(0, deviceAddr, ALLLED_ON_H, 0x00);
+
+    // Write MODE 1 register, system ready (no sleep, no allcall_adr)
+    err+= i2c_write(0, deviceAddr, MODE1, 0x81);
+
+    // Return configuration error in priority
+    if(!config_error)
+        return err;    
+    else 
+        return -1;
 }
 
 /**

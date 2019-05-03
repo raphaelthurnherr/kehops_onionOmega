@@ -24,18 +24,12 @@
 
 struct driverAttribute{
     int device_channel;
+    int onActivate;
+    int onDeactivate;
 };
 
 struct device_subdrivers{
     char name[15];
-    struct driverAttribute attributes;
-};
-
-
-struct driver_subdrivers{
-    char name[15];
-    int address;
-    char device_type[15];
     struct driverAttribute attributes;
 };
 
@@ -93,6 +87,7 @@ typedef struct device_drivers{
     char name[15];
     char type[25];
     struct driverAttribute attributes;
+    
 } hwDeviceDriver;
 
 typedef struct generic_drivers{
@@ -144,6 +139,7 @@ typedef struct parts_list{
     struct device pulsesCounter[MAX_DRIVERS_PER_TYPE];
     struct device rgbSensor[MAX_DRIVERS_PER_TYPE];
     struct device distanceSensor[MAX_DRIVERS_PER_TYPE];
+    struct device aout[MAX_DRIVERS_PER_TYPE];
 }kehopsParts;
 
 

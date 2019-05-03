@@ -4,18 +4,13 @@
     <logicalFolder name="HeaderFiles"
                    displayName="Header Files"
                    projectFiles="true">
-      <itemPath>algobotManager.sh.h</itemPath>
-      <itemPath>asyncTools/asyncLED.h</itemPath>
-      <itemPath>asyncTools/asyncMOTOR.h</itemPath>
-      <itemPath>asyncTools/asyncSTEPPER.h</itemPath>
-      <itemPath>asyncTools/asyncTools.h</itemPath>
+      <itemPath>hwControl/device_drivers/ads111x.h</itemPath>
       <itemPath>config/deviceMapping.h</itemPath>
       <itemPath>config/deviceMapping_jsonKeys.h</itemPath>
       <itemPath>fileIO.h</itemPath>
       <itemPath>hwControl/hardwareDrivers.h</itemPath>
       <itemPath>config/kehopsConfig.h</itemPath>
       <itemPath>type.h</itemPath>
-      <itemPath>AlgoidCom/typeNew.h</itemPath>
       <itemPath>hwControl/wifi_json.h</itemPath>
     </logicalFolder>
     <logicalFolder name="ResourceFiles"
@@ -26,6 +21,8 @@
                    displayName="Source Files"
                    projectFiles="true">
       <logicalFolder name="actuators" displayName="actuators" projectFiles="true">
+        <itemPath>actuators/asyncAOUT.c</itemPath>
+        <itemPath>actuators/asyncAOUT.h</itemPath>
         <itemPath>actuators/asyncLED.c</itemPath>
         <itemPath>actuators/asyncLED.h</itemPath>
         <itemPath>actuators/asyncMOTOR.c</itemPath>
@@ -44,12 +41,6 @@
                        displayName="device_drivers"
                        projectFiles="true">
           <logicalFolder name="api" displayName="api" projectFiles="true">
-            <logicalFolder name="ssd1306" displayName="ssd1306" projectFiles="true">
-              <itemPath>hwControl/device_drivers/api/ssd1306/SSD1306_OLED.c</itemPath>
-              <itemPath>hwControl/device_drivers/api/ssd1306/SSD1306_OLED.h</itemPath>
-              <itemPath>hwControl/device_drivers/api/ssd1306/gfxfont.h</itemPath>
-              <itemPath>hwControl/device_drivers/api/ssd1306/readme.txt</itemPath>
-            </logicalFolder>
             <logicalFolder name="vl53l0x" displayName="vl53l0x" projectFiles="true">
               <itemPath>hwControl/device_drivers/api/vl53l0x/vl53l0x_api.c</itemPath>
               <itemPath>hwControl/device_drivers/api/vl53l0x/vl53l0x_api.h</itemPath>
@@ -73,6 +64,8 @@
               <itemPath>hwControl/device_drivers/api/vl53l0x/vl53l0x_types.h</itemPath>
             </logicalFolder>
           </logicalFolder>
+          <itemPath>hwControl/device_drivers/ads101x.c</itemPath>
+          <itemPath>hwControl/device_drivers/ads101x.h</itemPath>
           <itemPath>hwControl/device_drivers/bh1745.c</itemPath>
           <itemPath>hwControl/device_drivers/bh1745.h</itemPath>
           <itemPath>hwControl/device_drivers/efm8_mcu_kehops.c</itemPath>
@@ -165,6 +158,7 @@
         <itemPath>kehopsCom/udpPublish.c</itemPath>
         <itemPath>kehopsCom/udpPublish.h</itemPath>
       </logicalFolder>
+      <itemPath>hwControl/device_drivers/ads111x.c</itemPath>
       <itemPath>configManager.c</itemPath>
       <itemPath>configManager.h</itemPath>
       <itemPath>config/deviceMapping.c</itemPath>
@@ -214,6 +208,7 @@
     <itemPath>hwControl/changeLog.txt</itemPath>
     <itemPath>dist/Debug/GNU_Omega-Linux/temp</itemPath>
     <itemPath>toDo</itemPath>
+    <itemPath>versions.txt</itemPath>
     <itemPath>dist/Debug/GNU_Omega-Linux/wifi</itemPath>
   </logicalFolder>
   <sourceRootList>
@@ -251,7 +246,9 @@
           <commandLine>-pthread -lm</commandLine>
         </linkerTool>
       </compileType>
-      <item path="AlgoidCom/typeNew.h" ex="false" tool="3" flavor2="0">
+      <item path="actuators/asyncAOUT.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="actuators/asyncAOUT.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="actuators/asyncLED.c" ex="false" tool="0" flavor2="0">
       </item>
@@ -277,16 +274,6 @@
       </item>
       <item path="actuators/asyncTools.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="algobotManager.sh.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="asyncTools/asyncLED.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="asyncTools/asyncMOTOR.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="asyncTools/asyncSTEPPER.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="asyncTools/asyncTools.h" ex="false" tool="3" flavor2="0">
-      </item>
       <item path="config/deviceMapping.c" ex="false" tool="0" flavor2="0">
       </item>
       <item path="config/deviceMapping.h" ex="false" tool="3" flavor2="0">
@@ -311,25 +298,13 @@
       </item>
       <item path="hwControl/changeLog.txt" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="hwControl/device_drivers/api/ssd1306/SSD1306_OLED.c"
-            ex="false"
-            tool="0"
-            flavor2="0">
+      <item path="hwControl/device_drivers/ads101x.c" ex="false" tool="0" flavor2="0">
       </item>
-      <item path="hwControl/device_drivers/api/ssd1306/SSD1306_OLED.h"
-            ex="false"
-            tool="3"
-            flavor2="0">
+      <item path="hwControl/device_drivers/ads101x.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="hwControl/device_drivers/api/ssd1306/gfxfont.h"
-            ex="false"
-            tool="3"
-            flavor2="0">
+      <item path="hwControl/device_drivers/ads111x.c" ex="false" tool="0" flavor2="0">
       </item>
-      <item path="hwControl/device_drivers/api/ssd1306/readme.txt"
-            ex="false"
-            tool="3"
-            flavor2="0">
+      <item path="hwControl/device_drivers/ads111x.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="hwControl/device_drivers/api/vl53l0x/vl53l0x_api.c"
             ex="false"
@@ -706,6 +681,8 @@
       <item path="tools.c" ex="false" tool="0" flavor2="0">
       </item>
       <item path="type.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="versions.txt" ex="false" tool="3" flavor2="0">
       </item>
     </conf>
     <conf name="Debug-GNU-LINUX" type="1">
@@ -736,7 +713,9 @@
           <commandLine>-pthread -lm</commandLine>
         </linkerTool>
       </compileType>
-      <item path="AlgoidCom/typeNew.h" ex="false" tool="3" flavor2="0">
+      <item path="actuators/asyncAOUT.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="actuators/asyncAOUT.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="actuators/asyncLED.c" ex="false" tool="0" flavor2="0">
       </item>
@@ -762,16 +741,6 @@
       </item>
       <item path="actuators/asyncTools.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="algobotManager.sh.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="asyncTools/asyncLED.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="asyncTools/asyncMOTOR.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="asyncTools/asyncSTEPPER.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="asyncTools/asyncTools.h" ex="false" tool="3" flavor2="0">
-      </item>
       <item path="config/deviceMapping.c" ex="false" tool="0" flavor2="0">
       </item>
       <item path="config/deviceMapping.h" ex="false" tool="3" flavor2="0">
@@ -796,25 +765,13 @@
       </item>
       <item path="hwControl/changeLog.txt" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="hwControl/device_drivers/api/ssd1306/SSD1306_OLED.c"
-            ex="false"
-            tool="0"
-            flavor2="0">
+      <item path="hwControl/device_drivers/ads101x.c" ex="false" tool="0" flavor2="0">
       </item>
-      <item path="hwControl/device_drivers/api/ssd1306/SSD1306_OLED.h"
-            ex="false"
-            tool="3"
-            flavor2="0">
+      <item path="hwControl/device_drivers/ads101x.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="hwControl/device_drivers/api/ssd1306/gfxfont.h"
-            ex="false"
-            tool="3"
-            flavor2="0">
+      <item path="hwControl/device_drivers/ads111x.c" ex="false" tool="0" flavor2="0">
       </item>
-      <item path="hwControl/device_drivers/api/ssd1306/readme.txt"
-            ex="false"
-            tool="3"
-            flavor2="0">
+      <item path="hwControl/device_drivers/ads111x.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="hwControl/device_drivers/api/vl53l0x/vl53l0x_api.c"
             ex="false"
@@ -1191,6 +1148,8 @@
       <item path="tools.c" ex="false" tool="0" flavor2="0">
       </item>
       <item path="type.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="versions.txt" ex="false" tool="3" flavor2="0">
       </item>
     </conf>
     <conf name="Debug-GNU-LINUX_x86" type="1">
@@ -1222,7 +1181,9 @@
           <commandLine>-pthread -lm</commandLine>
         </linkerTool>
       </compileType>
-      <item path="AlgoidCom/typeNew.h" ex="false" tool="3" flavor2="0">
+      <item path="actuators/asyncAOUT.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="actuators/asyncAOUT.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="actuators/asyncLED.c" ex="false" tool="0" flavor2="0">
       </item>
@@ -1248,16 +1209,6 @@
       </item>
       <item path="actuators/asyncTools.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="algobotManager.sh.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="asyncTools/asyncLED.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="asyncTools/asyncMOTOR.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="asyncTools/asyncSTEPPER.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="asyncTools/asyncTools.h" ex="false" tool="3" flavor2="0">
-      </item>
       <item path="config/deviceMapping.c" ex="false" tool="0" flavor2="0">
       </item>
       <item path="config/deviceMapping.h" ex="false" tool="3" flavor2="0">
@@ -1282,25 +1233,13 @@
       </item>
       <item path="hwControl/changeLog.txt" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="hwControl/device_drivers/api/ssd1306/SSD1306_OLED.c"
-            ex="false"
-            tool="0"
-            flavor2="0">
+      <item path="hwControl/device_drivers/ads101x.c" ex="false" tool="0" flavor2="0">
       </item>
-      <item path="hwControl/device_drivers/api/ssd1306/SSD1306_OLED.h"
-            ex="false"
-            tool="3"
-            flavor2="0">
+      <item path="hwControl/device_drivers/ads101x.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="hwControl/device_drivers/api/ssd1306/gfxfont.h"
-            ex="false"
-            tool="3"
-            flavor2="0">
+      <item path="hwControl/device_drivers/ads111x.c" ex="false" tool="0" flavor2="0">
       </item>
-      <item path="hwControl/device_drivers/api/ssd1306/readme.txt"
-            ex="false"
-            tool="3"
-            flavor2="0">
+      <item path="hwControl/device_drivers/ads111x.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="hwControl/device_drivers/api/vl53l0x/vl53l0x_api.c"
             ex="false"
@@ -1678,6 +1617,8 @@
       </item>
       <item path="type.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="versions.txt" ex="false" tool="3" flavor2="0">
+      </item>
     </conf>
     <conf name="Release" type="1">
       <toolsSet>
@@ -1707,7 +1648,9 @@
           <commandLine>-pthread -lm</commandLine>
         </linkerTool>
       </compileType>
-      <item path="AlgoidCom/typeNew.h" ex="false" tool="3" flavor2="0">
+      <item path="actuators/asyncAOUT.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="actuators/asyncAOUT.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="actuators/asyncLED.c" ex="false" tool="0" flavor2="9">
       </item>
@@ -1733,16 +1676,6 @@
       </item>
       <item path="actuators/asyncTools.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="algobotManager.sh.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="asyncTools/asyncLED.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="asyncTools/asyncMOTOR.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="asyncTools/asyncSTEPPER.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="asyncTools/asyncTools.h" ex="false" tool="3" flavor2="0">
-      </item>
       <item path="config/deviceMapping.c" ex="false" tool="0" flavor2="9">
       </item>
       <item path="config/deviceMapping.h" ex="false" tool="3" flavor2="0">
@@ -1767,25 +1700,13 @@
       </item>
       <item path="hwControl/changeLog.txt" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="hwControl/device_drivers/api/ssd1306/SSD1306_OLED.c"
-            ex="false"
-            tool="0"
-            flavor2="0">
+      <item path="hwControl/device_drivers/ads101x.c" ex="false" tool="0" flavor2="0">
       </item>
-      <item path="hwControl/device_drivers/api/ssd1306/SSD1306_OLED.h"
-            ex="false"
-            tool="3"
-            flavor2="0">
+      <item path="hwControl/device_drivers/ads101x.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="hwControl/device_drivers/api/ssd1306/gfxfont.h"
-            ex="false"
-            tool="3"
-            flavor2="0">
+      <item path="hwControl/device_drivers/ads111x.c" ex="false" tool="0" flavor2="0">
       </item>
-      <item path="hwControl/device_drivers/api/ssd1306/readme.txt"
-            ex="false"
-            tool="3"
-            flavor2="0">
+      <item path="hwControl/device_drivers/ads111x.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="hwControl/device_drivers/api/vl53l0x/vl53l0x_api.c"
             ex="false"
@@ -2162,6 +2083,8 @@
       <item path="tools.c" ex="false" tool="0" flavor2="9">
       </item>
       <item path="type.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="versions.txt" ex="false" tool="3" flavor2="0">
       </item>
     </conf>
   </confs>

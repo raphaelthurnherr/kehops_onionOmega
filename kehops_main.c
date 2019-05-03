@@ -1,4 +1,4 @@
-#define FIRMWARE_VERSION "1.0.1"
+#define FIRMWARE_VERSION "1.1.1"
 
 #define DEFAULT_EVENT_STATE 1   
 
@@ -29,6 +29,7 @@
 #include "asyncLED.h"
 #include "asyncMOTOR.h"
 #include "asyncSTEPPER.h"
+#include "asyncAOUT.h"
 #include "configManager.h"
 #include "type.h"
 #include "wifi_json.h"
@@ -71,6 +72,7 @@ int runPwmAction(void);
 int getPwmSetting(int name);
 
 int runLedAction(void);
+int runAoutAction(void);
 
 int getLedSetting(int name);
 
@@ -239,10 +241,11 @@ int main(int argc, char *argv[]) {
 															// G�n�re un �venement si changement d'�tat d�tect�
                                         										// Cont�le les valeur RGB des capteurs
                         
-                        kehops.battery[0].measure.voltage_mV = getBatteryVoltage(0);
-                        kehops.battery[0].measure.capacity =(kehops.battery[0].measure.voltage_mV-3500)/((4210-3500)/100);
+                        for(i=0;i<NBAIN;i++){
+                            kehops.battery[i].measure.voltage_mV = getBatteryVoltage(i);
+                            kehops.battery[i].measure.capacity =(kehops.battery[i].measure.voltage_mV-3500)/((4210-3500)/100);
+                        }
                         batteryEventCheck();
-
                                                 // R�cup�ration des couleur mesur�e sur les capteurs
                         for(i=0;i<NBRGBC;i++){
                             kehops.rgb[i].color.red.measure.value = getColorValue(i,RED);
@@ -399,6 +402,26 @@ int processmessage(void){
                                 
                                 runLedAction();
                                 break;
+                                
+		case pAOUT  : 	
+                                for(i=0;i<message.msgValueCnt;i++){
+                                    // Controle que la sortie existe...
+                                    if(message.Aout[i].id >= 0 && message.Aout[i].id < NBAOUT)
+                                        messageResponse[i].AOUTresponse.id=message.Aout[i].id;
+                                    else
+                                        messageResponse[i].AOUTresponse.id=-1;
+                                            
+                                    // R�cup�ration des param�tes 
+                                    strcpy(messageResponse[i].AOUTresponse.state, message.Aout[i].state);
+                                    messageResponse[i].AOUTresponse.powerPercent=message.Aout[i].powerPercent;
+                                    messageResponse[i].AOUTresponse.value=message.Aout[i].value;
+                                    messageResponse[i].responseType = RESP_STD_MESSAGE;
+                                }
+                                // Retourne en r�ponse le message v�rifi�
+                                sendResponse(message.msgID, message.msgFrom, RESPONSE, pAOUT, message.msgValueCnt);               
+                                
+                                runAoutAction();
+                                break;                                
                                 
             case CONFIG  :
                 
@@ -1243,6 +1266,95 @@ int runLedAction(void){
 	return 0;
 }
 
+
+// -------------------------------------------------------------------
+// runLEDAction
+//
+// -------------------------------------------------------------------
+int runAoutAction(void){
+	int ptrData;
+	int myTaskId;
+        int i;
+        int ID;
+        
+        int value=-1;
+        int power=0;
+        
+	unsigned char actionCount=0;
+	unsigned char action=0;
+
+        // R�cup�re l'expediteur original du message ayant provoqu�
+        // l'�venement
+        char msgTo[32];
+        
+        // Recherche s'il y a des param�tres d�fini pour chaque LED
+        // et mise � jour.   
+        for(i=0;i<NBAOUT;i++){
+            ptrData=getAoutSetting(i);
+            if(ptrData>=0){
+                actionCount++;          // Incr�mente le nombre de param�tres trouv�s = action suppl�mentaire a effectuer
+                
+                // R�cup�ration de commande d'�tat de la led dans le message
+                if(!strcmp(message.Aout[ptrData].state,"off"))
+                    kehops.aout[i].state = OFF;
+                if(!strcmp(message.Aout[ptrData].state,"on"))
+                    kehops.aout[i].state = ON;
+                
+                // R�cup�ration des consignes dans le message (si disponible)
+                if(message.Aout[ptrData].powerPercent > 0)
+                    kehops.aout[i].power = message.Aout[ptrData].powerPercent;
+
+                // R�cup�ration des consignes dans le message (si disponible)
+                if(message.Aout[ptrData].powerPercent > 0)
+                    kehops.aout[i].value = message.Aout[ptrData].value;
+
+            }
+        }
+
+        // VERIFIE L'EXISTANCE DE PARAMETRE DE TYPE LED, CREATION DU NOMBRE D'ACTION ADEQUAT
+        // 
+        if(actionCount>0){
+            // Ouverture d'une t�che pour les toutes les actions du message algoid � effectuer
+            // Recois un num�ro de tache en retour
+            myTaskId=createBuggyTask(message.msgID, actionCount);			//
+
+            // D�marrage des actions
+            if(myTaskId>0){
+                    printf("Creation de tache AOUT: #%d avec %d actions\n", myTaskId, actionCount);
+                    
+                    // Sauvegarde du nom de l'emetteur et du ID du message pour la r�ponse
+                    // en fin d'�venement
+                    saveSenderOfMsgId(message.msgID, message.msgFrom);
+                    
+                    for(ptrData=0; action < actionCount && ptrData<10; ptrData++){
+                            ID = message.Aout[ptrData].id;
+                            if(ID >= 0){
+                                    power=message.Aout[ptrData].powerPercent;
+                                    value=message.Aout[ptrData].value;
+
+                                    if(kehops.aout[ID].state == OFF)
+                                        setAsyncAoutAction(myTaskId, ID, OFF, NULL);
+
+                                    if(kehops.aout[ID].state == ON)
+                                        setAsyncAoutAction(myTaskId, ID, ON, NULL);
+
+                                    action++;
+                            }
+                    }
+                    
+                    messageResponse[0].responseType=EVENT_ACTION_BEGIN;
+            }            
+        }
+        else{   
+                sprintf(reportBuffer, "ERREUR: ID AOUT INEXISTANT pour le message #%d\n", message.msgID);
+                messageResponse[0].responseType=EVENT_ACTION_ERROR;
+                sendResponse(myTaskId, message.msgFrom, EVENT, pAOUT, 1);               // Envoie un message EVENT error
+                printf(reportBuffer);                                                           // Affichage du message dans le shell
+                sendMqttReport(message.msgID, reportBuffer);				// Envoie le message sur le canal MQTT "Report"
+        }
+	return 0;
+}
+
 // -------------------------------------------------------------------
 // runPWMAction
 //
@@ -1432,8 +1544,8 @@ int getPwmSetting(int name){
 
 // -------------------------------------------------------------------
 // GETLEDSETTING
-// Recherche dans le message algoid, les param�tres
-// pour une LED sp�cifi�e
+// Recherche dans le message kehops, les param�tres
+// pour une sortie LED sp�cifi�e
 // -------------------------------------------------------------------
 int getLedSetting(int name){
 	int i;
@@ -1447,6 +1559,22 @@ int getLedSetting(int name){
 	return searchPtr;
 }
 
+// -------------------------------------------------------------------
+// GETAOUTSETTING
+// Recherche dans le message kehops, les param�tres
+// pour une sortie LED sp�cifi�e
+// -------------------------------------------------------------------
+int getAoutSetting(int name){
+	int i;
+	int searchPtr = -1;
+
+	// Recherche dans les donn�e recues la valeur correspondante au param�tre "name"
+	for(i=0;i<message.msgValueCnt;i++){
+		if(name == message.Aout[i].id)
+		searchPtr=i;
+	}
+	return searchPtr;
+}
 
 // -------------------------------------------------------------------
 // CREATBUGGYTASK Creation d'une tache avec le nombre
