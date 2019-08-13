@@ -57,13 +57,13 @@
 #define FILE_KEY_CONFIG_SONAR_EVENT_HIGH "{'sonar'[*{'event_higher'"
 #define FILE_KEY_CONFIG_SONAR_EVENT_HYST "{'sonar'[*{'event_hysteresis'"
 
-#define FILE_KEY_CONFIG_BATTERY "{'battery'"
-#define FILE_KEY_CONFIG_BATTERY_ID "{'battery'[*{'battery'"
-#define FILE_KEY_CONFIG_BATTERY_MAP_ID "{'battery'[*{'ain_id'"
-#define FILE_KEY_CONFIG_BATTERY_EVENT_STATE "{'battery'[*{'event'"
-#define FILE_KEY_CONFIG_BATTERY_EVENT_LOW "{'battery'[*{'event_lower'"
-#define FILE_KEY_CONFIG_BATTERY_EVENT_HIGH "{'battery'[*{'event_higher'"
-#define FILE_KEY_CONFIG_BATTERY_EVENT_HYST "{'battery'[*{'event_hysteresis'"
+#define FILE_KEY_CONFIG_VOLTAGE "{'voltage'"
+#define FILE_KEY_CONFIG_VOLTAGE_ID "{'voltage'[*{'voltage'"
+#define FILE_KEY_CONFIG_VOLTAGE_MAP_ID "{'voltage'[*{'ain_id'"
+#define FILE_KEY_CONFIG_VOLTAGE_EVENT_STATE "{'voltage'[*{'event'"
+#define FILE_KEY_CONFIG_VOLTAGE_EVENT_LOW "{'voltage'[*{'event_lower'"
+#define FILE_KEY_CONFIG_VOLTAGE_EVENT_HIGH "{'voltage'[*{'event_higher'"
+#define FILE_KEY_CONFIG_VOLTAGE_EVENT_HYST "{'voltage'[*{'event_hysteresis'"
 
 #define FILE_KEY_CONFIG_MOTOR "{'motor'"
 #define FILE_KEY_CONFIG_MOTOR_ID "{'motor'[*{'motor'"
@@ -102,6 +102,11 @@
 #define FILE_KEY_CONFIG_COLOR_EVENT_HIGH "{'event_higher'"
 #define FILE_KEY_CONFIG_COLOR_EVENT_HYST "{'event_hysteresis'"
 
+#define FILE_KEY_CONFIG_DISPLAY "{'display'"
+#define FILE_KEY_CONFIG_DISPLAY_ID "{'display'[*{'display'"
+#define FILE_KEY_CONFIG_DISPLAY_MAP_ID "{'display'[*{'display_id'"
+#define FILE_KEY_CONFIG_HID_SCREEN"{'display'[*{'screen_hid'"
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -124,6 +129,7 @@ unsigned char NBBTN=0;
 unsigned char NBDIN=0;
 unsigned char NBWHEEL=0;
 unsigned char NBAOUT=0;
+unsigned char NBDISPLAY=0;
 
 /**
  * \brief Extract JSON configuration from FileBuffer to the kehops structrue configuration
@@ -132,7 +138,7 @@ unsigned char NBAOUT=0;
  */  
 void extractKehopsConfig(char * srcDataBuffer){
 
-    NBPWM = NBLED = NBAIN = NBSONAR = NBSTEPPER = NBSTEPPER = NBMOTOR = NBRGBC = NBBTN = NBDIN = NBWHEEL = NBAOUT =0;
+    NBPWM = NBLED = NBAIN = NBSONAR = NBSTEPPER = NBSTEPPER = NBMOTOR = NBRGBC = NBBTN = NBDIN = NBWHEEL = NBAOUT = NBDISPLAY = 0;
     
     
     struct jReadElement cfg_devices_list, cfg_mqtt_list, cfg_devices;
@@ -478,7 +484,7 @@ void extractKehopsConfig(char * srcDataBuffer){
         }
 
         // VOLTAGE Setting
-        jRead((char *)srcDataBuffer, FILE_KEY_CONFIG_BATTERY, &cfg_devices_list );
+        jRead((char *)srcDataBuffer, FILE_KEY_CONFIG_VOLTAGE, &cfg_devices_list );
 
         // RECHERCHE DATA DE TYPE ARRAY
         if(cfg_devices_list.dataType == JREAD_ARRAY ){
@@ -486,21 +492,21 @@ void extractKehopsConfig(char * srcDataBuffer){
             nbOfDeviceInConf = cfg_devices_list.elements;
             for(i=0; i < nbOfDeviceInConf; i++){ 
                 deviceId=-1;
-                deviceId = jRead_int((char *)srcDataBuffer, FILE_KEY_CONFIG_BATTERY_ID, &i); 
+                deviceId = jRead_int((char *)srcDataBuffer, FILE_KEY_CONFIG_VOLTAGE_ID, &i); 
 
                 if(deviceId >= 0){
                     NBAIN++;
-                    kehops.analogInput[deviceId].config.ain_id = jRead_int((char *)srcDataBuffer, FILE_KEY_CONFIG_BATTERY_MAP_ID, &i); 
-                    jRead_string((char *)srcDataBuffer, FILE_KEY_CONFIG_BATTERY_EVENT_STATE, dataValue, 15, &i );
+                    kehops.analogInput[deviceId].config.ain_id = jRead_int((char *)srcDataBuffer, FILE_KEY_CONFIG_VOLTAGE_MAP_ID, &i); 
+                    jRead_string((char *)srcDataBuffer, FILE_KEY_CONFIG_VOLTAGE_EVENT_STATE, dataValue, 15, &i );
                     if(!strcmp(dataValue, "on")){
                         kehops.analogInput[deviceId].event.enable = 1;
                     }else
                         if(!strcmp(dataValue, "off")){
                             kehops.analogInput[deviceId].event.enable = 0;
                         }
-                    kehops.analogInput[deviceId].event.low = jRead_int((char *)srcDataBuffer, FILE_KEY_CONFIG_BATTERY_EVENT_LOW, &i); 
-                    kehops.analogInput[deviceId].event.high = jRead_int((char *)srcDataBuffer, FILE_KEY_CONFIG_BATTERY_EVENT_HIGH, &i); 
-                    kehops.analogInput[deviceId].event.hysteresis = jRead_int((char *)srcDataBuffer, FILE_KEY_CONFIG_BATTERY_EVENT_HYST, &i); 
+                    kehops.analogInput[deviceId].event.low = jRead_int((char *)srcDataBuffer, FILE_KEY_CONFIG_VOLTAGE_EVENT_LOW, &i); 
+                    kehops.analogInput[deviceId].event.high = jRead_int((char *)srcDataBuffer, FILE_KEY_CONFIG_VOLTAGE_EVENT_HIGH, &i); 
+                    kehops.analogInput[deviceId].event.hysteresis = jRead_int((char *)srcDataBuffer, FILE_KEY_CONFIG_VOLTAGE_EVENT_HYST, &i); 
                 }
             }
         }            
@@ -545,9 +551,35 @@ void extractKehopsConfig(char * srcDataBuffer){
                     
                 }
             }
+        }
+        
+        // DISPLAY Setting
+        jRead((char *)srcDataBuffer, FILE_KEY_CONFIG_DISPLAY, &cfg_devices_list );
+
+        // RECHERCHE DATA DE TYPE ARRAY
+        if(cfg_devices_list.dataType == JREAD_ARRAY ){
+            // Get the number of Display in array
+            nbOfDeviceInConf = cfg_devices_list.elements
+                    ;
+            for(i=0; i < nbOfDeviceInConf; i++){ 
+                deviceId=-1;
+                deviceId = jRead_int((char *)srcDataBuffer, FILE_KEY_CONFIG_DISPLAY_ID, &i); 
+
+                if(deviceId >= 0){
+                    NBDISPLAY++;
+                    kehops.gfx[deviceId].config.gfx_id = jRead_int((char *)srcDataBuffer, FILE_KEY_CONFIG_DISPLAY_MAP_ID, &i); 
+                    jRead_string((char *)srcDataBuffer, FILE_KEY_CONFIG_HID_SCREEN, dataValue, 15, &i );
+                    if(!strcmp(dataValue, "on")){
+                        kehops.gfx[deviceId].config.hid.enable = 1;
+                    }else
+                        if(!strcmp(dataValue, "off")){
+                            kehops.gfx[deviceId].config.hid.enable = 0;
+                        }
+                                        
+                }
+            }
         }         
         
-
         // Reset settings
 //            jRead_string((char *)srcDataBuffer, KEY_MESSAGE_VALUE_CFG_APPRESET, AlgoidMessageRX.Config.config.reset, 15, &i );
         return 0;
@@ -734,10 +766,10 @@ char SaveKehopsConfig(char * fileName){
             jwEnd(); 
             
         // CREATE JSON CONFIG FOR VOLTAGE CONFIG
-            jwObj_array("battery");
+            jwObj_array("voltage");
                 for(i=0;i<NBAIN;i++){
                     jwArr_object();
-                        jwObj_int( "battery", i);
+                        jwObj_int( "voltage", i);
                         jwObj_int( "ain_id", kehops.analogInput[i].config.ain_id);
                         if(kehops.analogInput[i].event.enable == 0)
                             jwObj_string("event", "off");
@@ -749,7 +781,21 @@ char SaveKehopsConfig(char * fileName){
                         jwObj_int( "event_hysteresis", kehops.analogInput[i].event.hysteresis);
                     jwEnd();
                 } 
-            jwEnd();             
+            jwEnd();
+        // CREATE JSON CONFIG FOR VOLTAGE CONFIG
+            jwObj_array("display");
+                for(i=0;i<NBDISPLAY;i++){
+                    jwArr_object();
+                        jwObj_int( "display", i);
+                        jwObj_int( "display_id", kehops.gfx[i].config.gfx_id);
+                        if(kehops.gfx[i].config.hid.enable == 0)
+                            jwObj_string("screen_hid", "off");
+                        else 
+                            if(kehops.gfx[i].config.hid.enable == 1)
+                                jwObj_string("screen_hid", "on");                        
+                    jwEnd();
+                } 
+            jwEnd();            
 
         jwClose();          
        

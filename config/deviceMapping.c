@@ -117,7 +117,11 @@ char LoadDevicesDescriptor(char * srcDataBuffer, devices_list * boardDevice){
 
                         // Get the frequency attributes for frequency                       
                         boardDevice[i].attributes.frequency = jRead_int((char *)deviceData.pValue, KEY_DEVICE_OBJ_ATTRIBUTES_FREQUENCY, NULL); 
-                            
+                        
+                        // Get the frequency attributes for width and height
+                        boardDevice[i].attributes.width = jRead_int((char *)deviceData.pValue, KEY_DEVICE_OBJ_ATTRIBUTES_WIDTH, NULL); 
+                        boardDevice[i].attributes.height = jRead_int((char *)deviceData.pValue, KEY_DEVICE_OBJ_ATTRIBUTES_HEIGHT, NULL); 
+                        
                         // Get the init data attributes for devInit                       
                         jRead((char *)deviceData.pValue, KEY_DEVICE_OBJ_ATTRIBUTES_DEVINIT, &deviceSetting);
                         if(deviceSetting.dataType == JREAD_ARRAY){
@@ -166,7 +170,7 @@ char LoadDevicesDescriptor(char * srcDataBuffer, devices_list * boardDevice){
                             } else strcpy(boardDevice[i].sub_driver.name, "");
 
 
-                            // Get the ATTRIBUTES settings of driver
+                            // Get the ATTRIBUTES settings of sub driver
                             jRead((char *)deviceSetting.pValue, KEY_DRIVER_OBJ_ATTRIBUTES, &deviceSetting);
                             if(deviceSetting.dataType == JREAD_OBJECT){
                                 // Get the channel attibute of the driver
@@ -174,12 +178,12 @@ char LoadDevicesDescriptor(char * srcDataBuffer, devices_list * boardDevice){
                                 if(data>=0)
                                     boardDevice[i].sub_driver.attributes.device_channel = data;
                                 
-                                // Get the activate value attibute of the driver
+                                // Get the activate value attibute of the sub driver
                                 data=jRead_int((char *)deviceSetting.pValue, KEY_DRIVER_STR_ACTIVATE, NULL);
                                 if(data>=0)
                                     boardDevice[i].sub_driver.attributes.onActivate = data;
                                 
-                                // Get the deactivate value attibute of the driver
+                                // Get the deactivate value attibute of the sub driver
                                 data=jRead_int((char *)deviceSetting.pValue, KEY_DRIVER_STR_DEACTIVATE, NULL);
                                 if(data>=0)
                                     boardDevice[i].sub_driver.attributes.onDeactivate = data;                                
@@ -225,6 +229,7 @@ char LoadBoardDescriptor(char * srcDataBuffer, kehopsParts * kparts, devices_lis
         getSettings(srcDataBuffer, KEY_ARRAY_RGB, kparts->rgbSensor, &boardDevice[0]);
         getSettings(srcDataBuffer, KEY_ARRAY_DISTANCE, kparts->distanceSensor, &boardDevice[0]);
         getSettings(srcDataBuffer, KEY_ARRAY_AOUT, kparts->aout, &boardDevice[0]);
+        getSettings(srcDataBuffer, KEY_ARRAY_DISPLAY, kparts->gfxDisplay, &boardDevice[0]);
      }
   
     return -1;

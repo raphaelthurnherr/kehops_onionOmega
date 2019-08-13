@@ -45,10 +45,19 @@ extern int setStepperSpeed(int motorNumber, int speed);     // Configuration de 
 
 extern int resetHardware(t_sysConf * Config);                         // Reset les peripherique hardware (Moteur, LED, PWM, etc...)
 
-//extern char getOrganNumber(int organName);		// Retourne le num�ro du moteur 0..xx selon le nom d'organe sp�cifi�
+/**
+ * \brief updateKehopsHID will 
+ * \param pointer on the configuration structure
+ * \return code error
+ */
+
+extern void updateKehopsHID(int gfxId);
+extern void setDisplayText(int gfxId, char * text, char * border, char * icon);
 
 extern int getHWInfo(char* MCUversion, char* HWtype); // Get the hardware/software version
 extern int getMcuFirmware(void);                              // Get the hardware/software version
 extern int getMcuHWversion(void);                              // Get the hardware/software version
+
+extern unsigned char getHWstatus(void); // Get the hardware devices status
 
 #endif /* HWMANAGER_H_ */

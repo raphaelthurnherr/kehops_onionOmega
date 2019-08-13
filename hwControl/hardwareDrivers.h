@@ -25,9 +25,12 @@
 #define DRIVER_VL53L0X "vl53l0x"
 #define DRIVER_MCP4725 "mcp4725"
 #define DRIVER_TCA9548A "tca9548a"
-#define DRIVER_SSD1306 "ssd1306"
 #define DRIVER_ADS101X "ads101x"
 #define DRIVER_ADS111X "ads111x"
+#define DRIVER_SSD1305 "ssd1305"
+#define DRIVER_SSD1306 "ssd1306"
+#define DRIVER_SH1106 "sh1106"
+
 
 #define IFACE_GEN_HBRIDGE_MOTOR "generic_hbridge"
 #define IFACE_DEVICE_I2C "I2C"
@@ -114,5 +117,8 @@ extern int actuator_getVoltage(unsigned char ainID);			 // Retourne la tension e
 extern int actuator_getRGBColor(unsigned char rgbID, RGB_COLOR * rgbColor);	 // Lecture RGB sur capteur
 extern void actuator_clearWheel(unsigned char Id);
 extern int actuator_getStepperState(int stepperID);                   // 
+
+extern int actuator_setKehopsDisplay(unsigned char gfxID);
+extern int actuator_setDisplayText(unsigned char gfxID, char * text, char * border, char * icon);
 
 #endif /* ACTUATORSDRIVERS_H */

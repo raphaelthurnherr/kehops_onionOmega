@@ -15,7 +15,8 @@ typedef enum o_type{
         STEPMOTOR,
 	PWM,
 	LED,
-        AOUT
+        AOUT,
+        DISPLAY,
 }t_type;
 
 
@@ -27,7 +28,8 @@ typedef enum o_type{
 #define MAXSONAR 16
 #define MAXSTEPPER 16
 #define MAXMOTOR 16
-#define MAXRGBC 32
+#define MAXGFX 8
+#define MAXRGBC 16
 #define MAXDIN 64
 #define MAXCOUNTER 16
 

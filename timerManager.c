@@ -28,6 +28,8 @@ int timerDataBackup[5];
 
 int timeNow = 0;					// Variable de comptage de temp actuel pour les timers avec callback
 unsigned char checkMotorPowerFlag;
+unsigned char updateDisplayFlag;
+unsigned char t300msFlag;
 unsigned char t100msFlag;
 unsigned char t10secFlag;
 unsigned char t60secFlag;
@@ -37,12 +39,12 @@ unsigned char t60secFlag;
 // ------------------------------------------
 void *TimerTask (void * arg){
 	int i;
-	unsigned int cyclicTimer250ms;	// Compteur du timer cyclique 50mS
+        unsigned int cyclicTimer300ms;	// Compteur du timer cyclique 300mS
+	unsigned int cyclicTimer250ms;	// Compteur du timer cyclique 250mS
 	unsigned int cyclicTimer100ms;	// Compteur du timer cyclique 100mS
 	unsigned int cyclicTimer10sec;	// Compteur du timer cyclique 10Secondes
         unsigned int cyclicTimer60sec;	// Compteur du timer cyclique 10Secondes
         
-	unsigned int endTimerValues[5]; // Memorisation des data du timer
 	while(1){
 
 		// Controle successivement les timers pour la gestion du temps de
@@ -67,10 +69,16 @@ void *TimerTask (void * arg){
 			}
 		}
 
-		// Controle le time out de 50ms
+		// Controle le time out de 250ms
 		if(cyclicTimer250ms>=250){
 			checkMotorPowerFlag=1;
 			cyclicTimer250ms=0;				// Reset le compteur 50ms
+		}
+                
+                // Controle le time out de 300ms
+		if(cyclicTimer300ms>=300){
+			updateDisplayFlag=1;
+			cyclicTimer300ms=0;				// Reset le compteur 50ms
 		}
 
 		// Controle le time out de 100ms
@@ -90,6 +98,8 @@ void *TimerTask (void * arg){
 			t60secFlag=1;
 			cyclicTimer60sec=0;				// Reset le compteur 10secondes
 		}
+                
+                cyclicTimer300ms++;				// Reset le compteur 10secondes
 		cyclicTimer250ms++;				// Reset le compteur 10secondes
 		cyclicTimer100ms++;				// Reset le compteur 100ms
 		cyclicTimer10sec++;				// Reset le compteur 10secondes

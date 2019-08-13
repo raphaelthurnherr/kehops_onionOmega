@@ -48,6 +48,8 @@ struct addrReg {
 struct deviceAttributes{
     struct addrReg deviceInit[32];
     int frequency;
+    int width;
+    int height;
 };
 
 /**
@@ -140,6 +142,7 @@ typedef struct parts_list{
     struct device rgbSensor[MAX_DRIVERS_PER_TYPE];
     struct device distanceSensor[MAX_DRIVERS_PER_TYPE];
     struct device aout[MAX_DRIVERS_PER_TYPE];
+    struct device gfxDisplay[MAX_DRIVERS_PER_TYPE];
 }kehopsParts;
 
 

@@ -1,5 +1,18 @@
 Versions:
 
+1.2.1 - 14.05.2019
+- [NEW] Add responsive HID for 128x64 and 128x32 display
+- [NEW] Add Message MQTT for write to the display with arg "time, border, icon, text"
+- [UPDATE] "CORE" main loop wait for hardware full initializing
+
+1.2.0 - 10.05.2019
+- [NEW] Add configuration "kehops.cfg for display HID screen"
+- [NEW] Add new drivers for display SSD1306, SH1106, SSD1305
+- [NEW] TimerManager.c Add timer 300ms for display update
+
+1.1.1 - 06.05.2019
+- [UPDATE] Change all references "BATTERY" in project to "VOLTAGE"
+
 1.1.1 - 03.05.2019
 - [NEW] I2C devices drivers functions are not called if the device fail on initialization.
 - [NEW] Add attributes "onActivate" and "onDeactivate" values to the subdrivers config file. 
@@ -11,3 +24,53 @@ Versions:
 - [NEW] Add new drivers for 12 bit analog digital converter (ads101x)
 - [BUG] Drivers for display (ssd1306) & TOF distance sensors not yet supported
 - [FIX] Battery/AIN status send now MQTT message with all battery / AIN known
+
+
+Version 1.6.2b - 03.01.2019
+--------------------------
+
+- Move rescale in function "asyncMotor" for be adaptive to motor caracteristics
+  defined in config file
+
+Version 1.6.2b - 03.01.2019
+--------------------------
+
+- Add build number (runReomte.sh and buildNumber.sh)
+- Scale 0..100% is rework in function "setMotorSpeed" for be adaptive to motor caracteristics
+  defined in config file
+
+
+Version 1.6.2a - 02.01.2019
+NOT WORKING ...
+--------------------------
+
+- Rework motors speed functions and variables
+- Add test function for PID regulator...
+
+Version 1.6.2 - 28.12.2018
+--------------------------
+
+- Add possibility to change wheel and encoder settings from configuration message
+  More info http://kehops.io/doku.php?id=communication:mqttmessage#configuration_kehops
+
+- Internet status is working (ping the kehops cloud server)
+
+- Change read sequence for motor frequency et distance from EFM8 IC
+  Now, left and right wheel are reading in same time for distance and later
+  left and right wheel are reading in same time for speed.
+
+Version 1.6.1b - 27.12.2018
+---------------------------
+
+- Stepper motor send event "END" when there are positionned
+- FIX "clear" event state for DIN, BUTTON, SONAR, etc on event topic
+
+Version 1.6.1  - 11.12.2018
+---------------------------
+- Update of "Hardware" source file for simulator distribution
+- Adding default leds state at startup from configuration file
+
+Version 1.6.0  - 11.12.2018
+---------------------------
+- Update of "Hardware" source file for simulator distribution
+- Add full support for Stepper motor (configuration file, JSON message, events, etc...)

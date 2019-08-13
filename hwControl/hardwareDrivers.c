@@ -14,6 +14,7 @@
 
 
 //#define INFO_DEBUG
+//#define INFO_BUS_DEBUG
 
 #include <unistd.h>
 #include <stdio.h>
@@ -35,9 +36,11 @@
 #include "k_vl53l0x.h"
 #include "mcp4725.h"
 #include "tca9548a.h"
-#include "ssd1306.h"
+#include "display_mono.h"
 #include "ads101x.h"
 #include "ads111x.h"
+
+#include "gfx_xbm_pics.h"
 
 // Device variable déclaration
 #define MAX_IC_DEVICE_PER_TYPE 8
@@ -51,7 +54,9 @@ device_bh1745 dev_bh1745[MAX_IC_DEVICE_PER_TYPE];
 device_vl53l0x dev_vl53l0x[MAX_IC_DEVICE_PER_TYPE];
 device_mcp4725 dev_mcp4725[MAX_IC_DEVICE_PER_TYPE];
 device_tca9548a dev_tca9548a[MAX_IC_DEVICE_PER_TYPE];
-device_ssd1306 dev_ssd1306[MAX_IC_DEVICE_PER_TYPE];
+
+device_display dev_U8G2_display[MAX_IC_DEVICE_PER_TYPE];
+
 device_ads101x dev_ads101x[MAX_IC_DEVICE_PER_TYPE];
 device_ads111x dev_ads111x[MAX_IC_DEVICE_PER_TYPE];
 
@@ -64,9 +69,9 @@ unsigned char bh1745_count=0;
 unsigned char vl53l0x_count=0;
 unsigned char mcp4725_count=0;
 unsigned char tca9548a_count=0;
-unsigned char ssd1306_count=0;
 unsigned char ads101x_count=0;
 unsigned char ads111x_count=0;
+unsigned char display_U8G2_count=0;
 
 int getDriverConfig_ptr(char * driverType, char * name);
 int driverSelector_SetDOUT(char * driverType, char * driverName, int channel, int value);
@@ -92,7 +97,9 @@ int boardHWinit(void){
     int i;
 
     printf("#[HW DRIVER] Board devices drivers initialization: \n");
-    usleep(10000);            
+    
+    usleep(10000);
+    
     for(i=0; boardDevice[i].address >= 0 && i<MAX_BOARD_DEVICE; i++){
             
         NoDriverFound = 1;                          
@@ -275,21 +282,68 @@ int boardHWinit(void){
             // DEVICES TYPE DRIVER_SSD1306 GRAPHICAL DISPLAY
             if(!strcmp(boardDevice[i].type, DRIVER_SSD1306)){              
                 // Setting up the ssd1306 Graphic display
-                strcpy(dev_ssd1306[ssd1306_count].deviceName, boardDevice[i].name);
-                dev_ssd1306[ssd1306_count].deviceAddress = boardDevice[i].address;
-                if(ssd1306_init(&dev_ssd1306[ssd1306_count]) != 0){
+                strcpy(dev_U8G2_display[display_U8G2_count].deviceName, boardDevice[i].name);
+                dev_U8G2_display[display_U8G2_count].deviceAddress = boardDevice[i].address;
+                dev_U8G2_display[display_U8G2_count].controllerType = CTRL_SSD1306;
+                dev_U8G2_display[display_U8G2_count].width = boardDevice[i].attributes.width;
+                dev_U8G2_display[display_U8G2_count].height = boardDevice[i].attributes.height;
+                if(display_init(&dev_U8G2_display[display_U8G2_count]) != 0){
                     err++;
-                    printf(" -> NOT YET IMPLEMENTED");
-                    dev_ssd1306[ssd1306_count].deviceAddress = 0; // Set address to unvalid
+                    printf(" -> ERROR");
+                    dev_U8G2_display[display_U8G2_count].deviceAddress = 0; // Set address to unvalid
                 }else{
                     printf(" -> OK");                  
                 }
             #ifdef INFO_DEBUG                
                 printDeviceData(i, &boardDevice[i]);
             #endif                
-                ssd1306_count++;
+                display_U8G2_count++;
                 NoDriverFound=0;                
-            }            
+            }
+        
+            // DEVICES TYPE DRIVER_SSD1305 GRAPHICAL DISPLAY
+            if(!strcmp(boardDevice[i].type, DRIVER_SSD1305)){              
+                // Setting up the ssd1305 Graphic display
+                strcpy(dev_U8G2_display[display_U8G2_count].deviceName, boardDevice[i].name);
+                dev_U8G2_display[display_U8G2_count].deviceAddress = boardDevice[i].address;
+                dev_U8G2_display[display_U8G2_count].controllerType = CTRL_SSD1305;
+                dev_U8G2_display[display_U8G2_count].width = boardDevice[i].attributes.width;
+                dev_U8G2_display[display_U8G2_count].height = boardDevice[i].attributes.height;
+                if(display_init(&dev_U8G2_display[display_U8G2_count]) != 0){
+                    err++;
+                    printf(" -> ERROR");
+                    dev_U8G2_display[display_U8G2_count].deviceAddress = 0; // Set address to unvalid
+                }else{
+                    printf(" -> OK");                  
+                }
+            #ifdef INFO_DEBUG                
+                printDeviceData(i, &boardDevice[i]);
+            #endif                
+                display_U8G2_count++;
+                NoDriverFound=0;                
+            }        
+        
+            // DEVICES TYPE DRIVER_SH1106 GRAPHICAL DISPLAY
+            if(!strcmp(boardDevice[i].type, DRIVER_SH1106)){
+                strcpy(dev_U8G2_display[display_U8G2_count].deviceName, boardDevice[i].name);
+                dev_U8G2_display[display_U8G2_count].deviceAddress = boardDevice[i].address;
+                dev_U8G2_display[display_U8G2_count].controllerType = CTRL_SH1106;
+                dev_U8G2_display[display_U8G2_count].width = boardDevice[i].attributes.width;
+                dev_U8G2_display[display_U8G2_count].height = boardDevice[i].attributes.height;
+                if(display_init(&dev_U8G2_display[display_U8G2_count]) != 0){
+                    err++;
+                    printf(" -> ERROR");
+                    dev_U8G2_display[display_U8G2_count].deviceAddress = 0; // Set address to unvalid
+                }else{
+                    printf(" -> OK");                  
+                }
+            #ifdef INFO_DEBUG                
+                printDeviceData(i, &boardDevice[i]);
+            #endif                
+                display_U8G2_count++;
+                NoDriverFound=0;                
+            }
+        
             
             // DEVICES TYPE DRIVER_ADS101X 12 BIT ANALOG DIGITAL CONVERTER
             if(!strcmp(boardDevice[i].type, DRIVER_ADS101X)){              
@@ -373,8 +427,11 @@ char actuator_setDoutValue(int doutID, int value){
             if(dev_pca9685[ptrDev].deviceAddress > 0)
                 pca9685_setPWMdutyCycle(&dev_pca9685[ptrDev], channel, value);
             else
-                printf("#! Function [actuator_setDoutValue] -> I2C Error: Bad address or device not connected\n");
-            
+                {
+                #ifdef INFO_BUS_DEBUG
+                    printf("#! Function [actuator_setDoutValue] -> I2C Error: Bad address or device not connected\n");
+                #endif      
+            }
         }else 
             printf ("#! Function [actuator_setDoutValue] -> Unknown driver name: %s\n", kehopsActuators.dout[doutID].hw_driver.name);
     }
@@ -389,7 +446,11 @@ char actuator_setDoutValue(int doutID, int value){
             if(dev_mcp23008[ptrDev].deviceAddress > 0)
                 mcp23008_setChannel(&dev_mcp23008[ptrDev], channel, value);
             else
+                {
+                #ifdef INFO_BUS_DEBUG
                 printf("#! Function [actuator_setDoutValue] -> I2C Error: Bad address or device not connected\n");
+                #endif
+        }
             
         }else 
             printf ("#! Function [actuator_setDoutValue] -> Unknown driver name: %s\n", kehopsActuators.dout[doutID].hw_driver.name);
@@ -425,7 +486,12 @@ char actuator_setAnalogValue(int aoutID, int value){
             if(dev_mcp4725[ptrDev].deviceAddress > 0)
                 mcp4725_setDACOutput_mV(&dev_mcp4725[ptrDev], value);
             else
+                {
+                #ifdef INFO_BUS_DEBUG                
                 printf("#! Function [actuator_setAnalogValue] -> I2C Error: Bad address or device not connected\n");
+                #endif
+            }
+            
         }else 
             printf ("#! Function [actuator_setAnalogValue] -> Unknown driver name: %s\n", kehopsActuators.aout[aoutID].hw_driver.name);
     }
@@ -471,7 +537,11 @@ char actuator_setServoPosition(int doutID, int position){
             if(dev_pca9685[ptrDev].deviceAddress > 0)
                 pca9685_setPulseWidthTime(&dev_pca9685[ptrDev], channel, time_ms);
             else
+                {
+                #ifdef INFO_BUS_DEBUG
                 printf("#! Function [actuator_setServoPosition] -> I2C Error: Bad address or device not connected\n");
+                #endif
+            }                
             
         }else printf ("#! Function [actuator_setServoPosition] -> Unknown driver name: %s\n", kehopsActuators.dout[doutID].hw_driver.name);
     }
@@ -530,7 +600,11 @@ int actuator_setStepperStepAction(int stepperID, int direction, int stepCount){
                 PCA9629_StepperMotorControl(&dev_pca9629[ptrDev], ctrlData);
             }
             else
+                {
+                #ifdef INFO_BUS_DEBUG                
                 printf("#! Function [actuator_setStepperStepAction] -> I2C Error: Bad address or device not connected\n");
+                #endif 
+            }                
             
 
         }else printf ("#! Function [actuator_setStepperStepAction] -> Unknown driver name: %s\n", kehopsActuators.stepper_motors[stepperID].hw_driver.name);
@@ -578,7 +652,11 @@ int actuator_setStepperSpeed(int stepperID, int speed){
             if(dev_pca9629[ptrDev].deviceAddress > 0)
             PCA9629_StepperMotorPulseWidth(&dev_pca9629[ptrDev], regData);
             else
+                {
+                #ifdef INFO_BUS_DEBUG                
                 printf("#! Function [actuator_setStepperSpeed] -> I2C Error: Bad address or device not connected\n");
+                #endif 
+            }                
             
         }else printf ("#! Function [actuator_setStepperSpeed] -> Unknown driver name: %s\n", kehopsActuators.stepper_motors[stepperID].hw_driver.name);
      }
@@ -611,7 +689,11 @@ int actuator_getStepperState(int stepperID){
             if(dev_pca9629[ptrDev].deviceAddress > 0)
                 state = PCA9629_ReadMotorState(&dev_pca9629[ptrDev]);
             else
-                printf("#! Function [actuator_getStepperState] -> I2C Error: Bad address or device not connected\n");            
+                {
+                #ifdef INFO_BUS_DEBUG                
+                printf("#! Function [actuator_getStepperState] -> I2C Error: Bad address or device not connected\n");
+                #endif 
+            }                
         }else{
             printf ("#! Function [actuator_getStepperState] -> Unknown driver name: %s\n", kehopsActuators.stepper_motors[stepperID].hw_driver.name);
             state = 0;
@@ -642,7 +724,11 @@ int actuator_getCounterPulses(unsigned char pulseCounterID){
             if(dev_efm8bb[ptrDev].deviceAddress > 0)
                 counterPulses = EFM8BB_getChannel(&dev_efm8bb[ptrDev], kehopsActuators.pulsesCounter[pulseCounterID].hw_driver.attributes.device_channel);
             else
-                printf("#! Function [actuator_getCounterPulses] -> I2C Error: Bad address or device not connected\n");                        
+                {
+                #ifdef INFO_BUS_DEBUG                
+                printf("#! Function [actuator_getCounterPulses] -> I2C Error: Bad address or device not connected\n");
+                #endif 
+            }                
         }else printf ("#! Function [actuator_getCounterPulses] -> Unknown driver name: %s\n", kehopsActuators.pulsesCounter[pulseCounterID].hw_driver.name);
     }
     
@@ -669,7 +755,11 @@ int actuator_getCounterFrequency(unsigned char freqCounterID){
             if(dev_efm8bb[ptrDev].deviceAddress > 0)
                 frequency = EFM8BB_getChannel(&dev_efm8bb[ptrDev], kehopsActuators.freqCounter[freqCounterID].hw_driver.attributes.device_channel);
             else
-                printf("#! Function [actuator_getCounterFrequency] -> I2C Error: Bad address or device not connected\n");        
+                {
+                #ifdef INFO_BUS_DEBUG                
+                printf("#! Function [actuator_getCounterFrequency] -> I2C Error: Bad address or device not connected\n");
+                #endif 
+            }        
         }else printf ("#! Function [actuator_getCounterFrequency] -> Unknown driver name: %s\n", kehopsActuators.freqCounter[freqCounterID].hw_driver.name);
     }
     
@@ -693,7 +783,11 @@ int actuator_getDigitalInput(unsigned char dinID){
             if(dev_efm8bb[ptrDev].deviceAddress > 0)
                 value = EFM8BB_getChannel(&dev_efm8bb[ptrDev], kehopsActuators.din[dinID].hw_driver.attributes.device_channel);
             else
-                printf("#! Function [actuator_getDigitalInput] -> I2C Error: Bad address or device not connected\n");                    
+                {
+                #ifdef INFO_BUS_DEBUG                
+                printf("#! Function [actuator_getDigitalInput] -> I2C Error: Bad address or device not connected\n");
+                #endif             
+            }                    
         }else{
                 printf ("#! Function [actuator_getDigitalInput] -> Unknown driver name: %s\n", kehopsActuators.din[dinID].hw_driver.name);
                 value = -1;
@@ -708,7 +802,11 @@ int actuator_getDigitalInput(unsigned char dinID){
             if(dev_mcp23008[ptrDev].deviceAddress > 0)
                 value = mcp23008_getChannel(&dev_mcp23008[ptrDev], kehopsActuators.din[dinID].hw_driver.attributes.device_channel);
             else
-                printf("#! Function [actuator_getDigitalInput] -> I2C Error: Bad address or device not connected\n");              
+                {
+                #ifdef INFO_BUS_DEBUG                
+                printf("#! Function [actuator_getDigitalInput] -> I2C Error: Bad address or device not connected\n");
+                #endif             
+            }              
         }else{
                 printf ("#! Function [actuator_getDigitalInput] -> Unknown driver name: %s\n", kehopsActuators.din[dinID].hw_driver.name);
                 value = -1;
@@ -736,7 +834,11 @@ int actuator_getDistance(unsigned char distanceSensorID){
             if(dev_efm8bb[ptrDev].deviceAddress > 0)
                 distance_mm = EFM8BB_getChannel(&dev_efm8bb[ptrDev], kehopsActuators.distanceSensor[distanceSensorID].hw_driver.attributes.device_channel);
             else
-                printf("#! Function [actuator_getDistance] -> I2C Error: Bad address or device not connected\n");               
+                {
+                #ifdef INFO_BUS_DEBUG                
+                printf("#! Function [actuator_getDistance] -> I2C Error: Bad address or device not connected\n");
+                #endif             
+            }               
         }else{
                 printf ("#! Function [actuator_getDistance] -> Unknown driver name: %s\n", kehopsActuators.distanceSensor[distanceSensorID].hw_driver.name);
                 distance_mm = -1;
@@ -763,7 +865,11 @@ int actuator_getVoltage(unsigned char ainID){
             if(dev_efm8bb[ptrDev].deviceAddress > 0)
                 voltage_mv = EFM8BB_getChannel(&dev_efm8bb[ptrDev], kehopsActuators.ain[ainID].hw_driver.attributes.device_channel);
             else
-                printf("#! Function [actuator_getVoltage] -> I2C Error: Bad address or device not connected\n");                           
+                {
+                #ifdef INFO_BUS_DEBUG                
+                printf("#! Function [actuator_getVoltage] -> I2C Error: Bad address or device not connected\n");
+                #endif             
+            }                           
 
         }else{
                 printf ("#! Function [actuator_getVoltage] -> Unknown driver name: %s\n", kehopsActuators.ain[ainID].hw_driver.name);
@@ -778,7 +884,11 @@ int actuator_getVoltage(unsigned char ainID){
             if(dev_ads101x[ptrDev].deviceAddress > 0)
                 voltage_mv = ads101x_getVoltage_mv(&dev_ads101x[ptrDev], kehopsActuators.ain[ainID].hw_driver.attributes.device_channel);
             else
-                printf("#! Function [actuator_getVoltage] -> I2C Error: Bad address or device not connected\n");                                       
+                {
+                #ifdef INFO_BUS_DEBUG                
+                printf("#! Function [actuator_getVoltage] -> I2C Error: Bad address or device not connected\n");
+                #endif             
+            }                                       
         }else{
                 printf ("#! Function [actuator_getVoltage] -> Unknown driver name: %s\n", kehopsActuators.ain[ainID].hw_driver.name);
                 voltage_mv = -1;
@@ -792,7 +902,11 @@ int actuator_getVoltage(unsigned char ainID){
             if(dev_ads111x[ptrDev].deviceAddress > 0)
                 voltage_mv = ads111x_getVoltage_mv(&dev_ads111x[ptrDev], kehopsActuators.ain[ainID].hw_driver.attributes.device_channel);
             else
-                printf("#! Function [actuator_getVoltage] -> I2C Error: Bad address or device not connected\n");                                       
+                {
+                #ifdef INFO_BUS_DEBUG                
+                printf("#! Function [actuator_getVoltage] -> I2C Error: Bad address or device not connected\n");
+                #endif             
+            }                                       
         }else{
                 printf ("#! Function [actuator_getVoltage] -> Unknown driver name: %s\n", kehopsActuators.ain[ainID].hw_driver.name);
                 voltage_mv = -1;
@@ -817,7 +931,11 @@ int actuator_getRGBColor(unsigned char rgbID, RGB_COLOR * rgbColor){
                 rgbColor->clear = bh1745nuc_getChannelRGBvalue(&dev_bh1745[ptrDev], CLEAR);                
             }
             else
-                printf("#! Function [actuator_getColor] -> I2C Error: Bad address or device not connected\n"); 
+                {
+                #ifdef INFO_BUS_DEBUG                
+                printf("#! Function [actuator_getColor] -> I2C Error: Bad address or device not connected\n");
+                #endif             
+            } 
     }else{
             printf ("#! Function [actuator_getColor] -> Unknown driver name: %s\n", kehopsActuators.rgbSensor[rgbID].hw_driver.name);
     }
@@ -826,6 +944,205 @@ int actuator_getRGBColor(unsigned char rgbID, RGB_COLOR * rgbColor){
         return 0;
     else
         return -1;
+}
+
+/**
+ * \brief int actuator_setKehopsDisplay(unsigned char gfxID)
+ * \param gfxID, ID of display in kehops.cfg
+ * \return error code
+ */ 
+
+int actuator_setKehopsDisplay(unsigned char gfxID){
+    int ptrDev=-1;
+    char strTemp[25];
+    char strVolt[10];
+    char strDist[10];
+   
+    // Check if driver IC need a subdriver and make a pre-action if required
+    subDriver_onActivate(kehopsActuators.gfxDisplay[gfxID].hw_driver.name);
+    
+    
+    if(!strcmp(kehopsActuators.gfxDisplay[gfxID].hw_driver.type, DRIVER_SH1106) || !strcmp(kehopsActuators.gfxDisplay[gfxID].hw_driver.type, DRIVER_SSD1306)){
+        usleep(50000);
+        
+        ptrDev = getDriverConfig_ptr(DRIVER_SH1106, kehopsActuators.gfxDisplay[gfxID].hw_driver.name);
+        
+        if(ptrDev>=0){
+            if(dev_U8G2_display[ptrDev].deviceAddress > 0){
+                if(dev_U8G2_display[ptrDev].width >= 128 && dev_U8G2_display[ptrDev].height >= 64){
+                    
+                    //display_clearScreen(&dev_display[ptrDev]);
+                    // Build the screen
+                    gcvt((float)kehops.analogInput[0].measure.voltage_mV/1000, 3, strTemp);
+                    sprintf(strVolt, "%s V", strTemp);
+                    sprintf(strDist, "%d [cm]", kehops.sonar[0].measure.distance_cm);
+
+                    display_clearBuffer(&dev_U8G2_display[ptrDev]);
+                    display_addXBM(&dev_U8G2_display[ptrDev], 0, 0, kehops_61x64_width, kehops_61x64_height, kehops_61x64_bits);
+
+                    // Display the name in the logo
+                    display_addText(&dev_U8G2_display[ptrDev],15,60, 0, sysApp.info.name);
+
+                    // Display the sonar evaluation logo               
+                    if(kehops.sonar[0].measure.distance_cm < 10)
+                        display_addXBM(&dev_U8G2_display[ptrDev], 14, 0, kehops_us_33x17_0_width, kehops_us_33x17_0_height, kehops_us_33x17_0_bits);
+                    if(kehops.sonar[0].measure.distance_cm >= 10 & kehops.sonar[0].measure.distance_cm < 20)
+                        display_addXBM(&dev_U8G2_display[ptrDev], 14, 0, kehops_us_33x17_1_width, kehops_us_33x17_1_height, kehops_us_33x17_1_bits);                
+                    if(kehops.sonar[0].measure.distance_cm >= 20 & kehops.sonar[0].measure.distance_cm <30)
+                        display_addXBM(&dev_U8G2_display[ptrDev], 14, 0, kehops_us_33x17_2_width, kehops_us_33x17_2_height, kehops_us_33x17_2_bits);
+                    if(kehops.sonar[0].measure.distance_cm >= 30)
+                        display_addXBM(&dev_U8G2_display[ptrDev], 14, 0, kehops_us_33x17_3_width, kehops_us_33x17_3_height, kehops_us_33x17_3_bits);
+
+                // PROXIMITY
+                    // Display the left proximity sensor state
+                    if(kehops.proximity[0].measure.state)
+                        display_addXBM(&dev_U8G2_display[ptrDev], 2, 15, kehops_ir_l_10x7_1_width, kehops_ir_l_10x7_1_height, kehops_ir_l_10x7_1_bits);
+                    else
+                        display_addXBM(&dev_U8G2_display[ptrDev], 2, 15, kehops_ir_l_10x7_0_width, kehops_ir_l_10x7_0_height, kehops_ir_l_10x7_0_bits);                
+
+                    // Display the right proximity sensor state               
+                    if(kehops.proximity[1].measure.state)
+                        display_addXBM(&dev_U8G2_display[ptrDev], 49, 15, kehops_ir_r_10x7_1_width, kehops_ir_r_10x7_1_height, kehops_ir_r_10x7_1_bits);
+                    else
+                        display_addXBM(&dev_U8G2_display[ptrDev], 49, 15, kehops_ir_r_10x7_0_width, kehops_ir_r_10x7_0_height, kehops_ir_r_10x7_0_bits);                
+
+                // BUTTONS                
+                    if(kehops.button[0].measure.state)
+                        display_addCircle(&dev_U8G2_display[ptrDev], 21, 40, 3, 1);
+                    else
+                        display_addCircle(&dev_U8G2_display[ptrDev], 21, 40, 3, 0);
+
+                    if(kehops.button[1].measure.state)
+                        display_addCircle(&dev_U8G2_display[ptrDev], 39, 40, 3, 1);
+                    else
+                        display_addCircle(&dev_U8G2_display[ptrDev], 39, 40, 3, 0);                
+
+
+                    display_addText(&dev_U8G2_display[ptrDev],60,10, 0, strDist);
+
+                    // Display battery and voltage
+                    sprintf(strTemp, "%d", (int)kehops.analogInput[0].measure.capacity / 20);
+                    display_addIcon(&dev_U8G2_display[ptrDev], 120, 60, 0, strTemp);                
+
+                    display_addText(&dev_U8G2_display[ptrDev],80,60, 0, strVolt);
+
+                    sprintf(strTemp, "  %d %s", (int)kehops.analogInput[0].measure.capacity, "%");
+                    display_addText(&dev_U8G2_display[ptrDev],80,50, 0, strTemp);
+
+                    display_updateScreen(&dev_U8G2_display[ptrDev]);
+                }
+                
+// DISPLAY FOR 32px
+                if(dev_U8G2_display[ptrDev].width >= 128 && dev_U8G2_display[ptrDev].height <= 32){
+                    //display_clearScreen(&dev_display[ptrDev]);
+                    // Build the screen
+                    gcvt((float)kehops.analogInput[0].measure.voltage_mV/1000, 3, strTemp);
+                    sprintf(strVolt, "%s V", strTemp);
+                    sprintf(strDist, "%d [cm]", kehops.sonar[0].measure.distance_cm);
+
+                    display_clearBuffer(&dev_U8G2_display[ptrDev]);
+
+                    // Display the sonar evaluation logo               
+                    if(kehops.sonar[0].measure.distance_cm < 10)
+                        display_addXBM(&dev_U8G2_display[ptrDev], 5, 8, kehops_us_33x17_0_width, kehops_us_33x17_0_height, kehops_us_33x17_0_bits);
+                    if(kehops.sonar[0].measure.distance_cm >= 10 & kehops.sonar[0].measure.distance_cm < 20)
+                        display_addXBM(&dev_U8G2_display[ptrDev], 5, 8, kehops_us_33x17_1_width, kehops_us_33x17_1_height, kehops_us_33x17_1_bits);                
+                    if(kehops.sonar[0].measure.distance_cm >= 20 & kehops.sonar[0].measure.distance_cm <30)
+                        display_addXBM(&dev_U8G2_display[ptrDev], 5, 8, kehops_us_33x17_2_width, kehops_us_33x17_2_height, kehops_us_33x17_2_bits);
+                    if(kehops.sonar[0].measure.distance_cm >= 30)
+                        display_addXBM(&dev_U8G2_display[ptrDev], 5, 8, kehops_us_33x17_3_width, kehops_us_33x17_3_height, kehops_us_33x17_3_bits);
+
+
+                    display_addText(&dev_U8G2_display[ptrDev],45,16, 0, strDist);
+
+                    // Display battery and voltage
+                    sprintf(strTemp, "%d", (int)kehops.analogInput[0].measure.capacity / 20);
+                    display_addIcon(&dev_U8G2_display[ptrDev], 120, 30, 0, strTemp);                
+
+                    display_addText(&dev_U8G2_display[ptrDev],80,30, 0, strVolt);
+
+
+                    display_updateScreen(&dev_U8G2_display[ptrDev]);
+                }
+            }
+            else
+                {
+                #ifdef INFO_BUS_DEBUG                
+                printf("#! Function [actuator_setKehopsDisplay] -> I2C Error: Bad address or device not connected\n");
+                #endif             
+            }                                       
+        }else{
+                printf ("#! Function [actuator_setKehopsDisplay] -> Unknown driver name: %s\n", kehopsActuators.gfxDisplay[gfxID].hw_driver.name);
+        }
+    }
+    
+    // SUBDRIVER ACTION Check if driver IC need a subdriver and make a pre-action if required
+    subDriver_onDeactivate(kehopsActuators.gfxDisplay[gfxID].hw_driver.name);
+}
+
+
+/**
+ * \brief int actuator_setDisplayText(unsigned char gfxID)
+ * \param gfxID, ID of display in kehops.cfg
+ * \return error code
+ */ 
+
+int actuator_setDisplayText(unsigned char gfxID, char * text, char *border, char *icon){
+    int ptrDev=-1;
+   
+    // Check if driver IC need a subdriver and make a pre-action if required
+    subDriver_onActivate(kehopsActuators.gfxDisplay[gfxID].hw_driver.name);
+    
+    if(!strcmp(kehopsActuators.gfxDisplay[gfxID].hw_driver.type, DRIVER_SH1106) || !strcmp(kehopsActuators.gfxDisplay[gfxID].hw_driver.type, DRIVER_SSD1306)){
+        usleep(50000);
+        ptrDev = getDriverConfig_ptr(DRIVER_SH1106, kehopsActuators.gfxDisplay[gfxID].hw_driver.name);
+        
+        if(ptrDev>=0){
+            if(dev_U8G2_display[ptrDev].deviceAddress > 0){
+                if(dev_U8G2_display[ptrDev].width >= 128 && dev_U8G2_display[ptrDev].height >= 64){
+
+                    display_clearBuffer(&dev_U8G2_display[ptrDev]);
+                    
+                    // Select the border 
+                    if(!strcmp(border, "bubble"))
+                        display_addXBM(&dev_U8G2_display[ptrDev], 0, 0, bubble_128x64_width, bubble_128x64_height, bubble_128x64_bits);
+                    if(!strcmp(border, "normal"))
+                        display_addXBM(&dev_U8G2_display[ptrDev], 0, 0, rectangle_128x64_width, rectangle_128x64_height, rectangle_128x64_bits);
+                    
+                    display_addText(&dev_U8G2_display[ptrDev],10,30, 1, text);
+
+                    display_updateScreen(&dev_U8G2_display[ptrDev]);
+                }
+                
+// DISPLAY FOR 32px
+                if(dev_U8G2_display[ptrDev].width >= 128 && dev_U8G2_display[ptrDev].height <= 32){
+
+                    display_clearBuffer(&dev_U8G2_display[ptrDev]);
+
+                    // Select the border 
+                    if(!strcmp(border, "bubble"))
+                        display_addXBM(&dev_U8G2_display[ptrDev], 0, 0, bubble_128x32_width, bubble_128x32_height, bubble_128x32_bits);
+                    if(!strcmp(border, "normal"))
+                        display_addXBM(&dev_U8G2_display[ptrDev], 0, 0, rectangle_128x32_width, rectangle_128x32_height, rectangle_128x32_bits);
+
+                    display_addText(&dev_U8G2_display[ptrDev],10,16, 1, text);
+
+                    display_updateScreen(&dev_U8G2_display[ptrDev]);
+                }
+            }
+            else
+                {
+                #ifdef INFO_BUS_DEBUG                
+                printf("#! Function [actuator_setKehopsDisplay] -> I2C Error: Bad address or device not connected\n");
+                #endif             
+            }                                       
+        }else{
+                printf ("#! Function [actuator_setKehopsDisplay] -> Unknown driver name: %s\n", kehopsActuators.gfxDisplay[gfxID].hw_driver.name);
+        }
+    }
+    
+    // SUBDRIVER ACTION Check if driver IC need a subdriver and make a pre-action if required
+    subDriver_onDeactivate(kehopsActuators.gfxDisplay[gfxID].hw_driver.name);
 }
 
 
@@ -938,14 +1255,29 @@ int getDriverConfig_ptr(char * driverType, char * name){
                 refFound = i;
             }
         }        
-    }    
+    }   
+    
+    if(!strcmp(driverType, DRIVER_SSD1305)){
+        for(i=0; refFound<0 && i<display_U8G2_count ;i++){
+            if(!strcmp(dev_U8G2_display[i].deviceName, name)){
+                refFound = i;
+            }
+        }        
+    } 
     if(!strcmp(driverType, DRIVER_SSD1306)){
-        for(i=0; refFound<0 && i<ssd1306_count ;i++){
-            if(!strcmp(dev_ssd1306[i].deviceName, name)){
+        for(i=0; refFound<0 && i<display_U8G2_count ;i++){
+            if(!strcmp(dev_U8G2_display[i].deviceName, name)){
                 refFound = i;
             }
         }        
     }
+    if(!strcmp(driverType, DRIVER_SH1106)){
+        for(i=0; refFound<0 && i<display_U8G2_count ;i++){
+            if(!strcmp(dev_U8G2_display[i].deviceName, name)){
+                refFound = i;
+            }
+        }        
+    }    
     if(!strcmp(driverType, DRIVER_ADS101X)){
         for(i=0; refFound<0 && i < ads101x_count ;i++){
             if(!strcmp(dev_ads101x[i].deviceName, name)){
@@ -1073,7 +1405,11 @@ int driverSelector_SetDOUT(char * driverType, char * driverName, int channel, in
             if(dev_pca9685[ptrDev].deviceAddress > 0)
                 pca9685_setPWMdutyCycle(&dev_pca9685[ptrDev], channel, value);
             else
-                printf("#! Function [driverSelector_SetDOUT] -> I2C Error: Bad address or device not connected\n");             
+                {
+                #ifdef INFO_BUS_DEBUG                
+                printf("#! Function [driverSelector_SetDOUT] -> I2C Error: Bad address or device not connected\n");
+                #endif             
+            }             
         }
     }
         
@@ -1083,7 +1419,11 @@ int driverSelector_SetDOUT(char * driverType, char * driverName, int channel, in
             if(dev_mcp23008[ptrDev].deviceAddress > 0)
                 mcp23008_setChannel(&dev_mcp23008[ptrDev], channel, value);
             else
+                {
+                #ifdef INFO_BUS_DEBUG                
                 printf("#! Function [driverSelector_SetDOUT] -> I2C Error: Bad address or device not connected\n");
+                #endif             
+            }
         }
     }    
     
@@ -1117,7 +1457,11 @@ int setDeviceChannelByName(char * deviceName, int channel, int value){
             if(dev_tca9548a[ptrDev].deviceAddress > 0)
                 err += tca9548a_setChannelState(&dev_tca9548a[ptrDev], channel, value);
             else
-                printf("#! Function [setDeviceChannelByName] -> I2C Error: Bad address or device not connected\n");            
+                {
+                #ifdef INFO_BUS_DEBUG                
+                printf("#! Function [setDeviceChannelByName] -> I2C Error: Bad address or device not connected\n");
+                #endif 
+            }            
         }
     }
 
@@ -1173,6 +1517,7 @@ int subDriver_onActivate(char * driverName){
     if(strcmp(subDriverSettings.name, "")){
         status = setDeviceChannelByName(subDriverSettings.name, subDriverSettings.attributes.device_channel, subDriverSettings.attributes.onActivate);
     }
+    
     return status;
 }
 

@@ -49,10 +49,11 @@ typedef enum msgparam{
         CONFIG,
         SYSTEM,
         STEPPER,
+        pDISPLAY,
 }t_msgparam;
 
 
-struct m2wd{
+struct mDCmot{
 	int motor;
 	int speed;
         int userSetPoint;
@@ -180,7 +181,7 @@ struct mDistance{
 	int angle;
 };
 
-struct mBattery{
+struct mVoltage{
 	int id;
 	char event_state[50];
 	int event_low;
@@ -201,9 +202,18 @@ struct mAout{
         int value;
 };
 
+struct mDisplay{
+	int id;
+	char text[64];
+	char border[25];
+        char icon[25];
+        int time;
+        char hid[25];
+};
+
 struct mLed{
 	int id;
-	char state[50];
+	char state[15];
 	int powerPercent;
         int time;
         int blinkCount;
@@ -282,15 +292,16 @@ typedef struct JsonCommand{
 	unsigned char msgValueCnt;
 
 	// UNION ???
-	struct m2wd DCmotor[20];
+	struct mDCmot DCmotor[20];
         struct mStepper StepperMotor[20];
 	struct mDin DINsens[20];
         struct mDin BTNsens[20];
 	struct mDistance DISTsens[20];
-	struct mBattery BATTsens[20];
+	struct mVoltage BATTsens[20];
 	struct mLed PWMarray[20];
         struct mLed LEDarray[20]; // LED (internal board pwm)
         struct mAout Aout[20];
+        struct mDisplay Display[20];
         struct mRGB RGBsens[20];
         struct mConfig Config;
         struct mSystemCmd System;
@@ -304,16 +315,17 @@ typedef struct JsonResponse{
 
         struct mSystem SYSresponse;
 	struct mDin DINresponse;
-	struct mBattery BATTesponse;
+	struct mVoltage VOLTResponse;
 	struct mDistance DISTresponse;
         struct mServo SERVOresponse;
-	struct m2wd MOTresponse;
+	struct mDCmot MOTresponse;
         struct mStepper STEPPERresponse;
         struct mLed PWMresponse;
         struct mAout AOUTresponse;
         struct mLed LEDresponse;
         struct mDin BTNresponse;
         struct mRGB RGBresponse; 
+        struct mDisplay DISPLAYresponse; 
         struct mConfig CONFIGresponse;
         struct mSystemCmd SYSCMDresponse;
         char returnMessage[100];

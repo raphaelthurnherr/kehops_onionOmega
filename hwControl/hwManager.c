@@ -35,8 +35,6 @@
 #include "bh1745.h"
 
 
-
-
 // Thread Messager
 pthread_t th_hwManager;
 
@@ -147,7 +145,6 @@ typedef struct t_sensor{
 // --------------------------------------
 
 ACTUATORS actuator;
-
 SENSORS sensor;            // Device structure with actuator & sensor
 
 typedef struct tHWversion{
@@ -156,6 +153,9 @@ typedef struct tHWversion{
 }t_HWversion;
 
 t_HWversion BoardInfo;
+
+unsigned char HWstatus = 0;
+
 
 int i2c_command_queuing[50][4];
 int timeCount_ms=0;
@@ -190,6 +190,8 @@ int set_i2c_command_queue(int (*callback)(char, int, int),char adr, int cmd, int
 int getHWversion(void);                                                 // Get the hardware board version
 int getMcuFirmware(void);                                              // Get the hardware microcontroller version
 
+unsigned char getHWstatus(void); // Get the hardware devices status
+
 int resetHardware(t_sysConf * Config);
 
 
@@ -201,8 +203,10 @@ void *hwTask (void * arg){
         int i;
         int initResult;
 
-	//if(buggyBoardInit() && boardHWinit() == 0){   
         initResult = boardHWinit();
+        
+        HWstatus =1;
+        
         if(initResult == 0){
 		printf("\n#[HW MANAGER] Initialisation carte HW: OK\n");
 		sendMqttReport(0,"#[HW MANAGER] Initialisation carte HW: OK\n");
@@ -230,9 +234,6 @@ void *hwTask (void * arg){
 		// Sequencage des messages sur bus I2C à interval régulier
                 // de 250mS
 		switch(timeCount_ms){
-                        //case 0	: printf("Start --------------------------\n");
-                    
-                                  printf("\n**************\n");
                         case 5	: //sensor.counter[MOTOR_ENCODER_LEFT].counter = actuator_getCounterPulses(MOTOR_ENCODER_LEFT);
                                   //sensor.counter[MOTOR_ENCODER_RIGHT].counter = actuator_getCounterPulses(MOTOR_ENCODER_RIGHT);
                                   for(i=0;i<NBWHEEL;i++){
@@ -293,10 +294,11 @@ void *hwTask (void * arg){
                                       processCommandQueue(); break;
 		}
 
+                
 		// Reset le compteur au bout de 50mS
 		if(timeCount_ms<100)
 			timeCount_ms++;
-		else 
+		else
                     timeCount_ms=0;
                 
 		usleep(POOLTIME);
@@ -580,6 +582,44 @@ void setServoPosition(unsigned char ID, char position){
                 set_i2c_command_queue(&actuator_setServoPosition, doutID, position, NULL);
 }
 
+/**
+ * \brief updateKehopsHID will 
+ * \param pointer on the configuration structure
+ * \return code error
+ */
+
+void updateKehopsHID(int gfxId){
+    int gfxID = kehops.gfx[gfxId].config.gfx_id;
+    
+    if(!strcmp(kehopsActuators.gfxDisplay[gfxID].interface, ""))
+        printf("[hwManager] Error! no interface found for GFX [ID#%d], please check the config file <deviceMap.cfg>\n", gfxID);
+    else
+        if(!strcmp(kehopsActuators.gfxDisplay[gfxID].interface, IFACE_DEVICE_I2C)){
+            actuator_setKehopsDisplay(gfxID);
+        }
+}
+
+/**
+ * \brief setDisplayText will display a text with option (Border, icons)
+ * \param pointer on the configuration structure
+ * \return code error
+ */
+
+void setDisplayText(int gfxId, char * text, char * border, char * icon){
+    char mytext[32];
+    
+    sprintf(mytext, "GFX: %d", gfxId);
+    int gfxID = kehops.gfx[gfxId].config.gfx_id;
+    
+    if(!strcmp(kehopsActuators.gfxDisplay[gfxID].interface, ""))
+        printf("[hwManager] Error! no interface found for GFX [ID#%d], please check the config file <deviceMap.cfg>\n", gfxID);
+    else
+        if(!strcmp(kehopsActuators.gfxDisplay[gfxID].interface, IFACE_DEVICE_I2C)){
+            actuator_setDisplayText(gfxID,text, border, icon);
+        }
+}
+
+
 // ------------------------------------------------------------------------------------
 // ONTIMEOUT: Fcontion appelee en fin de timer
 // appelle une fonction callback pr�d�finie par *ptrFunc
@@ -606,8 +646,13 @@ void processCommandQueue(void){
 	i2c_command_queuing[49][CALLBACK]=i2c_command_queuing[49][ADR]=i2c_command_queuing[49][CMD]=i2c_command_queuing[49][PRM]=0;
 }
 
-
-
+// -------------------------------------------------------------------
+// RESET HARDFWARE
+// Applique un etat initial aux moteurs, LEDS, PWM, etc...
+// -------------------------------------------------------------------
+unsigned char getHWstatus(void){
+    return HWstatus;
+}
 
 // -------------------------------------------------------------------
 // RESET HARDFWARE

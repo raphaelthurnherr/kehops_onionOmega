@@ -22,7 +22,7 @@
 #define KEY_MESSAGE_VALUE_BTN "{'MsgData'{'MsgValue'[*{'btn'"
 #define KEY_MESSAGE_VALUE_SONAR "{'MsgData'{'MsgValue'[*{'sonar'"
 #define KEY_MESSAGE_VALUE_ANGLE "{'MsgData'{'MsgValue'[*{'angle'"
-#define KEY_MESSAGE_VALUE_BATT "{'MsgData'{'MsgValue'[*{'battery'"
+#define KEY_MESSAGE_VALUE_VOLT "{'MsgData'{'MsgValue'[*{'voltage'"
 #define KEY_MESSAGE_VALUE_RGB "{'MsgData'{'MsgValue'[*{'rgb'"
 
 #define KEY_MESSAGE_VALUE_PWM "{'MsgData'{'MsgValue'[*{'pwm'"
@@ -46,6 +46,12 @@
 #define KEY_MESSAGE_VALUE_EVENT_BLUE_HIGHER "{'MsgData'{'MsgValue'[*{'blue'{'event_higher'"
 #define KEY_MESSAGE_VALUE_EVENT_CLEAR_LOWER "{'MsgData'{'MsgValue'[*{'clear'{'event_lower'"
 #define KEY_MESSAGE_VALUE_EVENT_CLEAR_HIGHER "{'MsgData'{'MsgValue'[*{'clear'{'event_higher'"
+
+#define KEY_MESSAGE_VALUE_DISPLAY "{'MsgData'{'MsgValue'[*{'display'"
+#define KEY_MESSAGE_VALUE_TEXT "{'MsgData'{'MsgValue'[*{'text'"
+#define KEY_MESSAGE_VALUE_BORDER "{'MsgData'{'MsgValue'[*{'border'"
+#define KEY_MESSAGE_VALUE_ICON "{'MsgData'{'MsgValue'[*{'icon'"
+#define KEY_MESSAGE_VALUE_HID "{'MsgData'{'MsgValue'[*{'screen_hid'"
 
 #define KEY_MESSAGE_VALUE_MOTOR "{'MsgData'{'MsgValue'[*{'motor'"
 #define KEY_MESSAGE_VALUE_VELOCITY "{'MsgData'{'MsgValue'[*{'velocity'"
@@ -117,12 +123,12 @@
 #define KEY_MESSAGE_VALUE_CFG_SONAR_EVENT_HIGH "{'MsgData'{'MsgValue'[{'sonar'[*{'event_higher'"
 #define KEY_MESSAGE_VALUE_CFG_SONAR_EVENT_HYST "{'MsgData'{'MsgValue'[{'sonar'[*{'event_hysteresis'"
 
-#define KEY_MESSAGE_VALUE_CFG_BATTERY "{'MsgData'{'MsgValue'[*{'battery'"
-#define KEY_MESSAGE_VALUE_CFG_BATT_ID "{'MsgData'{'MsgValue'[{'battery'[*{'battery'"
-#define KEY_MESSAGE_VALUE_CFG_BATT_EVENT_STATE "{'MsgData'{'MsgValue'[{'battery'[*{'event'"
-#define KEY_MESSAGE_VALUE_CFG_BATT_EVENT_LOW "{'MsgData'{'MsgValue'[{'battery'[*{'event_lower'"
-#define KEY_MESSAGE_VALUE_CFG_BATT_EVENT_HIGH "{'MsgData'{'MsgValue'[{'battery'[*{'event_higher'"
-#define KEY_MESSAGE_VALUE_CFG_BATT_EVENT_HYST "{'MsgData'{'MsgValue'[{'battery'[*{'event_hysteresis'"
+#define KEY_MESSAGE_VALUE_CFG_VOLTAGE "{'MsgData'{'MsgValue'[*{'voltage'"
+#define KEY_MESSAGE_VALUE_CFG_VOLTAGE_ID "{'MsgData'{'MsgValue'[{'voltage'[*{'voltage'"
+#define KEY_MESSAGE_VALUE_CFG_VOLTAGE_EVENT_STATE "{'MsgData'{'MsgValue'[{'voltage'[*{'event'"
+#define KEY_MESSAGE_VALUE_CFG_VOLTAGE_EVENT_LOW "{'MsgData'{'MsgValue'[{'voltage'[*{'event_lower'"
+#define KEY_MESSAGE_VALUE_CFG_VOLTAGE_EVENT_HIGH "{'MsgData'{'MsgValue'[{'voltage'[*{'event_higher'"
+#define KEY_MESSAGE_VALUE_CFG_VOLTAGE_EVENT_HYST "{'MsgData'{'MsgValue'[{'voltage'[*{'event_hysteresis'"
 
 #define KEY_MESSAGE_VALUE_SYS_FIRMWARE "{'MsgData'{'MsgValue'[*{'firmware'"
 #define KEY_MESSAGE_VALUE_SYS_DASH "{'MsgData'{'MsgValue'[*{'dashboard'"
@@ -200,7 +206,7 @@ char GetAlgoidMsg(ALGOID *destMessage, char *srcBuffer){
                                         if(!strcmp(myDataString, "servo")) destMessage->msgParam = pSERVO;
                                         if(!strcmp(myDataString, "button")) destMessage->msgParam = BUTTON;
 					if(!strcmp(myDataString, "distance")) destMessage->msgParam = DISTANCE;
-					if(!strcmp(myDataString, "battery")) destMessage->msgParam = VOLTAGE;
+					if(!strcmp(myDataString, "voltage")) destMessage->msgParam = VOLTAGE;
 					if(!strcmp(myDataString, "din")) destMessage->msgParam = DINPUT;
 					if(!strcmp(myDataString, "status")) destMessage->msgParam = STATUS;
                                         if(!strcmp(myDataString, "rgb")) destMessage->msgParam = COLORS;
@@ -208,6 +214,7 @@ char GetAlgoidMsg(ALGOID *destMessage, char *srcBuffer){
                                         if(!strcmp(myDataString, "system")) destMessage->msgParam = SYSTEM;
                                         if(!strcmp(myDataString, "stepper")) destMessage->msgParam = STEPPER;
                                         if(!strcmp(myDataString, "aout")) destMessage->msgParam = pAOUT;
+                                        if(!strcmp(myDataString, "display")) destMessage->msgParam = pDISPLAY;
 
 				  jRead((char *)srcBuffer, KEY_MESSAGE_VALUE, &element );
 
@@ -269,10 +276,10 @@ char GetAlgoidMsg(ALGOID *destMessage, char *srcBuffer){
 				    		  destMessage->RGBsens[i].clear.event_high= jRead_long((char *)srcBuffer, KEY_MESSAGE_VALUE_EVENT_CLEAR_HIGHER, &i);
 				    	  }
 
-                                          // BATTERY
+                                          // VOLTAGE
 				    	  if(destMessage->msgParam == VOLTAGE){
 				    		  jRead_string((char *)srcBuffer, KEY_MESSAGE_VALUE_EVENT_STATE, destMessage->BATTsens[i].event_state, 15, &i );
-				    		  destMessage->BATTsens[i].id= jRead_long((char *)srcBuffer, KEY_MESSAGE_VALUE_BATT, &i);
+				    		  destMessage->BATTsens[i].id= jRead_long((char *)srcBuffer, KEY_MESSAGE_VALUE_VOLT, &i);
 				    		  destMessage->BATTsens[i].event_low= jRead_long((char *)srcBuffer, KEY_MESSAGE_VALUE_EVENT_LOWER, &i);
 				    		  destMessage->BATTsens[i].event_high= jRead_long((char *)srcBuffer, KEY_MESSAGE_VALUE_EVENT_HIGHER, &i);
 				    	  }
@@ -332,6 +339,25 @@ char GetAlgoidMsg(ALGOID *destMessage, char *srcBuffer){
 				    		  destMessage->PWMarray[i].id=pwmId;
 				    		  destMessage->PWMarray[i].powerPercent= jRead_long((char *)srcBuffer, KEY_MESSAGE_VALUE_POSPERCENT, &i);      
 				    	  }
+                                         
+                                          // DISPLAY
+				    	  if(destMessage->msgParam == pDISPLAY){
+                                                  destMessage->Display[i].id=-1;
+                                                  strcpy(destMessage->Display[i].text,"null");
+                                                  strcpy(destMessage->Display[i].border,"null");
+                                                  strcpy(destMessage->Display[i].icon,"null");
+
+                                                  
+				    		  jRead_string((char *)srcBuffer, KEY_MESSAGE_VALUE_TEXT, destMessage->Display[i].text, 64, &i);
+                                                  jRead_string((char *)srcBuffer, KEY_MESSAGE_VALUE_BORDER, destMessage->Display[i].border, 15, &i);
+                                                  jRead_string((char *)srcBuffer, KEY_MESSAGE_VALUE_ICON, destMessage->Display[i].icon, 15, &i);
+                                                  jRead_string((char *)srcBuffer, KEY_MESSAGE_VALUE_HID, destMessage->Display[i].hid, 15, &i);
+                                                  destMessage->Display[i].time= jRead_long((char *)srcBuffer, KEY_MESSAGE_VALUE_TIME, &i); 
+                                                  
+				    		  int displayId=jRead_long((char *)srcBuffer, KEY_MESSAGE_VALUE_DISPLAY, &i);
+				    		  destMessage->Display[i].id=displayId;
+				    	  }
+                                          
 
                                         // STATUS
 				    	  if(destMessage->msgParam == STATUS){
@@ -506,7 +532,7 @@ char GetAlgoidMsg(ALGOID *destMessage, char *srcBuffer){
                                                 }
 
                                                 // VOLTAGE Setting
-                                                jRead((char *)srcBuffer, KEY_MESSAGE_VALUE_CFG_BATTERY, &cfg_device_list );
+                                                jRead((char *)srcBuffer, KEY_MESSAGE_VALUE_CFG_VOLTAGE, &cfg_device_list );
 
                                                 // RECHERCHE DATA DE TYPE ARRAY
                                                 if(cfg_device_list.dataType == JREAD_ARRAY ){
@@ -515,11 +541,11 @@ char GetAlgoidMsg(ALGOID *destMessage, char *srcBuffer){
                                                     destMessage->Config.battValueCnt = nbOfdeviceInConf;
                                                     
                                                     for(i_dev=0; i_dev < nbOfdeviceInConf; i_dev++){
-                                                        destMessage->Config.ain[i_dev].id=jRead_long((char *)srcBuffer, KEY_MESSAGE_VALUE_CFG_BATT_ID, &i_dev); 
-                                                        jRead_string((char *)srcBuffer, KEY_MESSAGE_VALUE_CFG_BATT_EVENT_STATE, destMessage->Config.ain[i_dev].event_state, 15, &i_dev );
-                                                        destMessage->Config.ain[i_dev].event_low = jRead_long((char *)srcBuffer, KEY_MESSAGE_VALUE_CFG_BATT_EVENT_LOW, &i_dev);
-                                                        destMessage->Config.ain[i_dev].event_high = jRead_long((char *)srcBuffer, KEY_MESSAGE_VALUE_CFG_BATT_EVENT_HIGH, &i_dev);
-                                                        destMessage->Config.ain[i_dev].event_hyst = jRead_long((char *)srcBuffer, KEY_MESSAGE_VALUE_CFG_BATT_EVENT_HYST, &i_dev);
+                                                        destMessage->Config.ain[i_dev].id=jRead_long((char *)srcBuffer, KEY_MESSAGE_VALUE_CFG_VOLTAGE_ID, &i_dev); 
+                                                        jRead_string((char *)srcBuffer, KEY_MESSAGE_VALUE_CFG_VOLTAGE_EVENT_STATE, destMessage->Config.ain[i_dev].event_state, 15, &i_dev );
+                                                        destMessage->Config.ain[i_dev].event_low = jRead_long((char *)srcBuffer, KEY_MESSAGE_VALUE_CFG_VOLTAGE_EVENT_LOW, &i_dev);
+                                                        destMessage->Config.ain[i_dev].event_high = jRead_long((char *)srcBuffer, KEY_MESSAGE_VALUE_CFG_VOLTAGE_EVENT_HIGH, &i_dev);
+                                                        destMessage->Config.ain[i_dev].event_hyst = jRead_long((char *)srcBuffer, KEY_MESSAGE_VALUE_CFG_VOLTAGE_EVENT_HYST, &i_dev);
                                                     }
                                                 }                                                 
                                                 
@@ -685,15 +711,15 @@ void jsonBuilder(char * buffer, int msgId, char* to, char* from, char* msgType, 
                                                                             break;                                                                                
 
 							case VOLTAGE :                  
-                                                                            jwObj_int( "battery",messageResponse[i].BATTesponse.id);
+                                                                            jwObj_int( "voltage",messageResponse[i].VOLTResponse.id);
 
                                                                             // add object key:value pairs
                                                                             if(messageResponse[i].value >= 0){
                                                                                     jwObj_int("mV", messageResponse[i].value);
-                                                                                    jwObj_int("capacity", messageResponse[i].BATTesponse.capacity);// add object key:value pairs
-                                                                                    jwObj_string("event", messageResponse[i].BATTesponse.event_state);				// add object key:value pairs
-                                                                                    jwObj_int("event_lower", messageResponse[i].BATTesponse.event_low);				// add object key:value pairs
-                                                                                    jwObj_int("event_higher", messageResponse[i].BATTesponse.event_high);				// add object key:value pairs
+                                                                                    jwObj_int("capacity", messageResponse[i].VOLTResponse.capacity);// add object key:value pairs
+                                                                                    jwObj_string("event", messageResponse[i].VOLTResponse.event_state);				// add object key:value pairs
+                                                                                    jwObj_int("event_lower", messageResponse[i].VOLTResponse.event_low);				// add object key:value pairs
+                                                                                    jwObj_int("event_higher", messageResponse[i].VOLTResponse.event_high);				// add object key:value pairs
                                                                             }else
                                                                                 jwObj_string("mV", "error");
 
@@ -728,7 +754,28 @@ void jsonBuilder(char * buffer, int msgId, char* to, char* from, char* msgType, 
                                                                                else{
                                                                                     jwObj_string("state", "error");
                                                                                }
-                                                                            break;                                                                                    
+                                                                            break;
+                                                                            
+							case pDISPLAY :                   
+                                                                            switch(messageResponse[i].responseType){
+                                                                                case EVENT_ACTION_ERROR : jwObj_string("action", "error"); break;
+                                                                                case EVENT_ACTION_END : jwObj_string("action", "end"); break;
+                                                                                case EVENT_ACTION_BEGIN : jwObj_string("action", "begin"); break;
+                                                                                case EVENT_ACTION_RUN : jwObj_string("action", "run"); break;
+                                                                                case EVENT_ACTION_ABORT : jwObj_string("action", "abort"); break;
+                                                                                case RESP_STD_MESSAGE   :   if(messageResponse[i].DISPLAYresponse.id>=0)
+                                                                                                                jwObj_int( "display", messageResponse[i].DISPLAYresponse.id);
+                                                                                                            else
+                                                                                                                jwObj_string("display", "unknown");
+                                                                                                            jwObj_string("text", messageResponse[i].DISPLAYresponse.text);
+                                                                                                            jwObj_string("border", messageResponse[i].DISPLAYresponse.border);
+                                                                                                            jwObj_string("icon", messageResponse[i].DISPLAYresponse.icon);
+                                                                                                            jwObj_int( "time", messageResponse[i].DISPLAYresponse.time);
+                                                                                                            jwObj_string("screen_hid", messageResponse[i].DISPLAYresponse.hid);
+                                                                                                            ; break;
+                                                                                default : jwObj_string("error", "unknown"); break;
+                                                                            }
+                                                                            break;                                                                            
 
                                                         case STATUS :               
                                                                             // ETAT DU SYSTEM
@@ -740,7 +787,7 @@ void jsonBuilder(char * buffer, int msgId, char* to, char* from, char* msgType, 
                                                                                 jwObj_string("firmwareVersion",messageResponse[i].SYSresponse.firmwareVersion);	
                                                                                 jwObj_string("mcuVersion",messageResponse[i].SYSresponse.mcuVersion);
                                                                                 jwObj_string("boardRev",messageResponse[i].SYSresponse.HWrevision);
-                                                                                jwObj_double("battery_mv",messageResponse[i].SYSresponse.battVoltage);
+                                                                                jwObj_double("batery_mV",messageResponse[i].SYSresponse.battVoltage);
                                                                                 jwObj_double("battery_capacity",messageResponse[i].SYSresponse.battPercent);                                                                                // add object key:value pairs
                                                                                 if(messageResponse[i].SYSresponse.wan_online)
                                                                                     strcpy(wanState, "online");
@@ -864,13 +911,13 @@ void jsonBuilder(char * buffer, int msgId, char* to, char* from, char* msgType, 
                                                                             if(i>=1+NBDIN+NBBTN+NBMOTOR+NBSONAR+NBRGBC+NBLED+NBPWM && i<1+NBDIN+NBBTN+NBMOTOR+NBSONAR+NBRGBC+NBLED+NBPWM+NBAIN){
                                                                             //    jwObj_int("sonar",messageResponse[i].DISTresponse.id);		// add object key:value pairs
                                                                             //    jwObj_int("cm", round((messageResponse[i].value)));
-                                                                                jwObj_array( "battery" );
+                                                                                jwObj_array( "voltage" );
                                                                                     for(j=0;j<NBAIN;j++){
                                                                                         jwArr_object();
-                                                                                            jwObj_int("voltage_mv", round((messageResponse[i].value)));
-                                                                                            jwObj_string("event", messageResponse[i].BATTesponse.event_state);                                                                                            
-                                                                                            jwObj_int("event_lower", messageResponse[i].BATTesponse.event_high);                                                                                            
-                                                                                            jwObj_int("event_higher", messageResponse[i].BATTesponse.event_low);                                                                                            
+                                                                                            jwObj_int("mV", round((messageResponse[i].value)));
+                                                                                            jwObj_string("event", messageResponse[i].VOLTResponse.event_state);                                                                                            
+                                                                                            jwObj_int("event_lower", messageResponse[i].VOLTResponse.event_high);                                                                                            
+                                                                                            jwObj_int("event_higher", messageResponse[i].VOLTResponse.event_low);                                                                                            
                                                                                         jwEnd();           
                                                                                         i++;
                                                                                     }
@@ -1109,10 +1156,10 @@ void jsonBuilder(char * buffer, int msgId, char* to, char* from, char* msgType, 
 
                                                                                                             // CREATE JSON CONFIG FOR VOLTAGE CONFIG
                                                                                                             if(messageResponse[i].CONFIGresponse.battValueCnt > 0){
-                                                                                                                jwObj_array("battery");
+                                                                                                                jwObj_array("voltage");
                                                                                                                     for(j=0;j<messageResponse[i].CONFIGresponse.battValueCnt;j++){
                                                                                                                         jwArr_object();
-                                                                                                                            jwObj_int( "battery", messageResponse[i].CONFIGresponse.ain[j].id);
+                                                                                                                            jwObj_int( "voltage", messageResponse[i].CONFIGresponse.ain[j].id);
                                                                                                                             jwObj_string("event", messageResponse[i].CONFIGresponse.ain[j].event_state);
                                                                                                                             jwObj_int( "event_lower", messageResponse[i].CONFIGresponse.ain[j].event_low);
                                                                                                                             jwObj_int( "event_higher", messageResponse[i].CONFIGresponse.ain[j].event_high);

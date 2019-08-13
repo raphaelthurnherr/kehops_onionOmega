@@ -1,4 +1,4 @@
-#define FIRMWARE_VERSION "1.1.1"
+#define FIRMWARE_VERSION "1.2.0"
 
 #define DEFAULT_EVENT_STATE 1   
 
@@ -154,7 +154,15 @@ int main(int argc, char *argv[]) {
 // - Mesure sur les capteurs de distance, DIN et batterie
 // - Gestion des �venements provoqu�s par les capteurs
 // --------------------------------------------------------------------
-               
+   
+        // wait for Hardware device ready
+        i=0;
+        while(!getHWstatus()){
+            usleep(1000);
+            i++;
+        };
+        printf("#[CORE] Hardware initialization ready in %d mS\n", i);
+        
 	while(1){
             
         // CHeck if WifiScanResult is available
@@ -209,6 +217,16 @@ int main(int argc, char *argv[]) {
             checkMotorPowerFlag=0;
         }
          
+	// Gestion de periode d'affichage des display        
+        if(updateDisplayFlag){
+            for(i=0;i<NBDISPLAY;i++){
+                if(kehops.gfx[i].config.hid.enable && kehops.gfx[i].action.timeOut<=0)
+                    updateKehopsHID(i); 
+            }
+                
+            updateDisplayFlag=0;
+        }
+        
         // Contr�le du TIMER 10seconde
     	if(t10secFlag){
     		t10secFlag=0;
@@ -355,7 +373,7 @@ int processmessage(void){
                                     messageResponse[i].PWMresponse.time=message.PWMarray[i].time;
                                     messageResponse[i].responseType = RESP_STD_MESSAGE;
                                 }
-
+                                
                                 // Retourne en r�ponse le message v�rifi�
                                 sendResponse(message.msgID, message.msgFrom, RESPONSE, pPWM, message.msgValueCnt);     
                     
@@ -421,7 +439,27 @@ int processmessage(void){
                                 sendResponse(message.msgID, message.msgFrom, RESPONSE, pAOUT, message.msgValueCnt);               
                                 
                                 runAoutAction();
-                                break;                                
+                                break;
+		case pDISPLAY  : 	
+                                for(i=0;i<message.msgValueCnt;i++){
+                                    // Controle que la sortie existe...
+                                    if(message.Display[i].id >= 0 && message.Display[i].id < NBDISPLAY)
+                                        messageResponse[i].DISPLAYresponse.id=message.Display[i].id;
+                                    else
+                                        messageResponse[i].DISPLAYresponse.id=-1;
+                                            
+                                    // Rècupèration des paramètes 
+                                    strcpy(messageResponse[i].DISPLAYresponse.text, message.Display[i].text);
+                                    strcpy(messageResponse[i].DISPLAYresponse.border, message.Display[i].border);
+                                    strcpy(messageResponse[i].DISPLAYresponse.icon, message.Display[i].icon);
+                                    strcpy(messageResponse[i].DISPLAYresponse.hid, message.Display[i].hid);
+                                    messageResponse[i].responseType = RESP_STD_MESSAGE;
+                                }
+                                // Retourne en r�ponse le message v�rifi�
+                                sendResponse(message.msgID, message.msgFrom, RESPONSE, pDISPLAY, message.msgValueCnt);               
+                                
+                                runDisplayAction();
+                                break;                                 
                                 
             case CONFIG  :
                 
@@ -1268,7 +1306,7 @@ int runLedAction(void){
 
 
 // -------------------------------------------------------------------
-// runLEDAction
+// runAoutAction
 //
 // -------------------------------------------------------------------
 int runAoutAction(void){
@@ -1347,6 +1385,89 @@ int runAoutAction(void){
         }
         else{   
                 sprintf(reportBuffer, "ERREUR: ID AOUT INEXISTANT pour le message #%d\n", message.msgID);
+                messageResponse[0].responseType=EVENT_ACTION_ERROR;
+                sendResponse(myTaskId, message.msgFrom, EVENT, pAOUT, 1);               // Envoie un message EVENT error
+                printf(reportBuffer);                                                           // Affichage du message dans le shell
+                sendMqttReport(message.msgID, reportBuffer);				// Envoie le message sur le canal MQTT "Report"
+        }
+	return 0;
+}
+
+// -------------------------------------------------------------------
+// runDisplayAction
+//
+// -------------------------------------------------------------------
+int runDisplayAction(void){
+	int ptrData;
+	int myTaskId;
+        int i;
+        int ID;
+        
+	unsigned char actionCount=0;
+	unsigned char action=0;
+
+        // R�cup�re l'expediteur original du message ayant provoqu�
+        // l'�venement
+        char msgTo[32];
+        
+        // Recherche s'il y a des param�tres d�fini pour chaque LED
+        // et mise � jour.   
+        for(i=0;i<NBDISPLAY;i++){
+            ptrData=getDisplaySetting(i);
+            if(ptrData>=0){
+                actionCount++;          // Incr�mente le nombre de param�tres trouv�s = action suppl�mentaire a effectuer
+                
+                strcpy(kehops.gfx[i].text, message.Display[ptrData].text);
+                strcpy(kehops.gfx[i].border, message.Display[ptrData].border);
+                strcpy(kehops.gfx[i].icon, message.Display[ptrData].icon);
+
+ 
+                // R�cup�ration des consignes dans le message (si disponible)
+                if(message.Display[ptrData].time > 0)
+                    kehops.gfx[i].action.timeOut = message.Display[ptrData].time;
+                
+                if(!strcmp(message.Display[ptrData].hid, "on")){
+                        kehops.gfx[i].config.hid.enable = 1;
+                    }else
+                        if(!strcmp(message.Display[ptrData].hid, "off")){
+                            kehops.gfx[i].config.hid.enable = 0;
+                        }
+            }
+        }
+
+        // VERIFIE L'EXISTANCE DE PARAMETRE DE TYPE LED, CREATION DU NOMBRE D'ACTION ADEQUAT
+        // 
+        if(actionCount>0){
+            // Ouverture d'une t�che pour les toutes les actions du message algoid � effectuer
+            // Recois un num�ro de tache en retour
+            myTaskId=createBuggyTask(message.msgID, actionCount);			//
+
+            // D�marrage des actions
+            if(myTaskId>0){
+                    printf("Creation de tache DISPLAY: #%d avec %d actions\n", myTaskId, actionCount);
+                    
+                    // Sauvegarde du nom de l'emetteur et du ID du message pour la r�ponse
+                    // en fin d'�venement
+                    saveSenderOfMsgId(message.msgID, message.msgFrom);
+                    
+                    for(ptrData=0; action < actionCount && ptrData<10; ptrData++){
+                            ID = message.Display[ptrData].id;
+                            if(ID >= 0){
+/*                                    power=message.Aout[ptrData].powerPercent;
+                                    value=message.Aout[ptrData].value;
+*/
+                                    //if(kehops.aout[ID].state == ON)
+                                        setAsyncDisplayAction(myTaskId, ID, ON, NULL);
+
+                                    action++;
+                            }
+                    }
+                    
+                    messageResponse[0].responseType=EVENT_ACTION_BEGIN;
+            }            
+        }
+        else{   
+                sprintf(reportBuffer, "ERREUR: ID DISPLAY INEXISTANT pour le message #%d\n", message.msgID);
                 messageResponse[0].responseType=EVENT_ACTION_ERROR;
                 sendResponse(myTaskId, message.msgFrom, EVENT, pAOUT, 1);               // Envoie un message EVENT error
                 printf(reportBuffer);                                                           // Affichage du message dans le shell
@@ -1577,6 +1698,23 @@ int getAoutSetting(int name){
 }
 
 // -------------------------------------------------------------------
+// getDisplaySetting
+// Recherche dans le message kehops, les param�tres
+// pour une sortie LED sp�cifi�e
+// -------------------------------------------------------------------
+int getDisplaySetting(int name){
+	int i;
+	int searchPtr = -1;
+
+	// Recherche dans les donn�e recues la valeur correspondante au param�tre "name"
+	for(i=0;i<message.msgValueCnt;i++){
+		if(name == message.Display[i].id)
+		searchPtr=i;
+	}
+	return searchPtr;
+}
+
+// -------------------------------------------------------------------
 // CREATBUGGYTASK Creation d'une tache avec le nombre
 // d'actions � effectuer,
 // - Retourne le num�ro d'action attribu�
@@ -1749,12 +1887,12 @@ int makeStatusRequest(int msgType){
 	}
         
         for(i=0;i<NBAIN;i++){
-                messageResponse[ptrData].BATTesponse.id=i;
+                messageResponse[ptrData].VOLTResponse.id=i;
                 messageResponse[ptrData].value = kehops.analogInput[i].measure.voltage_mV;
-                messageResponse[ptrData].BATTesponse.event_low = kehops.analogInput[i].event.low;
-                messageResponse[ptrData].BATTesponse.event_high = kehops.analogInput[i].event.high;                
-                if(kehops.analogInput[i].event.enable) strcpy(messageResponse[ptrData].BATTesponse.event_state, "on");
-                else strcpy(messageResponse[ptrData].BATTesponse.event_state, "off");
+                messageResponse[ptrData].VOLTResponse.event_low = kehops.analogInput[i].event.low;
+                messageResponse[ptrData].VOLTResponse.event_high = kehops.analogInput[i].event.high;                
+                if(kehops.analogInput[i].event.enable) strcpy(messageResponse[ptrData].VOLTResponse.event_state, "on");
+                else strcpy(messageResponse[ptrData].VOLTResponse.event_state, "off");
                 ptrData++;
 	}
         
@@ -2042,11 +2180,11 @@ int makeBatteryRequest(void){
 	if(message.msgValueCnt==0){
             message.msgValueCnt=NBAIN;
             for(i=0;i<NBAIN;i++){
-                    messageResponse[i].BATTesponse.id=i;
+                    messageResponse[i].VOLTResponse.id=i;
             }
 	}else
             for(i=0;i<message.msgValueCnt; i++){
-                    messageResponse[i].BATTesponse.id=message.BATTsens[i].id;
+                    messageResponse[i].VOLTResponse.id=message.BATTsens[i].id;
 
                     if(message.BATTsens[i].id <NBAIN){
                             // ENREGISTREMENT DES NOUVEAUX PARAMETRES RECUS
@@ -2069,21 +2207,21 @@ int makeBatteryRequest(void){
 
 	for(i=0;i<message.msgValueCnt; i++){
 		// RETOURNE EN REPONSE LES PARAMETRES ENREGISTRES
-		int temp = messageResponse[i].BATTesponse.id;
+		int temp = messageResponse[i].VOLTResponse.id;
 
 		if(message.BATTsens[i].id <NBAIN){
                         messageResponse[i].value=kehops.analogInput[temp].measure.voltage_mV;                        
 
                         if(kehops.analogInput[temp].event.enable){
-				strcpy(messageResponse[i].BATTesponse.event_state, "on");
+				strcpy(messageResponse[i].VOLTResponse.event_state, "on");
 				saveSenderOfMsgId(message.msgID, message.msgFrom);
 			}
 			else{
-				strcpy(messageResponse[i].BATTesponse.event_state, "off");
+				strcpy(messageResponse[i].VOLTResponse.event_state, "off");
 				removeSenderOfMsgId(message.msgID);
 			}
-                        messageResponse[i].BATTesponse.event_high = kehops.analogInput[temp].event.high;
-                        messageResponse[i].BATTesponse.event_low = kehops.analogInput[temp].event.low;
+                        messageResponse[i].VOLTResponse.event_high = kehops.analogInput[temp].event.high;
+                        messageResponse[i].VOLTResponse.event_low = kehops.analogInput[temp].event.low;
 		} else
 			messageResponse[i].value = -1;
 	};
@@ -2230,7 +2368,7 @@ void batteryEventCheck(void){
 			// Evaluation des alarmes � envoyer
 			if((battLowDetected && !event_low_disable) || (battHighDetected && !event_high_disable)){				// Mesure tension hors plage
                             if(battWarningSended[i]==0){														// N'envoie qu'une seule fois l'EVENT
-                                messageResponse[i].BATTesponse.id=i;
+                                messageResponse[i].VOLTResponse.id=i;
                                 messageResponse[i].value = kehops.analogInput[i].measure.voltage_mV;
                                 sendResponse(message.msgID, message.msgFrom, EVENT, VOLTAGE, 1);
                                 battWarningSended[i]=1;
@@ -2242,7 +2380,7 @@ void batteryEventCheck(void){
 			}
 			// Envoie un �venement Fin de niveau bas (+50mV Hysterese)
 			else if (battWarningSended[i]==1 && kehops.analogInput[i].measure.voltage_mV > (kehops.analogInput[i].event.low + kehops.analogInput[i].event.hysteresis)){				// Mesure tension dans la plage
-                                messageResponse[i].BATTesponse.id=i;											// n'envoie qu'une seule fois apr�s
+                                messageResponse[i].VOLTResponse.id=i;											// n'envoie qu'une seule fois apr�s
                                 messageResponse[i].value = kehops.analogInput[i].measure.voltage_mV;
                                 // une hysterese de 50mV
                                 sendResponse(message.msgID, message.msgFrom, EVENT, VOLTAGE, 1);

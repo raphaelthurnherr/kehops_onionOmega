@@ -27,4 +27,6 @@ extern unsigned char NBBTN;
 extern unsigned char NBDIN;
 extern unsigned char NBWHEEL;
 extern unsigned char NBAOUT;
+extern unsigned char NBDISPLAY;
+
 #endif /* KEHOPSCONFIG_H */

@@ -209,6 +209,15 @@ struct s_rgb_config{
     struct s_eventBool event;
 };
 
+struct s_gfx_action{
+    int  timeOut;
+};
+
+struct s_gfx_config{ 
+    int gfx_id;
+    struct s_eventBool hid;
+};
+
 struct s_rgb_meas{
     struct s_color_data red;
     struct s_color_data green;
@@ -278,6 +287,8 @@ struct s_pwm_action{
     int  blinkTime;
 };
 
+
+
 struct s_pwm_config{
     int  dout_id;
     int  mode;
@@ -312,6 +323,14 @@ typedef struct robotRgb{
     struct s_rgb_config config;
 }robot_rgb;
 
+typedef struct robotGfx{
+    char text[64];
+    char border[25];
+    char icon[25];
+    struct s_gfx_config config;
+    struct s_gfx_action action;
+}robot_gfx;
+
 
 typedef struct robotKehops{
     robot_ain analogInput[MAXAIN];
@@ -324,6 +343,7 @@ typedef struct robotKehops{
     robot_prox proximity[MAXDIN];
     robot_sonar sonar[MAXSONAR];
     robot_rgb rgb[MAXRGBC];
+    robot_gfx gfx[MAXGFX];
 }robot_kehops;
 
 

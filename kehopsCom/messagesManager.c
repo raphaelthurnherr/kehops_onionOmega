@@ -343,9 +343,10 @@ void sendResponse(int msgId, char * msgTo, unsigned char msgType, unsigned char 
 		case MOVE : strcpy(ackParam, "move"); break;
 		case DINPUT : strcpy(ackParam, "din"); break;
                 case BUTTON : strcpy(ackParam, "button"); break;
-		case VOLTAGE : strcpy(ackParam, "battery"); break;
+		case VOLTAGE : strcpy(ackParam, "voltage"); break;
 		case DISTANCE : strcpy(ackParam, "distance"); break;
 		case pLED : strcpy(ackParam, "led"); break;
+                case pDISPLAY : strcpy(ackParam, "display"); break;
 		case STATUS : strcpy(ackParam, "status"); break;
                 case COLORS : strcpy(ackParam, "rgb"); break;
 		case ERR_PARAM : strcpy(ackParam, "error param"); break;
