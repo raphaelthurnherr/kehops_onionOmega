@@ -550,6 +550,7 @@ void extractKehopsConfig(char * srcDataBuffer){
                     kehops.rgb[deviceId].color.blue.event.hysteresis = jRead_int((char *)cfg_devices.pValue, FILE_KEY_CONFIG_COLOR_EVENT_HYST, &i);                     
                     
                 }
+                else printf ("blablablab_______________\n");
             }
         }
         

@@ -935,7 +935,10 @@ int actuator_getRGBColor(unsigned char rgbID, RGB_COLOR * rgbColor){
                 #ifdef INFO_BUS_DEBUG                
                 printf("#! Function [actuator_getColor] -> I2C Error: Bad address or device not connected\n");
                 #endif             
-            } 
+            }
+#ifdef INFO_DEBUG
+            printf("COLOR SENSOR #%d  Red: %d  Green: %d  Blue: %d  Clear: %d\n", ptrDev, rgbColor->red, rgbColor->green, rgbColor->blue, rgbColor->clear);
+#endif
     }else{
             printf ("#! Function [actuator_getColor] -> Unknown driver name: %s\n", kehopsActuators.rgbSensor[rgbID].hw_driver.name);
     }

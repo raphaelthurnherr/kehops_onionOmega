@@ -1,4 +1,7 @@
 Versions:
+1.2.2 - 14.08.2019
+- [FIX] Message battery_mv in stream is bad 
+- [FIX] RGB sensor values "blue and clear" return same data as green
 
 1.2.1 - 14.05.2019
 - [NEW] Add responsive HID for 128x64 and 128x32 display

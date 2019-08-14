@@ -368,9 +368,9 @@ int getColorValue(unsigned char sensorID, unsigned char color){
     
     switch(color){
         case RED : colorValue= sensor.rgbc[sensorID].red; break;
-        case GREEN : colorValue=sensor.rgbc[sensorID].green; break;
-        case BLUE : sensor.rgbc[sensorID].blue; break;
-        case CLEAR : sensor.rgbc[sensorID].clear; break;
+        case GREEN : colorValue = sensor.rgbc[sensorID].green; break;
+        case BLUE : colorValue = sensor.rgbc[sensorID].blue; break;
+        case CLEAR : colorValue = sensor.rgbc[sensorID].clear; break;
         default : colorValue = -1; break;
     }
   

@@ -681,12 +681,12 @@ void jsonBuilder(char * buffer, int msgId, char* to, char* from, char* msgType, 
                                                                             jwObj_string("event", messageResponse[i].RGBresponse.event_state);
 
 
-                                                                                jwObj_object("color");
-                                                                                    jwObj_int("red", messageResponse[i].RGBresponse.red.value);
-                                                                                    jwObj_int("green", messageResponse[i].RGBresponse.green.value);
-                                                                                    jwObj_int("blue", messageResponse[i].RGBresponse.blue.value);
-                                                                                    jwObj_int("clear", messageResponse[i].RGBresponse.clear.value);
-                                                                                jwEnd();
+                                                                            jwObj_object("color");
+                                                                                jwObj_int("red", messageResponse[i].RGBresponse.red.value);
+                                                                                jwObj_int("green", messageResponse[i].RGBresponse.green.value);
+                                                                                jwObj_int("blue", messageResponse[i].RGBresponse.blue.value);
+                                                                                jwObj_int("clear", messageResponse[i].RGBresponse.clear.value);
+                                                                            jwEnd();
 
                                                                             jwObj_object( "red" );                                                                                 
                                                                                     jwObj_int("event_lower", messageResponse[i].RGBresponse.red.event_low);
@@ -715,13 +715,13 @@ void jsonBuilder(char * buffer, int msgId, char* to, char* from, char* msgType, 
 
                                                                             // add object key:value pairs
                                                                             if(messageResponse[i].value >= 0){
-                                                                                    jwObj_int("mV", messageResponse[i].value);
+                                                                                    jwObj_int("voltage_mv", messageResponse[i].value);
                                                                                     jwObj_int("capacity", messageResponse[i].VOLTResponse.capacity);// add object key:value pairs
                                                                                     jwObj_string("event", messageResponse[i].VOLTResponse.event_state);				// add object key:value pairs
                                                                                     jwObj_int("event_lower", messageResponse[i].VOLTResponse.event_low);				// add object key:value pairs
                                                                                     jwObj_int("event_higher", messageResponse[i].VOLTResponse.event_high);				// add object key:value pairs
                                                                             }else
-                                                                                jwObj_string("mV", "error");
+                                                                                jwObj_string("mv", "error");
 
                                                                             break;
 
@@ -787,7 +787,7 @@ void jsonBuilder(char * buffer, int msgId, char* to, char* from, char* msgType, 
                                                                                 jwObj_string("firmwareVersion",messageResponse[i].SYSresponse.firmwareVersion);	
                                                                                 jwObj_string("mcuVersion",messageResponse[i].SYSresponse.mcuVersion);
                                                                                 jwObj_string("boardRev",messageResponse[i].SYSresponse.HWrevision);
-                                                                                jwObj_double("batery_mV",messageResponse[i].SYSresponse.battVoltage);
+                                                                                jwObj_double("battery_mv",messageResponse[i].SYSresponse.battVoltage);
                                                                                 jwObj_double("battery_capacity",messageResponse[i].SYSresponse.battPercent);                                                                                // add object key:value pairs
                                                                                 if(messageResponse[i].SYSresponse.wan_online)
                                                                                     strcpy(wanState, "online");
@@ -914,7 +914,7 @@ void jsonBuilder(char * buffer, int msgId, char* to, char* from, char* msgType, 
                                                                                 jwObj_array( "voltage" );
                                                                                     for(j=0;j<NBAIN;j++){
                                                                                         jwArr_object();
-                                                                                            jwObj_int("mV", round((messageResponse[i].value)));
+                                                                                            jwObj_int("mv", round((messageResponse[i].value)));
                                                                                             jwObj_string("event", messageResponse[i].VOLTResponse.event_state);                                                                                            
                                                                                             jwObj_int("event_lower", messageResponse[i].VOLTResponse.event_high);                                                                                            
                                                                                             jwObj_int("event_higher", messageResponse[i].VOLTResponse.event_low);                                                                                            
