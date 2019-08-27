@@ -73,6 +73,7 @@ struct dc_wheel_data{
 };
 
 struct s_motor_config{
+    char dc_motor_name[25];
     int dc_motor_id;
     char inverted;   
     int powerMin;   
@@ -111,6 +112,7 @@ struct dc_wheel_config{
 
 struct s_stepper_config{
     int stepper_motor_id;
+    char stepper_name[25];
     char inverted;   
     int steps;   
     int ratio;
@@ -157,10 +159,12 @@ typedef struct robotStepperWheel{
 
 struct s_son_config{
     int  distanceSensor_id;
+    char name[25];
 };
 
 struct s_ain_config{
     int  ain_id;
+    char name[25];
 };
 
 struct s_ain_meas{
@@ -189,6 +193,7 @@ typedef struct robotSonar{
 
 struct s_button_config{
     int  din_id;
+    char name[25];
 };
 
 struct s_button_meas{
@@ -206,7 +211,7 @@ struct s_color_data{
 
 struct s_rgb_config{ 
     int rgbID;
-    struct s_eventBool event;
+    char name[25];
 };
 
 struct s_gfx_action{
@@ -215,6 +220,7 @@ struct s_gfx_action{
 
 struct s_gfx_config{ 
     int gfx_id;
+    char name[25];
     struct s_eventBool hid;
 };
 
@@ -231,6 +237,7 @@ struct s_prox_meas{
 
 struct s_prox_config{
     int  din_id;
+    char name[25];
 };
 
 typedef struct robotButton{
@@ -291,6 +298,7 @@ struct s_pwm_action{
 
 struct s_pwm_config{
     int  dout_id;
+    char name[25];
     int  mode;
     int  defaultPower;
     int  defaultState;
@@ -298,6 +306,7 @@ struct s_pwm_config{
 
 struct s_aout_config{
     int  aout_id;
+    char name[25];
     int  mode;
     int  defaultPower;
     int  defaultState;
@@ -321,6 +330,7 @@ typedef struct robotAnalog{
 typedef struct robotRgb{
     struct s_rgb_meas color;
     struct s_rgb_config config;
+    struct s_eventBool event;
 }robot_rgb;
 
 typedef struct robotGfx{

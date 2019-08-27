@@ -38,7 +38,7 @@ char clearMsgStack(unsigned char ptrStack);
 unsigned char mqttDataReady=0;
 int mqttStatus;
 
-char MqttDataBuffer[4096];
+char MqttDataBuffer[MAX_MQTT_BUFF];
 char msgReportBuffer[4096];
 
 STATISTICS msg_stats;
@@ -204,14 +204,13 @@ int pullMsgStack(unsigned char ptrStack){
 			AlgoidMsgRXStack[9].msgValueCnt=0;
 
 			for(i=0;i<AlgoidMsgRXStack[9].msgValueCnt;i++){
-				AlgoidMsgRXStack[9].DCmotor[i].motor=UNKNOWN;
+				AlgoidMsgRXStack[9].DCmotor[i].id = UNKNOWN;
 			}
 
 			return 1;
 		}else
 			return 0;
 }
-// ----------------------
 
 char clearMsgStack(unsigned char ptrStack){
 		int i;
@@ -226,7 +225,7 @@ char clearMsgStack(unsigned char ptrStack){
 
 			for(i=0;i<AlgoidMsgRXStack[ptrStack].msgValueCnt;i++){
 				//strcpy(AlgoidMsgRXStack[ptrStack].DCmotor[i].motor, "");
-                                AlgoidMsgRXStack[ptrStack].DCmotor[i].motor=-1;
+                                AlgoidMsgRXStack[ptrStack].DCmotor[i].id=-1;
 				AlgoidMsgRXStack[ptrStack].DCmotor[i].time=-1;
 				AlgoidMsgRXStack[ptrStack].DCmotor[i].userSetPoint=-1;
                                 AlgoidMsgRXStack[ptrStack].DCmotor[i].cm=-1;

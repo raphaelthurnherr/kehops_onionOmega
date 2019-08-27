@@ -21,6 +21,7 @@
 #define DRIVER_BH1745 "bh1745"
 #define DRIVER_EFM8BB "efm8bb"
 #define DRIVER_MCP23008 "mcp23008"
+#define DRIVER_MCP23017 "mcp23017"
 #define DRIVER_PCA9629 "pca9629"
 #define DRIVER_VL53L0X "vl53l0x"
 #define DRIVER_MCP4725 "mcp4725"

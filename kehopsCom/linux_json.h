@@ -1,4 +1,4 @@
-#define MAX_MQTT_BUFF 8192
+#define MAX_MQTT_BUFF 32768
 
 #include "../type.h"
 
@@ -54,7 +54,8 @@ typedef enum msgparam{
 
 
 struct mDCmot{
-	int motor;
+	int id;
+        char name[25];
 	int speed;
         int userSetPoint;
 	int time;
@@ -62,7 +63,8 @@ struct mDCmot{
 };
 
 struct mStepper{
-	int motor;
+	int id;
+        char name[25];        
 	int userSetPoint;
 	int step;
 	int rotation;
@@ -72,11 +74,13 @@ struct mStepper{
 
 struct mDin{
 	int id;
+        char name[25];        
 	char event_state[25];
 };
 
 struct mAin{
 	int id;
+        char name[25];        
 	char event_state[25];
         int event_low;
         int event_high;
@@ -113,6 +117,7 @@ struct mPIDConfig{
 
 struct mMotConfig{
         int id;
+        char name[25];
 	char inverted[25];
         int  minRPM;
         int  maxRPM;
@@ -122,12 +127,14 @@ struct mMotConfig{
 
 struct mWheelConfig{
 	int id;
+        char name[25];        
 	int diameter;
 	int pulsesPerRot;
 };
 
 struct mStepperConfig{
         int id;
+        char name[25];        
 	char inverted[25];
         int  ratio;
         int  stepsPerRot;
@@ -135,6 +142,7 @@ struct mStepperConfig{
 
 struct mLedConfig{
         int id;
+        char name[25];        
 	char state[25];
 	int power;
         char isServoMode[25];
@@ -142,38 +150,27 @@ struct mLedConfig{
 
 struct mAoutConfig{
         int id;
+        char name[25];        
 	char state[25];
 	int power;
 };
 
-struct mConfig{
-        int motValueCnt;
-        int ledValueCnt;
-        int pwmValueCnt;
-        int aoutValueCnt;
-        int btnValueCnt;
-        int dinValueCnt;
-        int sonarValueCnt;
-        int battValueCnt;
-        int stepperValueCnt;
-        int wheelValueCnt;
-	struct mStream stream;
-        struct mBroker broker;
-        struct mAppConf action;
-        struct mInfoID robot;
-        struct mMotConfig motor[10];
-        struct mWheelConfig wheel[10];
-        struct mStepperConfig stepper[10];
-        struct mLedConfig led[10];
-        struct mLedConfig pwm[10];
-        struct mAoutConfig Aout[10];
-        struct mDin btn[10];
-        struct mDin din[10];
-        struct mAin sonar[10];
-        struct mAin ain[10];
+struct mRGBconfig{
+        int id;
+        char name[25];        
+
 };
 
+struct mDisplayConfig{
+        int id;
+        char name[25];        
+	char default_hid[25];
+};
+
+
+
 struct mDistance{
+        char name[25];
 	int id;
 	char event_state[50];
 	int event_low;
@@ -183,20 +180,22 @@ struct mDistance{
 
 struct mVoltage{
 	int id;
+        char name[25];
 	char event_state[50];
 	int event_low;
 	int event_high;
         int capacity;
 };
-
+/*
 struct mPwm{
 	int id;
 	char state[50];
 	int angle;
 };
-
+*/
 struct mAout{
 	int id;
+        char name[25];
 	char state[50];
 	int powerPercent;
         int value;
@@ -204,6 +203,7 @@ struct mAout{
 
 struct mDisplay{
 	int id;
+        char name[25];
 	char text[64];
 	char border[25];
         char icon[25];
@@ -213,6 +213,7 @@ struct mDisplay{
 
 struct mLed{
 	int id;
+        char name[25];
 	char state[15];
 	int powerPercent;
         int time;
@@ -271,15 +272,49 @@ struct mColor{
         int value;
 	int event_low;
 	int event_high;
+        int event_hyst;
 };
 
 struct mRGB{
 	int id;
+        char name[25];
         char event_state[50];
         struct mColor red;
         struct mColor green;
         struct mColor blue;
         struct mColor clear;
+};
+
+
+struct mConfig{
+        int motValueCnt;
+        int ledValueCnt;
+        int pwmValueCnt;
+        int aoutValueCnt;
+        int btnValueCnt;
+        int dinValueCnt;
+        int sonarValueCnt;
+        int ainValueCnt;
+        int stepperValueCnt;
+        int wheelValueCnt;
+        int rgbValueCnt;
+        int displayValueCnt;
+	struct mStream stream;
+        struct mBroker broker;
+        struct mAppConf action;
+        struct mInfoID robot;
+        struct mMotConfig motor[10];
+        struct mWheelConfig wheel[10];
+        struct mStepperConfig stepper[10];
+        struct mLedConfig led[10];
+        struct mLedConfig pwm[10];
+        struct mAoutConfig Aout[10];
+        struct mRGB rgb[10];
+        struct mDisplayConfig display[10];
+        struct mDin btn[10];
+        struct mDin din[10];
+        struct mAin sonar[10];
+        struct mAin ain[10];        
 };
 
 // Structure d'un message algoid recu

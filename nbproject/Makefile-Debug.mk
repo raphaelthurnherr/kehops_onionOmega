@@ -152,7 +152,7 @@ OBJECTFILES= \
 	${OBJECTDIR}/hwControl/device_drivers/display_mono.o \
 	${OBJECTDIR}/hwControl/device_drivers/efm8_mcu_kehops.o \
 	${OBJECTDIR}/hwControl/device_drivers/k_vl53l0x.o \
-	${OBJECTDIR}/hwControl/device_drivers/mcp23008.o \
+	${OBJECTDIR}/hwControl/device_drivers/mcp230xx.o \
 	${OBJECTDIR}/hwControl/device_drivers/mcp4725.o \
 	${OBJECTDIR}/hwControl/device_drivers/pca9629.o \
 	${OBJECTDIR}/hwControl/device_drivers/pca9685.o \
@@ -802,10 +802,10 @@ ${OBJECTDIR}/hwControl/device_drivers/k_vl53l0x.o: hwControl/device_drivers/k_vl
 	${RM} "$@.d"
 	$(COMPILE.c) -g -IhwControl/libs/i2c -IhwControl/libs/onion-debug -IhwControl -Iactuators -IkehopsCom -IkehopsCom/libs/lib_json -IkehopsCom/libs/lib_mqtt -IhwControl/device_drivers -include buildNumber.h -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/hwControl/device_drivers/k_vl53l0x.o hwControl/device_drivers/k_vl53l0x.c
 
-${OBJECTDIR}/hwControl/device_drivers/mcp23008.o: hwControl/device_drivers/mcp23008.c
+${OBJECTDIR}/hwControl/device_drivers/mcp230xx.o: hwControl/device_drivers/mcp230xx.c
 	${MKDIR} -p ${OBJECTDIR}/hwControl/device_drivers
 	${RM} "$@.d"
-	$(COMPILE.c) -g -IhwControl/libs/i2c -IhwControl/libs/onion-debug -IhwControl -Iactuators -IkehopsCom -IkehopsCom/libs/lib_json -IkehopsCom/libs/lib_mqtt -IhwControl/device_drivers -include buildNumber.h -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/hwControl/device_drivers/mcp23008.o hwControl/device_drivers/mcp23008.c
+	$(COMPILE.c) -g -IhwControl/libs/i2c -IhwControl/libs/onion-debug -IhwControl -Iactuators -IkehopsCom -IkehopsCom/libs/lib_json -IkehopsCom/libs/lib_mqtt -IhwControl/device_drivers -include buildNumber.h -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/hwControl/device_drivers/mcp230xx.o hwControl/device_drivers/mcp230xx.c
 
 ${OBJECTDIR}/hwControl/device_drivers/mcp4725.o: hwControl/device_drivers/mcp4725.c
 	${MKDIR} -p ${OBJECTDIR}/hwControl/device_drivers

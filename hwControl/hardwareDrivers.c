@@ -31,7 +31,7 @@
 #include "pca9685.h"
 #include "pca9629.h"
 #include "efm8_mcu_kehops.h"
-#include "mcp23008.h"
+#include "mcp230xx.h"
 #include "bh1745.h"
 #include "k_vl53l0x.h"
 #include "mcp4725.h"
@@ -49,7 +49,7 @@
 device_pca9685 dev_pca9685[MAX_IC_DEVICE_PER_TYPE];
 device_pca9629 dev_pca9629[MAX_IC_DEVICE_PER_TYPE];
 device_efm8McuKehops dev_efm8bb[MAX_IC_DEVICE_PER_TYPE];
-device_mcp23008 dev_mcp23008[MAX_IC_DEVICE_PER_TYPE];
+device_mcp230xx dev_mcp230xx[MAX_IC_DEVICE_PER_TYPE];
 device_bh1745 dev_bh1745[MAX_IC_DEVICE_PER_TYPE];
 device_vl53l0x dev_vl53l0x[MAX_IC_DEVICE_PER_TYPE];
 device_mcp4725 dev_mcp4725[MAX_IC_DEVICE_PER_TYPE];
@@ -64,7 +64,7 @@ device_ads111x dev_ads111x[MAX_IC_DEVICE_PER_TYPE];
 unsigned char pca9685_count=0;
 unsigned char pca9629_count=0;
 unsigned char efm8bb_count=0;
-unsigned char mcp23008_count=0;
+unsigned char mcp230xx_count=0;
 unsigned char bh1745_count=0;
 unsigned char vl53l0x_count=0;
 unsigned char mcp4725_count=0;
@@ -182,23 +182,43 @@ int boardHWinit(void){
             
             // DEVICES TYPE MCP23008 GPIO EXTENDER CONFIGURATION
             if(!strcmp(boardDevice[i].type, DRIVER_MCP23008)){              
-                // Setting up the mcp23008 GPIO extender              
-                strcpy(dev_mcp23008[mcp23008_count].deviceName, boardDevice[i].name);
-                dev_mcp23008[mcp23008_count].deviceAddress = boardDevice[i].address;
-                dev_mcp23008[mcp23008_count].pullupEnable  = 0xff;                   // NEED TO BE DEFINE VIA CONFIG DEVICE.CFG
-                dev_mcp23008[mcp23008_count].gpioDirection = 0x60;                   // NEED TO BE DEFINE VIA CONFIG DEVICE.CFG
-                if(mcp23008_init(&dev_mcp23008[mcp23008_count]) != 0){
+                // Setting up the mcp23008GPIO extender              
+                strcpy(dev_mcp230xx[mcp230xx_count].deviceName, boardDevice[i].name);
+                dev_mcp230xx[mcp230xx_count].deviceAddress = boardDevice[i].address;
+                dev_mcp230xx[mcp230xx_count].pullupEnable  = 0xff;                   // NEED TO BE DEFINE VIA CONFIG DEVICE.CFG
+                dev_mcp230xx[mcp230xx_count].gpioDirection = 0x60;                   // NEED TO BE DEFINE VIA CONFIG DEVICE.CFG
+                if(mcp23008_init(&dev_mcp230xx[mcp230xx_count]) != 0){
                     err++;
                     printf(" -> ERROR");
-                    dev_mcp23008[mcp23008_count].deviceAddress = 0; // Set address to unvalid
+                    dev_mcp230xx[mcp230xx_count].deviceAddress = 0; // Set address to unvalid
                 }else
                     printf(" -> OK");                  
             #ifdef INFO_DEBUG                
                 printDeviceData(i, &boardDevice[i]);
             #endif                
-                mcp23008_count++;
+                mcp230xx_count++;
                 NoDriverFound=0;                
-            }     
+            }
+        
+            // DEVICES TYPE MCP23017 GPIO EXTENDER CONFIGURATION
+            if(!strcmp(boardDevice[i].type, DRIVER_MCP23017)){              
+                // Setting up the mcp23017 GPIO extender              
+                strcpy(dev_mcp230xx[mcp230xx_count].deviceName, boardDevice[i].name);
+                dev_mcp230xx[mcp230xx_count].deviceAddress = boardDevice[i].address;
+                dev_mcp230xx[mcp230xx_count].pullupEnable  = 0xff;                   // NEED TO BE DEFINE VIA CONFIG DEVICE.CFG
+                dev_mcp230xx[mcp230xx_count].gpioDirection = 0x00;                   // NEED TO BE DEFINE VIA CONFIG DEVICE.CFG
+                if(mcp23008_init(&dev_mcp230xx[mcp230xx_count]) != 0){
+                    err++;
+                    printf(" -> ERROR");
+                    dev_mcp230xx[mcp230xx_count].deviceAddress = 0; // Set address to unvalid
+                }else
+                    printf(" -> OK");                  
+            #ifdef INFO_DEBUG                
+                printDeviceData(i, &boardDevice[i]);
+            #endif                
+                mcp230xx_count++;
+                NoDriverFound=0;                
+            }         
             
             // DEVICES TYPE BH1745 RGB SENSOR CONFIGURATION
             if(!strcmp(boardDevice[i].type, DRIVER_BH1745)){              
@@ -441,10 +461,10 @@ char actuator_setDoutValue(int doutID, int value){
         ptrDev = getDriverConfig_ptr(DRIVER_MCP23008, kehopsActuators.dout[doutID].hw_driver.name);
         if(ptrDev>=0){
     #ifdef INFO_DEBUG            
-            printf("SET DOUT VALUE FROM <%s> DRIVERS:  NAME:%s TYPE:%s I2C add: 0x%2x    dout_id: %d     channel: %d     state: %d\n",DRIVER_MCP23008, kehopsActuators.dout[doutID].hw_driver.name, kehopsActuators.dout[doutID].hw_driver.type, dev_mcp23008[ptrDev].deviceAddress, doutID, channel, value);        
+            printf("SET DOUT VALUE FROM <%s> DRIVERS:  NAME:%s TYPE:%s I2C add: 0x%2x    dout_id: %d     channel: %d     state: %d\n",DRIVER_MCP230XX, kehopsActuators.dout[doutID].hw_driver.name, kehopsActuators.dout[doutID].hw_driver.type, dev_mcp230xx[ptrDev].deviceAddress, doutID, channel, value);        
     #endif            
-            if(dev_mcp23008[ptrDev].deviceAddress > 0)
-                mcp23008_setChannel(&dev_mcp23008[ptrDev], channel, value);
+            if(dev_mcp230xx[ptrDev].deviceAddress > 0)
+                mcp230xx_setChannel(&dev_mcp230xx[ptrDev], channel, value);
             else
                 {
                 #ifdef INFO_BUS_DEBUG
@@ -455,6 +475,26 @@ char actuator_setDoutValue(int doutID, int value){
         }else 
             printf ("#! Function [actuator_setDoutValue] -> Unknown driver name: %s\n", kehopsActuators.dout[doutID].hw_driver.name);
     }
+    
+    // USE DRIVER FOR MCP23017
+    if(!strcmp(kehopsActuators.dout[doutID].hw_driver.type, DRIVER_MCP23017)){
+        ptrDev = getDriverConfig_ptr(DRIVER_MCP23008, kehopsActuators.dout[doutID].hw_driver.name);
+        if(ptrDev>=0){
+    #ifdef INFO_DEBUG            
+            printf("SET DOUT VALUE FROM <%s> DRIVERS:  NAME:%s TYPE:%s I2C add: 0x%2x    dout_id: %d     channel: %d     state: %d\n",DRIVER_MCP230XX, kehopsActuators.dout[doutID].hw_driver.name, kehopsActuators.dout[doutID].hw_driver.type, dev_mcp230xx[ptrDev].deviceAddress, doutID, channel, value);        
+    #endif            
+            if(dev_mcp230xx[ptrDev].deviceAddress > 0)
+                mcp230xx_setChannel(&dev_mcp230xx[ptrDev], channel, value);
+            else
+                {
+                #ifdef INFO_BUS_DEBUG
+                printf("#! Function [actuator_setDoutValue] -> I2C Error: Bad address or device not connected\n");
+                #endif
+        }
+            
+        }else 
+            printf ("#! Function [actuator_setDoutValue] -> Unknown driver name: %s\n", kehopsActuators.dout[doutID].hw_driver.name);
+    }    
     
     // SUBDRIVER ACTION Check if driver IC need a subdriver and make a post-action if required
     subDriver_onDeactivate(kehopsActuators.dout[doutID].hw_driver.name);
@@ -799,8 +839,8 @@ int actuator_getDigitalInput(unsigned char dinID){
     if(!strcmp(kehopsActuators.din[dinID].hw_driver.type, DRIVER_MCP23008)){
         ptrDev = getDriverConfig_ptr(DRIVER_MCP23008, kehopsActuators.din[dinID].hw_driver.name);                
         if(ptrDev>=0){
-            if(dev_mcp23008[ptrDev].deviceAddress > 0)
-                value = mcp23008_getChannel(&dev_mcp23008[ptrDev], kehopsActuators.din[dinID].hw_driver.attributes.device_channel);
+            if(dev_mcp230xx[ptrDev].deviceAddress > 0)
+                value = mcp230xx_getChannel(&dev_mcp230xx[ptrDev], kehopsActuators.din[dinID].hw_driver.attributes.device_channel);
             else
                 {
                 #ifdef INFO_BUS_DEBUG                
@@ -811,8 +851,27 @@ int actuator_getDigitalInput(unsigned char dinID){
                 printf ("#! Function [actuator_getDigitalInput] -> Unknown driver name: %s\n", kehopsActuators.din[dinID].hw_driver.name);
                 value = -1;
         }
-        //printf ("#! NOW USING  DRIVER 'MCP23008' for DIN #%d\n", dinID);
+        //printf ("#! NOW USING  DRIVER 'MCP230xx' for DIN #%d\n", dinID);
     }
+    
+    // USE DRIVER FOR MCP23017
+    if(!strcmp(kehopsActuators.din[dinID].hw_driver.type, DRIVER_MCP23017)){
+        ptrDev = getDriverConfig_ptr(DRIVER_MCP23017, kehopsActuators.din[dinID].hw_driver.name);                
+        if(ptrDev>=0){
+            if(dev_mcp230xx[ptrDev].deviceAddress > 0)
+                value = mcp230xx_getChannel(&dev_mcp230xx[ptrDev], kehopsActuators.din[dinID].hw_driver.attributes.device_channel);
+            else
+                {
+                #ifdef INFO_BUS_DEBUG                
+                printf("#! Function [actuator_getDigitalInput] -> I2C Error: Bad address or device not connected\n");
+                #endif             
+            }              
+        }else{
+                printf ("#! Function [actuator_getDigitalInput] -> Unknown driver name: %s\n", kehopsActuators.din[dinID].hw_driver.name);
+                value = -1;
+        }
+        //printf ("#! NOW USING  DRIVER 'MCP230xx' for DIN #%d\n", dinID);
+    }    
    
     // SUBDRIVER ACTION Check if driver IC need a subdriver and make a post-action if required
     subDriver_onDeactivate(kehopsActuators.din[dinID].hw_driver.name);
@@ -1225,11 +1284,18 @@ int getDriverConfig_ptr(char * driverType, char * name){
         }        
     }
     if(!strcmp(driverType, DRIVER_MCP23008)){
-        for(i=0; refFound<0 && i<mcp23008_count ;i++){
-            if(!strcmp(dev_mcp23008[i].deviceName, name)){
+        for(i=0; refFound<0 && i<mcp230xx_count ;i++){
+            if(!strcmp(dev_mcp230xx[i].deviceName, name)){
                 refFound = i;
             }
         }        
+    }
+    if(!strcmp(driverType, DRIVER_MCP23017)){
+    for(i=0; refFound<0 && i<mcp230xx_count ;i++){
+        if(!strcmp(dev_mcp230xx[i].deviceName, name)){
+            refFound = i;
+        }
+    }        
     }
     if(!strcmp(driverType, DRIVER_PCA9629)){
         for(i=0; refFound<0 && i<pca9629_count ;i++){
@@ -1416,11 +1482,11 @@ int driverSelector_SetDOUT(char * driverType, char * driverName, int channel, in
         }
     }
         
-    // USE DRIVER FOR MCP23008
+    // USE DRIVER FOR MCP230xx
     if(!strcmp(driverType, DRIVER_MCP23008)){
         if(ptrDev>=0){
-            if(dev_mcp23008[ptrDev].deviceAddress > 0)
-                mcp23008_setChannel(&dev_mcp23008[ptrDev], channel, value);
+            if(dev_mcp230xx[ptrDev].deviceAddress > 0)
+                mcp230xx_setChannel(&dev_mcp230xx[ptrDev], channel, value);
             else
                 {
                 #ifdef INFO_BUS_DEBUG                
@@ -1429,6 +1495,20 @@ int driverSelector_SetDOUT(char * driverType, char * driverName, int channel, in
             }
         }
     }    
+
+    // USE DRIVER FOR MCP23017
+    if(!strcmp(driverType, DRIVER_MCP23017)){
+        if(ptrDev>=0){
+            if(dev_mcp230xx[ptrDev].deviceAddress > 0)
+                mcp230xx_setChannel(&dev_mcp230xx[ptrDev], channel, value);
+            else
+                {
+                #ifdef INFO_BUS_DEBUG                
+                printf("#! Function [driverSelector_SetDOUT] -> I2C Error: Bad address or device not connected\n");
+                #endif             
+            }
+        }
+    } 
     
     // SUBDRIVER ACTION Check if driver IC need a subdriver and make a post-action if required
     subDriver_onDeactivate(driverName);

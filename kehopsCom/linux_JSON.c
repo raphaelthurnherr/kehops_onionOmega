@@ -72,7 +72,8 @@
 #define KEY_MESSAGE_VALUE_CFG_STREAM_ONEVENT "{'MsgData'{'MsgValue'[*{'mqtt'{'stream'{'onEvent'"
 
 #define KEY_MESSAGE_VALUE_CFG_MOTOR "{'MsgData'{'MsgValue'[*{'motor'"
-#define KEY_MESSAGE_VALUE_CFG_MOTOR_ID "{'MsgData'{'MsgValue'[{'motor'[*{'motor'"
+#define KEY_MESSAGE_VALUE_CFG_MOTOR_ID "{'MsgData'{'MsgValue'[{'motor'[*{'id'"
+#define KEY_MESSAGE_VALUE_CFG_MOTOR_NAME "{'MsgData'{'MsgValue'[{'motor'[*{'name'"
 #define KEY_MESSAGE_VALUE_CFG_MOTOR_INVERT "{'MsgData'{'MsgValue'[{'motor'[*{'inverted'"
 #define KEY_MESSAGE_VALUE_CFG_MOTOR_MINPWM "{'MsgData'{'MsgValue'[{'motor'[*{'pwmMin'"
 #define KEY_MESSAGE_VALUE_CFG_MOTOR_MINRPM "{'MsgData'{'MsgValue'[{'motor'[*{'rpmMin'"
@@ -88,47 +89,64 @@
 #define KEY_MESSAGE_VALUE_CFG_WHEEL_PIDKD "{'MsgData'{'MsgValue'[{'wheel'[*{'rpmRegulator'{'PID_Kd'"
 
 #define KEY_MESSAGE_VALUE_CFG_STEPPER "{'MsgData'{'MsgValue'[*{'stepper'"
-#define KEY_MESSAGE_VALUE_CFG_STEPPER_ID "{'MsgData'{'MsgValue'[{'stepper'[*{'motor'"
+#define KEY_MESSAGE_VALUE_CFG_STEPPER_ID "{'MsgData'{'MsgValue'[{'stepper'[*{'id'"
+#define KEY_MESSAGE_VALUE_CFG_STEPPER_NAME "{'MsgData'{'MsgValue'[{'stepper'[*{'name'"
 #define KEY_MESSAGE_VALUE_CFG_STEPPER_INVERT "{'MsgData'{'MsgValue'[{'stepper'[*{'inverted'"
 #define KEY_MESSAGE_VALUE_CFG_STEPPER_RATIO "{'MsgData'{'MsgValue'[{'stepper'[*{'ratio'"
 #define KEY_MESSAGE_VALUE_CFG_STEPPER_STEPS "{'MsgData'{'MsgValue'[{'stepper'[*{'steps'"
 
 #define KEY_MESSAGE_VALUE_CFG_LED "{'MsgData'{'MsgValue'[*{'led'"
-#define KEY_MESSAGE_VALUE_CFG_LED_ID "{'MsgData'{'MsgValue'[{'led'[*{'led'"
+#define KEY_MESSAGE_VALUE_CFG_LED_ID "{'MsgData'{'MsgValue'[{'led'[*{'id'"
+#define KEY_MESSAGE_VALUE_CFG_LED_NAME "{'MsgData'{'MsgValue'[{'led'[*{'name'"
 #define KEY_MESSAGE_VALUE_CFG_LED_STATE "{'MsgData'{'MsgValue'[{'led'[*{'state'"
 #define KEY_MESSAGE_VALUE_CFG_LED_POWER "{'MsgData'{'MsgValue'[{'led'[*{'power'"
 
 #define KEY_MESSAGE_VALUE_CFG_PWM "{'MsgData'{'MsgValue'[*{'pwm'"
-#define KEY_MESSAGE_VALUE_CFG_PWM_ID "{'MsgData'{'MsgValue'[{'pwm'[*{'pwm'"
+#define KEY_MESSAGE_VALUE_CFG_PWM_ID "{'MsgData'{'MsgValue'[{'pwm'[*{'id'"
+#define KEY_MESSAGE_VALUE_CFG_PWM_NAME "{'MsgData'{'MsgValue'[{'pwm'[*{'name'"
 #define KEY_MESSAGE_VALUE_CFG_PWM_STATE "{'MsgData'{'MsgValue'[{'pwm'[*{'state'"
 #define KEY_MESSAGE_VALUE_CFG_PWM_POWER "{'MsgData'{'MsgValue'[{'pwm'[*{'power'"
 
 #define KEY_MESSAGE_VALUE_CFG_AOUT "{'MsgData'{'MsgValue'[*{'aout'"
-#define KEY_MESSAGE_VALUE_CFG_AOUT_ID "{'MsgData'{'MsgValue'[{'aout'[*{'aout'"
+#define KEY_MESSAGE_VALUE_CFG_AOUT_ID "{'MsgData'{'MsgValue'[{'aout'[*{'id'"
+#define KEY_MESSAGE_VALUE_CFG_AOUT_NAME "{'MsgData'{'MsgValue'[{'aout'[*{'name'"
 #define KEY_MESSAGE_VALUE_CFG_AOUT_STATE "{'MsgData'{'MsgValue'[{'aout'[*{'state'"
 #define KEY_MESSAGE_VALUE_CFG_AOUT_POWER "{'MsgData'{'MsgValue'[{'aout'[*{'power'"
 
 #define KEY_MESSAGE_VALUE_CFG_BTN "{'MsgData'{'MsgValue'[*{'button'"
-#define KEY_MESSAGE_VALUE_CFG_BTN_ID "{'MsgData'{'MsgValue'[{'button'[*{'btn'"
+#define KEY_MESSAGE_VALUE_CFG_BTN_ID "{'MsgData'{'MsgValue'[{'button'[*{'id'"
+#define KEY_MESSAGE_VALUE_CFG_BTN_NAME "{'MsgData'{'MsgValue'[{'button'[*{'name'"
 #define KEY_MESSAGE_VALUE_CFG_BTN_EVENT_STATE "{'MsgData'{'MsgValue'[{'button'[*{'event'"
 
 #define KEY_MESSAGE_VALUE_CFG_DIN "{'MsgData'{'MsgValue'[*{'din'"
-#define KEY_MESSAGE_VALUE_CFG_DIN_ID "{'MsgData'{'MsgValue'[{'din'[*{'din'"
+#define KEY_MESSAGE_VALUE_CFG_DIN_ID "{'MsgData'{'MsgValue'[{'din'[*{'id'"
+#define KEY_MESSAGE_VALUE_CFG_DIN_NAME "{'MsgData'{'MsgValue'[{'din'[*{'name'"
 #define KEY_MESSAGE_VALUE_CFG_DIN_EVENT_STATE "{'MsgData'{'MsgValue'[{'din'[*{'event'"
 
 #define KEY_MESSAGE_VALUE_CFG_SONAR "{'MsgData'{'MsgValue'[*{'sonar'"
-#define KEY_MESSAGE_VALUE_CFG_SONAR_ID "{'MsgData'{'MsgValue'[{'sonar'[*{'sonar'"
+#define KEY_MESSAGE_VALUE_CFG_SONAR_ID "{'MsgData'{'MsgValue'[{'sonar'[*{'id'"
+#define KEY_MESSAGE_VALUE_CFG_SONAR_NAME "{'MsgData'{'MsgValue'[{'sonar'[*{'name'"
 #define KEY_MESSAGE_VALUE_CFG_SONAR_EVENT_STATE "{'MsgData'{'MsgValue'[{'sonar'[*{'event'"
 #define KEY_MESSAGE_VALUE_CFG_SONAR_EVENT_LOW "{'MsgData'{'MsgValue'[{'sonar'[*{'event_lower'"
 #define KEY_MESSAGE_VALUE_CFG_SONAR_EVENT_HIGH "{'MsgData'{'MsgValue'[{'sonar'[*{'event_higher'"
 #define KEY_MESSAGE_VALUE_CFG_SONAR_EVENT_HYST "{'MsgData'{'MsgValue'[{'sonar'[*{'event_hysteresis'"
 
 #define KEY_MESSAGE_VALUE_CFG_VOLTAGE "{'MsgData'{'MsgValue'[*{'voltage'"
-#define KEY_MESSAGE_VALUE_CFG_VOLTAGE_ID "{'MsgData'{'MsgValue'[{'voltage'[*{'voltage'"
+#define KEY_MESSAGE_VALUE_CFG_VOLTAGE_ID "{'MsgData'{'MsgValue'[{'voltage'[*{'id'"
+#define KEY_MESSAGE_VALUE_CFG_VOLTAGE_NAME "{'MsgData'{'MsgValue'[{'voltage'[*{'name'"
 #define KEY_MESSAGE_VALUE_CFG_VOLTAGE_EVENT_STATE "{'MsgData'{'MsgValue'[{'voltage'[*{'event'"
 #define KEY_MESSAGE_VALUE_CFG_VOLTAGE_EVENT_LOW "{'MsgData'{'MsgValue'[{'voltage'[*{'event_lower'"
 #define KEY_MESSAGE_VALUE_CFG_VOLTAGE_EVENT_HIGH "{'MsgData'{'MsgValue'[{'voltage'[*{'event_higher'"
 #define KEY_MESSAGE_VALUE_CFG_VOLTAGE_EVENT_HYST "{'MsgData'{'MsgValue'[{'voltage'[*{'event_hysteresis'"
+
+#define KEY_MESSAGE_VALUE_CFG_RGBC "{'MsgData'{'MsgValue'[*{'color'"
+#define KEY_MESSAGE_VALUE_CFG_RGBC_ID "{'MsgData'{'MsgValue'[{'color'[*{'id'"
+#define KEY_MESSAGE_VALUE_CFG_RGBC_NAME "{'MsgData'{'MsgValue'[{'color'[*{'name'"
+#define KEY_MESSAGE_VALUE_CFG_RGBC_EVENT_STATE "{'MsgData'{'MsgValue'[{'color'[*{'event'"
+
+#define KEY_MESSAGE_VALUE_CFG_RGBC_RED_EVENT_LOW "{'MsgData'{'MsgValue'[{'color'[*{'red'{'event_lower'"
+#define KEY_MESSAGE_VALUE_CFG_RGBC_RED_EVENT_HIGH "{'MsgData'{'MsgValue'[{'color'[*{'red'{'event_higher'"
+#define KEY_MESSAGE_VALUE_CFG_RGBC_RED_EVENT_HYST "{'MsgData'{'MsgValue'[{'color'[*{'red'{'event_hysteresis'"
 
 #define KEY_MESSAGE_VALUE_SYS_FIRMWARE "{'MsgData'{'MsgValue'[*{'firmware'"
 #define KEY_MESSAGE_VALUE_SYS_DASH "{'MsgData'{'MsgValue'[*{'dashboard'"
@@ -225,8 +243,8 @@ char GetAlgoidMsg(ALGOID *destMessage, char *srcBuffer){
 				      for(i=0; i<element.elements; i++ )    // loop for no. of elements in JSON
 				      {
 				    	  if(destMessage->msgParam == MOTORS){
-				    		  destMessage->DCmotor[i].motor=UNKNOWN;	// Initialisation roue inconnue
-                                                  destMessage->DCmotor[i].motor= jRead_long((char *)srcBuffer, KEY_MESSAGE_VALUE_MOTOR, &i);
+				    		  destMessage->DCmotor[i].id=UNKNOWN;	// Initialisation roue inconnue
+                                                  destMessage->DCmotor[i].id= jRead_long((char *)srcBuffer, KEY_MESSAGE_VALUE_MOTOR, &i);
                                                  
 					    	  destMessage->DCmotor[i].userSetPoint= jRead_long((char *)srcBuffer, KEY_MESSAGE_VALUE_VELOCITY, &i);
 					    	  destMessage->DCmotor[i].time= jRead_long((char *)srcBuffer, KEY_MESSAGE_VALUE_TIME, &i);
@@ -234,9 +252,9 @@ char GetAlgoidMsg(ALGOID *destMessage, char *srcBuffer){
 				    	  }
                                           
                                             if(destMessage->msgParam == STEPPER){
-                                                destMessage->StepperMotor[i].motor=UNKNOWN;	// Initialisation roue inconnue
+                                                destMessage->StepperMotor[i].id=UNKNOWN;	// Initialisation roue inconnue
                                                 //jRead_string((char *)srcBuffer, KEY_MESSAGE_VALUE_MOTOR, myDataString, 15, &i );
-                                                destMessage->StepperMotor[i].motor= jRead_long((char *)srcBuffer, KEY_MESSAGE_VALUE_MOTOR, &i);
+                                                destMessage->StepperMotor[i].id= jRead_long((char *)srcBuffer, KEY_MESSAGE_VALUE_MOTOR, &i);
 
                                                 destMessage->StepperMotor[i].userSetPoint= jRead_long((char *)srcBuffer, KEY_MESSAGE_VALUE_VELOCITY, &i);
                                                 destMessage->StepperMotor[i].angle= jRead_long((char *)srcBuffer, KEY_MESSAGE_VALUE_ANGLE, &i);
@@ -364,7 +382,7 @@ char GetAlgoidMsg(ALGOID *destMessage, char *srcBuffer){
                                                   // Nothing to get, return status of all system
 				    	  }
                                           
-                                        // CONFIGURATION
+                                    // CONFIGURATION
                                           if(destMessage->msgParam == CONFIG){
                                               int nbOfdeviceInConf;
                                               int i_dev;
@@ -391,6 +409,7 @@ char GetAlgoidMsg(ALGOID *destMessage, char *srcBuffer){
                                                     
                                                     for(i_dev=0; i_dev < nbOfdeviceInConf; i_dev++){                 
                                                         destMessage->Config.motor[i_dev].id=jRead_int((char *)srcBuffer, KEY_MESSAGE_VALUE_CFG_MOTOR_ID, &i_dev); 
+                                                        jRead_string((char *)srcBuffer, KEY_MESSAGE_VALUE_CFG_MOTOR_NAME, destMessage->Config.motor[i_dev].name, 25, &i_dev );
                                                         destMessage->Config.motor[i_dev].minRPM=jRead_int((char *)srcBuffer, KEY_MESSAGE_VALUE_CFG_MOTOR_MINRPM, &i_dev); 
                                                         destMessage->Config.motor[i_dev].maxRPM=jRead_int((char *)srcBuffer, KEY_MESSAGE_VALUE_CFG_MOTOR_MAXRPM, &i_dev); 
                                                         destMessage->Config.motor[i_dev].minPWM=jRead_int((char *)srcBuffer, KEY_MESSAGE_VALUE_CFG_MOTOR_MINPWM, &i_dev); 
@@ -429,6 +448,7 @@ char GetAlgoidMsg(ALGOID *destMessage, char *srcBuffer){
                                                     
                                                     for(i_dev=0; i_dev < nbOfdeviceInConf; i_dev++){                 
                                                         destMessage->Config.stepper[i_dev].id=jRead_long((char *)srcBuffer, KEY_MESSAGE_VALUE_CFG_STEPPER_ID, &i_dev); 
+                                                        jRead_string((char *)srcBuffer, KEY_MESSAGE_VALUE_CFG_STEPPER_NAME, destMessage->Config.stepper[i_dev].name, 25, &i_dev );
                                                         jRead_string((char *)srcBuffer, KEY_MESSAGE_VALUE_CFG_STEPPER_INVERT, destMessage->Config.stepper[i_dev].inverted, 15, &i_dev ); 
                                                         destMessage->Config.stepper[i_dev].ratio=jRead_long((char *)srcBuffer, KEY_MESSAGE_VALUE_CFG_STEPPER_RATIO, &i_dev); 
                                                         destMessage->Config.stepper[i_dev].stepsPerRot=jRead_long((char *)srcBuffer, KEY_MESSAGE_VALUE_CFG_STEPPER_STEPS, &i_dev); 
@@ -445,6 +465,7 @@ char GetAlgoidMsg(ALGOID *destMessage, char *srcBuffer){
                                                     
                                                     for(i_dev=0; i_dev < nbOfdeviceInConf; i_dev++){
                                                         destMessage->Config.led[i_dev].id = jRead_long((char *)srcBuffer, KEY_MESSAGE_VALUE_CFG_LED_ID, &i_dev); 
+                                                        jRead_string((char *)srcBuffer, KEY_MESSAGE_VALUE_CFG_LED_NAME, destMessage->Config.led[i_dev].name, 25, &i_dev );
                                                         destMessage->Config.led[i_dev].power = jRead_long((char *)srcBuffer, KEY_MESSAGE_VALUE_CFG_LED_POWER, &i_dev); 
                                                         jRead_string((char *)srcBuffer, KEY_MESSAGE_VALUE_CFG_LED_STATE, destMessage->Config.led[i_dev].state, 15, &i_dev ); 
                                                     }
@@ -461,6 +482,7 @@ char GetAlgoidMsg(ALGOID *destMessage, char *srcBuffer){
                                                     
                                                     for(i_dev=0; i_dev < nbOfdeviceInConf; i_dev++){
                                                         destMessage->Config.pwm[i_dev].id=jRead_long((char *)srcBuffer, KEY_MESSAGE_VALUE_CFG_PWM_ID, &i_dev); 
+                                                        jRead_string((char *)srcBuffer, KEY_MESSAGE_VALUE_CFG_PWM_NAME, destMessage->Config.pwm[i_dev].name, 25, &i_dev );
                                                         destMessage->Config.pwm[i_dev].power=jRead_long((char *)srcBuffer, KEY_MESSAGE_VALUE_CFG_PWM_POWER, &i_dev); 
                                                         jRead_string((char *)srcBuffer, KEY_MESSAGE_VALUE_CFG_PWM_STATE, destMessage->Config.pwm[i_dev].state, 15, &i_dev ); 
                                                     }
@@ -477,6 +499,7 @@ char GetAlgoidMsg(ALGOID *destMessage, char *srcBuffer){
                                                     
                                                     for(i_dev=0; i_dev < nbOfdeviceInConf; i_dev++){
                                                         destMessage->Config.Aout[i_dev].id=jRead_long((char *)srcBuffer, KEY_MESSAGE_VALUE_CFG_AOUT_ID, &i_dev); 
+                                                        jRead_string((char *)srcBuffer, KEY_MESSAGE_VALUE_CFG_AOUT_NAME, destMessage->Config.Aout[i_dev].name, 25, &i_dev );
                                                         destMessage->Config.Aout[i_dev].power=jRead_long((char *)srcBuffer, KEY_MESSAGE_VALUE_CFG_AOUT_POWER, &i_dev); 
                                                         jRead_string((char *)srcBuffer, KEY_MESSAGE_VALUE_CFG_AOUT_STATE, destMessage->Config.Aout[i_dev].state, 15, &i_dev ); 
                                                     }
@@ -493,6 +516,7 @@ char GetAlgoidMsg(ALGOID *destMessage, char *srcBuffer){
                                                     
                                                     for(i_dev=0; i_dev < nbOfdeviceInConf; i_dev++){
                                                         destMessage->Config.din[i_dev].id=jRead_long((char *)srcBuffer, KEY_MESSAGE_VALUE_CFG_DIN_ID, &i_dev);                                                        
+                                                        jRead_string((char *)srcBuffer, KEY_MESSAGE_VALUE_CFG_DIN_NAME, destMessage->Config.din[i_dev].name, 25, &i_dev );
                                                         strcpy(destMessage->Config.din[i_dev].event_state, "");
                                                         jRead_string((char *)srcBuffer, KEY_MESSAGE_VALUE_CFG_DIN_EVENT_STATE, destMessage->Config.din[i_dev].event_state, 15, &i_dev );
                                                     }
@@ -509,6 +533,7 @@ char GetAlgoidMsg(ALGOID *destMessage, char *srcBuffer){
                                                     
                                                     for(i_dev=0; i_dev < nbOfdeviceInConf; i_dev++){
                                                         destMessage->Config.btn[i_dev].id=jRead_long((char *)srcBuffer, KEY_MESSAGE_VALUE_CFG_BTN_ID, &i_dev); 
+                                                        jRead_string((char *)srcBuffer, KEY_MESSAGE_VALUE_CFG_BTN_NAME, destMessage->Config.btn[i_dev].name, 25, &i_dev );
                                                         jRead_string((char *)srcBuffer, KEY_MESSAGE_VALUE_CFG_BTN_EVENT_STATE, destMessage->Config.btn[i_dev].event_state, 15, &i_dev );
                                                     }
                                                 }
@@ -524,6 +549,7 @@ char GetAlgoidMsg(ALGOID *destMessage, char *srcBuffer){
                                                     
                                                     for(i_dev=0; i_dev < nbOfdeviceInConf; i_dev++){
                                                         destMessage->Config.sonar[i_dev].id=jRead_long((char *)srcBuffer, KEY_MESSAGE_VALUE_CFG_SONAR_ID, &i_dev); 
+                                                        jRead_string((char *)srcBuffer, KEY_MESSAGE_VALUE_CFG_SONAR_NAME, destMessage->Config.sonar[i_dev].name, 25, &i_dev );
                                                         jRead_string((char *)srcBuffer, KEY_MESSAGE_VALUE_CFG_SONAR_EVENT_STATE, destMessage->Config.sonar[i_dev].event_state, 15, &i_dev );
                                                         destMessage->Config.sonar[i_dev].event_low = jRead_long((char *)srcBuffer, KEY_MESSAGE_VALUE_CFG_SONAR_EVENT_LOW, &i_dev);
                                                         destMessage->Config.sonar[i_dev].event_high = jRead_long((char *)srcBuffer, KEY_MESSAGE_VALUE_CFG_SONAR_EVENT_HIGH, &i_dev);
@@ -536,18 +562,38 @@ char GetAlgoidMsg(ALGOID *destMessage, char *srcBuffer){
 
                                                 // RECHERCHE DATA DE TYPE ARRAY
                                                 if(cfg_device_list.dataType == JREAD_ARRAY ){
-                                                    // Get the number of SONAR in array
+                                                    // Get the number of AIN in array
                                                     nbOfdeviceInConf=cfg_device_list.elements;
-                                                    destMessage->Config.battValueCnt = nbOfdeviceInConf;
+                                                    destMessage->Config.ainValueCnt = nbOfdeviceInConf;
                                                     
                                                     for(i_dev=0; i_dev < nbOfdeviceInConf; i_dev++){
                                                         destMessage->Config.ain[i_dev].id=jRead_long((char *)srcBuffer, KEY_MESSAGE_VALUE_CFG_VOLTAGE_ID, &i_dev); 
+                                                        jRead_string((char *)srcBuffer, KEY_MESSAGE_VALUE_CFG_VOLTAGE_NAME, destMessage->Config.ain[i_dev].name, 25, &i_dev );
                                                         jRead_string((char *)srcBuffer, KEY_MESSAGE_VALUE_CFG_VOLTAGE_EVENT_STATE, destMessage->Config.ain[i_dev].event_state, 15, &i_dev );
                                                         destMessage->Config.ain[i_dev].event_low = jRead_long((char *)srcBuffer, KEY_MESSAGE_VALUE_CFG_VOLTAGE_EVENT_LOW, &i_dev);
                                                         destMessage->Config.ain[i_dev].event_high = jRead_long((char *)srcBuffer, KEY_MESSAGE_VALUE_CFG_VOLTAGE_EVENT_HIGH, &i_dev);
                                                         destMessage->Config.ain[i_dev].event_hyst = jRead_long((char *)srcBuffer, KEY_MESSAGE_VALUE_CFG_VOLTAGE_EVENT_HYST, &i_dev);
                                                     }
                                                 }                                                 
+                                                
+                                                // RGB Setting
+                                                jRead((char *)srcBuffer, KEY_MESSAGE_VALUE_CFG_RGBC, &cfg_device_list );
+
+                                                // RECHERCHE DATA DE TYPE ARRAY
+                                                if(cfg_device_list.dataType == JREAD_ARRAY ){
+                                                    // Get the number of RGB in array
+                                                    nbOfdeviceInConf=cfg_device_list.elements;
+                                                    destMessage->Config.rgbValueCnt = nbOfdeviceInConf;
+                                                    
+                                                    for(i_dev=0; i_dev < nbOfdeviceInConf; i_dev++){
+                                                        destMessage->Config.rgb[i_dev].id=jRead_long((char *)srcBuffer, KEY_MESSAGE_VALUE_CFG_RGBC_ID, &i_dev); 
+                                                        jRead_string((char *)srcBuffer, KEY_MESSAGE_VALUE_CFG_RGBC_NAME, destMessage->Config.rgb[i_dev].name, 25, &i_dev );
+                                                        jRead_string((char *)srcBuffer, KEY_MESSAGE_VALUE_CFG_RGBC_EVENT_STATE, destMessage->Config.rgb[i_dev].event_state, 15, &i_dev );
+                                                        destMessage->Config.rgb[i_dev].red.event_low = jRead_long((char *)srcBuffer, KEY_MESSAGE_VALUE_CFG_RGBC_RED_EVENT_LOW, &i_dev);
+                                                        destMessage->Config.rgb[i_dev].red.event_high = jRead_long((char *)srcBuffer, KEY_MESSAGE_VALUE_CFG_RGBC_RED_EVENT_HIGH, &i_dev);
+                                                        destMessage->Config.rgb[i_dev].red.event_hyst = jRead_long((char *)srcBuffer, KEY_MESSAGE_VALUE_CFG_RGBC_RED_EVENT_HYST, &i_dev);
+                                                    }
+                                                }   
                                                 
                                             // Get the name
                                                 jRead_string((char *)srcBuffer, KEY_MESSAGE_VALUE_CFG_NAME, destMessage->Config.robot.name, 15, &i );
@@ -597,651 +643,741 @@ char GetAlgoidMsg(ALGOID *destMessage, char *srcBuffer){
 // convert the structure in JSON format & Send to host
 // -----------------------------------------------------------------------------
 void jsonBuilder(char * buffer, int msgId, char* to, char* from, char* msgType, char* msgParam, unsigned char orgType, unsigned char count ){
-	unsigned int buflen= MAX_MQTT_BUFF;
-	unsigned char i,j, k;
-        
+    unsigned int buflen= MAX_MQTT_BUFF;
+    unsigned char i,j, k;
+
 // Formatage de la réponse en JSON
-	jwOpen( buffer, buflen, JW_OBJECT, JW_PRETTY );		// start root object
-		jwObj_string( "MsgTo", to );				// add object key:value pairs
-		jwObj_string( "MsgFrom", from );				// add object key:value pairs
-		jwObj_int( "MsgID", msgId );
-		jwObj_object( "MsgData" );
-			jwObj_string( "MsgType", msgType );				// add object key:value pairs
-			if(msgParam!=0) jwObj_string( "MsgParam", msgParam );				// add object key:value pairs
+    jwOpen( buffer, buflen, JW_OBJECT, JW_PRETTY );		// start root object
+    jwObj_string( "MsgTo", to );				// add object key:value pairs
+    jwObj_string( "MsgFrom", from );				// add object key:value pairs
+    jwObj_int( "MsgID", msgId );
+    jwObj_object( "MsgData" );
+        jwObj_string( "MsgType", msgType );				// add object key:value pairs
+        if(msgParam!=0) jwObj_string( "MsgParam", msgParam );				// add object key:value pairs
+        if(count>0){
+            //
+            if(orgType==STATUS)
+                jwObj_object("MsgMap");
+            else
+                jwObj_array( "MsgValue" );
 
-			if(count>0){
+            for(i=0;i<count;i++){
+                //printf("Make array: %d values: %d %d\n", i, 0,9);
+                if(orgType!=STATUS)
+                    jwArr_object();
 
-				//
-                                if(orgType==STATUS)
-                                    jwObj_object("MsgMap");
-                                else
-                                    jwObj_array( "MsgValue" );
-                                
-				for(i=0;i<count;i++){
-					//printf("Make array: %d values: %d %d\n", i, 0,9);
-					if(orgType!=STATUS)
-                                            jwArr_object();
-
-						switch(orgType){
-							case MOTORS :                   
-                                                                            switch(messageResponse[i].responseType){
-                                                                                case EVENT_ACTION_ERROR : jwObj_string("action", "error"); break;
-                                                                                case EVENT_ACTION_END : jwObj_string("action", "end"); break;
-                                                                                case EVENT_ACTION_BEGIN : jwObj_string("action", "begin"); break;
-                                                                                case EVENT_ACTION_RUN : jwObj_string("action", "run"); break;
-                                                                                case EVENT_ACTION_ABORT : jwObj_string("action", "abort"); break;
-                                                                                case RESP_STD_MESSAGE   :   if(messageResponse[i].MOTresponse.motor>=0)
-                                                                                                                jwObj_int( "motor", messageResponse[i].MOTresponse.motor);
-                                                                                                            else
-                                                                                                                jwObj_string("motor", "unknown");
-                                                                                                            jwObj_int( "cm", messageResponse[i].MOTresponse.cm);				// add object key:value pairs
-                                                                                                            jwObj_int( "time", messageResponse[i].MOTresponse.time);				// add object key:value pairs
-                                                                                                            jwObj_int("userSetPoint", round((messageResponse[i].MOTresponse.userSetPoint)));
-                                                                                                            ; break;
-                                                                                default : jwObj_string("error", "unknown"); break;
-                                                                            }
-                                                                            break;
-
-							case STEPPER :                   
-                                                                            switch(messageResponse[i].responseType){
-                                                                                case EVENT_ACTION_ERROR : jwObj_string("action", "error"); break;
-                                                                                case EVENT_ACTION_END : jwObj_string("action", "end"); break;
-                                                                                case EVENT_ACTION_BEGIN : jwObj_string("action", "begin"); break;
-                                                                                case EVENT_ACTION_RUN : jwObj_string("action", "run"); break;
-                                                                                case EVENT_ACTION_ABORT : jwObj_string("action", "abort"); break;
-                                                                                case RESP_STD_MESSAGE   :   if(messageResponse[i].STEPPERresponse.motor>=0)
-                                                                                                                jwObj_int( "motor", messageResponse[i].STEPPERresponse.motor);
-                                                                                                            else
-                                                                                                                jwObj_string("motor", "unknown");
-                                                                                                            jwObj_int( "step", messageResponse[i].STEPPERresponse.step);				// add object key:value pairs
-                                                                                                            jwObj_int( "rotation", messageResponse[i].STEPPERresponse.rotation);				// add object key:value pairs
-                                                                                                            jwObj_int("userSetPoint", round((messageResponse[i].STEPPERresponse.userSetPoint)));
-                                                                                                            ; break;
-                                                                                default : jwObj_string("error", "unknown"); break;
-                                                                            }
-                                                                            break;                                                                            
-
-							case DISTANCE :                 
-                                                                            jwObj_int( "sonar",messageResponse[i].DISTresponse.id);
-
-                                                                            // add object key:value pairs
-                                                                            if(messageResponse[i].value >= 0){
-                                                                                    jwObj_int("cm", round((messageResponse[i].value)));					// add object key:value pairs
-                                                                                    //jwObj_int("angle", messageResponse[i].DISTresponse.angle);				// add object key:value pairs
-                                                                                    jwObj_string("event", messageResponse[i].DISTresponse.event_state);				// add object key:value pairs
-                                                                                    jwObj_int("event_lower", messageResponse[i].DISTresponse.event_low);				// add object key:value pairs
-                                                                                    jwObj_int("event_higher", messageResponse[i].DISTresponse.event_high);				// add object key:value pairs
-                                                                            } else
-                                                                                    jwObj_string("cm", "error");
-
-                                                                            break;
-
-							case COLORS :                 
-                                                                            jwObj_int( "rgb",messageResponse[i].RGBresponse.id);
-                                                                            jwObj_string("event", messageResponse[i].RGBresponse.event_state);
-
-
-                                                                            jwObj_object("color");
-                                                                                jwObj_int("red", messageResponse[i].RGBresponse.red.value);
-                                                                                jwObj_int("green", messageResponse[i].RGBresponse.green.value);
-                                                                                jwObj_int("blue", messageResponse[i].RGBresponse.blue.value);
-                                                                                jwObj_int("clear", messageResponse[i].RGBresponse.clear.value);
-                                                                            jwEnd();
-
-                                                                            jwObj_object( "red" );                                                                                 
-                                                                                    jwObj_int("event_lower", messageResponse[i].RGBresponse.red.event_low);
-                                                                                    jwObj_int("event_higher", messageResponse[i].RGBresponse.red.event_high);
-                                                                            jwEnd();
-
-                                                                            jwObj_object( "green" );                                                                                 
-                                                                                    jwObj_int("event_lower", messageResponse[i].RGBresponse.green.event_low);
-                                                                                    jwObj_int("event_higher", messageResponse[i].RGBresponse.green.event_high);           
-                                                                            jwEnd(); 
-
-                                                                            jwObj_object( "blue" );                                                                                 
-                                                                                    jwObj_int("event_lower", messageResponse[i].RGBresponse.blue.event_low);
-                                                                                    jwObj_int("event_higher", messageResponse[i].RGBresponse.blue.event_high);
-                                                                            jwEnd();
-
-                                                                            jwObj_object( "clear" );                                                                                 
-                                                                                    jwObj_int("event_lower", messageResponse[i].RGBresponse.clear.event_low);
-                                                                                    jwObj_int("event_higher", messageResponse[i].RGBresponse.clear.event_high);
-                                                                            jwEnd(); 
-
-                                                                            break;                                                                                
-
-							case VOLTAGE :                  
-                                                                            jwObj_int( "voltage",messageResponse[i].VOLTResponse.id);
-
-                                                                            // add object key:value pairs
-                                                                            if(messageResponse[i].value >= 0){
-                                                                                    jwObj_int("voltage_mv", messageResponse[i].value);
-                                                                                    jwObj_int("capacity", messageResponse[i].VOLTResponse.capacity);// add object key:value pairs
-                                                                                    jwObj_string("event", messageResponse[i].VOLTResponse.event_state);				// add object key:value pairs
-                                                                                    jwObj_int("event_lower", messageResponse[i].VOLTResponse.event_low);				// add object key:value pairs
-                                                                                    jwObj_int("event_higher", messageResponse[i].VOLTResponse.event_high);				// add object key:value pairs
-                                                                            }else
-                                                                                jwObj_string("mv", "error");
-
-                                                                            break;
-
-							case DINPUT :           
-                                                                            jwObj_int("din",messageResponse[i].DINresponse.id);	
-                                                                            if(messageResponse[i].value >= 0){
-
-                                                                                                     // add object key:value pairs
-                                                                                 if(messageResponse[i].value >= 0){
-                                                                                         jwObj_int( "state", messageResponse[i].value);				// add object key:value pairs
-                                                                                         jwObj_string("event", messageResponse[i].DINresponse.event_state);			// Etat des evenements DIN
-                                                                                 } else
-                                                                                         jwObj_string("state", "error");
-                                                                             }
-                                                                            else{
-                                                                                 jwObj_string("state", "error");
-                                                                            }
-                                                                            break;
-                                                                                    
-							case BUTTON :                  
-                                                                            jwObj_int("btn",messageResponse[i].BTNresponse.id);	
-                                                                               if(messageResponse[i].value >= 0){
-                                                                                                        // add object key:value pairs
-                                                                                    if(messageResponse[i].value >= 0){
-                                                                                            jwObj_int( "state", messageResponse[i].value);				// add object key:value pairs
-                                                                                            jwObj_string("event", messageResponse[i].BTNresponse.event_state);				// add object key:value pairs
-                                                                                    } else
-                                                                                            jwObj_string("state", "error");
-                                                                                }
-                                                                               else{
-                                                                                    jwObj_string("state", "error");
-                                                                               }
-                                                                            break;
-                                                                            
-							case pDISPLAY :                   
-                                                                            switch(messageResponse[i].responseType){
-                                                                                case EVENT_ACTION_ERROR : jwObj_string("action", "error"); break;
-                                                                                case EVENT_ACTION_END : jwObj_string("action", "end"); break;
-                                                                                case EVENT_ACTION_BEGIN : jwObj_string("action", "begin"); break;
-                                                                                case EVENT_ACTION_RUN : jwObj_string("action", "run"); break;
-                                                                                case EVENT_ACTION_ABORT : jwObj_string("action", "abort"); break;
-                                                                                case RESP_STD_MESSAGE   :   if(messageResponse[i].DISPLAYresponse.id>=0)
-                                                                                                                jwObj_int( "display", messageResponse[i].DISPLAYresponse.id);
-                                                                                                            else
-                                                                                                                jwObj_string("display", "unknown");
-                                                                                                            jwObj_string("text", messageResponse[i].DISPLAYresponse.text);
-                                                                                                            jwObj_string("border", messageResponse[i].DISPLAYresponse.border);
-                                                                                                            jwObj_string("icon", messageResponse[i].DISPLAYresponse.icon);
-                                                                                                            jwObj_int( "time", messageResponse[i].DISPLAYresponse.time);
-                                                                                                            jwObj_string("screen_hid", messageResponse[i].DISPLAYresponse.hid);
-                                                                                                            ; break;
-                                                                                default : jwObj_string("error", "unknown"); break;
-                                                                            }
-                                                                            break;                                                                            
-
-                                                        case STATUS :               
-                                                                            // ETAT DU SYSTEM
-                                                                            if(i==0){
-                                                                                char wanState[10];
-
-                                                                                jwObj_string("name", messageResponse[i].SYSresponse.name);
-                                                                                jwObj_double("upTime",messageResponse[i].SYSresponse.startUpTime);
-                                                                                jwObj_string("firmwareVersion",messageResponse[i].SYSresponse.firmwareVersion);	
-                                                                                jwObj_string("mcuVersion",messageResponse[i].SYSresponse.mcuVersion);
-                                                                                jwObj_string("boardRev",messageResponse[i].SYSresponse.HWrevision);
-                                                                                jwObj_double("battery_mv",messageResponse[i].SYSresponse.battVoltage);
-                                                                                jwObj_double("battery_capacity",messageResponse[i].SYSresponse.battPercent);                                                                                // add object key:value pairs
-                                                                                if(messageResponse[i].SYSresponse.wan_online)
-                                                                                    strcpy(wanState, "online");
+                        switch(orgType){
+                                case MOTORS :                   
+                                                switch(messageResponse[i].responseType){
+                                                    case EVENT_ACTION_ERROR : jwObj_string("action", "error"); break;
+                                                    case EVENT_ACTION_END : jwObj_string("action", "end"); break;
+                                                    case EVENT_ACTION_BEGIN : jwObj_string("action", "begin"); break;
+                                                    case EVENT_ACTION_RUN : jwObj_string("action", "run"); break;
+                                                    case EVENT_ACTION_ABORT : jwObj_string("action", "abort"); break;
+                                                    case RESP_STD_MESSAGE   :   if(messageResponse[i].MOTresponse.id>=0)
+                                                                                    jwObj_int( "id", messageResponse[i].MOTresponse.id);
                                                                                 else
-                                                                                    strcpy(wanState, "offline");
-                                                                                jwObj_string("internet",wanState);                                              // WAN State
-                                                                                jwObj_double("messageTX",messageResponse[i].SYSresponse.tx_message);		// System message received
-                                                                                jwObj_double("messageRX",messageResponse[i].SYSresponse.rx_message);		// System message received
-                                                                            }
+                                                                                    jwObj_string("id", "unknown");
+                                                                                jwObj_string("name", messageResponse[i].MOTresponse.name);
+                                                                                jwObj_int( "cm", messageResponse[i].MOTresponse.cm);				// add object key:value pairs
+                                                                                jwObj_int( "time", messageResponse[i].MOTresponse.time);				// add object key:value pairs
+                                                                                jwObj_int("velocity", round((messageResponse[i].MOTresponse.userSetPoint)));
+                                                                                ; break;
+                                                    default : jwObj_string("error", "unknown"); break;
+                                                }
+                                                break;
 
-                                                                            // ETAT DES DIN
-                                                                            if(i>=1 && i<1+NBDIN){
+                                case STEPPER :                   
+                                                switch(messageResponse[i].responseType){
+                                                    case EVENT_ACTION_ERROR : jwObj_string("action", "error"); break;
+                                                    case EVENT_ACTION_END : jwObj_string("action", "end"); break;
+                                                    case EVENT_ACTION_BEGIN : jwObj_string("action", "begin"); break;
+                                                    case EVENT_ACTION_RUN : jwObj_string("action", "run"); break;
+                                                    case EVENT_ACTION_ABORT : jwObj_string("action", "abort"); break;
+                                                    case RESP_STD_MESSAGE   :   if(messageResponse[i].STEPPERresponse.id>=0)
+                                                                                    jwObj_int( "id", messageResponse[i].STEPPERresponse.id);
+                                                                                else
+                                                                                    jwObj_string("id", "unknown");
+                                                                                jwObj_string("name", messageResponse[i].STEPPERresponse.name);
+                                                                                jwObj_int( "step", messageResponse[i].STEPPERresponse.step);				// add object key:value pairs
+                                                                                jwObj_int( "rotation", messageResponse[i].STEPPERresponse.rotation);				// add object key:value pairs
+                                                                                jwObj_int("userSetPoint", round((messageResponse[i].STEPPERresponse.userSetPoint)));
+                                                                                ; break;
+                                                    default : jwObj_string("error", "unknown"); break;
+                                                }
+                                                break;                                                                            
+
+                                case DISTANCE :                 
+                                                jwObj_int( "id",messageResponse[i].DISTresponse.id);
+                                                jwObj_string( "name",messageResponse[i].DISTresponse.name);
+
+                                                // add object key:value pairs
+                                                if(messageResponse[i].value >= 0){
+                                                        jwObj_int("cm", round((messageResponse[i].value)));					// add object key:value pairs
+                                                        //jwObj_int("angle", messageResponse[i].DISTresponse.angle);				// add object key:value pairs
+                                                        jwObj_string("event", messageResponse[i].DISTresponse.event_state);				// add object key:value pairs
+                                                        jwObj_int("event_lower", messageResponse[i].DISTresponse.event_low);				// add object key:value pairs
+                                                        jwObj_int("event_higher", messageResponse[i].DISTresponse.event_high);				// add object key:value pairs
+                                                } else
+                                                        jwObj_string("cm", "error");
+
+                                                break;
+
+                                case COLORS :                 
+                                                jwObj_int( "id",messageResponse[i].RGBresponse.id);
+                                                jwObj_string( "name",messageResponse[i].RGBresponse.name);
+                                                jwObj_string("event", messageResponse[i].RGBresponse.event_state);
+
+
+                                                jwObj_object("color");
+                                                    jwObj_int("red", messageResponse[i].RGBresponse.red.value);
+                                                    jwObj_int("green", messageResponse[i].RGBresponse.green.value);
+                                                    jwObj_int("blue", messageResponse[i].RGBresponse.blue.value);
+                                                    jwObj_int("clear", messageResponse[i].RGBresponse.clear.value);
+                                                jwEnd();
+
+                                                jwObj_object( "red" );                                                                                 
+                                                        jwObj_int("event_lower", messageResponse[i].RGBresponse.red.event_low);
+                                                        jwObj_int("event_higher", messageResponse[i].RGBresponse.red.event_high);
+                                                jwEnd();
+
+                                                jwObj_object( "green" );                                                                                 
+                                                        jwObj_int("event_lower", messageResponse[i].RGBresponse.green.event_low);
+                                                        jwObj_int("event_higher", messageResponse[i].RGBresponse.green.event_high);           
+                                                jwEnd(); 
+
+                                                jwObj_object( "blue" );                                                                                 
+                                                        jwObj_int("event_lower", messageResponse[i].RGBresponse.blue.event_low);
+                                                        jwObj_int("event_higher", messageResponse[i].RGBresponse.blue.event_high);
+                                                jwEnd();
+
+                                                jwObj_object( "clear" );                                                                                 
+                                                        jwObj_int("event_lower", messageResponse[i].RGBresponse.clear.event_low);
+                                                        jwObj_int("event_higher", messageResponse[i].RGBresponse.clear.event_high);
+                                                jwEnd(); 
+
+                                                break;                                                                                
+
+                                case VOLTAGE :                  
+                                                jwObj_int( "id",messageResponse[i].VOLTResponse.id);
+                                                jwObj_string( "name",messageResponse[i].VOLTResponse.name);
+
+                                                // add object key:value pairs
+                                                if(messageResponse[i].value >= 0){
+                                                        jwObj_int("voltage_mv", messageResponse[i].value);
+                                                        jwObj_int("capacity", messageResponse[i].VOLTResponse.capacity);// add object key:value pairs
+                                                        jwObj_string("event", messageResponse[i].VOLTResponse.event_state);				// add object key:value pairs
+                                                        jwObj_int("event_lower", messageResponse[i].VOLTResponse.event_low);				// add object key:value pairs
+                                                        jwObj_int("event_higher", messageResponse[i].VOLTResponse.event_high);				// add object key:value pairs
+                                                }else
+                                                    jwObj_string("mv", "error");
+
+                                                break;
+
+                                case DINPUT :           
+                                                jwObj_int("id",messageResponse[i].DINresponse.id);	
+                                                jwObj_string( "name",messageResponse[i].DINresponse.name);
+                                                if(messageResponse[i].value >= 0){
+
+                                                                         // add object key:value pairs
+                                                     if(messageResponse[i].value >= 0){
+                                                             jwObj_int( "state", messageResponse[i].value);				// add object key:value pairs
+                                                             jwObj_string("event", messageResponse[i].DINresponse.event_state);			// Etat des evenements DIN
+                                                     } else
+                                                             jwObj_string("state", "error");
+                                                 }
+                                                else{
+                                                     jwObj_string("state", "error");
+                                                }
+                                                break;
+
+                                case BUTTON :                  
+                                                jwObj_int("id",messageResponse[i].BTNresponse.id);
+                                                jwObj_string( "name",messageResponse[i].BTNresponse.name);
+                                                   if(messageResponse[i].value >= 0){
+                                                                            // add object key:value pairs
+                                                        if(messageResponse[i].value >= 0){
+                                                                jwObj_int( "state", messageResponse[i].value);				// add object key:value pairs
+                                                                jwObj_string("event", messageResponse[i].BTNresponse.event_state);				// add object key:value pairs
+                                                        } else
+                                                                jwObj_string("state", "error");
+                                                    }
+                                                   else{
+                                                        jwObj_string("state", "error");
+                                                   }
+                                                break;
+
+                                case pDISPLAY :                   
+                                                switch(messageResponse[i].responseType){
+                                                    case EVENT_ACTION_ERROR : jwObj_string("action", "error"); break;
+                                                    case EVENT_ACTION_END : jwObj_string("action", "end"); break;
+                                                    case EVENT_ACTION_BEGIN : jwObj_string("action", "begin"); break;
+                                                    case EVENT_ACTION_RUN : jwObj_string("action", "run"); break;
+                                                    case EVENT_ACTION_ABORT : jwObj_string("action", "abort"); break;
+                                                    case RESP_STD_MESSAGE   :   if(messageResponse[i].DISPLAYresponse.id>=0)
+                                                                                    jwObj_int( "id", messageResponse[i].DISPLAYresponse.id);
+                                                                                else
+                                                                                    jwObj_string("id", "unknown");
+                                                                                jwObj_string("text", messageResponse[i].DISPLAYresponse.text);
+                                                                                jwObj_string("border", messageResponse[i].DISPLAYresponse.border);
+                                                                                jwObj_string("icon", messageResponse[i].DISPLAYresponse.icon);
+                                                                                jwObj_int( "time", messageResponse[i].DISPLAYresponse.time);
+                                                                                jwObj_string("screen_hid", messageResponse[i].DISPLAYresponse.hid);
+                                                                                ; break;
+                                                    default : jwObj_string("error", "unknown"); break;
+                                                }
+                                                break;
+                                                
+
+                                case STATUS :               
+                                                    // ETAT DU SYSTEM
+                                                if(i==0){
+                                                    char wanState[10];
+
+                                                    jwObj_string("name", messageResponse[i].SYSresponse.name);
+                                                    jwObj_double("upTime",messageResponse[i].SYSresponse.startUpTime);
+                                                    jwObj_string("firmwareVersion",messageResponse[i].SYSresponse.firmwareVersion);	
+                                                    jwObj_string("mcuVersion",messageResponse[i].SYSresponse.mcuVersion);
+                                                    jwObj_string("boardRev",messageResponse[i].SYSresponse.HWrevision);
+                                                    jwObj_double("battery_mv",messageResponse[i].SYSresponse.battVoltage);
+                                                    jwObj_double("battery_capacity",messageResponse[i].SYSresponse.battPercent);                                                                                // add object key:value pairs
+                                                    if(messageResponse[i].SYSresponse.wan_online)
+                                                        strcpy(wanState, "online");
+                                                    else
+                                                        strcpy(wanState, "offline");
+                                                    jwObj_string("internet",wanState);                                              // WAN State
+                                                    jwObj_double("messageTX",messageResponse[i].SYSresponse.tx_message);		// System message received
+                                                    jwObj_double("messageRX",messageResponse[i].SYSresponse.rx_message);		// System message received
+                                                }
+
+                                                // ETAT DES DIN
+                                                if(i>=1 && i<1+NBDIN){
 //                                                                                        jwObj_int("din",messageResponse[i].DINresponse.id);		// add object key:value pairs
 //                                                                                        jwObj_int( "state", messageResponse[i].value);
-                                                                                jwObj_array( "din" );
+                                                    jwObj_array( "din" );
 
-                                                                                    for(j=0;j<NBDIN;j++){
-                                                                                        jwArr_object();
-                                                                                            jwObj_int("state",messageResponse[i].value);
-                                                                                            jwObj_string("event", messageResponse[i].DINresponse.event_state);			// Etat des evenements DIN
-                                                                                        jwEnd();           
-                                                                                        i++;
-                                                                                    }
-                                                                                jwEnd();       
-                                                                            }
+                                                        for(j=0;j<NBDIN;j++){
+                                                            jwArr_object();
+                                                                jwObj_string("name", messageResponse[i].DINresponse.name);			// Etat des evenements DIN
+                                                                jwObj_int("state",messageResponse[i].value);
+                                                                jwObj_string("event", messageResponse[i].DINresponse.event_state);			// Etat des evenements DIN
+                                                            jwEnd();           
+                                                            i++;
+                                                        }
+                                                    jwEnd();       
+                                                }
 
-                                                                            // ETAT DES BOUTON     
-                                                                            if(i>=1+NBDIN && i<1+NBDIN+NBBTN){
-                                                                            //    jwObj_int("btn",messageResponse[i].BTNresponse.id);		// add object key:value pairs
-                                                                            //    jwObj_int( "state", messageResponse[i].value);
-                                                                                jwObj_array( "btn" );
-                                                                                    for(j=0;j<NBBTN;j++){
-                                                                                        jwArr_object();
-                                                                                            jwObj_int("state",messageResponse[i].value);
-                                                                                            jwObj_string("event", messageResponse[i].BTNresponse.event_state);				// add object key:value pairs                                                                                            
-                                                                                        jwEnd();           
-                                                                                        i++;
-                                                                                    }
-                                                                                jwEnd();     
-                                                                            }
+                                                // ETAT DES BOUTON     
+                                                if(i>=1+NBDIN && i<1+NBDIN+NBBTN){
+                                                //    jwObj_int("btn",messageResponse[i].BTNresponse.id);		// add object key:value pairs
+                                                //    jwObj_int( "state", messageResponse[i].value);
+                                                    jwObj_array( "btn" );
+                                                        for(j=0;j<NBBTN;j++){
+                                                            jwArr_object();
+                                                                jwObj_string("name", messageResponse[i].BTNresponse.name);			// Etat des evenements DIN
+                                                                jwObj_int("state",messageResponse[i].value);
+                                                                jwObj_string("event", messageResponse[i].BTNresponse.event_state);				// add object key:value pairs                                                                                            
+                                                            jwEnd();           
+                                                            i++;
+                                                        }
+                                                    jwEnd();     
+                                                }
+ 
+                                                // ETAT DES MOTEUR                                                                                        // ETAT DES AIN                                                                                       // ETAT DES DIN
+                                                if(i>=1+NBDIN+NBBTN && i<1+NBDIN+NBBTN+NBMOTOR){
+                                                //        jwObj_int("motor",messageResponse[i].PWMresponse.id);		// add object key:value pairs
+                                                //        jwObj_int("cm", round((messageResponse[i].MOTresponse.cm)));		// add object key:value pairs
+                                                //        jwObj_int("speed", round((messageResponse[i].MOTresponse.userSetPoint)));
+                                                    jwObj_array( "motor" );
+                                                        for(j=0;j<NBMOTOR;j++){
+                                                            jwArr_object();
+                                                                jwObj_string("name", messageResponse[i].MOTresponse.name);
+                                                                jwObj_double("cm",messageResponse[i].MOTresponse.cm);
+                                                                jwObj_int("speed",round((messageResponse[i].MOTresponse.speed)));
+                                                                jwObj_int("velocity",messageResponse[i].MOTresponse.userSetPoint);
+                                                            jwEnd();           
+                                                            i++;
+                                                        }
+                                                    jwEnd(); 
+                                                }
+
+                                                // ETAT DU SONAR                                                                                        // ETAT DES AIN                                                                                       // ETAT DES DIN
+                                                if(i>=1+NBDIN+NBBTN+NBMOTOR && i<1+NBDIN+NBBTN+NBMOTOR+NBSONAR){
+                                                //    jwObj_int("sonar",messageResponse[i].DISTresponse.id);		// add object key:value pairs
+                                                //    jwObj_int("cm", round((messageResponse[i].value)));
+                                                    jwObj_array( "sonar" );
+                                                        for(j=0;j<NBSONAR;j++){
+                                                            jwArr_object();
+                                                                jwObj_string("name", messageResponse[i].DISTresponse.name);			// Etat des evenements DIN
+                                                                jwObj_int("cm", round((messageResponse[i].value)));
+                                                                jwObj_string("event", messageResponse[i].DISTresponse.event_state);                                                                                            
+                                                                jwObj_int("event_lower", messageResponse[i].DISTresponse.event_high);                                                                                            
+                                                                jwObj_int("event_higher", messageResponse[i].DISTresponse.event_low);                                                                                            
+                                                            jwEnd();           
+                                                            i++;
+                                                        }
+                                                    jwEnd(); 
+                                                }
+
+                                                // ETAT DES CAPTEURS RGB                                                                                                                                                     // ETAT DES AIN                                                                                       // ETAT DES DIN
+                                                if(i>=1+NBDIN+NBBTN+NBMOTOR+NBSONAR && i<1+NBDIN+NBBTN+NBMOTOR+NBSONAR+NBRGBC){
+                                                    jwObj_array( "rgb" );
+                                                        for(j=0;j<NBRGBC;j++){
+                                                            jwArr_object();
+                                                                jwObj_string("name", messageResponse[i].RGBresponse.name);			// Etat des evenements DIN
+                                                                jwObj_string("event", messageResponse[i].RGBresponse.event_state);                                                                                        
+                                                                jwObj_int("red",messageResponse[i].RGBresponse.red.value);
+                                                                jwObj_int("green",messageResponse[i].RGBresponse.green.value);
+                                                                jwObj_int("blue",messageResponse[i].RGBresponse.blue.value);
+                                                                jwObj_int("clear",messageResponse[i].RGBresponse.clear.value);
+                                                            jwEnd();           
+                                                            i++;
+                                                        }
+                                                    jwEnd();                                                                                             
+                                                }                                                                            
+
+                                                // ETAT DES LED                 
+                                                if(i>=1+NBDIN+NBBTN+NBMOTOR+NBSONAR+NBRGBC && i<1+NBDIN+NBBTN+NBMOTOR+NBSONAR+NBRGBC+NBLED){
+                                                    jwObj_array( "led" );
+                                                        for(j=0;j<NBLED;j++){
+                                                            jwArr_object();
+                                                                jwObj_string("name", messageResponse[i].LEDresponse.name);
+                                                                jwObj_int("state",messageResponse[i].value);
+                                                                jwObj_int("power",messageResponse[i].LEDresponse.powerPercent);
+                                                            jwEnd();           
+                                                            i++;
+                                                        }
+                                                    jwEnd();                                                                                             
+                                                }                                                                            
 
 
-                                                                            // ETAT DES MOTEUR                                                                                        // ETAT DES AIN                                                                                       // ETAT DES DIN
-                                                                            if(i>=1+NBDIN+NBBTN && i<1+NBDIN+NBBTN+NBMOTOR){
-                                                                            //        jwObj_int("motor",messageResponse[i].PWMresponse.id);		// add object key:value pairs
-                                                                            //        jwObj_int("cm", round((messageResponse[i].MOTresponse.cm)));		// add object key:value pairs
-                                                                            //        jwObj_int("speed", round((messageResponse[i].MOTresponse.userSetPoint)));
-                                                                                jwObj_array( "motor" );
-                                                                                    for(j=0;j<NBMOTOR;j++){
-                                                                                        jwArr_object();
-                                                                                            jwObj_double("cm",(messageResponse[i].MOTresponse.cm));
-                                                                                            jwObj_int("speed",round((messageResponse[i].MOTresponse.speed)));
-                                                                                            jwObj_int("setpoint",messageResponse[i].MOTresponse.userSetPoint);
-                                                                                        jwEnd();           
-                                                                                        i++;
-                                                                                    }
-                                                                                jwEnd(); 
-                                                                            }
+                                                // ETAT DES PWM 
+                                                if(i>=1+NBDIN+NBBTN+NBMOTOR+NBSONAR+NBRGBC+NBLED && i<1+NBDIN+NBBTN+NBMOTOR+NBSONAR+NBRGBC+NBLED+NBPWM){
+                                                    jwObj_array( "pwm" );
+                                                        for(j=0;j<NBPWM;j++){
+                                                            jwArr_object();
+                                                                jwObj_string("name", messageResponse[i].PWMresponse.name);
+                                                                jwObj_int("state",messageResponse[i].value);
+                                                                jwObj_int("power",messageResponse[i].PWMresponse.powerPercent);
+                                                            jwEnd();           
+                                                            i++;
+                                                        }
+                                                    jwEnd();                                                                                             
+                                                }
 
-                                                                            // ETAT DU SONAR                                                                                        // ETAT DES AIN                                                                                       // ETAT DES DIN
-                                                                            if(i>=1+NBDIN+NBBTN+NBMOTOR && i<1+NBDIN+NBBTN+NBMOTOR+NBSONAR){
-                                                                            //    jwObj_int("sonar",messageResponse[i].DISTresponse.id);		// add object key:value pairs
-                                                                            //    jwObj_int("cm", round((messageResponse[i].value)));
-                                                                                jwObj_array( "sonar" );
-                                                                                    for(j=0;j<NBSONAR;j++){
-                                                                                        jwArr_object();
-                                                                                            jwObj_int("cm", round((messageResponse[i].value)));
-                                                                                            jwObj_string("event", messageResponse[i].DISTresponse.event_state);                                                                                            
-                                                                                            jwObj_int("event_lower", messageResponse[i].DISTresponse.event_high);                                                                                            
-                                                                                            jwObj_int("event_higher", messageResponse[i].DISTresponse.event_low);                                                                                            
-                                                                                        jwEnd();           
-                                                                                        i++;
-                                                                                    }
-                                                                                jwEnd(); 
-                                                                            }
+                                                // ETAT DES BATTERIES                              
+                                                if(i>=1+NBDIN+NBBTN+NBMOTOR+NBSONAR+NBRGBC+NBLED+NBPWM && i<1+NBDIN+NBBTN+NBMOTOR+NBSONAR+NBRGBC+NBLED+NBPWM+NBAIN){
+                                                //    jwObj_int("sonar",messageResponse[i].DISTresponse.id);		// add object key:value pairs
+                                                //    jwObj_int("cm", round((messageResponse[i].value)));
+                                                    jwObj_array( "voltage" );
+                                                        for(j=0;j<NBAIN;j++){
+                                                            jwArr_object();
+                                                                jwObj_string("name", messageResponse[i].VOLTResponse.name);			// Etat des evenements DIN
+                                                                jwObj_int("mv", round((messageResponse[i].value)));
+                                                                jwObj_string("event", messageResponse[i].VOLTResponse.event_state);                                                                                            
+                                                                jwObj_int("event_lower", messageResponse[i].VOLTResponse.event_high);                                                                                            
+                                                                jwObj_int("event_higher", messageResponse[i].VOLTResponse.event_low);                                                                                            
+                                                            jwEnd();           
+                                                            i++;
+                                                        }
+                                                    jwEnd(); 
+                                                } 
+                                                
+                                                // ETAT DES AOUT
+                                                if(i>=1+NBDIN+NBBTN+NBMOTOR+NBSONAR+NBRGBC+NBLED+NBPWM+NBAIN && i<1+NBDIN+NBBTN+NBMOTOR+NBSONAR+NBRGBC+NBLED+NBPWM+NBAOUT){
+                                                    jwObj_array( "aout" );
+                                                        for(j=0;j<NBAOUT;j++){
+                                                            jwArr_object();
+                                                                jwObj_string("name", messageResponse[i].AOUTresponse.name);
+                                                                jwObj_int("state",messageResponse[i].value);
+                                                                jwObj_int("power",messageResponse[i].AOUTresponse.powerPercent);
+                                                            jwEnd();           
+                                                            i++;
+                                                        }
+                                                    jwEnd();                                                                                             
+                                                }                                                
 
-                                                                            // ETAT DES CAPTEURS RGB                                                                                                                                                     // ETAT DES AIN                                                                                       // ETAT DES DIN
-                                                                            if(i>=1+NBDIN+NBBTN+NBMOTOR+NBSONAR && i<1+NBDIN+NBBTN+NBMOTOR+NBSONAR+NBRGBC){
-                                                                                jwObj_array( "rgb" );
-                                                                                    for(j=0;j<NBRGBC;j++){
-                                                                                        jwArr_object();
-                                                                                            jwObj_string("event", messageResponse[i].RGBresponse.event_state);                                                                                        
-                                                                                            jwObj_int("red",messageResponse[i].RGBresponse.red.value);
-                                                                                            jwObj_int("green",messageResponse[i].RGBresponse.green.value);
-                                                                                            jwObj_int("blue",messageResponse[i].RGBresponse.blue.value);
-                                                                                            jwObj_int("clear",messageResponse[i].RGBresponse.clear.value);
-                                                                                        jwEnd();           
-                                                                                        i++;
-                                                                                    }
-                                                                                jwEnd();                                                                                             
-                                                                            }                                                                            
-                                                                            
-                                                                            // ETAT DES LED                                                                                   // ETAT DES PWM                                                                                        // ETAT DES AIN                                                                                       // ETAT DES DIN
-                                                                            if(i>=1+NBDIN+NBBTN+NBMOTOR+NBSONAR+NBRGBC && i<1+NBDIN+NBBTN+NBMOTOR+NBSONAR+NBRGBC+NBLED){
-                                                                                jwObj_array( "led" );
-                                                                                    for(j=0;j<NBLED;j++){
-                                                                                        jwArr_object();
-                                                                                            jwObj_int("state",messageResponse[i].value);
-                                                                                            jwObj_int("power",messageResponse[i].LEDresponse.powerPercent);
-                                                                                        jwEnd();           
-                                                                                        i++;
-                                                                                    }
-                                                                                jwEnd();                                                                                             
-                                                                            }                                                                            
+                                                break;
+
+                                case pPWM :             
+                                                switch(messageResponse[i].responseType){
+                                                    case EVENT_ACTION_ERROR :   jwObj_string("action", "error");break;
+                                                    case EVENT_ACTION_END  :   jwObj_string("action", "end"); break;
+                                                    case EVENT_ACTION_BEGIN  :   jwObj_string("action", "begin"); break;
+                                                    case EVENT_ACTION_RUN  :   jwObj_string("action", "run"); break;
+                                                    case EVENT_ACTION_ABORT  :   jwObj_string("action", "abort"); break;
+                                                    case RESP_STD_MESSAGE  :   if(messageResponse[i].PWMresponse.id>=0)
+                                                                    jwObj_int( "id", messageResponse[i].PWMresponse.id);
+                                                                else
+                                                                    jwObj_string("id", "unknown");
+                                                                jwObj_string( "name", messageResponse[i].PWMresponse.name);				
+                                                                jwObj_string( "state", messageResponse[i].PWMresponse.state);				
+                                                                jwObj_int( "power", messageResponse[i].PWMresponse.powerPercent);				
+                                                                jwObj_int("time", messageResponse[i].PWMresponse.time);
+                                                                break;
+                                                    default :   jwObj_string("error", "unknown");break;
+                                                }
+                                                break;
+
+                                case pAOUT :             
+                                                switch(messageResponse[i].responseType){
+                                                    case EVENT_ACTION_ERROR :   jwObj_string("action", "error");break;
+                                                    case EVENT_ACTION_END  :   jwObj_string("action", "end"); break;
+                                                    case EVENT_ACTION_BEGIN  :   jwObj_string("action", "begin"); break;
+                                                    case EVENT_ACTION_RUN  :   jwObj_string("action", "run"); break;
+                                                    case EVENT_ACTION_ABORT  :   jwObj_string("action", "abort"); break;
+                                                    case RESP_STD_MESSAGE  :   if(messageResponse[i].AOUTresponse.id>=0)
+                                                                    jwObj_int( "aout", messageResponse[i].AOUTresponse.id);
+                                                                else
+                                                                    jwObj_string("aout", "unknown");
+                                                                jwObj_string( "name", messageResponse[i].AOUTresponse.name);				
+                                                                jwObj_string( "state", messageResponse[i].AOUTresponse.state);				
+                                                                jwObj_int( "power", messageResponse[i].AOUTresponse.powerPercent);				
+                                                                jwObj_int("value", messageResponse[i].AOUTresponse.value);
+                                                                break;
+                                                    default :   jwObj_string("error", "unknown");break;
+                                                }
+                                                break;
+
+                                case pSERVO :             
+                                                switch(messageResponse[i].responseType){
+                                                    case EVENT_ACTION_ERROR :   jwObj_string("action", "error");break;
+                                                    case EVENT_ACTION_END  :    jwObj_string("action", "end"); break;
+                                                    case EVENT_ACTION_BEGIN  :  jwObj_string("action", "begin"); break;
+                                                    case EVENT_ACTION_ABORT  :  jwObj_string("action", "abort"); break;
+                                                    case RESP_STD_MESSAGE  :    if(messageResponse[i].PWMresponse.id>=0)
+                                                                                    jwObj_int( "pwm", messageResponse[i].PWMresponse.id);
+                                                                                else
+                                                                                    jwObj_string("pwm", "unknown");
+                                                                                jwObj_string( "name", messageResponse[i].PWMresponse.name);	
+                                                                                jwObj_string( "state", messageResponse[i].PWMresponse.state);				
+                                                                                jwObj_int( "position", messageResponse[i].PWMresponse.powerPercent);				
+                                                                                break;
+                                                    default :                   jwObj_string("error", "unknown");break;
+                                                }
+                                                break;                                                                         
+
+                                case pLED :             
+                                                switch(messageResponse[i].responseType){
+                                                    case EVENT_ACTION_ERROR :    jwObj_string("action", "error");break;
+                                                    case EVENT_ACTION_END  :     jwObj_string("action", "end"); break;
+                                                    case EVENT_ACTION_BEGIN  :   jwObj_string("action", "begin"); break;
+                                                    case EVENT_ACTION_RUN  :   jwObj_string("action", "run"); break;
+                                                    case EVENT_ACTION_ABORT  :   jwObj_string("action", "abort"); break;
+                                                    case RESP_STD_MESSAGE  :    if(messageResponse[i].LEDresponse.id>=0)
+                                                                                    jwObj_int( "id", messageResponse[i].LEDresponse.id);
+                                                                                else
+                                                                                    jwObj_string("id", "unknown");
+                                                                                jwObj_string( "name", messageResponse[i].LEDresponse.name);	
+                                                                                jwObj_string( "state", messageResponse[i].LEDresponse.state);				// add object key:value pairs
+                                                                                jwObj_int( "power", messageResponse[i].LEDresponse.powerPercent);				// add object key:value pairs
+                                                                                jwObj_int("time", messageResponse[i].LEDresponse.time);
+                                                                                jwObj_int("count", messageResponse[i].LEDresponse.blinkCount);
+                                                                                break;
+                                                    default :   jwObj_string("error", "unknown");break;
+                                                }
+                                                break;
+
+                                case CONFIG :         
+                                                switch(messageResponse[i].responseType){
+                                                    case EVENT_ACTION_ERROR : jwObj_string("action", "error"); break;
+                                                    case EVENT_ACTION_END :   jwObj_string("action", "end"); break;
+                                                    case EVENT_ACTION_BEGIN : jwObj_string("action", "begin"); break;
+                                                    case EVENT_ACTION_ABORT : jwObj_string("action", "abort"); break;
+                                                    case RESP_STD_MESSAGE   :   
+                                                                                jwObj_object( "config" );                                                                                 
+                                                                                    jwObj_string("reset", messageResponse[i].CONFIGresponse.action.reset);       
+                                                                                    jwObj_string("save", messageResponse[i].CONFIGresponse.action.save);                                                                                                                       
+                                                                                jwEnd();  
+
+                                                                                jwObj_object( "robot"); 
+                                                                                    jwObj_string("name", messageResponse[i].CONFIGresponse.robot.name);
+                                                                                    jwObj_string("group", messageResponse[i].CONFIGresponse.robot.group);
+                                                                                jwEnd();                                                                                                            
+                                                                                jwObj_object( "mqtt" );                                                                                 
+                                                                                    jwObj_object( "broker" ); 
+                                                                                        jwObj_string("address", messageResponse[i].CONFIGresponse.broker.address);
+                                                                                    jwEnd();
+                                                                                    jwObj_object( "stream" );                                                                                 
+                                                                                            jwObj_string("state", messageResponse[i].CONFIGresponse.stream.state);
+                                                                                            jwObj_int("time", messageResponse[i].CONFIGresponse.stream.time);
+                                                                                            jwObj_string("onEvent", messageResponse[i].CONFIGresponse.stream.onEvent);         
+                                                                                    jwEnd();
+                                                                                jwEnd();
+
+                                                                            // CREATE JSON CONFIG FOR MOTOR  
+                                                                                if(messageResponse[i].CONFIGresponse.motValueCnt > 0){
+                                                                                    jwObj_array("motor");
+                                                                                        for(j=0;j<messageResponse[i].CONFIGresponse.motValueCnt;j++){
+                                                                                            jwArr_object();
+                                                                                                jwObj_int( "id", messageResponse[i].CONFIGresponse.motor[j].id);
+                                                                                                jwObj_string("name", messageResponse[i].CONFIGresponse.motor[j].name);
+                                                                                                jwObj_string("inverted", messageResponse[i].CONFIGresponse.motor[j].inverted);
+                                                                                                jwObj_int("rpmMin", messageResponse[i].CONFIGresponse.motor[j].minRPM);
+                                                                                                jwObj_int("rpmMax", messageResponse[i].CONFIGresponse.motor[j].maxRPM);
+                                                                                            jwEnd();
+                                                                                        } 
+                                                                                    jwEnd();
+                                                                                }
+
+                                                                            // CREATE JSON CONFIG FOR WHEEL  
+                                                                                if(messageResponse[i].CONFIGresponse.wheelValueCnt > 0){
+                                                                                    jwObj_array("wheel");
+                                                                                        for(j=0;j<messageResponse[i].CONFIGresponse.wheelValueCnt;j++){
+                                                                                            jwArr_object();
+                                                                                                jwObj_int( "wheel", messageResponse[i].CONFIGresponse.wheel[j].id);
+                                                                                                jwObj_int("diameter", messageResponse[i].CONFIGresponse.wheel[j].diameter);
+                                                                                                jwObj_int("pulses", messageResponse[i].CONFIGresponse.wheel[j].pulsesPerRot);
+                                                                                                jwObj_object( "rpmRegulator"); 
+                                                                                                    jwObj_string("state", messageResponse[i].CONFIGresponse.motor[j].rpmRegulator.PIDstate);
+                                                                                                    jwObj_double("PID_Kp", messageResponse[i].CONFIGresponse.motor[j].rpmRegulator.PID_Kp);
+                                                                                                    jwObj_double("PID_Ki", messageResponse[i].CONFIGresponse.motor[j].rpmRegulator.PID_Ki);
+                                                                                                    jwObj_double("PID_Kd", messageResponse[i].CONFIGresponse.motor[j].rpmRegulator.PID_Kd);
+                                                                                                jwEnd();    
+                                                                                            jwEnd();
+                                                                                        } 
+                                                                                    jwEnd();
+                                                                                }         
+
+                                                                            // CREATE JSON CONFIG FOR STEPPER  
+                                                                                if(messageResponse[i].CONFIGresponse.stepperValueCnt > 0){
+                                                                                    jwObj_array("stepper");
+                                                                                        for(j=0;j<messageResponse[i].CONFIGresponse.stepperValueCnt;j++){
+                                                                                            jwArr_object();
+                                                                                                jwObj_int( "id", messageResponse[i].CONFIGresponse.stepper[j].id);
+                                                                                                jwObj_string("name", messageResponse[i].CONFIGresponse.stepper[j].name);                                                                                                                            
+                                                                                                jwObj_string("inverted", messageResponse[i].CONFIGresponse.stepper[j].inverted);
+                                                                                                jwObj_int("ratio", messageResponse[i].CONFIGresponse.stepper[j].ratio);
+                                                                                                jwObj_int("steps", messageResponse[i].CONFIGresponse.stepper[j].stepsPerRot);
+                                                                                            jwEnd();
+                                                                                        } 
+                                                                                    jwEnd();
+                                                                                }                                                                                                              
 
 
-                                                                            // ETAT DES PWM                                                                                   // ETAT DES PWM                                                                                        // ETAT DES AIN                                                                                       // ETAT DES DIN
-                                                                            if(i>=1+NBDIN+NBBTN+NBMOTOR+NBSONAR+NBRGBC+NBLED && i<1+NBDIN+NBBTN+NBMOTOR+NBSONAR+NBRGBC+NBLED+NBPWM){
-                                                                                jwObj_array( "pwm" );
-                                                                                    for(j=0;j<NBPWM;j++){
-                                                                                        jwArr_object();
-                                                                                            jwObj_int("state",messageResponse[i].value);
-                                                                                            jwObj_int("power",messageResponse[i].PWMresponse.powerPercent);
-                                                                                        jwEnd();           
-                                                                                        i++;
-                                                                                    }
-                                                                                jwEnd();                                                                                             
-                                                                            }
-                                                                            
-                                                                            // ETAT DES BATTERIES                                                                                        // ETAT DES AIN                                                                                       // ETAT DES DIN
-                                                                            if(i>=1+NBDIN+NBBTN+NBMOTOR+NBSONAR+NBRGBC+NBLED+NBPWM && i<1+NBDIN+NBBTN+NBMOTOR+NBSONAR+NBRGBC+NBLED+NBPWM+NBAIN){
-                                                                            //    jwObj_int("sonar",messageResponse[i].DISTresponse.id);		// add object key:value pairs
-                                                                            //    jwObj_int("cm", round((messageResponse[i].value)));
-                                                                                jwObj_array( "voltage" );
-                                                                                    for(j=0;j<NBAIN;j++){
-                                                                                        jwArr_object();
-                                                                                            jwObj_int("mv", round((messageResponse[i].value)));
-                                                                                            jwObj_string("event", messageResponse[i].VOLTResponse.event_state);                                                                                            
-                                                                                            jwObj_int("event_lower", messageResponse[i].VOLTResponse.event_high);                                                                                            
-                                                                                            jwObj_int("event_higher", messageResponse[i].VOLTResponse.event_low);                                                                                            
-                                                                                        jwEnd();           
-                                                                                        i++;
-                                                                                    }
-                                                                                jwEnd(); 
-                                                                            }                                                                            
+                                                                            // CREATE JSON CONFIG FOR LED
+                                                                                if(messageResponse[i].CONFIGresponse.ledValueCnt > 0){
+                                                                                    jwObj_array("led");
+                                                                                        for(j=0;j<messageResponse[i].CONFIGresponse.ledValueCnt;j++){
+                                                                                            jwArr_object();
+                                                                                                jwObj_int( "id", messageResponse[i].CONFIGresponse.led[j].id);
+                                                                                                jwObj_string("name", messageResponse[i].CONFIGresponse.led[j].name);                                                                                                                            
+                                                                                                jwObj_string("state", messageResponse[i].CONFIGresponse.led[j].state);
+                                                                                                jwObj_int( "power", messageResponse[i].CONFIGresponse.led[j].power);
+                                                                                            jwEnd();
+                                                                                        } 
+                                                                                    jwEnd();                                             
+                                                                                }
 
-                                                                            break;
-                                                                                    
-                                                        case pPWM :             
-                                                                            switch(messageResponse[i].responseType){
-                                                                                case EVENT_ACTION_ERROR :   jwObj_string("action", "error");break;
-                                                                                case EVENT_ACTION_END  :   jwObj_string("action", "end"); break;
-                                                                                case EVENT_ACTION_BEGIN  :   jwObj_string("action", "begin"); break;
-                                                                                case EVENT_ACTION_RUN  :   jwObj_string("action", "run"); break;
-                                                                                case EVENT_ACTION_ABORT  :   jwObj_string("action", "abort"); break;
-                                                                                case RESP_STD_MESSAGE  :   if(messageResponse[i].PWMresponse.id>=0)
-                                                                                                jwObj_int( "pwm", messageResponse[i].PWMresponse.id);
-                                                                                            else
-                                                                                                jwObj_string("pwm", "unknown");
-                                                                                            jwObj_string( "state", messageResponse[i].PWMresponse.state);				
-                                                                                            jwObj_int( "power", messageResponse[i].PWMresponse.powerPercent);				
-                                                                                            jwObj_int("time", messageResponse[i].PWMresponse.time);
-                                                                                            break;
-                                                                                default :   jwObj_string("error", "unknown");break;
-                                                                            }
-                                                                            break;
+                                                                            // CREATE JSON CONFIG FOR PWM
+                                                                                if(messageResponse[i].CONFIGresponse.pwmValueCnt > 0){
+                                                                                    jwObj_array("pwm");
+                                                                                        for(j=0;j<messageResponse[i].CONFIGresponse.pwmValueCnt;j++){
+                                                                                            jwArr_object();
+                                                                                                jwObj_int( "id", messageResponse[i].CONFIGresponse.pwm[j].id);
+                                                                                                jwObj_string("name", messageResponse[i].CONFIGresponse.pwm[j].name);                                                                                                                            
+                                                                                                jwObj_string("state", messageResponse[i].CONFIGresponse.pwm[j].state);
+                                                                                                jwObj_int( "power", messageResponse[i].CONFIGresponse.pwm[j].power);
+                                                                                            jwEnd();
+                                                                                        } 
+                                                                                    jwEnd();                                             
+                                                                                }                                                                                                            
 
-                                                        case pAOUT :             
-                                                                            switch(messageResponse[i].responseType){
-                                                                                case EVENT_ACTION_ERROR :   jwObj_string("action", "error");break;
-                                                                                case EVENT_ACTION_END  :   jwObj_string("action", "end"); break;
-                                                                                case EVENT_ACTION_BEGIN  :   jwObj_string("action", "begin"); break;
-                                                                                case EVENT_ACTION_RUN  :   jwObj_string("action", "run"); break;
-                                                                                case EVENT_ACTION_ABORT  :   jwObj_string("action", "abort"); break;
-                                                                                case RESP_STD_MESSAGE  :   if(messageResponse[i].AOUTresponse.id>=0)
-                                                                                                jwObj_int( "aout", messageResponse[i].AOUTresponse.id);
-                                                                                            else
-                                                                                                jwObj_string("aout", "unknown");
-                                                                                            jwObj_string( "state", messageResponse[i].AOUTresponse.state);				
-                                                                                            jwObj_int( "power", messageResponse[i].AOUTresponse.powerPercent);				
-                                                                                            jwObj_int("value", messageResponse[i].AOUTresponse.value);
-                                                                                            break;
-                                                                                default :   jwObj_string("error", "unknown");break;
-                                                                            }
-                                                                            break;
-                                                                            
-                                                        case pSERVO :             
-                                                                            switch(messageResponse[i].responseType){
-                                                                                case EVENT_ACTION_ERROR :   jwObj_string("action", "error");break;
-                                                                                case EVENT_ACTION_END  :    jwObj_string("action", "end"); break;
-                                                                                case EVENT_ACTION_BEGIN  :  jwObj_string("action", "begin"); break;
-                                                                                case EVENT_ACTION_ABORT  :  jwObj_string("action", "abort"); break;
-                                                                                case RESP_STD_MESSAGE  :    if(messageResponse[i].PWMresponse.id>=0)
-                                                                                                                jwObj_int( "pwm", messageResponse[i].PWMresponse.id);
-                                                                                                            else
-                                                                                                                jwObj_string("pwm", "unknown");
-                                                                                                            jwObj_string( "state", messageResponse[i].PWMresponse.state);				
-                                                                                                            jwObj_int( "position", messageResponse[i].PWMresponse.powerPercent);				
-                                                                                                            break;
-                                                                                default :                   jwObj_string("error", "unknown");break;
-                                                                            }
-                                                                            break;                                                                         
-                                                                                   
-                                                        case pLED :             
-                                                                            switch(messageResponse[i].responseType){
-                                                                                case EVENT_ACTION_ERROR :    jwObj_string("action", "error");break;
-                                                                                case EVENT_ACTION_END  :     jwObj_string("action", "end"); break;
-                                                                                case EVENT_ACTION_BEGIN  :   jwObj_string("action", "begin"); break;
-                                                                                case EVENT_ACTION_RUN  :   jwObj_string("action", "run"); break;
-                                                                                case EVENT_ACTION_ABORT  :   jwObj_string("action", "abort"); break;
-                                                                                case RESP_STD_MESSAGE  :    if(messageResponse[i].LEDresponse.id>=0)
-                                                                                                                jwObj_int( "led", messageResponse[i].LEDresponse.id);
-                                                                                                            else
-                                                                                                                jwObj_string("led", "unknown");
-                                                                                                            jwObj_string( "state", messageResponse[i].LEDresponse.state);				// add object key:value pairs
-                                                                                                            jwObj_int( "power", messageResponse[i].LEDresponse.powerPercent);				// add object key:value pairs
-                                                                                                            jwObj_int("time", messageResponse[i].LEDresponse.time);
-                                                                                                            jwObj_int("count", messageResponse[i].LEDresponse.blinkCount);
-                                                                                                            break;
-                                                                                default :   jwObj_string("error", "unknown");break;
-                                                                            }
-                                                                            break;
+                                                                            // CREATE JSON CONFIG FOR AOUT
+                                                                                if(messageResponse[i].CONFIGresponse.aoutValueCnt > 0){
+                                                                                    jwObj_array("aout");
+                                                                                        for(j=0;j<messageResponse[i].CONFIGresponse.aoutValueCnt;j++){
+                                                                                            jwArr_object();
+                                                                                                jwObj_int( "id", messageResponse[i].CONFIGresponse.Aout[j].id);
+                                                                                                jwObj_string("name", messageResponse[i].CONFIGresponse.Aout[j].name);                                                                                                                            
+                                                                                                jwObj_string("state", messageResponse[i].CONFIGresponse.Aout[j].state);
+                                                                                                jwObj_int( "power", messageResponse[i].CONFIGresponse.Aout[j].power);
+                                                                                            jwEnd();
+                                                                                        } 
+                                                                                    jwEnd();                                             
+                                                                                } 
+
+                                                                            // CREATE JSON CONFIG FOR DIN CONFIG
+                                                                                if(messageResponse[i].CONFIGresponse.dinValueCnt > 0){
+                                                                                    jwObj_array("din");
+                                                                                        for(j=0;j<messageResponse[i].CONFIGresponse.dinValueCnt;j++){
+                                                                                            jwArr_object();
+                                                                                                jwObj_int( "id", messageResponse[i].CONFIGresponse.din[j].id);
+                                                                                                jwObj_string("name", messageResponse[i].CONFIGresponse.din[j].name); 
+                                                                                                jwObj_string("event", messageResponse[i].CONFIGresponse.din[j].event_state);
+                                                                                            jwEnd();
+                                                                                        } 
+                                                                                    jwEnd();                                             
+                                                                                }                                                                                                            
+
+                                                                                // CREATE JSON CONFIG FOR BTN CONFIG
+                                                                                if(messageResponse[i].CONFIGresponse.btnValueCnt > 0){
+                                                                                    jwObj_array("button");
+                                                                                        for(j=0;j<messageResponse[i].CONFIGresponse.btnValueCnt;j++){
+                                                                                            jwArr_object();
+                                                                                                jwObj_int( "id", messageResponse[i].CONFIGresponse.btn[j].id);
+                                                                                                jwObj_string("name", messageResponse[i].CONFIGresponse.btn[j].name);
+                                                                                                jwObj_string("event", messageResponse[i].CONFIGresponse.btn[j].event_state);
+                                                                                            jwEnd();
+                                                                                        } 
+                                                                                    jwEnd();                                             
+                                                                                }
+
+                                                                                // CREATE JSON CONFIG FOR SONAR CONFIG
+                                                                                if(messageResponse[i].CONFIGresponse.sonarValueCnt > 0){
+                                                                                    jwObj_array("sonar");
+                                                                                        for(j=0;j<messageResponse[i].CONFIGresponse.sonarValueCnt;j++){
+                                                                                            jwArr_object();
+                                                                                                jwObj_int( "id", messageResponse[i].CONFIGresponse.sonar[j].id);
+                                                                                                jwObj_string("name", messageResponse[i].CONFIGresponse.sonar[j].name);
+                                                                                                jwObj_string("event", messageResponse[i].CONFIGresponse.sonar[j].event_state);
+                                                                                                jwObj_int( "event_lower", messageResponse[i].CONFIGresponse.sonar[j].event_low);
+                                                                                                jwObj_int( "event_higher", messageResponse[i].CONFIGresponse.sonar[j].event_high);
+                                                                                                jwObj_int( "event_hysteresis", messageResponse[i].CONFIGresponse.sonar[j].event_hyst);
+                                                                                            jwEnd();
+                                                                                        } 
+                                                                                    jwEnd();                                             
+                                                                                } 
+
+                                                                                // CREATE JSON CONFIG FOR VOLTAGE CONFIG
+                                                                                if(messageResponse[i].CONFIGresponse.ainValueCnt > 0){
+                                                                                    jwObj_array("voltage");
+                                                                                        for(j=0;j<messageResponse[i].CONFIGresponse.ainValueCnt;j++){
+                                                                                            jwArr_object();
+                                                                                                jwObj_int( "id", messageResponse[i].CONFIGresponse.ain[j].id);
+                                                                                                jwObj_string("name", messageResponse[i].CONFIGresponse.ain[j].name);
+                                                                                                jwObj_string("event", messageResponse[i].CONFIGresponse.ain[j].event_state);
+                                                                                                jwObj_int( "event_lower", messageResponse[i].CONFIGresponse.ain[j].event_low);
+                                                                                                jwObj_int( "event_higher", messageResponse[i].CONFIGresponse.ain[j].event_high);
+                                                                                                jwObj_int( "event_hysteresis", messageResponse[i].CONFIGresponse.ain[j].event_hyst);
+                                                                                            jwEnd();
+                                                                                        } 
+                                                                                    jwEnd();                                             
+                                                                                }
                                                                                 
-							case CONFIG :         
-                                                                            switch(messageResponse[i].responseType){
-                                                                                case EVENT_ACTION_ERROR : jwObj_string("action", "error"); break;
-                                                                                case EVENT_ACTION_END :   jwObj_string("action", "end"); break;
-                                                                                case EVENT_ACTION_BEGIN : jwObj_string("action", "begin"); break;
-                                                                                case EVENT_ACTION_ABORT : jwObj_string("action", "abort"); break;
-                                                                                case RESP_STD_MESSAGE   :   
-                                                                                                            jwObj_object( "config" );                                                                                 
-                                                                                                                jwObj_string("reset", messageResponse[i].CONFIGresponse.action.reset);       
-                                                                                                                jwObj_string("save", messageResponse[i].CONFIGresponse.action.save);                                                                                                                       
-                                                                                                            jwEnd();  
+                                                                                // CREATE JSON CONFIG FOR RGB
+                                                                                if(messageResponse[i].CONFIGresponse.rgbValueCnt > 0){
+                                                                                    jwObj_array("color");
+                                                                                        for(j=0;j<messageResponse[i].CONFIGresponse.rgbValueCnt;j++){
+                                                                                            jwArr_object();
+                                                                                                jwObj_int( "id", messageResponse[i].CONFIGresponse.rgb[j].id);
+                                                                                                jwObj_string("name", messageResponse[i].CONFIGresponse.rgb[j].name);
+                                                                                                jwObj_string("event", messageResponse[i].CONFIGresponse.rgb[j].event_state);
+                                                                                                
+                                                                                                jwObj_object("red");
+                                                                                                    jwObj_int("event_higher", messageResponse[i].CONFIGresponse.rgb[j].red.event_high);
+                                                                                                    jwObj_int("event_lower", messageResponse[i].CONFIGresponse.rgb[j].red.event_low);
+                                                                                                    jwObj_int("event_hysteresis", messageResponse[i].CONFIGresponse.rgb[j].red.event_hyst);
+                                                                                                jwEnd();
+                                                                                                jwObj_object("green");
+                                                                                                    jwObj_int("event_higher", messageResponse[i].CONFIGresponse.rgb[j].green.event_high);
+                                                                                                    jwObj_int("event_lower", messageResponse[i].CONFIGresponse.rgb[j].green.event_low);
+                                                                                                    jwObj_int("event_hysteresis", messageResponse[i].CONFIGresponse.rgb[j].green.event_hyst);
+                                                                                                jwEnd();
+                                                                                                jwObj_object("blue");                                                                                                
+                                                                                                    jwObj_int("event_higher", messageResponse[i].CONFIGresponse.rgb[j].blue.event_high);
+                                                                                                    jwObj_int("event_lower", messageResponse[i].CONFIGresponse.rgb[j].blue.event_low);
+                                                                                                    jwObj_int("event_hysteresis", messageResponse[i].CONFIGresponse.rgb[j].blue.event_hyst);
+                                                                                                jwEnd();                                                                                                
+                                                                                                jwObj_object("clear");                                                                                                
+                                                                                                    jwObj_int("event_higher", messageResponse[i].CONFIGresponse.rgb[j].clear.event_high);
+                                                                                                    jwObj_int("event_lower", messageResponse[i].CONFIGresponse.rgb[j].clear.event_low);
+                                                                                                    jwObj_int("event_hysteresis", messageResponse[i].CONFIGresponse.rgb[j].clear.event_hyst);
+                                                                                                jwEnd(); 
 
-                                                                                                            jwObj_object( "robot"); 
-                                                                                                                jwObj_string("name", messageResponse[i].CONFIGresponse.robot.name);
-                                                                                                                jwObj_string("group", messageResponse[i].CONFIGresponse.robot.group);
-                                                                                                            jwEnd();                                                                                                            
-                                                                                                            jwObj_object( "mqtt" );                                                                                 
-                                                                                                                jwObj_object( "broker" ); 
-                                                                                                                    jwObj_string("address", messageResponse[i].CONFIGresponse.broker.address);
-                                                                                                                jwEnd();
-                                                                                                                jwObj_object( "stream" );                                                                                 
-                                                                                                                        jwObj_string("state", messageResponse[i].CONFIGresponse.stream.state);
-                                                                                                                        jwObj_int("time", messageResponse[i].CONFIGresponse.stream.time);
-                                                                                                                        jwObj_string("onEvent", messageResponse[i].CONFIGresponse.stream.onEvent);         
-                                                                                                                jwEnd();
-                                                                                                            jwEnd();
-
-                                                                                                        // CREATE JSON CONFIG FOR MOTOR  
-                                                                                                            if(messageResponse[i].CONFIGresponse.motValueCnt > 0){
-                                                                                                                jwObj_array("motor");
-                                                                                                                    for(j=0;j<messageResponse[i].CONFIGresponse.motValueCnt;j++){
-                                                                                                                        jwArr_object();
-                                                                                                                            jwObj_int( "motor", messageResponse[i].CONFIGresponse.motor[j].id);
-                                                                                                                            jwObj_string("inverted", messageResponse[i].CONFIGresponse.motor[j].inverted);
-                                                                                                                            jwObj_int("rpmMin", messageResponse[i].CONFIGresponse.motor[j].minRPM);
-                                                                                                                            jwObj_int("rpmMax", messageResponse[i].CONFIGresponse.motor[j].maxRPM);
-                                                                                                                        jwEnd();
-                                                                                                                    } 
-                                                                                                                jwEnd();
-                                                                                                            }
-                                                                                                            
-                                                                                                        // CREATE JSON CONFIG FOR WHEEL  
-                                                                                                            if(messageResponse[i].CONFIGresponse.wheelValueCnt > 0){
-                                                                                                                jwObj_array("wheel");
-                                                                                                                    for(j=0;j<messageResponse[i].CONFIGresponse.wheelValueCnt;j++){
-                                                                                                                        jwArr_object();
-                                                                                                                            jwObj_int( "wheel", messageResponse[i].CONFIGresponse.wheel[j].id);
-                                                                                                                            jwObj_int("diameter", messageResponse[i].CONFIGresponse.wheel[j].diameter);
-                                                                                                                            jwObj_int("pulses", messageResponse[i].CONFIGresponse.wheel[j].pulsesPerRot);
-                                                                                                                            jwObj_object( "rpmRegulator"); 
-                                                                                                                                jwObj_string("state", messageResponse[i].CONFIGresponse.motor[j].rpmRegulator.PIDstate);
-                                                                                                                                jwObj_double("PID_Kp", messageResponse[i].CONFIGresponse.motor[j].rpmRegulator.PID_Kp);
-                                                                                                                                jwObj_double("PID_Ki", messageResponse[i].CONFIGresponse.motor[j].rpmRegulator.PID_Ki);
-                                                                                                                                jwObj_double("PID_Kd", messageResponse[i].CONFIGresponse.motor[j].rpmRegulator.PID_Kd);
-                                                                                                                            jwEnd();    
-                                                                                                                        jwEnd();
-                                                                                                                    } 
-                                                                                                                jwEnd();
-                                                                                                            }         
-
-                                                                                                        // CREATE JSON CONFIG FOR STEPPER  
-                                                                                                            if(messageResponse[i].CONFIGresponse.stepperValueCnt > 0){
-                                                                                                                jwObj_array("stepper");
-                                                                                                                    for(j=0;j<messageResponse[i].CONFIGresponse.stepperValueCnt;j++){
-                                                                                                                        jwArr_object();
-                                                                                                                            jwObj_int( "motor", messageResponse[i].CONFIGresponse.stepper[j].id);
-                                                                                                                            jwObj_string("inverted", messageResponse[i].CONFIGresponse.stepper[j].inverted);
-                                                                                                                            jwObj_int("ratio", messageResponse[i].CONFIGresponse.stepper[j].ratio);
-                                                                                                                            jwObj_int("steps", messageResponse[i].CONFIGresponse.stepper[j].stepsPerRot);
-                                                                                                                        jwEnd();
-                                                                                                                    } 
-                                                                                                                jwEnd();
-                                                                                                            }                                                                                                              
-                  
-                                                                                                            
-                                                                                                        // CREATE JSON CONFIG FOR LED
-                                                                                                            if(messageResponse[i].CONFIGresponse.ledValueCnt > 0){
-                                                                                                                jwObj_array("led");
-                                                                                                                    for(j=0;j<messageResponse[i].CONFIGresponse.ledValueCnt;j++){
-                                                                                                                        jwArr_object();
-                                                                                                                            jwObj_int( "led", messageResponse[i].CONFIGresponse.led[j].id);
-                                                                                                                            jwObj_string("state", messageResponse[i].CONFIGresponse.led[j].state);
-                                                                                                                            jwObj_int( "power", messageResponse[i].CONFIGresponse.led[j].power);
-                                                                                                                        jwEnd();
-                                                                                                                    } 
-                                                                                                                jwEnd();                                             
-                                                                                                            }
-                                                                                                            
-                                                                                                        // CREATE JSON CONFIG FOR PWM
-                                                                                                            if(messageResponse[i].CONFIGresponse.pwmValueCnt > 0){
-                                                                                                                jwObj_array("pwm");
-                                                                                                                    for(j=0;j<messageResponse[i].CONFIGresponse.pwmValueCnt;j++){
-                                                                                                                        jwArr_object();
-                                                                                                                            jwObj_int( "pwm", messageResponse[i].CONFIGresponse.pwm[j].id);
-                                                                                                                            jwObj_string("state", messageResponse[i].CONFIGresponse.pwm[j].state);
-                                                                                                                            jwObj_int( "power", messageResponse[i].CONFIGresponse.pwm[j].power);
-                                                                                                                        jwEnd();
-                                                                                                                    } 
-                                                                                                                jwEnd();                                             
-                                                                                                            }                                                                                                            
-
-                                                                                                        // CREATE JSON CONFIG FOR AOUT
-                                                                                                            if(messageResponse[i].CONFIGresponse.aoutValueCnt > 0){
-                                                                                                                jwObj_array("aout");
-                                                                                                                    for(j=0;j<messageResponse[i].CONFIGresponse.aoutValueCnt;j++){
-                                                                                                                        jwArr_object();
-                                                                                                                            jwObj_int( "aout", messageResponse[i].CONFIGresponse.Aout[j].id);
-                                                                                                                            jwObj_string("state", messageResponse[i].CONFIGresponse.Aout[j].state);
-                                                                                                                            jwObj_int( "power", messageResponse[i].CONFIGresponse.Aout[j].power);
-                                                                                                                        jwEnd();
-                                                                                                                    } 
-                                                                                                                jwEnd();                                             
-                                                                                                            } 
-                                                                                                            
-                                                                                                        // CREATE JSON CONFIG FOR DIN CONFIG
-                                                                                                            if(messageResponse[i].CONFIGresponse.dinValueCnt > 0){
-                                                                                                                jwObj_array("din");
-                                                                                                                    for(j=0;j<messageResponse[i].CONFIGresponse.dinValueCnt;j++){
-                                                                                                                        jwArr_object();
-                                                                                                                            jwObj_int( "din", messageResponse[i].CONFIGresponse.din[j].id);
-                                                                                                                            jwObj_string("event", messageResponse[i].CONFIGresponse.din[j].event_state);
-                                                                                                                        jwEnd();
-                                                                                                                    } 
-                                                                                                                jwEnd();                                             
-                                                                                                            }                                                                                                            
-
-                                                                                                            // CREATE JSON CONFIG FOR BTN CONFIG
-                                                                                                            if(messageResponse[i].CONFIGresponse.btnValueCnt > 0){
-                                                                                                                jwObj_array("button");
-                                                                                                                    for(j=0;j<messageResponse[i].CONFIGresponse.btnValueCnt;j++){
-                                                                                                                        jwArr_object();
-                                                                                                                            jwObj_int( "btn", messageResponse[i].CONFIGresponse.btn[j].id);
-                                                                                                                            jwObj_string("event", messageResponse[i].CONFIGresponse.btn[j].event_state);
-                                                                                                                        jwEnd();
-                                                                                                                    } 
-                                                                                                                jwEnd();                                             
-                                                                                                            }
-                                                                                                            
-                                                                                                            // CREATE JSON CONFIG FOR SONAR CONFIG
-                                                                                                            if(messageResponse[i].CONFIGresponse.sonarValueCnt > 0){
-                                                                                                                jwObj_array("sonar");
-                                                                                                                    for(j=0;j<messageResponse[i].CONFIGresponse.sonarValueCnt;j++){
-                                                                                                                        jwArr_object();
-                                                                                                                            jwObj_int( "sonar", messageResponse[i].CONFIGresponse.sonar[j].id);
-                                                                                                                            jwObj_string("event", messageResponse[i].CONFIGresponse.sonar[j].event_state);
-                                                                                                                            jwObj_int( "event_lower", messageResponse[i].CONFIGresponse.sonar[j].event_low);
-                                                                                                                            jwObj_int( "event_higher", messageResponse[i].CONFIGresponse.sonar[j].event_high);
-                                                                                                                            jwObj_int( "event_hysteresis", messageResponse[i].CONFIGresponse.sonar[j].event_hyst);
-                                                                                                                        jwEnd();
-                                                                                                                    } 
-                                                                                                                jwEnd();                                             
-                                                                                                            } 
-
-                                                                                                            // CREATE JSON CONFIG FOR VOLTAGE CONFIG
-                                                                                                            if(messageResponse[i].CONFIGresponse.battValueCnt > 0){
-                                                                                                                jwObj_array("voltage");
-                                                                                                                    for(j=0;j<messageResponse[i].CONFIGresponse.battValueCnt;j++){
-                                                                                                                        jwArr_object();
-                                                                                                                            jwObj_int( "voltage", messageResponse[i].CONFIGresponse.ain[j].id);
-                                                                                                                            jwObj_string("event", messageResponse[i].CONFIGresponse.ain[j].event_state);
-                                                                                                                            jwObj_int( "event_lower", messageResponse[i].CONFIGresponse.ain[j].event_low);
-                                                                                                                            jwObj_int( "event_higher", messageResponse[i].CONFIGresponse.ain[j].event_high);
-                                                                                                                            jwObj_int( "event_hysteresis", messageResponse[i].CONFIGresponse.ain[j].event_hyst);
-                                                                                                                        jwEnd();
-                                                                                                                    } 
-                                                                                                                jwEnd();                                             
-                                                                                                            }                                                                                                             
-                                                                                                            
-                                                                                                            break;
-                                                                                default : jwObj_string("error", "unknown"); break;
-                                                                            }
-                                                                            break;
+                                                                                            jwEnd();
+                                                                                        } 
+                                                                                    jwEnd();                                             
+                                                                                }
                                                                                 
-							case SYSTEM :           
-                                                                            switch(messageResponse[i].responseType){
-                                                                                case EVENT_ACTION_ERROR : jwObj_string("action", "error"); break;
-                                                                                case EVENT_ACTION_END :   jwObj_string("action", "end"); break;
-                                                                                case EVENT_ACTION_BEGIN : jwObj_string("action", "begin"); break;
-                                                                                case EVENT_ACTION_ABORT : jwObj_string("action", "abort"); break;
-                                                                                case RESP_FIRMWARE   :                                                                                    
-                                                                                                        jwObj_string("firmware", messageResponse[i].SYSCMDresponse.firmwareCommand); break;
-                                                                                case RESP_WIFI_COMMAND  :                                                                                    
-                                                                                                        jwObj_string("wifi", messageResponse[i].SYSCMDresponse.wifi.command.name); break;
-                                                                                case RESP_WIFI_DATA   :                                                                                    
-                                                                                                        jwObj_object("wifi");
-                                                                                                            jwObj_int("id", messageResponse[i].SYSCMDresponse.wifi.command.index);
-                                                                                                            jwObj_string("mode", messageResponse[i].SYSCMDresponse.wifi.command.mode);
-                                                                                                            jwObj_string("security", messageResponse[i].SYSCMDresponse.wifi.command.config.security);
-                                                                                                            jwObj_string("ssid", messageResponse[i].SYSCMDresponse.wifi.command.config.ssid);
-                                                                                                            jwObj_string("key", messageResponse[i].SYSCMDresponse.wifi.command.config.key);
-                                                                                                        jwEnd();
-                                                                                                        break;
-                                                                                case RESP_WIFI_SCAN   : 
-                                                                                                        jwObj_object("wifi");
-                                                                                                            jwObj_array("scan");
-                                                                                                                for(j=0;j<messageResponse[i].SYSCMDresponse.wifi.scanResult.wifiDetected;j++){
-                                                                                                                    jwArr_object();
-                                                                                                                        jwObj_string("ssid", messageResponse[i].SYSCMDresponse.wifi.scanResult.list[j].ssid);
-                                                                                                                        jwObj_string("authentification", messageResponse[i].SYSCMDresponse.wifi.scanResult.list[j].encryption.enable);
-                                                                                                                        jwObj_array("security");
-                                                                                                                            //for(k=0;k<messageResponse[i].SYSCMDresponse.wifi.scanResult.list[j].encryption.authCnt;k++)
-                                                                                                                               jwArr_string(messageResponse[i].SYSCMDresponse.wifi.scanResult.list[j].encryption.authentification[0].mode);
-                                                                                                                         jwEnd();
-                                                                                                                        jwObj_array("wpa");
-                                                                                                                            //for(k=0;k<messageResponse[i].SYSCMDresponse.wifi.scanResult.list[j].encryption.wpaCnt;k++)
-                                                                                                                               jwArr_string(messageResponse[i].SYSCMDresponse.wifi.scanResult.list[j].encryption.wpa[0].type);
-                                                                                                                         jwEnd();
-                                                                                                                    jwEnd();
-                                                                                                                } 
-                                                                                                            jwEnd();
-                                                                                                        jwEnd();
-                                                                                                        break;
-                                                                                case RESP_WIFI_NETWORK_LIST   : 
-                                                                                                        jwObj_object("wifi");
-                                                                                                            jwObj_array("list");
-                                                                                                                for(j=0;j<messageResponse[i].SYSCMDresponse.wifi.scanResult.wifiDetected;j++){
-                                                                                                                    jwArr_object();
-                                                                                                                        jwObj_string("connected", messageResponse[i].SYSCMDresponse.wifi.scanResult.list[j].active);
-                                                                                                                        jwObj_string("ssid", messageResponse[i].SYSCMDresponse.wifi.scanResult.list[j].ssid);
-                                                                                                                        jwObj_string("key", messageResponse[i].SYSCMDresponse.wifi.scanResult.list[j].key);
-                                                                                                                        jwObj_array("security");
-                                                                                                                               jwArr_string(messageResponse[i].SYSCMDresponse.wifi.scanResult.list[j].encryption.authentification[0].mode);
-                                                                                                                         jwEnd();
-                                                                                                                    jwEnd();
-                                                                                                                } 
-                                                                                                            jwEnd();
-                                                                                                        jwEnd();
-                                                                                                        break;                                                                                                        
-                                                                                default : jwObj_string("error", "unknown"); break;
-                                                                            }		// add object key:value pairs
-                                                                            jwObj_string("message", messageResponse[0].returnMessage);
-                                                                            break;                                                                                
-                                                                                   
-							default:            break;
 
-						}
-                                    if(orgType!=STATUS)
-                                        jwEnd();
-				}
-				jwEnd();
-			}
-		jwEnd();
-		jwClose();
+                                                                                // CREATE JSON CONFIG FOR DISPLAY
+                                                                                if(messageResponse[i].CONFIGresponse.displayValueCnt > 0){
+                                                                                    jwObj_array("display");
+                                                                                        for(j=0;j<messageResponse[i].CONFIGresponse.displayValueCnt;j++){
+                                                                                            jwArr_object();
+                                                                                                jwObj_int( "id", messageResponse[i].CONFIGresponse.display[j].id);
+                                                                                                jwObj_string("name", messageResponse[i].CONFIGresponse.display[j].name);
+                                                                                                jwObj_string("screen_hid", messageResponse[i].CONFIGresponse.display[j].default_hid);
+
+                                                                                            jwEnd();
+                                                                                        } 
+                                                                                    jwEnd();                                             
+                                                                                }                                                                                                            
+
+                                                                                break;
+                                                    default : jwObj_string("error", "unknown"); break;
+                                                }
+                                                break;
+
+                                case SYSTEM :           
+                                                    switch(messageResponse[i].responseType){
+                                                        case EVENT_ACTION_ERROR : jwObj_string("action", "error"); break;
+                                                        case EVENT_ACTION_END :   jwObj_string("action", "end"); break;
+                                                        case EVENT_ACTION_BEGIN : jwObj_string("action", "begin"); break;
+                                                        case EVENT_ACTION_ABORT : jwObj_string("action", "abort"); break;
+                                                        case RESP_FIRMWARE   :                                                                                    
+                                                                                jwObj_string("firmware", messageResponse[i].SYSCMDresponse.firmwareCommand); break;
+                                                        case RESP_WIFI_COMMAND  :                                                                                    
+                                                                                jwObj_string("wifi", messageResponse[i].SYSCMDresponse.wifi.command.name); break;
+                                                        case RESP_WIFI_DATA   :                                                                                    
+                                                                                jwObj_object("wifi");
+                                                                                    jwObj_int("id", messageResponse[i].SYSCMDresponse.wifi.command.index);
+                                                                                    jwObj_string("mode", messageResponse[i].SYSCMDresponse.wifi.command.mode);
+                                                                                    jwObj_string("security", messageResponse[i].SYSCMDresponse.wifi.command.config.security);
+                                                                                    jwObj_string("ssid", messageResponse[i].SYSCMDresponse.wifi.command.config.ssid);
+                                                                                    jwObj_string("key", messageResponse[i].SYSCMDresponse.wifi.command.config.key);
+                                                                                jwEnd();
+                                                                                break;
+                                                        case RESP_WIFI_SCAN   : 
+                                                                                jwObj_object("wifi");
+                                                                                    jwObj_array("scan");
+                                                                                        for(j=0;j<messageResponse[i].SYSCMDresponse.wifi.scanResult.wifiDetected;j++){
+                                                                                            jwArr_object();
+                                                                                                jwObj_string("ssid", messageResponse[i].SYSCMDresponse.wifi.scanResult.list[j].ssid);
+                                                                                                jwObj_string("authentification", messageResponse[i].SYSCMDresponse.wifi.scanResult.list[j].encryption.enable);
+                                                                                                jwObj_array("security");
+                                                                                                    //for(k=0;k<messageResponse[i].SYSCMDresponse.wifi.scanResult.list[j].encryption.authCnt;k++)
+                                                                                                       jwArr_string(messageResponse[i].SYSCMDresponse.wifi.scanResult.list[j].encryption.authentification[0].mode);
+                                                                                                 jwEnd();
+                                                                                                jwObj_array("wpa");
+                                                                                                    //for(k=0;k<messageResponse[i].SYSCMDresponse.wifi.scanResult.list[j].encryption.wpaCnt;k++)
+                                                                                                       jwArr_string(messageResponse[i].SYSCMDresponse.wifi.scanResult.list[j].encryption.wpa[0].type);
+                                                                                                 jwEnd();
+                                                                                            jwEnd();
+                                                                                        } 
+                                                                                    jwEnd();
+                                                                                jwEnd();
+                                                                                break;
+                                                        case RESP_WIFI_NETWORK_LIST   : 
+                                                                                jwObj_object("wifi");
+                                                                                    jwObj_array("list");
+                                                                                        for(j=0;j<messageResponse[i].SYSCMDresponse.wifi.scanResult.wifiDetected;j++){
+                                                                                            jwArr_object();
+                                                                                                jwObj_string("connected", messageResponse[i].SYSCMDresponse.wifi.scanResult.list[j].active);
+                                                                                                jwObj_string("ssid", messageResponse[i].SYSCMDresponse.wifi.scanResult.list[j].ssid);
+                                                                                                jwObj_string("key", messageResponse[i].SYSCMDresponse.wifi.scanResult.list[j].key);
+                                                                                                jwObj_array("security");
+                                                                                                       jwArr_string(messageResponse[i].SYSCMDresponse.wifi.scanResult.list[j].encryption.authentification[0].mode);
+                                                                                                 jwEnd();
+                                                                                            jwEnd();
+                                                                                        } 
+                                                                                    jwEnd();
+                                                                                jwEnd();
+                                                                                break;                                                                                                        
+                                                        default : jwObj_string("error", "unknown"); break;
+                                                    }		// add object key:value pairs
+                                                    jwObj_string("message", messageResponse[0].returnMessage);
+                                                    break;                                                                                
+
+                                default:            break;
+
+                        }
+            if(orgType!=STATUS)
+                jwEnd();
+        }
+            jwEnd();
+        }
+    jwEnd();
+    jwClose();
 }

@@ -172,8 +172,8 @@
           <itemPath>hwControl/device_drivers/efm8_mcu_kehops.h</itemPath>
           <itemPath>hwControl/device_drivers/k_vl53l0x.c</itemPath>
           <itemPath>hwControl/device_drivers/k_vl53l0x.h</itemPath>
-          <itemPath>hwControl/device_drivers/mcp23008.c</itemPath>
-          <itemPath>hwControl/device_drivers/mcp23008.h</itemPath>
+          <itemPath>hwControl/device_drivers/mcp230xx.c</itemPath>
+          <itemPath>hwControl/device_drivers/mcp230xx.h</itemPath>
           <itemPath>hwControl/device_drivers/mcp4725.c</itemPath>
           <itemPath>hwControl/device_drivers/mcp4725.h</itemPath>
           <itemPath>hwControl/device_drivers/pca9629.c</itemPath>
@@ -305,7 +305,6 @@
                    kind="IMPORTANT_FILES_FOLDER">
       <itemPath>Makefile</itemPath>
     </logicalFolder>
-    <itemPath>hwControl/changeLog.txt</itemPath>
     <itemPath>dist/Debug/GNU_Omega-Linux/temp</itemPath>
     <itemPath>toDo</itemPath>
     <itemPath>versions.txt</itemPath>
@@ -403,8 +402,6 @@
       <item path="fileIO.c" ex="false" tool="0" flavor2="0">
       </item>
       <item path="fileIO.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="hwControl/changeLog.txt" ex="false" tool="3" flavor2="0">
       </item>
       <item path="hwControl/device_drivers/ads101x.c" ex="false" tool="0" flavor2="0">
       </item>
@@ -1018,12 +1015,12 @@
             tool="3"
             flavor2="0">
       </item>
-      <item path="hwControl/device_drivers/mcp23008.c"
+      <item path="hwControl/device_drivers/mcp230xx.c"
             ex="false"
             tool="0"
             flavor2="0">
       </item>
-      <item path="hwControl/device_drivers/mcp23008.h"
+      <item path="hwControl/device_drivers/mcp230xx.h"
             ex="false"
             tool="3"
             flavor2="0">
@@ -1355,8 +1352,6 @@
       </item>
       <item path="fileIO.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="hwControl/changeLog.txt" ex="false" tool="3" flavor2="0">
-      </item>
       <item path="hwControl/device_drivers/ads101x.c" ex="false" tool="0" flavor2="0">
       </item>
       <item path="hwControl/device_drivers/ads101x.h" ex="false" tool="3" flavor2="0">
@@ -1969,12 +1964,12 @@
             tool="3"
             flavor2="0">
       </item>
-      <item path="hwControl/device_drivers/mcp23008.c"
+      <item path="hwControl/device_drivers/mcp230xx.c"
             ex="false"
             tool="0"
             flavor2="0">
       </item>
-      <item path="hwControl/device_drivers/mcp23008.h"
+      <item path="hwControl/device_drivers/mcp230xx.h"
             ex="false"
             tool="3"
             flavor2="0">
@@ -2307,8 +2302,6 @@
       </item>
       <item path="fileIO.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="hwControl/changeLog.txt" ex="false" tool="3" flavor2="0">
-      </item>
       <item path="hwControl/device_drivers/ads101x.c" ex="false" tool="0" flavor2="0">
       </item>
       <item path="hwControl/device_drivers/ads101x.h" ex="false" tool="3" flavor2="0">
@@ -2921,12 +2914,12 @@
             tool="3"
             flavor2="0">
       </item>
-      <item path="hwControl/device_drivers/mcp23008.c"
+      <item path="hwControl/device_drivers/mcp230xx.c"
             ex="false"
             tool="0"
             flavor2="0">
       </item>
-      <item path="hwControl/device_drivers/mcp23008.h"
+      <item path="hwControl/device_drivers/mcp230xx.h"
             ex="false"
             tool="3"
             flavor2="0">
@@ -3257,8 +3250,6 @@
       <item path="fileIO.c" ex="false" tool="0" flavor2="9">
       </item>
       <item path="fileIO.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="hwControl/changeLog.txt" ex="false" tool="3" flavor2="0">
       </item>
       <item path="hwControl/device_drivers/ads101x.c" ex="false" tool="0" flavor2="0">
       </item>
@@ -3872,12 +3863,12 @@
             tool="3"
             flavor2="0">
       </item>
-      <item path="hwControl/device_drivers/mcp23008.c"
+      <item path="hwControl/device_drivers/mcp230xx.c"
             ex="false"
             tool="0"
             flavor2="9">
       </item>
-      <item path="hwControl/device_drivers/mcp23008.h"
+      <item path="hwControl/device_drivers/mcp230xx.h"
             ex="false"
             tool="3"
             flavor2="0">

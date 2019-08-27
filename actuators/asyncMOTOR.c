@@ -41,6 +41,7 @@ int setAsyncMotorAction(int actionNumber, int motorNb, int usrSetpoint, char uni
 	int endOfTask;  
         
 
+
 	// D�marre de timer d'action sur la roue et sp�cifie la fonction call back � appeler en time-out
 	// Valeur en retour >0 signifie que l'action "en retour" � �t� �cras�e
 	switch(unit){
@@ -53,8 +54,8 @@ int setAsyncMotorAction(int actionNumber, int motorNb, int usrSetpoint, char uni
                 case  INFINITE:     setTimerResult=setTimer(100, &dummyMotorAction, actionNumber, motorNb, MOTOR); break;
 		default: printf("\n!!! ERROR Function [setAsyncMotorAction] -> unknown mode");break;
 	}
-
-	if(setTimerResult!=0){						// Timer pret, action effectu�e ()
+        
+	if(setTimerResult!=0){						// Timer pret, action effectuée ()
 		if(setTimerResult>1){					// Le timer � �t� �cras� par la nouvelle action en retour car sur la m�me roue
 			endOfTask=removeBuggyTask(setTimerResult);	// Supprime l'ancienne t�che qui � �t� �cras�e par la nouvelle action
 			if(endOfTask){
@@ -77,7 +78,7 @@ int setAsyncMotorAction(int actionNumber, int motorNb, int usrSetpoint, char uni
                 
 		// Défini le "nouveau" sens de rotation à applique au moteur ainsi que la consigne de vitesse
 		if(setMotorDirection(motorNb, kehops.dcWheel[motorNb].motor.direction)){                                                            // Sens de rotation
-                        int powerOut= kehops.dcWheel[motorNb].config.motor.powerMin + ((float)(100-kehops.dcWheel[motorNb].config.motor.powerMin) /100)*kehops.dcWheel[motorNb].motor.userSpeedSetPoint;
+                            int powerOut= kehops.dcWheel[motorNb].config.motor.powerMin + ((float)(100-kehops.dcWheel[motorNb].config.motor.powerMin) /100)*kehops.dcWheel[motorNb].motor.userSpeedSetPoint;
                         ///setMotorSpeed(motorNb, kehops.dcWheel[motorNb].motor.userSpeedSetPoint);
                         printf("Powerout: %d \n", powerOut);
                         setMotorSpeed(motorNb, powerOut);

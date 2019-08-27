@@ -31,7 +31,7 @@
 #include "pca9685.h"
 #include "pca9629.h"
 #include "efm8_mcu_kehops.h"
-#include "mcp23008.h"
+#include "mcp230xx.h"
 #include "bh1745.h"
 
 

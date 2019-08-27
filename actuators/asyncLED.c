@@ -32,7 +32,7 @@ int checkBlinkLedCount(int actionNumber, int ledName);
 int setAsyncLedAction(int actionNumber, int ledName, int mode, int time, int count){
 	int setTimerResult;
 	int endOfTask;
-
+        printf("test\n");
 	// D�marre un timer d'action sur la led et sp�cifie la fonction call back � appeler en time-out
 	// Valeur en retour >0 signifie que l'action "en retour" � �t� �cras�e
         if(mode==BLINK){

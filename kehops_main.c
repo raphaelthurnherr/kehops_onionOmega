@@ -1,4 +1,4 @@
-#define FIRMWARE_VERSION "1.2.2"
+#define FIRMWARE_VERSION "1.3.1"
 
 #define DEFAULT_EVENT_STATE 1   
 
@@ -304,10 +304,12 @@ int processmessage(void){
                                 for(i=0;i<message.msgValueCnt;i++){
                                    
                                     // Controle que le moteur existe...
-                                    if(message.DCmotor[i].motor >= 0 && message.DCmotor[i].motor<NBMOTOR)
-                                        messageResponse[i].MOTresponse.motor=message.DCmotor[i].motor;
+                                    if(message.DCmotor[i].id >= 0 && message.DCmotor[i].id < NBMOTOR){
+                                        messageResponse[i].MOTresponse.id = message.DCmotor[i].id;
+                                        strcpy(messageResponse[i].MOTresponse.name,kehops.dcWheel[i].config.motor.dc_motor_name);
+                                    }
                                     else
-                                        messageResponse[i].MOTresponse.motor=-1;
+                                        messageResponse[i].MOTresponse.id=-1;
                                             
                                     // Récupération des paramètes de commandes
                                     
@@ -333,10 +335,12 @@ int processmessage(void){
                                 for(i=0;i<message.msgValueCnt;i++){
                                    
                                     // Controle que le moteur existe...
-                                    if(message.StepperMotor[i].motor >= 0 && message.StepperMotor[i].motor < NBSTEPPER)
-                                        messageResponse[i].STEPPERresponse.motor=message.StepperMotor[i].motor;
+                                    if(message.StepperMotor[i].id >= 0 && message.StepperMotor[i].id < NBSTEPPER){
+                                        messageResponse[i].STEPPERresponse.id=message.StepperMotor[i].id;
+                                        strcpy(messageResponse[i].STEPPERresponse.name,kehops.stepperWheel[i].config.motor.stepper_name);
+                                    }
                                     else
-                                        messageResponse[i].STEPPERresponse.motor=-1;
+                                        messageResponse[i].STEPPERresponse.id=-1;
                                             
                                     // Récupération des paramètes de commandes
                                     
@@ -362,6 +366,7 @@ int processmessage(void){
                                     if(message.PWMarray[i].id >= 0 && message.PWMarray[i].id <NBPWM){
                                         kehops.pwm[message.PWMarray[i].id].config.mode = 0;
                                         messageResponse[i].PWMresponse.id=message.PWMarray[i].id;
+                                        strcpy(messageResponse[i].PWMresponse.name, kehops.pwm[i].config.name);
                                     }
                                     else
                                         messageResponse[i].PWMresponse.id=-1;
@@ -385,6 +390,7 @@ int processmessage(void){
                                     if(message.PWMarray[i].id >= 0 && message.PWMarray[i].id <NBPWM){
                                         messageResponse[i].PWMresponse.id=message.PWMarray[i].id;
                                         kehops.pwm[message.PWMarray[i].id].config.mode = 1;
+                                        strcpy(messageResponse[i].PWMresponse.name,kehops.pwm[i].config.name);
                                     }
                                     else
                                         messageResponse[i].PWMresponse.id=-1;
@@ -403,8 +409,10 @@ int processmessage(void){
 		case pLED  : 	
                                 for(i=0;i<message.msgValueCnt;i++){
                                     // Controle que le moteur existe...
-                                    if(message.LEDarray[i].id >= 0 && message.LEDarray[i].id <NBLED)
+                                    if(message.LEDarray[i].id >= 0 && message.LEDarray[i].id <NBLED){
                                         messageResponse[i].LEDresponse.id=message.LEDarray[i].id;
+                                        strcpy(messageResponse[i].LEDresponse.name,kehops.led[i].config.name);
+                                    }
                                     else
                                         messageResponse[i].LEDresponse.id=-1;
                                             
@@ -424,8 +432,10 @@ int processmessage(void){
 		case pAOUT  : 	
                                 for(i=0;i<message.msgValueCnt;i++){
                                     // Controle que la sortie existe...
-                                    if(message.Aout[i].id >= 0 && message.Aout[i].id < NBAOUT)
+                                    if(message.Aout[i].id >= 0 && message.Aout[i].id < NBAOUT){
                                         messageResponse[i].AOUTresponse.id=message.Aout[i].id;
+                                        strcpy(messageResponse[i].AOUTresponse.name,kehops.aout[i].config.name);
+                                    }
                                     else
                                         messageResponse[i].AOUTresponse.id=-1;
                                             
@@ -443,8 +453,10 @@ int processmessage(void){
 		case pDISPLAY  : 	
                                 for(i=0;i<message.msgValueCnt;i++){
                                     // Controle que la sortie existe...
-                                    if(message.Display[i].id >= 0 && message.Display[i].id < NBDISPLAY)
+                                    if(message.Display[i].id >= 0 && message.Display[i].id < NBDISPLAY){
                                         messageResponse[i].DISPLAYresponse.id=message.Display[i].id;
+                                        strcpy(messageResponse[i].DISPLAYresponse.name, kehops.gfx[i].config.name);
+                                    }
                                     else
                                         messageResponse[i].DISPLAYresponse.id=-1;
                                             
@@ -503,56 +515,76 @@ int processmessage(void){
                                     
                                 // CONFIG COMMAND FOR MOTOR SETTING
                                     for(i=0;i<message.Config.motValueCnt; i++){
-                                        messageResponse[valCnt].CONFIGresponse.motValueCnt=message.Config.motValueCnt;
-                                        // Check if motor exist...
-                                        if(message.Config.motor[i].id >= 0 && message.Config.motor[i].id <NBMOTOR){
-                                            // Save config for motor inversion
-                                            if(!strcmp(message.Config.motor[i].inverted, "on")){
-                                                kehops.dcWheel[message.Config.motor[i].id].config.motor.inverted = 1;
-                                                strcpy(messageResponse[valCnt].CONFIGresponse.motor[i].inverted, "on");
-                                            }
-                                            else if(!strcmp(message.Config.motor[i].inverted, "off")){
-                                                    kehops.dcWheel[message.Config.motor[i].id].config.motor.inverted = 0;
-                                                    strcpy(messageResponse[valCnt].CONFIGresponse.motor[i].inverted, "off");
+                                        messageResponse[valCnt].CONFIGresponse.motValueCnt = message.Config.motValueCnt;
+
+                                        // Check if motor ID is valid    
+                                        if(message.Config.motor[i].id >= 0){   
+                                            if(message.Config.motor[i].id >= NBMOTOR){
+                                                message.Config.motor[i].id = NBMOTOR;
+                                                if(!strcmp(message.Config.motor[i].name, "")){
+                                                    char newMotorName[25];
+                                                    sprintf(newMotorName, "motor_%d", NBMOTOR);
+                                                    strcpy(message.Config.motor[i].name, newMotorName);
+                                                }
+                                                NBMOTOR ++;
                                             }
 
-                                            // Save config for motor Min PWM for run
-                                            if(message.Config.motor[i].minPWM >=0)
-                                                kehops.dcWheel[message.Config.motor[i].id].config.motor.powerMin = message.Config.motor[i].minPWM;
-                                            
-                                            // Save config for motor Min Max RPM
-                                            if(message.Config.motor[i].minRPM >=0)
-                                                kehops.dcWheel[message.Config.motor[i].id].config.rpmMin = message.Config.motor[i].minRPM;
-                                            if(message.Config.motor[i].maxRPM >=0)
-                                                kehops.dcWheel[message.Config.motor[i].id].config.rpmMax = message.Config.motor[i].maxRPM;
-                                            
-                                            // Save config for motor PID regulator
-                                            if(!strcmp(message.Config.motor[i].rpmRegulator.PIDstate, "on")){
-                                                kehops.dcWheel[message.Config.motor[i].id].config.pidReg.enable = 1;
-                                                strcpy(messageResponse[valCnt].CONFIGresponse.motor[i].rpmRegulator.PIDstate, "on");
-                                            }
-                                            else if(!strcmp(message.Config.motor[i].rpmRegulator.PIDstate, "off")){
-                                                kehops.dcWheel[message.Config.motor[i].id].config.pidReg.enable = 0;
-                                                strcpy(messageResponse[valCnt].CONFIGresponse.motor[i].rpmRegulator.PIDstate, "off");
-                                            }
-                                            if(message.Config.motor[i].rpmRegulator.PID_Kp >= 0.0)
-                                                kehops.dcWheel[message.Config.motor[i].id].config.pidReg.Kp = message.Config.motor[i].rpmRegulator.PID_Kp;
-                                            if(message.Config.motor[i].rpmRegulator.PID_Ki >= 0.0)
-                                                kehops.dcWheel[message.Config.motor[i].id].config.pidReg.Ki = message.Config.motor[i].rpmRegulator.PID_Ki;
-                                            if(message.Config.motor[i].rpmRegulator.PID_Kd >= 0.0)
-                                                kehops.dcWheel[message.Config.motor[i].id].config.pidReg.Kd = message.Config.motor[i].rpmRegulator.PID_Kd;                                            
-                                            
-                                            
-                                            messageResponse[valCnt].CONFIGresponse.motor[i].id = message.Config.motor[i].id;
-                                            messageResponse[valCnt].CONFIGresponse.motor[i].minPWM = message.Config.motor[i].minPWM;
-                                            messageResponse[valCnt].CONFIGresponse.motor[i].minRPM = message.Config.motor[i].minRPM;
-                                            messageResponse[valCnt].CONFIGresponse.motor[i].maxRPM = message.Config.motor[i].maxRPM;
-                                            messageResponse[valCnt].CONFIGresponse.motor[i].rpmRegulator.PID_Kp = message.Config.motor[i].rpmRegulator.PID_Kp;
-                                            messageResponse[valCnt].CONFIGresponse.motor[i].rpmRegulator.PID_Ki = message.Config.motor[i].rpmRegulator.PID_Ki;
-                                            messageResponse[valCnt].CONFIGresponse.motor[i].rpmRegulator.PID_Kd = message.Config.motor[i].rpmRegulator.PID_Kd;
+                                            if(!strcmp(message.Config.motor[i].name, "delete")){
+                            // TODO: DELETE MOTOR FROM FILE
+                                            }else{
+                                                // Save config for motor name
+                                                strcpy(kehops.dcWheel[message.Config.motor[i].id].config.motor.dc_motor_name,message.Config.motor[i].name);
+                                                strcpy(messageResponse[valCnt].CONFIGresponse.motor[i].name, message.Config.motor[i].name);
+
+                                                // Save config for motor inversion
+                                                if(!strcmp(message.Config.motor[i].inverted, "on")){
+                                                    kehops.dcWheel[message.Config.motor[i].id].config.motor.inverted = 1;
+                                                    strcpy(messageResponse[valCnt].CONFIGresponse.motor[i].inverted, "on");
+                                                }
+                                                else if(!strcmp(message.Config.motor[i].inverted, "off")){
+                                                        kehops.dcWheel[message.Config.motor[i].id].config.motor.inverted = 0;
+                                                        strcpy(messageResponse[valCnt].CONFIGresponse.motor[i].inverted, "off");
+                                                }
+
+                                                // Save config for motor Min PWM for run
+                                                if(message.Config.motor[i].minPWM >=0)
+                                                    kehops.dcWheel[message.Config.motor[i].id].config.motor.powerMin = message.Config.motor[i].minPWM;
+
+                                                // Save config for motor Min Max RPM
+                                                if(message.Config.motor[i].minRPM >=0)
+                                                    kehops.dcWheel[message.Config.motor[i].id].config.rpmMin = message.Config.motor[i].minRPM;
+                                                if(message.Config.motor[i].maxRPM >=0)
+                                                    kehops.dcWheel[message.Config.motor[i].id].config.rpmMax = message.Config.motor[i].maxRPM;
+
+                                                // Save config for motor PID regulator
+                                                if(!strcmp(message.Config.motor[i].rpmRegulator.PIDstate, "on")){
+                                                    kehops.dcWheel[message.Config.motor[i].id].config.pidReg.enable = 1;
+                                                    strcpy(messageResponse[valCnt].CONFIGresponse.motor[i].rpmRegulator.PIDstate, "on");
+                                                }
+                                                else if(!strcmp(message.Config.motor[i].rpmRegulator.PIDstate, "off")){
+                                                    kehops.dcWheel[message.Config.motor[i].id].config.pidReg.enable = 0;
+                                                    strcpy(messageResponse[valCnt].CONFIGresponse.motor[i].rpmRegulator.PIDstate, "off");
+                                                }
+                                                if(message.Config.motor[i].rpmRegulator.PID_Kp >= 0.0)
+                                                    kehops.dcWheel[message.Config.motor[i].id].config.pidReg.Kp = message.Config.motor[i].rpmRegulator.PID_Kp;
+                                                if(message.Config.motor[i].rpmRegulator.PID_Ki >= 0.0)
+                                                    kehops.dcWheel[message.Config.motor[i].id].config.pidReg.Ki = message.Config.motor[i].rpmRegulator.PID_Ki;
+                                                if(message.Config.motor[i].rpmRegulator.PID_Kd >= 0.0)
+                                                    kehops.dcWheel[message.Config.motor[i].id].config.pidReg.Kd = message.Config.motor[i].rpmRegulator.PID_Kd;                                            
+
+
+                                                messageResponse[valCnt].CONFIGresponse.motor[i].id = message.Config.motor[i].id;
+                                                messageResponse[valCnt].CONFIGresponse.motor[i].minPWM = message.Config.motor[i].minPWM;
+                                                messageResponse[valCnt].CONFIGresponse.motor[i].minRPM = message.Config.motor[i].minRPM;
+                                                messageResponse[valCnt].CONFIGresponse.motor[i].maxRPM = message.Config.motor[i].maxRPM;
+                                                messageResponse[valCnt].CONFIGresponse.motor[i].rpmRegulator.PID_Kp = message.Config.motor[i].rpmRegulator.PID_Kp;
+                                                messageResponse[valCnt].CONFIGresponse.motor[i].rpmRegulator.PID_Ki = message.Config.motor[i].rpmRegulator.PID_Ki;
+                                                messageResponse[valCnt].CONFIGresponse.motor[i].rpmRegulator.PID_Kd = message.Config.motor[i].rpmRegulator.PID_Kd;
+                                                }
                                         }
-                                        else
+                                        else{
                                             messageResponse[valCnt].CONFIGresponse.motor[i].id=-1;
+                                        }
                                     }
 
                                 // CONFIG COMMAND FOR WHEEL SETTING
@@ -582,25 +614,44 @@ int processmessage(void){
                                 // CONFIG COMMAND FOR STEPPER SETTING
                                     for(i=0;i<message.Config.stepperValueCnt; i++){
                                         messageResponse[valCnt].CONFIGresponse.stepperValueCnt=message.Config.stepperValueCnt;
-                                        // Check if motor exist...
-                                        if(message.Config.stepper[i].id >= 0 && message.Config.stepper[i].id < NBSTEPPER){
-                                            // Save config for motor inversion
-                                            if(!strcmp(message.Config.stepper[i].inverted, "on")){
-                                                kehops.stepperWheel[message.Config.stepper[i].id].config.motor.inverted = 1;
-                                                strcpy(messageResponse[valCnt].CONFIGresponse.stepper[i].inverted, "on");
+                                        // Check if motor ID is valid 
+                                        if(message.Config.stepper[i].id >= 0){
+                                            
+                                            if(message.Config.stepper[i].id >= NBSTEPPER){
+                                                message.Config.stepper[i].id = NBSTEPPER;
+                                                if(!strcmp(message.Config.stepper[i].name, "")){
+                                                    char newMotorName[25];
+                                                    sprintf(newMotorName, "stepper_%d", NBSTEPPER);
+                                                    strcpy(message.Config.stepper[i].name, newMotorName);
+                                                }
+                                                NBSTEPPER ++;
                                             }
-                                            else if(!strcmp(message.Config.stepper[i].inverted, "off")){
-                                                kehops.stepperWheel[message.Config.stepper[i].id].config.motor.inverted = 0;
-                                                    strcpy(messageResponse[valCnt].CONFIGresponse.stepper[i].inverted, "off");
+
+                                            if(!strcmp(message.Config.stepper[i].name, "delete")){
+                            // TODO: DELETE MOTOR FROM FILE
+                                            }else{                                                                                        
+                                                // Save config for motor name
+                                                strcpy(kehops.stepperWheel[message.Config.stepper[i].id].config.motor.stepper_name, message.Config.stepper[i].name);
+                                                strcpy(messageResponse[valCnt].CONFIGresponse.stepper[i].name, message.Config.stepper[i].name);
+
+                                                // Save config for motor inversion
+                                                if(!strcmp(message.Config.stepper[i].inverted, "on")){
+                                                    kehops.stepperWheel[message.Config.stepper[i].id].config.motor.inverted = 1;
+                                                    strcpy(messageResponse[valCnt].CONFIGresponse.stepper[i].inverted, "on");
+                                                }
+                                                else if(!strcmp(message.Config.stepper[i].inverted, "off")){
+                                                    kehops.stepperWheel[message.Config.stepper[i].id].config.motor.inverted = 0;
+                                                        strcpy(messageResponse[valCnt].CONFIGresponse.stepper[i].inverted, "off");
+                                                }
+
+                                                kehops.stepperWheel[message.Config.stepper[i].id].config.motor.ratio = message.Config.stepper[i].ratio;
+                                                kehops.stepperWheel[message.Config.stepper[i].id].config.motor.steps = message.Config.stepper[i].stepsPerRot;
+
+
+                                                messageResponse[valCnt].CONFIGresponse.stepper[i].id = message.Config.stepper[i].id;
+                                                messageResponse[valCnt].CONFIGresponse.stepper[i].ratio = kehops.stepperWheel[message.Config.stepper[i].id].config.motor.ratio;
+                                                messageResponse[valCnt].CONFIGresponse.stepper[i].stepsPerRot = kehops.stepperWheel[message.Config.stepper[i].id].config.motor.steps;
                                             }
-                                            
-                                            kehops.stepperWheel[message.Config.stepper[i].id].config.motor.ratio = message.Config.stepper[i].ratio;
-                                            kehops.stepperWheel[message.Config.stepper[i].id].config.motor.steps = message.Config.stepper[i].stepsPerRot;
-                                            
-                                            
-                                            messageResponse[valCnt].CONFIGresponse.stepper[i].id = message.Config.stepper[i].id;
-                                            messageResponse[valCnt].CONFIGresponse.stepper[i].ratio = kehops.stepperWheel[message.Config.stepper[i].id].config.motor.ratio;
-                                            messageResponse[valCnt].CONFIGresponse.stepper[i].stepsPerRot = kehops.stepperWheel[message.Config.stepper[i].id].config.motor.steps;
                                             
                                         }
                                         else
@@ -612,20 +663,39 @@ int processmessage(void){
                                         messageResponse[valCnt].CONFIGresponse.ledValueCnt=message.Config.ledValueCnt;
                                         
                                         // Check if led exist...
-                                        if(message.Config.led[i].id >= 0 && message.Config.led[i].id <NBLED){
-                                            kehops.led[message.Config.led[i].id].config.defaultPower = message.Config.led[i].power;
-                                            messageResponse[valCnt].CONFIGresponse.led[i].power=message.Config.led[i].power;
-                                            // Save config for led inversion
-                                            if(!strcmp(message.Config.led[i].state, "on")){
-                                                kehops.led[message.Config.led[i].id].config.defaultState = 1;
-                                                strcpy(messageResponse[valCnt].CONFIGresponse.led[i].state, "on");
-                                            }
-                                            else if(!strcmp(message.Config.led[i].state, "off")){
-                                                kehops.led[message.Config.led[i].id].config.defaultState = 0;
-                                                strcpy(messageResponse[valCnt].CONFIGresponse.led[i].state, "off");
+                                        if(message.Config.led[i].id >= 0){
+                                            if(message.Config.led[i].id >= NBLED){
+                                                message.Config.led[i].id = NBLED;
+                                                if(!strcmp(message.Config.led[i].name, "")){
+                                                    char newLedName[25];
+                                                    sprintf(newLedName, "led_%d", NBLED);
+                                                    strcpy(message.Config.led[i].name, newLedName);
+                                                }
+                                                NBLED ++;
                                             }
 
-                                            messageResponse[valCnt].CONFIGresponse.led[i].id = message.Config.led[i].id;
+                                            if(!strcmp(message.Config.led[i].name, "delete")){
+                            // TODO: DELETE MOTOR FROM FILE
+                                            }else{                           
+                                            
+                                                // Save config for led name
+                                                strcpy(kehops.led[message.Config.led[i].id].config.name,message.Config.led[i].name);
+                                                strcpy(messageResponse[valCnt].CONFIGresponse.led[i].name, message.Config.led[i].name);
+
+                                                kehops.led[message.Config.led[i].id].config.defaultPower = message.Config.led[i].power;
+                                                messageResponse[valCnt].CONFIGresponse.led[i].power=message.Config.led[i].power;
+                                                // Save config for led inversion
+                                                if(!strcmp(message.Config.led[i].state, "on")){
+                                                    kehops.led[message.Config.led[i].id].config.defaultState = 1;
+                                                    strcpy(messageResponse[valCnt].CONFIGresponse.led[i].state, "on");
+                                                }
+                                                else if(!strcmp(message.Config.led[i].state, "off")){
+                                                    kehops.led[message.Config.led[i].id].config.defaultState = 0;
+                                                    strcpy(messageResponse[valCnt].CONFIGresponse.led[i].state, "off");
+                                                }
+
+                                                messageResponse[valCnt].CONFIGresponse.led[i].id = message.Config.led[i].id;
+                                            }
                                         }
                                         else
                                             messageResponse[valCnt].CONFIGresponse.led[i].id=-1;
@@ -636,65 +706,162 @@ int processmessage(void){
                                         messageResponse[valCnt].CONFIGresponse.pwmValueCnt=message.Config.pwmValueCnt;
                                         
                                         // Check if PWM exist...
-                                        if(message.Config.pwm[i].id >= 0 && message.Config.pwm[i].id <NBPWM){
-                                            kehops.pwm[message.Config.pwm[i].id].config.defaultPower = message.Config.pwm[i].power;
-                                            messageResponse[valCnt].CONFIGresponse.pwm[i].power=message.Config.pwm[i].power;
-                                            // Save config for led inversion
-                                            if(!strcmp(message.Config.pwm[i].state, "on")){
-                                                kehops.pwm[message.Config.pwm[i].id].config.defaultState = 1;
-                                                strcpy(messageResponse[valCnt].CONFIGresponse.pwm[i].state, "on");
-                                            }
-                                            else if(!strcmp(message.Config.pwm[i].state, "off")){
-                                                kehops.pwm[message.Config.pwm[i].id].config.defaultState = 0;
-                                                strcpy(messageResponse[valCnt].CONFIGresponse.pwm[i].state, "off");
+                                        if(message.Config.pwm[i].id >= 0){
+                                            
+                                            if(message.Config.pwm[i].id >= NBPWM){
+                                                message.Config.pwm[i].id = NBPWM;
+                                                if(!strcmp(message.Config.pwm[i].name, "")){
+                                                    char newPwmName[25];
+                                                    sprintf(newPwmName, "pwm_%d", NBPWM);
+                                                    strcpy(message.Config.pwm[i].name, newPwmName);
+                                                }
+                                                NBPWM ++;
                                             }
 
-                                            messageResponse[valCnt].CONFIGresponse.pwm[i].id = message.Config.pwm[i].id;
+                                            if(!strcmp(message.Config.pwm[i].name, "delete")){
+                            // TODO: DELETE MOTOR FROM FILE
+                                            }else{                                            
+                                                // Save config for pwm name
+                                                strcpy(kehops.pwm[message.Config.pwm[i].id].config.name,message.Config.pwm[i].name);
+                                                strcpy(messageResponse[valCnt].CONFIGresponse.pwm[i].name, message.Config.pwm[i].name);
+
+                                                kehops.pwm[message.Config.pwm[i].id].config.defaultPower = message.Config.pwm[i].power;
+                                                messageResponse[valCnt].CONFIGresponse.pwm[i].power=message.Config.pwm[i].power;
+                                                // Save config for pwm inversion
+                                                if(!strcmp(message.Config.pwm[i].state, "on")){
+                                                    kehops.pwm[message.Config.pwm[i].id].config.defaultState = 1;
+                                                    strcpy(messageResponse[valCnt].CONFIGresponse.pwm[i].state, "on");
+                                                }
+                                                else if(!strcmp(message.Config.pwm[i].state, "off")){
+                                                    kehops.pwm[message.Config.pwm[i].id].config.defaultState = 0;
+                                                    strcpy(messageResponse[valCnt].CONFIGresponse.pwm[i].state, "off");
+                                                }
+
+                                                messageResponse[valCnt].CONFIGresponse.pwm[i].id = message.Config.pwm[i].id;
+                                            }
                                         }
                                         else
                                             messageResponse[valCnt].CONFIGresponse.pwm[i].id=-1;
+                                    }
+
+                                    // CONFIG COMMAND FOR AOUT OUTPUT SETTING
+                                    for(i=0;i<message.Config.aoutValueCnt; i++){
+                                        messageResponse[valCnt].CONFIGresponse.aoutValueCnt=message.Config.aoutValueCnt;
+                                        
+                                        // Check if AOUT exist...
+                                        if(message.Config.Aout[i].id >= 0){
+                                            
+                                            if(message.Config.Aout[i].id >= NBAOUT){
+                                                message.Config.Aout[i].id = NBAOUT;
+                                                if(!strcmp(message.Config.Aout[i].name, "")){
+                                                    char newName[25];
+                                                    sprintf(newName, "aout_%d", NBAOUT);
+                                                    strcpy(message.Config.Aout[i].name, newName);
+                                                }
+                                                NBAOUT ++;
+                                            }
+
+                                            if(!strcmp(message.Config.Aout[i].name, "delete")){
+                            // TODO: DELETE MOTOR FROM FILE
+                                            }else{                                            
+                                                // Save config for pwm name
+                                                strcpy(kehops.aout[message.Config.Aout[i].id].config.name,message.Config.Aout[i].name);
+                                                strcpy(messageResponse[valCnt].CONFIGresponse.Aout[i].name, message.Config.Aout[i].name);
+
+                                                kehops.aout[message.Config.Aout[i].id].config.defaultPower = message.Config.Aout[i].power;
+                                                messageResponse[valCnt].CONFIGresponse.Aout[i].power=message.Config.Aout[i].power;
+                                                // Save config for pwm inversion
+                                                if(!strcmp(message.Config.Aout[i].state, "on")){
+                                                    kehops.aout[message.Config.Aout[i].id].config.defaultState = 1;
+                                                    strcpy(messageResponse[valCnt].CONFIGresponse.Aout[i].state, "on");
+                                                }
+                                                else if(!strcmp(message.Config.Aout[i].state, "off")){
+                                                    kehops.aout[message.Config.Aout[i].id].config.defaultState = 0;
+                                                    strcpy(messageResponse[valCnt].CONFIGresponse.Aout[i].state, "off");
+                                                }
+
+                                                messageResponse[valCnt].CONFIGresponse.Aout[i].id = message.Config.Aout[i].id;
+                                            }
+                                        }
+                                        else
+                                            messageResponse[valCnt].CONFIGresponse.Aout[i].id=-1;
                                     }
                                     
                                     // CONFIG COMMAND FOR DIN SETTING
                                     for(i=0;i<message.Config.dinValueCnt; i++){
                                         messageResponse[valCnt].CONFIGresponse.dinValueCnt=message.Config.dinValueCnt;
                                         
-                                        
                                         // Check if DIN exist...
-                                        if(message.Config.din[i].id >= 0 && message.Config.din[i].id<NBDIN){
+                                        if(message.Config.din[i].id >= 0){
+                                            
+                                            if(message.Config.din[i].id >= NBDIN){
+                                                message.Config.din[i].id = NBDIN;
+                                                if(!strcmp(message.Config.din[i].name, "")){
+                                                    char newName[25];
+                                                    sprintf(newName, "din_%d", NBDIN);
+                                                    strcpy(message.Config.din[i].name, newName);
+                                                }
+                                                NBDIN ++;
+                                            }
 
-                                            // Save config for DIN event State
-                                            if(!strcmp(message.Config.din[i].event_state, "on")){
-                                                kehops.proximity[message.Config.din[i].id].event.enable = 1;
-                                                strcpy(messageResponse[valCnt].CONFIGresponse.din[i].event_state, "on");
+                                            if(!strcmp(message.Config.din[i].name, "delete")){
+                            // TODO: DELETE MOTOR FROM FILE
+                                            }else{ 
+                                                
+                                                // Save config for din name
+                                                strcpy(kehops.proximity[message.Config.din[i].id].config.name,message.Config.din[i].name);
+                                                strcpy(messageResponse[valCnt].CONFIGresponse.din[i].name, message.Config.din[i].name);
+                                                // Save config for DIN event State
+                                                if(!strcmp(message.Config.din[i].event_state, "on")){
+                                                    kehops.proximity[message.Config.din[i].id].event.enable = 1;
+                                                    strcpy(messageResponse[valCnt].CONFIGresponse.din[i].event_state, "on");
+                                                }
+                                                else if(!strcmp(message.Config.din[i].event_state, "off")){
+                                                    kehops.proximity[message.Config.din[i].id].event.enable = 0;
+                                                    strcpy(messageResponse[valCnt].CONFIGresponse.din[i].event_state, "off");
+                                                }
+                                                messageResponse[valCnt].CONFIGresponse.din[i].id = message.Config.din[i].id;
                                             }
-                                            else if(!strcmp(message.Config.din[i].event_state, "off")){
-                                                kehops.proximity[message.Config.din[i].id].event.enable = 0;
-                                                strcpy(messageResponse[valCnt].CONFIGresponse.din[i].event_state, "off");
-                                            }
-                                            messageResponse[valCnt].CONFIGresponse.din[i].id = message.Config.din[i].id;
                                         }
                                         else
                                             messageResponse[valCnt].CONFIGresponse.din[i].id=-1;
                                     }
                                     
                                     // CONFIG COMMAND FOR BTN SETTING
-                                    for(i=0;i<message.Config.dinValueCnt; i++){
+                                    for(i=0;i<message.Config.btnValueCnt; i++){
                                         messageResponse[valCnt].CONFIGresponse.btnValueCnt=message.Config.btnValueCnt;
                                         
-                                        // Check if DIN exist...
-                                        if(message.Config.btn[i].id >= 0 && message.Config.btn[i].id <NBBTN){
+                                        // Check if BTN exist...
+                                        if(message.Config.btn[i].id >= 0){
+                                            
+                                            if(message.Config.btn[i].id >= NBBTN){
+                                                message.Config.btn[i].id = NBBTN;
+                                                if(!strcmp(message.Config.btn[i].name, "")){
+                                                    char newName[25];
+                                                    sprintf(newName, "btn_%d", NBBTN);
+                                                    strcpy(message.Config.btn[i].name, newName);
+                                                }
+                                                NBBTN ++;
+                                            }
 
-                                            // Save config for BTN event State
-                                            if(!strcmp(message.Config.btn[i].event_state, "on")){
-                                                kehops.button[message.Config.btn[i].id].event.enable = 1;
-                                                strcpy(messageResponse[valCnt].CONFIGresponse.btn[i].event_state, "on");
+                                            if(!strcmp(message.Config.btn[i].name, "delete")){
+                            // TODO: DELETE MOTOR FROM FILE
+                                            }else{ 
+                                                // Save config for BTN name
+                                                strcpy(kehops.button[message.Config.btn[i].id].config.name,message.Config.btn[i].name);
+                                                strcpy(messageResponse[valCnt].CONFIGresponse.btn[i].name, message.Config.btn[i].name);
+                                                
+                                                // Save config for BTN event State
+                                                if(!strcmp(message.Config.btn[i].event_state, "on")){
+                                                    kehops.button[message.Config.btn[i].id].event.enable = 1;
+                                                    strcpy(messageResponse[valCnt].CONFIGresponse.btn[i].event_state, "on");
+                                                }
+                                                else if(!strcmp(message.Config.btn[i].event_state, "off")){
+                                                    kehops.button[message.Config.btn[i].id].event.enable = 0;
+                                                    strcpy(messageResponse[valCnt].CONFIGresponse.btn[i].event_state, "off");
+                                                }
+                                                messageResponse[valCnt].CONFIGresponse.btn[i].id = message.Config.btn[i].id;
                                             }
-                                            else if(!strcmp(message.Config.btn[i].event_state, "off")){
-                                                kehops.button[message.Config.btn[i].id].event.enable = 0;
-                                                strcpy(messageResponse[valCnt].CONFIGresponse.btn[i].event_state, "off");
-                                            }
-                                            messageResponse[valCnt].CONFIGresponse.btn[i].id = message.Config.btn[i].id;
                                         }
                                         else
                                             messageResponse[valCnt].CONFIGresponse.btn[i].id=-1;
@@ -703,62 +870,170 @@ int processmessage(void){
                                     // CONFIG COMMAND FOR SONAR SETTING
                                     for(i=0;i<message.Config.sonarValueCnt; i++){
                                         messageResponse[valCnt].CONFIGresponse.sonarValueCnt=message.Config.sonarValueCnt;
-                                        
+                                       
                                         // Check if SONAR exist...
-                                        if(message.Config.sonar[i].id >= 0 && message.Config.sonar[i].id <NBSONAR){
-
-                                            // Save config for SONAR event State
-                                            if(!strcmp(message.Config.sonar[i].event_state, "on")){
-                                                kehops.sonar[message.Config.sonar[i].id].event.enable = 1;
-                                                strcpy(messageResponse[valCnt].CONFIGresponse.sonar[i].event_state, "on");
-                                            }
-                                            else if(!strcmp(message.Config.sonar[i].event_state, "off")){
-                                                kehops.sonar[message.Config.sonar[i].id].event.enable = 0;
-                                                strcpy(messageResponse[valCnt].CONFIGresponse.sonar[i].event_state, "off");
-                                            }
-                                            // Save config for SONAR event LOW, HIGH and HYSTERESIS
-                                            kehops.sonar[message.Config.sonar[i].id].event.low = message.Config.sonar[i].event_low;
-                                            kehops.sonar[message.Config.sonar[i].id].event.high = message.Config.sonar[i].event_high;
-                                            kehops.sonar[message.Config.sonar[i].id].event.hysteresis = message.Config.sonar[i].event_hyst;
+                                        if(message.Config.sonar[i].id >= 0){
                                             
-                                            messageResponse[valCnt].CONFIGresponse.sonar[i].id = message.Config.sonar[i].id;
-                                            messageResponse[valCnt].CONFIGresponse.sonar[i].event_low = message.Config.sonar[i].event_low;
-                                            messageResponse[valCnt].CONFIGresponse.sonar[i].event_high = message.Config.sonar[i].event_high;
-                                            messageResponse[valCnt].CONFIGresponse.sonar[i].event_hyst = message.Config.sonar[i].event_hyst;
+                                            if(message.Config.sonar[i].id >= NBSONAR){
+                                                message.Config.sonar[i].id = NBSONAR;
+                                                if(!strcmp(message.Config.sonar[i].name, "")){
+                                                    char newName[25];
+                                                    sprintf(newName, "sonar_%d", NBSONAR);
+                                                    strcpy(message.Config.sonar[i].name, newName);
+                                                }
+                                                NBSONAR ++;
+                                            }
+
+                                            if(!strcmp(message.Config.sonar[i].name, "delete")){
+                            // TODO: DELETE MOTOR FROM FILE
+                                            }else{
+
+                                                // Save config for SONAR name
+                                                strcpy(kehops.sonar[message.Config.sonar[i].id].config.name,message.Config.sonar[i].name);
+                                                strcpy(messageResponse[valCnt].CONFIGresponse.sonar[i].name, message.Config.sonar[i].name);
+                                                
+                                                // Save config for SONAR event State
+                                                if(!strcmp(message.Config.sonar[i].event_state, "on")){
+                                                    kehops.sonar[message.Config.sonar[i].id].event.enable = 1;
+                                                    strcpy(messageResponse[valCnt].CONFIGresponse.sonar[i].event_state, "on");
+                                                }
+                                                else if(!strcmp(message.Config.sonar[i].event_state, "off")){
+                                                    kehops.sonar[message.Config.sonar[i].id].event.enable = 0;
+                                                    strcpy(messageResponse[valCnt].CONFIGresponse.sonar[i].event_state, "off");
+                                                }
+                                                // Save config for SONAR event LOW, HIGH and HYSTERESIS
+                                                kehops.sonar[message.Config.sonar[i].id].event.low = message.Config.sonar[i].event_low;
+                                                kehops.sonar[message.Config.sonar[i].id].event.high = message.Config.sonar[i].event_high;
+                                                kehops.sonar[message.Config.sonar[i].id].event.hysteresis = message.Config.sonar[i].event_hyst;
+
+                                                messageResponse[valCnt].CONFIGresponse.sonar[i].id = message.Config.sonar[i].id;
+                                                messageResponse[valCnt].CONFIGresponse.sonar[i].event_low = message.Config.sonar[i].event_low;
+                                                messageResponse[valCnt].CONFIGresponse.sonar[i].event_high = message.Config.sonar[i].event_high;
+                                                messageResponse[valCnt].CONFIGresponse.sonar[i].event_hyst = message.Config.sonar[i].event_hyst;
+                                            }
                                         }
                                         else
                                             messageResponse[valCnt].CONFIGresponse.sonar[i].id=-1;
                                     }
 
                                     // CONFIG COMMAND FOR VOLTAGE SETTING
-                                    for(i=0;i<message.Config.battValueCnt; i++){
-                                        messageResponse[valCnt].CONFIGresponse.battValueCnt=message.Config.battValueCnt;
-                                        
+                                    for(i=0;i<message.Config.ainValueCnt; i++){
+                                        messageResponse[valCnt].CONFIGresponse.ainValueCnt = message.Config.ainValueCnt;
                                         // Check if AIN exist...
-                                        if(message.Config.ain[i].id >= 0 && message.Config.ain[i].id <NBAIN){
-
-                                            // Save config for AIN event State
-                                            if(!strcmp(message.Config.ain[i].event_state, "on")){
-                                                kehops.analogInput[message.Config.ain[i].id].event.enable = 1;
-                                                strcpy(messageResponse[valCnt].CONFIGresponse.ain[i].event_state, "on");
-                                            }
-                                            else if(!strcmp(message.Config.ain[i].event_state, "off")){
-                                                kehops.analogInput[message.Config.ain[i].id].event.enable = 0;
-                                                strcpy(messageResponse[valCnt].CONFIGresponse.ain[i].event_state, "off");
-                                            }
-                                            // Save config for SONAR event LOW, HIGH and HYSTERESIS
-                                            kehops.analogInput[message.Config.ain[i].id].event.low = message.Config.ain[i].event_low;
-                                            kehops.analogInput[message.Config.ain[i].id].event.high = message.Config.ain[i].event_high;
-                                            kehops.analogInput[message.Config.ain[i].id].event.hysteresis = message.Config.ain[i].event_hyst;
+                                        if(message.Config.ain[i].id >= 0){
                                             
-                                            messageResponse[valCnt].CONFIGresponse.ain[i].id = message.Config.ain[i].id;
-                                            messageResponse[valCnt].CONFIGresponse.ain[i].event_low = message.Config.ain[i].event_low;
-                                            messageResponse[valCnt].CONFIGresponse.ain[i].event_high = message.Config.ain[i].event_high;
-                                            messageResponse[valCnt].CONFIGresponse.ain[i].event_hyst = message.Config.ain[i].event_hyst;
+                                            if(message.Config.ain[i].id >= NBAIN){
+                                                message.Config.ain[i].id = NBAIN;
+                                                if(!strcmp(message.Config.ain[i].name, "")){
+                                                    char newName[25];
+                                                    sprintf(newName, "ain_%d", NBAIN);
+                                                    strcpy(message.Config.ain[i].name, newName);
+                                                }
+                                                NBAIN ++;
+                                            }
+                                            
+                                            if(!strcmp(message.Config.ain[i].name, "delete")){
+                            // TODO: DELETE MOTOR FROM FILE
+                                            }else{
+                                                
+                                                // Save config for AIN name
+                                                strcpy(kehops.analogInput[message.Config.ain[i].id].config.name, message.Config.ain[i].name);
+                                                strcpy(messageResponse[valCnt].CONFIGresponse.ain[i].name, message.Config.ain[i].name);
+                                                
+                                                // Save config for AIN event State
+                                                if(!strcmp(message.Config.ain[i].event_state, "on")){
+                                                    kehops.analogInput[message.Config.ain[i].id].event.enable = 1;
+                                                    strcpy(messageResponse[valCnt].CONFIGresponse.ain[i].event_state, "on");
+                                                }
+                                                else if(!strcmp(message.Config.ain[i].event_state, "off")){
+                                                    kehops.analogInput[message.Config.ain[i].id].event.enable = 0;
+                                                    strcpy(messageResponse[valCnt].CONFIGresponse.ain[i].event_state, "off");
+                                                }
+                                                // Save config for SONAR event LOW, HIGH and HYSTERESIS
+                                                kehops.analogInput[message.Config.ain[i].id].event.low = message.Config.ain[i].event_low;
+                                                kehops.analogInput[message.Config.ain[i].id].event.high = message.Config.ain[i].event_high;
+                                                kehops.analogInput[message.Config.ain[i].id].event.hysteresis = message.Config.ain[i].event_hyst;
+
+                                                messageResponse[valCnt].CONFIGresponse.ain[i].id = message.Config.ain[i].id;
+                                                messageResponse[valCnt].CONFIGresponse.ain[i].event_low = message.Config.ain[i].event_low;
+                                                messageResponse[valCnt].CONFIGresponse.ain[i].event_high = message.Config.ain[i].event_high;
+                                                messageResponse[valCnt].CONFIGresponse.ain[i].event_hyst = message.Config.ain[i].event_hyst;
+                                            }
                                         }
                                         else
                                             messageResponse[valCnt].CONFIGresponse.ain[i].id=-1;
                                     }
+                                    
+                                    // CONFIG COMMAND FOR RGB SETTING
+                                    for(i=0;i<message.Config.rgbValueCnt; i++){
+                                        messageResponse[valCnt].CONFIGresponse.rgbValueCnt = message.Config.rgbValueCnt;
+                                        // Check if RGB exist...
+                                        if(message.Config.rgb[i].id >= 0){
+                                            
+                                            if(message.Config.rgb[i].id >= NBRGBC){
+                                                message.Config.rgb[i].id = NBRGBC;
+                                                if(!strcmp(message.Config.rgb[i].name, "")){
+                                                    char newName[25];
+                                                    sprintf(newName, "rgb_%d", NBRGBC);
+                                                    strcpy(message.Config.rgb[i].name, newName);
+                                                }
+                                                NBRGBC ++;
+                                            }
+
+                                            if(!strcmp(message.Config.rgb[i].name, "delete")){
+                            // TODO: DELETE MOTOR FROM FILE
+                                            }else{
+                                                // Save config for RGB name
+                                                strcpy(kehops.rgb[message.Config.rgb[i].id].config.name,message.Config.rgb[i].name);
+                                                strcpy(messageResponse[valCnt].CONFIGresponse.rgb[i].name, message.Config.rgb[i].name);
+                                                
+                                                // Save config for RGB event State
+                                                if(!strcmp(message.Config.rgb[i].event_state, "on")){
+                                                    kehops.rgb[message.Config.rgb[i].id].event.enable = 1;
+                                                    strcpy(messageResponse[valCnt].CONFIGresponse.rgb[i].event_state, "on");
+                                                }
+                                                else if(!strcmp(message.Config.rgb[i].event_state, "off")){
+                                                    kehops.rgb[message.Config.rgb[i].id].event.enable = 0;
+                                                    strcpy(messageResponse[valCnt].CONFIGresponse.rgb[i].event_state, "off");
+                                                }
+                                                // Save config for SONAR event LOW, HIGH and HYSTERESIS
+                                                kehops.rgb[message.Config.rgb[i].id].color.red.event.low = message.Config.rgb[i].red.event_low;
+                                                kehops.rgb[message.Config.rgb[i].id].color.red.event.high = message.Config.rgb[i].red.event_high;
+                                                kehops.rgb[message.Config.rgb[i].id].color.red.event.hysteresis = message.Config.rgb[i].red.event_hyst;
+
+                                                kehops.rgb[message.Config.rgb[i].id].color.green.event.low = message.Config.rgb[i].green.event_low;
+                                                kehops.rgb[message.Config.rgb[i].id].color.green.event.high = message.Config.rgb[i].green.event_high;
+                                                kehops.rgb[message.Config.rgb[i].id].color.green.event.hysteresis = message.Config.rgb[i].green.event_hyst;
+                                                
+                                                kehops.rgb[message.Config.rgb[i].id].color.blue.event.low = message.Config.rgb[i].blue.event_low;
+                                                kehops.rgb[message.Config.rgb[i].id].color.blue.event.high = message.Config.rgb[i].blue.event_high;
+                                                kehops.rgb[message.Config.rgb[i].id].color.blue.event.hysteresis = message.Config.rgb[i].blue.event_hyst;
+                                                
+                                                kehops.rgb[message.Config.rgb[i].id].color.clear.event.low = message.Config.rgb[i].clear.event_low;
+                                                kehops.rgb[message.Config.rgb[i].id].color.clear.event.high = message.Config.rgb[i].clear.event_high;
+                                                kehops.rgb[message.Config.rgb[i].id].color.clear.event.hysteresis = message.Config.rgb[i].clear.event_hyst;
+                                                
+                                                messageResponse[valCnt].CONFIGresponse.rgb[i].id = message.Config.rgb[i].id;
+                                                messageResponse[valCnt].CONFIGresponse.rgb[i].red.event_low = message.Config.rgb[i].red.event_low;
+                                                messageResponse[valCnt].CONFIGresponse.rgb[i].red.event_high = message.Config.rgb[i].red.event_high;
+                                                messageResponse[valCnt].CONFIGresponse.rgb[i].red.event_hyst = message.Config.rgb[i].red.event_hyst;
+                                                
+                                                messageResponse[valCnt].CONFIGresponse.rgb[i].green.event_low = message.Config.rgb[i].green.event_low;
+                                                messageResponse[valCnt].CONFIGresponse.rgb[i].green.event_high = message.Config.rgb[i].green.event_high;
+                                                messageResponse[valCnt].CONFIGresponse.rgb[i].green.event_hyst = message.Config.rgb[i].green.event_hyst;
+                                                
+                                                messageResponse[valCnt].CONFIGresponse.rgb[i].blue.event_low = message.Config.rgb[i].blue.event_low;
+                                                messageResponse[valCnt].CONFIGresponse.rgb[i].blue.event_high = message.Config.rgb[i].blue.event_high;
+                                                messageResponse[valCnt].CONFIGresponse.rgb[i].blue.event_hyst = message.Config.rgb[i].blue.event_hyst;
+                                                
+                                                messageResponse[valCnt].CONFIGresponse.rgb[i].clear.event_low = message.Config.rgb[i].clear.event_low;
+                                                messageResponse[valCnt].CONFIGresponse.rgb[i].clear.event_high = message.Config.rgb[i].clear.event_high;
+                                                messageResponse[valCnt].CONFIGresponse.rgb[i].clear.event_hyst = message.Config.rgb[i].clear.event_hyst;
+                                            }
+                                        }
+                                        else
+                                            messageResponse[valCnt].CONFIGresponse.ain[i].id=-1;
+                                    }                                    
                                     
                                 // CONFIG COMMAND FOR SAVE
                                     if(!strcmp(message.Config.action.save, "true")){
@@ -1028,7 +1303,7 @@ int runMotorAction(void){
                     saveSenderOfMsgId(message.msgID, message.msgFrom);
 
                     for(ptrData=0; action < actionCount && ptrData<10; ptrData++){
-                        ID = message.DCmotor[ptrData].motor;
+                        ID = message.DCmotor[ptrData].id;
                         if(ID >= 0){
                             
                             // Effectue l'action sur la roue
@@ -1129,7 +1404,7 @@ int runStepperAction(void){
                     saveSenderOfMsgId(message.msgID, message.msgFrom);
 
                     for(ptrData=0; action < actionCount && ptrData<10; ptrData++){
-                        ID = message.StepperMotor[ptrData].motor;
+                        ID = message.StepperMotor[ptrData].id;
                         if(ID >= 0){
                             // Effectue l'action sur le moteur pas à pas
                             if(kehops.stepperWheel[ID].target.time <= 0 && kehops.stepperWheel[ID].target.steps <=0 && kehops.stepperWheel[ID].target.rotation <= 0 && kehops.stepperWheel[ID].target.angle <=0){                                
@@ -1622,7 +1897,7 @@ int getWDvalue(int wheelName){
 	// V�rifie que le moteur est existant...
 		// Recherche dans les donn�e recues la valeur correspondante au param�tre "wheelName"
 		for(i=0;i<message.msgValueCnt;i++){
-			if(wheelName == message.DCmotor[i].motor)
+			if(wheelName == message.DCmotor[i].id)
 				searchPtr=i;
 		}
 		return searchPtr;
@@ -1640,7 +1915,7 @@ int getStepperValue(int motorName){
 	// V�rifie que le moteur est existant...
 		// Recherche dans les donn�e recues la valeur correspondante au param�tre "wheelName"
 		for(i=0;i<message.msgValueCnt;i++){
-			if(motorName == message.StepperMotor[i].motor)
+			if(motorName == message.StepperMotor[i].id)
 				searchPtr=i;
 		}
 		return searchPtr;
@@ -1798,7 +2073,7 @@ int makeStatusRequest(int msgType){
 	int i;
 	int ptrData=0;
 
-	message.msgValueCnt = NBDIN + NBBTN + NBMOTOR + NBSONAR + NBRGBC + NBLED + NBPWM + NBAIN +1 ; // Nombre de VALEUR � transmettre + 1 pour le SystemStatus
+	message.msgValueCnt = NBDIN + NBBTN + NBMOTOR + NBSONAR + NBRGBC + NBLED + NBPWM + NBAIN + NBAOUT +1 ; // Nombre de VALEUR � transmettre + 1 pour le SystemStatus
      
         // Preparation du message de reponse pour le status systeme
         strcpy(messageResponse[ptrData].SYSresponse.name, sysApp.info.name);
@@ -1822,6 +2097,7 @@ int makeStatusRequest(int msgType){
 
 	for(i=0;i<NBDIN;i++){
 		messageResponse[ptrData].DINresponse.id=i;
+                strcpy(messageResponse[ptrData].DINresponse.name, kehops.proximity[i].config.name);
                 messageResponse[ptrData].value = kehops.proximity[i].measure.state;
                 if(kehops.proximity[i].event.enable) strcpy(messageResponse[ptrData].DINresponse.event_state, "on");
                 else strcpy(messageResponse[ptrData].DINresponse.event_state, "off");                
@@ -1830,6 +2106,7 @@ int makeStatusRequest(int msgType){
                 
         for(i=0;i<NBBTN;i++){
                 messageResponse[ptrData].BTNresponse.id=i;
+                strcpy(messageResponse[ptrData].BTNresponse.name, kehops.button[i].config.name);
                 messageResponse[ptrData].value = kehops.button[i].measure.state;
                 
                 if(kehops.button[i].event.enable) strcpy(messageResponse[ptrData].BTNresponse.event_state, "on");                
@@ -1838,9 +2115,11 @@ int makeStatusRequest(int msgType){
 	}
 
 	for(i=0;i<NBMOTOR;i++){
-		messageResponse[ptrData].MOTresponse.motor=i;
+		messageResponse[ptrData].MOTresponse.id=i;
+                strcpy(messageResponse[ptrData].MOTresponse.name, kehops.dcWheel[i].config.motor.dc_motor_name);
                 messageResponse[ptrData].MOTresponse.speed=kehops.dcWheel[i].measure.rpm;
-                messageResponse[ptrData].MOTresponse.cm = rpmToPercent(i, kehops.dcWheel[i].measure.rpm);
+                //messageResponse[ptrData].MOTresponse.cm = rpmToPercent(i, kehops.dcWheel[i].measure.rpm);
+                messageResponse[ptrData].MOTresponse.cm = kehops.dcWheel[i].measure.distance;
                 // !!! RESPONSE VELOCITY TO CHECK...
                 //messageResponse[ptrData].MOTresponse.userSetPoint = rpmToPercent(0,sysConfig.motor[0].minRPM) + robot.motor[i].userSetPoint;
                 messageResponse[ptrData].MOTresponse.userSetPoint = kehops.dcWheel[i].motor.userSpeedSetPoint;
@@ -1849,6 +2128,7 @@ int makeStatusRequest(int msgType){
         
         for(i=0;i<NBSONAR;i++){
                 messageResponse[ptrData].DISTresponse.id=i;
+                strcpy(messageResponse[ptrData].DISTresponse.name, kehops.sonar[i].config.name);
                 messageResponse[ptrData].value = kehops.sonar[i].measure.distance_cm;
                 messageResponse[ptrData].DISTresponse.event_low = kehops.sonar[i].event.low;
                 messageResponse[ptrData].DISTresponse.event_high = kehops.sonar[i].event.high;
@@ -1860,12 +2140,13 @@ int makeStatusRequest(int msgType){
 
         for(i=0;i<NBRGBC;i++){
 		messageResponse[ptrData].RGBresponse.id=i;
+                strcpy(messageResponse[ptrData].RGBresponse.name, kehops.rgb[i].config.name);
                 messageResponse[ptrData].RGBresponse.red.value = kehops.rgb[i].color.red.measure.value;
                 messageResponse[ptrData].RGBresponse.green.value = kehops.rgb[i].color.green.measure.value;
                 messageResponse[ptrData].RGBresponse.blue.value = kehops.rgb[i].color.blue.measure.value;
                 messageResponse[ptrData].RGBresponse.clear.value = kehops.rgb[i].color.clear.measure.value;
                 
-                if(kehops.rgb[i].config.event.enable) strcpy(messageResponse[ptrData].RGBresponse.event_state, "on");
+                if(kehops.rgb[i].event.enable) strcpy(messageResponse[ptrData].RGBresponse.event_state, "on");
                 else strcpy(messageResponse[ptrData].RGBresponse.event_state, "off");
                 
 		ptrData++;
@@ -1873,6 +2154,7 @@ int makeStatusRequest(int msgType){
 
         for(i=0;i<NBLED;i++){       
 		messageResponse[ptrData].LEDresponse.id = i;
+                strcpy(messageResponse[ptrData].LEDresponse.name, kehops.led[i].config.name);
                 messageResponse[ptrData].value = kehops.led[i].state;
                 messageResponse[ptrData].LEDresponse.powerPercent = kehops.led[i].power;
 		ptrData++;
@@ -1881,6 +2163,7 @@ int makeStatusRequest(int msgType){
         
         for(i=0;i<NBPWM;i++){        
 		messageResponse[ptrData].PWMresponse.id = i;
+                strcpy(messageResponse[ptrData].PWMresponse.name, kehops.pwm[i].config.name);
 		messageResponse[ptrData].value = kehops.pwm[i].state;
                 messageResponse[ptrData].PWMresponse.powerPercent = kehops.pwm[i].power;
 		ptrData++;
@@ -1888,12 +2171,21 @@ int makeStatusRequest(int msgType){
         
         for(i=0;i<NBAIN;i++){
                 messageResponse[ptrData].VOLTResponse.id=i;
+                strcpy(messageResponse[ptrData].VOLTResponse.name, kehops.analogInput[i].config.name);
                 messageResponse[ptrData].value = kehops.analogInput[i].measure.voltage_mV;
                 messageResponse[ptrData].VOLTResponse.event_low = kehops.analogInput[i].event.low;
                 messageResponse[ptrData].VOLTResponse.event_high = kehops.analogInput[i].event.high;                
                 if(kehops.analogInput[i].event.enable) strcpy(messageResponse[ptrData].VOLTResponse.event_state, "on");
                 else strcpy(messageResponse[ptrData].VOLTResponse.event_state, "off");
                 ptrData++;
+	}
+        
+        for(i=0;i<NBAOUT;i++){        
+            messageResponse[ptrData].AOUTresponse.id = i;
+            strcpy(messageResponse[ptrData].AOUTresponse.name, kehops.aout[i].config.name);
+            messageResponse[ptrData].value = kehops.aout[i].state;
+            messageResponse[ptrData].AOUTresponse.powerPercent = kehops.aout[i].power;
+            ptrData++;
 	}
         
 	// Envoie de la r�ponse MQTT
@@ -2081,11 +2373,11 @@ int makeRgbRequest(void){
 
                             // PARAMETRAGE DE L'ENVOIE DES MESSAGES SUR EVENEMENTS.
                             if(!strcmp(message.RGBsens[i].event_state, "on")){
-                                kehops.rgb[message.RGBsens[i].id].config.event.enable = 1;
+                                kehops.rgb[message.RGBsens[i].id].event.enable = 1;
                                 saveSenderOfMsgId(message.msgID, message.msgFrom);
                             }
                             else if(!strcmp(message.RGBsens[i].event_state, "off")){
-                                kehops.rgb[message.RGBsens[i].id].config.event.enable = 0;
+                                kehops.rgb[message.RGBsens[i].id].event.enable = 0;
                                 removeSenderOfMsgId(message.msgID);
                             }
 
@@ -2136,7 +2428,7 @@ int makeRgbRequest(void){
                         messageResponse[i].RGBresponse.clear.value=kehops.rgb[temp].color.clear.measure.value;
 
                         // Copie de l'etat de l'evenement
-			if(kehops.rgb[i].config.event.enable)strcpy(messageResponse[i].RGBresponse.event_state, "on");
+			if(kehops.rgb[i].event.enable)strcpy(messageResponse[i].RGBresponse.event_state, "on");
 			else strcpy(messageResponse[i].RGBresponse.event_state, "off");
                         
                         // Copie des param�tres �venements haut/bas pour le ROUGE
@@ -2243,23 +2535,23 @@ int makeMotorRequest(void){
 	if(message.msgValueCnt==0){
 		message.msgValueCnt=NBMOTOR;
 		for(i=0;i<NBMOTOR;i++){
-			messageResponse[i].MOTresponse.motor=i;
+			messageResponse[i].MOTresponse.id=i;
 		}
 	}                
 
 	// RETOURNE EN REPONSE LES PARAMETRES ENREGISTRES ---
 	for(i=0;i<message.msgValueCnt;i++){
-		int temp = messageResponse[i].MOTresponse.motor;
+		int temp = messageResponse[i].MOTresponse.id;
 
 		// Contr�le que le moteur soit pris en charge
-		if(message.DCmotor[i].motor < NBMOTOR){
-                    
+		if(message.DCmotor[i].id < NBMOTOR){
+                        strcpy(messageResponse[i].MOTresponse.name, kehops.dcWheel[temp].config.motor.dc_motor_name);
                         messageResponse[i].MOTresponse.userSetPoint = kehops.dcWheel[temp].motor.userSpeedSetPoint;
                         messageResponse[i].MOTresponse.cm = kehops.dcWheel[temp].target.distanceCM;
                         messageResponse[i].MOTresponse.time = kehops.dcWheel[temp].target.time;
                         messageResponse[i].responseType=RESP_STD_MESSAGE;
 		} else
-			messageResponse[i].MOTresponse.motor = -1;
+			messageResponse[i].MOTresponse.id = -1;
 	}
 	// Envoie de la r�ponse MQTT
 	sendResponse(message.msgID, message.msgFrom, RESPONSE, MOTORS, message.msgValueCnt);
@@ -2492,7 +2784,7 @@ void COLOREventCheck(void){
 	unsigned char i;
 
 	for(i=0;i<NBRGBC;i++){
-            if(kehops.rgb[i].config.event.enable){
+            if(kehops.rgb[i].event.enable){
 
                 int red_event_low_disable, red_event_high_disable;                     
                 int redLowDetected, redHighDetected;
@@ -2691,83 +2983,7 @@ void runRestartCommand(void){
 
 void resetConfig(void){
     int i;
-    // NEED TO BE MAKE AFTER LOAD CONFIG
-    /*
-    	// Init robot membre
-	for(i=0;i<NBAIN;i++){
-            kehops.analogInput[i].event.enable = DEFAULT_EVENT_STATE;
-            kehops.analogInput[i].event.high=65535;
-            kehops.analogInput[i].event.low=0;
-	}
-    
-	for(i=0;i<NBDIN;i++){
-            kehops.proximity[i].event.enable = DEFAULT_EVENT_STATE;
-	}
 
-        for(i=0;i<NBBTN;i++){
-            kehops.button[i].event.enable=DEFAULT_EVENT_STATE;
-	}
-    
-        for(i=0;i<NBMOTOR;i++){
-            kehops.dcWheel[i].config.motor.inverted = 0;
-            kehops.dcWheel[i].target.distanceCM = 0;
-
-            kehops.dcWheel[i].target.time = 0;
-       
-            kehops.dcWheel[i].config.rpmMin = 20;
-            kehops.dcWheel[i].config.rpmMax = 200;
-            kehops.dcWheel[i].config.pidReg.enable = 0;
-            kehops.dcWheel[i].config.pidReg.Kp = 0.0;
-            kehops.dcWheel[i].config.pidReg.Ki = 0.0;
-            kehops.dcWheel[i].config.pidReg.Kd = 0.0;
-	}  
-
-        for(i=0;i<NBSTEPPER;i++){
-            kehops.stepperWheel[i].config.motor.inverted = 0;
-            kehops.stepperWheel[i].config.motor.ratio = 64;
-            kehops.stepperWheel[i].config.motor.steps = 32;
-            
-            kehops.stepperWheel[i].target.angle = 0;
-            kehops.stepperWheel[i].target.rotation = 0;
-            kehops.stepperWheel[i].target.steps = 0;
-            kehops.stepperWheel[i].target.time = 0;
-	}
-
-        for(i=0;i<NBSONAR;i++){
-            kehops.sonar[i].event.enable = DEFAULT_EVENT_STATE;
-            kehops.sonar[i].event.high = 100;
-            kehops.sonar[i].event.low = 10;
-            kehops.sonar[i].event.hysteresis = 0;
-            kehops.sonar[i].measure.distance_cm = -1;
-	}
-
-        for(i=0;i<NBRGBC;i++){
-
-            kehops.rgb[i].color.red.event.enable = DEFAULT_EVENT_STATE;
-            kehops.rgb[i].color.green.event.enable = DEFAULT_EVENT_STATE;
-            kehops.rgb[i].color.blue.event.enable = DEFAULT_EVENT_STATE;
-            kehops.rgb[i].color.clear.event.enable = DEFAULT_EVENT_STATE;
-
-            kehops.rgb[i].color.red.measure.value = -1;
-            kehops.rgb[i].color.red.event.low = 0;
-            kehops.rgb[i].color.red.event.high = 65535;
-
-            kehops.rgb[i].color.green.measure.value = -1;
-            kehops.rgb[i].color.green.event.low = 0;
-            kehops.rgb[i].color.green.event.high = 65535;
-
-            kehops.rgb[i].color.blue.measure.value = -1;
-            kehops.rgb[i].color.blue.event.low = 0;
-            kehops.rgb[i].color.blue.event.high = 65535;
-
-            kehops.rgb[i].color.clear.measure.value = -1;
-            kehops.rgb[i].color.clear.event.low = 0;
-            kehops.rgb[i].color.clear.event.high = 65535;
-	}
-
-        // ------------ Initialisation de la configuration systeme
-        
-    */
         // Initialisation configuration de flux de donn�es periodique
         sysConf.communication.mqtt.stream.state  = ON;
         sysConf.communication.mqtt.stream.time_ms = 500;
@@ -2921,6 +3137,7 @@ int makeConfigRequest(void){
     messageResponse[ptrData].CONFIGresponse.motValueCnt = NBMOTOR;
     for(i=0;i<NBMOTOR; i++){
         messageResponse[ptrData].CONFIGresponse.motor[i].id = i;
+        strcpy(messageResponse[ptrData].CONFIGresponse.motor[i].name, kehops.dcWheel[i].config.motor.dc_motor_name);
         
         // Inversion moteur
         if(kehops.dcWheel[i].config.motor.inverted)
@@ -2954,6 +3171,7 @@ int makeConfigRequest(void){
     messageResponse[ptrData].CONFIGresponse.stepperValueCnt = NBSTEPPER;
     for(i=0;i<NBSTEPPER; i++){
         messageResponse[ptrData].CONFIGresponse.stepper[i].id = i;
+        strcpy(messageResponse[ptrData].CONFIGresponse.stepper[i].name, kehops.stepperWheel[i].config.motor.stepper_name);
         
         // Inversion moteur pas-à-pas
         if(kehops.stepperWheel[i].config.motor.inverted)
@@ -2971,7 +3189,8 @@ int makeConfigRequest(void){
     // Récupération de la config des LEDS
     messageResponse[ptrData].CONFIGresponse.ledValueCnt = NBLED;
     for(i=0;i<NBLED; i++){
-        messageResponse[ptrData].CONFIGresponse.led[i].id = i;        
+        messageResponse[ptrData].CONFIGresponse.led[i].id = i;
+        strcpy(messageResponse[ptrData].CONFIGresponse.led[i].name, kehops.led[i].config.name);
         messageResponse[ptrData].CONFIGresponse.led[i].power = kehops.led[i].config.defaultPower;        
         
         if(kehops.led[i].config.defaultState)
@@ -2989,6 +3208,7 @@ int makeConfigRequest(void){
     messageResponse[ptrData].CONFIGresponse.pwmValueCnt = NBPWM;
     for(i=0;i<NBPWM; i++){
         messageResponse[ptrData].CONFIGresponse.pwm[i].id = i;        
+        strcpy(messageResponse[ptrData].CONFIGresponse.pwm[i].name, kehops.pwm[i].config.name);
         messageResponse[ptrData].CONFIGresponse.pwm[i].power = kehops.pwm[i].config.defaultPower;        
         
         if(kehops.pwm[i].config.defaultState)
@@ -3002,11 +3222,25 @@ int makeConfigRequest(void){
             strcpy(messageResponse[ptrData].CONFIGresponse.pwm[i].isServoMode,"off");
     }
     
+    // Récupération de la config des AOUT
+    messageResponse[ptrData].CONFIGresponse.aoutValueCnt = NBAOUT;
+    for(i=0;i<NBAOUT; i++){
+        messageResponse[ptrData].CONFIGresponse.Aout[i].id = i;        
+        strcpy(messageResponse[ptrData].CONFIGresponse.Aout[i].name, kehops.aout[i].config.name);
+        messageResponse[ptrData].CONFIGresponse.Aout[i].power = kehops.aout[i].config.defaultPower;        
+        
+        if(kehops.aout[i].config.defaultState)
+            strcpy(messageResponse[ptrData].CONFIGresponse.Aout[i].state, "on");
+        else 
+            strcpy(messageResponse[ptrData].CONFIGresponse.Aout[i].state, "off");
+
+    }    
+    
         // Récupération de la config des DIN
     messageResponse[ptrData].CONFIGresponse.dinValueCnt = NBDIN;
     for(i=0;i<NBDIN; i++){
         messageResponse[ptrData].CONFIGresponse.din[i].id = i;        
-        
+        strcpy(messageResponse[ptrData].CONFIGresponse.din[i].name, kehops.proximity[i].config.name);
         if(kehops.proximity[i].event.enable)
             strcpy(messageResponse[ptrData].CONFIGresponse.din[i].event_state, "on");
         else 
@@ -3017,7 +3251,7 @@ int makeConfigRequest(void){
     messageResponse[ptrData].CONFIGresponse.btnValueCnt = NBBTN;
     for(i=0;i<NBBTN; i++){
         messageResponse[ptrData].CONFIGresponse.btn[i].id = i;        
-        
+        strcpy(messageResponse[ptrData].CONFIGresponse.btn[i].name, kehops.button[i].config.name);        
         if(kehops.button[i].event.enable)
             strcpy(messageResponse[ptrData].CONFIGresponse.btn[i].event_state, "on");
         else 
@@ -3028,6 +3262,7 @@ int makeConfigRequest(void){
     messageResponse[ptrData].CONFIGresponse.sonarValueCnt = NBSONAR;
     for(i=0;i<NBSONAR; i++){
         messageResponse[ptrData].CONFIGresponse.sonar[i].id = i;        
+        strcpy(messageResponse[ptrData].CONFIGresponse.sonar[i].name, kehops.sonar[i].config.name);        
         
         if(kehops.sonar[i].event.enable)
             strcpy(messageResponse[ptrData].CONFIGresponse.sonar[i].event_state, "on");
@@ -3039,11 +3274,11 @@ int makeConfigRequest(void){
         messageResponse[ptrData].CONFIGresponse.sonar[i].event_hyst = kehops.sonar[i].event.hysteresis;
     }
 
-    // Récupération de la config des BATTERIE
-    messageResponse[ptrData].CONFIGresponse.sonarValueCnt = NBAIN;
+    // Récupération de la config des AIN
+    messageResponse[ptrData].CONFIGresponse.ainValueCnt = NBAIN;
     for(i=0;i<NBAIN; i++){
         messageResponse[ptrData].CONFIGresponse.ain[i].id = i;        
-        
+        strcpy(messageResponse[ptrData].CONFIGresponse.ain[i].name, kehops.analogInput[i].config.name);
         if(kehops.analogInput[i].event.enable)
             strcpy(messageResponse[ptrData].CONFIGresponse.ain[i].event_state, "on");
         else 
@@ -3052,8 +3287,49 @@ int makeConfigRequest(void){
         messageResponse[ptrData].CONFIGresponse.ain[i].event_low = kehops.analogInput[i].event.low;
         messageResponse[ptrData].CONFIGresponse.ain[i].event_high = kehops.analogInput[i].event.high;
         messageResponse[ptrData].CONFIGresponse.ain[i].event_hyst = kehops.analogInput[i].event.hysteresis;
-    }     
- 
+    }
+    
+    // Récupération de la config des RGB
+    messageResponse[ptrData].CONFIGresponse.rgbValueCnt = NBRGBC;
+    for(i=0;i<NBRGBC; i++){
+        messageResponse[ptrData].CONFIGresponse.rgb[i].id = i;        
+        strcpy(messageResponse[ptrData].CONFIGresponse.rgb[i].name, kehops.rgb[i].config.name);
+        if(kehops.rgb[i].event.enable)
+            strcpy(messageResponse[ptrData].CONFIGresponse.rgb[i].event_state, "on");
+        else 
+            strcpy(messageResponse[ptrData].CONFIGresponse.rgb[i].event_state, "off");
+
+        messageResponse[ptrData].CONFIGresponse.rgb[i].red.event_low = kehops.rgb[i].color.red.event.low;
+        messageResponse[ptrData].CONFIGresponse.rgb[i].red.event_high = kehops.rgb[i].color.red.event.high;
+        messageResponse[ptrData].CONFIGresponse.rgb[i].red.event_hyst = kehops.rgb[i].color.red.event.hysteresis;
+
+        messageResponse[ptrData].CONFIGresponse.rgb[i].green.event_low = kehops.rgb[i].color.green.event.low;
+        messageResponse[ptrData].CONFIGresponse.rgb[i].green.event_high = kehops.rgb[i].color.green.event.high;
+        messageResponse[ptrData].CONFIGresponse.rgb[i].green.event_hyst = kehops.rgb[i].color.green.event.hysteresis;
+
+        messageResponse[ptrData].CONFIGresponse.rgb[i].blue.event_low = kehops.rgb[i].color.blue.event.low;
+        messageResponse[ptrData].CONFIGresponse.rgb[i].blue.event_high = kehops.rgb[i].color.blue.event.high;
+        messageResponse[ptrData].CONFIGresponse.rgb[i].blue.event_hyst = kehops.rgb[i].color.blue.event.hysteresis;
+        
+        messageResponse[ptrData].CONFIGresponse.rgb[i].clear.event_low = kehops.rgb[i].color.clear.event.low;
+        messageResponse[ptrData].CONFIGresponse.rgb[i].clear.event_high = kehops.rgb[i].color.clear.event.high;
+        messageResponse[ptrData].CONFIGresponse.rgb[i].clear.event_hyst = kehops.rgb[i].color.clear.event.hysteresis;
+
+    }    
+    
+    // Récupération de la config des DISPLAY
+    messageResponse[ptrData].CONFIGresponse.displayValueCnt = NBDISPLAY;
+    for(i=0;i<NBDISPLAY; i++){
+        messageResponse[ptrData].CONFIGresponse.display[i].id = i;        
+        strcpy(messageResponse[ptrData].CONFIGresponse.display[i].name, kehops.gfx[i].config.name);
+        if(kehops.gfx[i].config.hid.enable)
+            strcpy(messageResponse[ptrData].CONFIGresponse.display[i].default_hid, "on");
+        else 
+            strcpy(messageResponse[ptrData].CONFIGresponse.display[i].default_hid, "off");
+
+    }  
+
+    
     // Envoie du message de réponse de la configuration
     messageResponse[ptrData].responseType = RESP_STD_MESSAGE;
     sendResponse(message.msgID, message.msgFrom, RESPONSE, CONFIG, 1);
