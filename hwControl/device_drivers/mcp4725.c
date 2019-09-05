@@ -46,7 +46,6 @@ int mcp4725_init(device_mcp4725 *mcp4725config){
 /**
  * \brief MCP4725 set DAC output voltage in mV
  * \param pointer on the configuration structure
- * \param channel, specify the channel to set state
  * \param value_mv, mV value for output
  * \return code error
  */
@@ -81,7 +80,6 @@ int mcp4725_setDACOutput_mV(device_mcp4725 *mcp4725config, int value_mv){
 /**
  * \brief MCP4725 set DAC output 12bit value
  * \param pointer on the configuration structure
- * \param channel, specify the channel to set state
  * \param value (12bit), mV value for output
  * \return code error
  */

@@ -25,6 +25,7 @@
 #define DRIVER_PCA9629 "pca9629"
 #define DRIVER_VL53L0X "vl53l0x"
 #define DRIVER_MCP4725 "mcp4725"
+#define DRIVER_MCP4728 "mcp4728"
 #define DRIVER_TCA9548A "tca9548a"
 #define DRIVER_ADS101X "ads101x"
 #define DRIVER_ADS111X "ads111x"

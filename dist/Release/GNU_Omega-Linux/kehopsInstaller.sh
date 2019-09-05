@@ -32,7 +32,6 @@ checkApp(){
 # TRY TO DOWNLOAD MD5 FILE FROM SERVER
         echo "Start download application MD5 from server..."
         CMD=`wget -P /root/update/ -q https://raw.githubusercontent.com/raphaelthurnherr/kehops_onionOmega/master/dist/Release/GNU_Omega-Linux/kehops.md5`
-
         if [ $? -eq 0 ];
 # MD5 FILE OF THE APPLICATION WAS DOWNLOADED SUCCESSFULLY
         then
@@ -131,10 +130,11 @@ install_update_app(){
     killall kehops;                                                                                                                                             
     sleep 1;                    
 # REMOVE THE OLD BINARY
-    rm /root/kehops/* 
+    rm /root/kehops/kehops
+    rm /root/kehops/kehops.md5
 # COPY THE NEW BINARY FILE
     tar -xvf /root/update/kehops.tar -C /root/kehops/ kehops kehops.md5
-    #cp /root/update/kehops* /root/kehops/                                                                                                                                                    
+    cp /root/update/kehops* /root/kehops/                                                                                                                                                    
 # APPLY THE EXECUTION RIGHTS
     chmod +x /root/kehops/kehops                                                                                                                                     
 } 
@@ -206,8 +206,8 @@ updateApp(){
 	# TRY TO DOWNLOAD BINARY FROM SERVER                                                                                                                                                  
         	echo "Start download TAR firmware from server..."                                                 
                 
-                CMD=`wget -P /root/update/ -q https://raw.githubusercontent.com/raphaelthurnherr/kehops_onionOmega/master/dist/Release/GNU_Omega-Linux/kehops.tar`
-                
+                #CMD=`wget -P /root/update/ -q https://raw.githubusercontent.com/raphaelthurnherr/kehops_onionOmega/master/dist/Release/GNU_Omega-Linux/kehops.tar`
+		CMD=`wget -P /root/update/ -q https://github.com/raphaelthurnherr/kehops_onionOmega/raw/master/dist/Release/kehops.tar`                
 		if [ $? -eq 0 ];
 		then
                 # SUCCESSFULLY DOWNLOAD

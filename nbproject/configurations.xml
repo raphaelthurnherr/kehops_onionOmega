@@ -176,6 +176,8 @@
           <itemPath>hwControl/device_drivers/mcp230xx.h</itemPath>
           <itemPath>hwControl/device_drivers/mcp4725.c</itemPath>
           <itemPath>hwControl/device_drivers/mcp4725.h</itemPath>
+          <itemPath>hwControl/device_drivers/mcp4728.c</itemPath>
+          <itemPath>hwControl/device_drivers/mcp4728.h</itemPath>
           <itemPath>hwControl/device_drivers/pca9629.c</itemPath>
           <itemPath>hwControl/device_drivers/pca9629.h</itemPath>
           <itemPath>hwControl/device_drivers/pca9685.c</itemPath>
@@ -1028,6 +1030,10 @@
       <item path="hwControl/device_drivers/mcp4725.c" ex="false" tool="0" flavor2="0">
       </item>
       <item path="hwControl/device_drivers/mcp4725.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/mcp4728.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/mcp4728.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="hwControl/device_drivers/pca9629.c" ex="false" tool="0" flavor2="0">
       </item>
@@ -1977,6 +1983,10 @@
       <item path="hwControl/device_drivers/mcp4725.c" ex="false" tool="0" flavor2="0">
       </item>
       <item path="hwControl/device_drivers/mcp4725.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/mcp4728.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/mcp4728.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="hwControl/device_drivers/pca9629.c" ex="false" tool="0" flavor2="0">
       </item>
@@ -2928,6 +2938,10 @@
       </item>
       <item path="hwControl/device_drivers/mcp4725.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="hwControl/device_drivers/mcp4728.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/mcp4728.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="hwControl/device_drivers/pca9629.c" ex="false" tool="0" flavor2="0">
       </item>
       <item path="hwControl/device_drivers/pca9629.h" ex="false" tool="3" flavor2="0">
@@ -3876,6 +3890,10 @@
       <item path="hwControl/device_drivers/mcp4725.c" ex="false" tool="0" flavor2="0">
       </item>
       <item path="hwControl/device_drivers/mcp4725.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/mcp4728.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="hwControl/device_drivers/mcp4728.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="hwControl/device_drivers/pca9629.c" ex="false" tool="0" flavor2="9">
       </item>

@@ -35,6 +35,7 @@
 #include "bh1745.h"
 #include "k_vl53l0x.h"
 #include "mcp4725.h"
+#include "mcp4728.h"
 #include "tca9548a.h"
 #include "display_mono.h"
 #include "ads101x.h"
@@ -53,6 +54,7 @@ device_mcp230xx dev_mcp230xx[MAX_IC_DEVICE_PER_TYPE];
 device_bh1745 dev_bh1745[MAX_IC_DEVICE_PER_TYPE];
 device_vl53l0x dev_vl53l0x[MAX_IC_DEVICE_PER_TYPE];
 device_mcp4725 dev_mcp4725[MAX_IC_DEVICE_PER_TYPE];
+device_mcp4728 dev_mcp4728[MAX_IC_DEVICE_PER_TYPE];
 device_tca9548a dev_tca9548a[MAX_IC_DEVICE_PER_TYPE];
 
 device_display dev_U8G2_display[MAX_IC_DEVICE_PER_TYPE];
@@ -68,6 +70,7 @@ unsigned char mcp230xx_count=0;
 unsigned char bh1745_count=0;
 unsigned char vl53l0x_count=0;
 unsigned char mcp4725_count=0;
+unsigned char mcp4728_count=0;
 unsigned char tca9548a_count=0;
 unsigned char ads101x_count=0;
 unsigned char ads111x_count=0;
@@ -278,6 +281,27 @@ int boardHWinit(void){
                 mcp4725_count++;
                 NoDriverFound=0;                
             }
+        
+            // DEVICES TYPE MCP4728 4 CHANNELS DIGITAL ANALOG CONVERTER CONFIGURATION
+            if(!strcmp(boardDevice[i].type, DRIVER_MCP4728)){              
+                // Setting up the mcp4728 Digital analog converter             
+                strcpy(dev_mcp4728[mcp4728_count].deviceName, boardDevice[i].name);
+                dev_mcp4728[mcp4728_count].deviceAddress = boardDevice[i].address;
+                dev_mcp4728[mcp4728_count].vref_mv = 3300;
+                
+                if(mcp4728_init(&dev_mcp4728[mcp4728_count]) != 0){
+                    err++;
+                    printf(" -> ERROR");
+                    dev_mcp4728[mcp4728_count].deviceAddress = 0;
+                }else{
+                    printf(" -> OK");                  
+                }
+            #ifdef INFO_DEBUG                
+                printDeviceData(i, &boardDevice[i]);
+            #endif                
+                mcp4728_count++;
+                NoDriverFound=0;                
+            }        
             
             // DEVICES TYPE TCA9548A 8 CHANNELS I2C  SWITCH
             if(!strcmp(boardDevice[i].type, DRIVER_TCA9548A)){              
@@ -535,6 +559,27 @@ char actuator_setAnalogValue(int aoutID, int value){
         }else 
             printf ("#! Function [actuator_setAnalogValue] -> Unknown driver name: %s\n", kehopsActuators.aout[aoutID].hw_driver.name);
     }
+    
+    // USE DRIVER FOR MCP4728
+    if(!strcmp(kehopsActuators.aout[aoutID].hw_driver.type, DRIVER_MCP4728)){
+        ptrDev = getDriverConfig_ptr(DRIVER_MCP4728, kehopsActuators.aout[aoutID].hw_driver.name);
+        if(ptrDev>=0){
+    #ifdef INFO_DEBUG
+            printf("SET ANALOG VALUE FROM <%s> DRIVERS:  NAME:%s TYPE:%s I2C add: 0x%2x    aout_id: %d     channel: %d     value: %d\n",DRIVER_MCP4725, kehopsActuators.aout[aoutID].hw_driver.name, kehopsActuators.aout[aoutID].hw_driver.type, dev_mcp4725[ptrDev].deviceAddress, aoutID, channel, value);        
+    #endif
+            int channel = kehopsActuators.ain[aoutID].hw_driver.attributes.device_channel;
+            if(dev_mcp4728[ptrDev].deviceAddress > 0)
+                mcp4728_setDACOutput_mV(&dev_mcp4728[ptrDev], channel, value);
+            else
+                {
+                #ifdef INFO_BUS_DEBUG                
+                printf("#! Function [actuator_setAnalogValue] -> I2C Error: Bad address or device not connected\n");
+                #endif
+            }
+            
+        }else 
+            printf ("#! Function [actuator_setAnalogValue] -> Unknown driver name: %s\n", kehopsActuators.aout[aoutID].hw_driver.name);
+    }    
     
     // SUBDRIVER ACTION Check if driver IC need a subdriver and make a post-action if required
     subDriver_onDeactivate(kehopsActuators.aout[aoutID].hw_driver.name);    
@@ -1045,7 +1090,7 @@ int actuator_setKehopsDisplay(unsigned char gfxID){
                     // Display the name in the logo
                     display_addText(&dev_U8G2_display[ptrDev],15,60, 0, sysApp.info.name);
 
-                    // Display the sonar evaluation logo               
+                    // Display the sonar evaluation logo        
                     if(kehops.sonar[0].measure.distance_cm < 10)
                         display_addXBM(&dev_U8G2_display[ptrDev], 14, 0, kehops_us_33x17_0_width, kehops_us_33x17_0_height, kehops_us_33x17_0_bits);
                     if(kehops.sonar[0].measure.distance_cm >= 10 & kehops.sonar[0].measure.distance_cm < 20)
@@ -1318,6 +1363,13 @@ int getDriverConfig_ptr(char * driverType, char * name){
             }
         }        
     }
+    if(!strcmp(driverType, DRIVER_MCP4728)){
+        for(i=0; refFound<0 && i<mcp4728_count ;i++){
+            if(!strcmp(dev_mcp4728[i].deviceName, name)){
+                refFound = i;
+            }
+        }        
+    }    
     if(!strcmp(driverType, DRIVER_TCA9548A)){
         for(i=0; refFound<0 && i<tca9548a_count ;i++){
             if(!strcmp(dev_tca9548a[i].deviceName, name)){

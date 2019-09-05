@@ -7,6 +7,7 @@
  *
  * Library to setup and use the 8 channel MCP230xx GPIO extender I2C device
  * 
+ * MCP23017 Use two bank register (IOCON.BANK =1)
  */
 
 #ifndef I2CSIMU
@@ -37,7 +38,7 @@ int mcp23008_init(device_mcp230xx *mcp230xxconfig){
     int err =0;
     
     // Get the use configuratiom, ignore the 8 MSB if 16bit configuration
-    unsigned char deviceAddress = mcp230xxconfig->deviceAddress & 0x00FF;
+    unsigned char deviceAddress = mcp230xxconfig->deviceAddress;
     unsigned char gpioDirection = mcp230xxconfig->gpioDirection & 0x00FF;
     unsigned char invertedInput = mcp230xxconfig->invertedInput & 0x00FF;
     unsigned char pullupEnable = mcp230xxconfig->pullupEnable & 0x00FF;
@@ -70,7 +71,7 @@ int mcp23008_init(device_mcp230xx *mcp230xxconfig){
  */
 int mcp23017_init(device_mcp230xx *mcp230xxconfig){
     int err =0;    
-    unsigned int deviceAddress = mcp230xxconfig->deviceAddress;
+    unsigned char deviceAddress = mcp230xxconfig->deviceAddress;
     unsigned int gpioDirection = mcp230xxconfig->gpioDirection;
     unsigned int invertedInput = mcp230xxconfig->invertedInput;
     unsigned int pullupEnable = mcp230xxconfig->pullupEnable;
@@ -120,10 +121,16 @@ int mcp23017_init(device_mcp230xx *mcp230xxconfig){
 int mcp230xx_getChannel(device_mcp230xx *mcp230xxconfig, unsigned char channel){
     unsigned char err =0;
     unsigned char deviceAddress = mcp230xxconfig->deviceAddress;
-    int MCP230xx_GPIO_STATE;
+    int MCP230xx_GPIO_STATE = 0;
+    int MCP230xx_GPIOB_STATE = 0;
     unsigned char value=0;
-    
+      
+    // Get the PORT A Value
     err += i2c_readByte(0, deviceAddress, GPIO, &MCP230xx_GPIO_STATE);
+    
+    // Get the PORT B Value (Read "0" on MCP 23008)
+    err += i2c_readByte(0, deviceAddress, GPIO | 0x10, &MCP230xx_GPIOB_STATE);
+    MCP230xx_GPIO_STATE |= MCP230xx_GPIOB_STATE << 8;
     
     if(MCP230xx_GPIO_STATE & (0x01<<channel))
         value = 0;
@@ -146,17 +153,25 @@ int mcp230xx_getChannel(device_mcp230xx *mcp230xxconfig, unsigned char channel){
 int mcp230xx_setChannel(device_mcp230xx *mcp230xxconfig, unsigned char channel, unsigned char state){
     unsigned char err =0;
     int MCP230xx_GPIO_STATE;
-    unsigned char deviceAddress = mcp230xxconfig->deviceAddress;
+    unsigned char GPIOBREG = 0x00;       // By default, PORT A Selected (Reg adresse 0x00..0x0A
     
-    // Sélection du chip d'entrée/sortie qui pilote le pont en H
-    i2c_readByte(0, deviceAddress, GPIO, &MCP230xx_GPIO_STATE);
+    unsigned char deviceAddress = mcp230xxconfig->deviceAddress;
+   
+    // Modify address register (0x10 .. 0x1A) if channel 8..15 are used according the bank register of MCP23017 
+    if(channel >= 8){
+        GPIOBREG = 0x10;
+        channel -= 8;       // Convert 16 port to 2x 8 bit port. (Channel 16 will be channel 7 on PORT B)
+    }
+    
+    // Get the PORT x Value    
+    err += i2c_readByte(0, deviceAddress, GPIO | GPIOBREG, &MCP230xx_GPIO_STATE);
     
     if(state)
         MCP230xx_GPIO_STATE |= (0x01<<channel);
     else
-        MCP230xx_GPIO_STATE &= (0xFF-(0x01<<channel));
+        MCP230xx_GPIO_STATE &= (0xFF-(0x01 << channel));
     
-    err += i2c_write(0, deviceAddress, OLAT, MCP230xx_GPIO_STATE);
+    err += i2c_write(0, deviceAddress, OLAT | GPIOBREG, MCP230xx_GPIO_STATE);
     
     return err;
 }
