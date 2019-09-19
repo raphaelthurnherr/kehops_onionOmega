@@ -19,7 +19,7 @@
 #define CVRTREG 0x00                    // Conversion register
 #define CONFREG 0x01                    // Config register
 #define THRESHOLD_L 0x02		// Threshold low register
-#define THRESHOLD_L 0x03		// Threshold low register
+#define THRESHOLD_H 0x03		// Threshold low register
 
 #include "ads111x.h"
 #include <onion-i2c.h>
