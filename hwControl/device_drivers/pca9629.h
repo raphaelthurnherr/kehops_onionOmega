@@ -21,7 +21,7 @@ typedef struct pca9629{
     char deviceName[25];                        // Device Name of IC
     unsigned char deviceAddress;                // Bus device address
     float pulsesWidth_ms;                       // Specify the pulse width for motor driving
-    unsigned char bipolar_mode;
+    unsigned char driveMode;                    // Set the drive mode (0 wavedrive, 1 fullstep, 2 halfstep)
     unsigned char gpioDirection;                // Specify the GPIO's port dirtection, 1 input, 0 output
 } device_pca9629;
 
