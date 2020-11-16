@@ -33,10 +33,13 @@ int pca9629_init(device_pca9629 *pca9629config){
     
     unsigned char devAddress = pca9629config->deviceAddress;
     unsigned char gpioDirection = pca9629config->gpioDirection & 0x0F;
-    
 
-    if(pca9629config->bipolar_mode)
-        OP_CFG_PHS_DATA |= 0x40;
+    switch(pca9629config->driveMode){
+        case 0 : OP_CFG_PHS_DATA |= 0x10; break;        // Wavedrive
+        case 1 : OP_CFG_PHS_DATA |= 0x40; break;        // Full step
+        case 2 : OP_CFG_PHS_DATA |= 0x80; break;        // Half step
+        default : OP_CFG_PHS_DATA |= 0x10; break;       // Wavedrive default
+    }
         
     err+= i2c_write(0, devAddress, 0x00, 0x20);    // MODE - Configuration du registre MODE (pin INT désactivée, Allcall Adr. désactivé)
     err+= i2c_write(0, devAddress, 0x01, 0xFF);    // WDTOI
