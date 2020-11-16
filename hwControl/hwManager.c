@@ -197,7 +197,7 @@ int resetHardware(t_sysConf * Config);
 
 
 // ------------------------------------------
-// Programme principale TIMER
+// Programme principale HARDWARE MANAGER
 // ------------------------------------------
 void *hwTask (void * arg){
         int i;
@@ -287,8 +287,8 @@ void *hwTask (void * arg){
                         case 40 :   for(i=0;i<NBSTEPPER;i++){
                                         actuator.stepperMotor[i].isRunning = actuator_getStepperState(kehops.stepperWheel[i].config.motor.stepper_motor_id);
                                     }
-                                    break;
-                                
+                                    break;      
+                                    
 			default:
                                   if(i2c_command_queuing[0][CALLBACK]!=0)
                                       processCommandQueue(); break;

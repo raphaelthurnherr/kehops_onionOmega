@@ -92,6 +92,14 @@ extern char actuator_setServoPosition(int doutID, int position);
  */
 extern int actuator_setStepperSpeed(int stepperID, int speed);
 
+/*
+ * \fn char actuator_setStepperDriveMode()
+ * \brief Set the STEPPER drive mode bipolar or unipolar
+ *
+ * \param stepperID, drivemode (one phase, two phase, half step)
+ * \return -
+ */
+extern int actuator_setStepperDriveMode(int stepperID, int driveMode);
 
 /**
  * \fn char actuator_setStepperStepAction()

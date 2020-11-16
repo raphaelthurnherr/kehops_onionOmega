@@ -132,7 +132,8 @@ int boardHWinit(void){
                 else
                     dev_pca9685[pca9685_count].frequency = boardDevice[i].attributes.frequency;     
                 dev_pca9685[pca9685_count].totemPoleOutput=1;                 
-                dev_pca9685[pca9685_count].deviceAddress = boardDevice[i].address;                
+                dev_pca9685[pca9685_count].deviceAddress = boardDevice[i].address; 
+                
                 if(pca9685_init(&dev_pca9685[pca9685_count]) != 0){
                     err++;
                     printf(" -> ERROR");
@@ -147,11 +148,12 @@ int boardHWinit(void){
                 NoDriverFound=0;
             }
             
-        // DEVICES TYPE PCA9529 STEPPER MOTOR DRIVER CONFIGURATION
+        // DEVICES TYPE PCA9629 STEPPER MOTOR DRIVER CONFIGURATION
             if(!strcmp(boardDevice[i].type, DRIVER_PCA9629)){              
                 // Setting up the pca9629 device               
                 strcpy(dev_pca9629[pca9629_count].deviceName, boardDevice[i].name);
                 dev_pca9629[pca9629_count].deviceAddress = boardDevice[i].address;
+                dev_pca9629[pca9629_count].gpioDirection = 0x03;                   // NEED TO BE DEFINE VIA CONFIG DEVICE.CFG (Output active low)
                 if(pca9629_init(&dev_pca9629[pca9629_count]) != 0){
                     err++;
                     printf(" -> ERROR");
@@ -182,7 +184,7 @@ int boardHWinit(void){
                 efm8bb_count++;
                 NoDriverFound=0;                
             }
-            
+
             // DEVICES TYPE MCP23008 GPIO EXTENDER CONFIGURATION
             if(!strcmp(boardDevice[i].type, DRIVER_MCP23008)){              
                 // Setting up the mcp23008GPIO extender              
@@ -485,7 +487,7 @@ char actuator_setDoutValue(int doutID, int value){
         ptrDev = getDriverConfig_ptr(DRIVER_MCP23008, kehopsActuators.dout[doutID].hw_driver.name);
         if(ptrDev>=0){
     #ifdef INFO_DEBUG            
-            printf("SET DOUT VALUE FROM <%s> DRIVERS:  NAME:%s TYPE:%s I2C add: 0x%2x    dout_id: %d     channel: %d     state: %d\n",DRIVER_MCP230XX, kehopsActuators.dout[doutID].hw_driver.name, kehopsActuators.dout[doutID].hw_driver.type, dev_mcp230xx[ptrDev].deviceAddress, doutID, channel, value);        
+            printf("SET DOUT VALUE FROM <%s> DRIVERS:  NAME:%s TYPE:%s I2C add: 0x%2x    dout_id: %d     channel: %d     state: %d\n", DRIVER_MCP23008, kehopsActuators.dout[doutID].hw_driver.name, kehopsActuators.dout[doutID].hw_driver.type, dev_mcp230xx[ptrDev].deviceAddress, doutID, channel, value);        
     #endif            
             if(dev_mcp230xx[ptrDev].deviceAddress > 0)
                 mcp230xx_setChannel(&dev_mcp230xx[ptrDev], channel, value);
@@ -505,10 +507,30 @@ char actuator_setDoutValue(int doutID, int value){
         ptrDev = getDriverConfig_ptr(DRIVER_MCP23008, kehopsActuators.dout[doutID].hw_driver.name);
         if(ptrDev>=0){
     #ifdef INFO_DEBUG            
-            printf("SET DOUT VALUE FROM <%s> DRIVERS:  NAME:%s TYPE:%s I2C add: 0x%2x    dout_id: %d     channel: %d     state: %d\n",DRIVER_MCP230XX, kehopsActuators.dout[doutID].hw_driver.name, kehopsActuators.dout[doutID].hw_driver.type, dev_mcp230xx[ptrDev].deviceAddress, doutID, channel, value);        
+            printf("SET DOUT VALUE FROM <%s> DRIVERS:  NAME:%s TYPE:%s I2C add: 0x%2x    dout_id: %d     channel: %d     state: %d\n",DRIVER_MCP23008, kehopsActuators.dout[doutID].hw_driver.name, kehopsActuators.dout[doutID].hw_driver.type, dev_mcp230xx[ptrDev].deviceAddress, doutID, channel, value);        
     #endif            
             if(dev_mcp230xx[ptrDev].deviceAddress > 0)
                 mcp230xx_setChannel(&dev_mcp230xx[ptrDev], channel, value);
+            else
+                {
+                #ifdef INFO_BUS_DEBUG
+                printf("#! Function [actuator_setDoutValue] -> I2C Error: Bad address or device not connected\n");
+                #endif
+        }
+            
+        }else 
+            printf ("#! Function [actuator_setDoutValue] -> Unknown driver name: %s\n", kehopsActuators.dout[doutID].hw_driver.name);
+    }
+    
+    // USE DRIVER FOR PCA9629 (P0-P3)
+    if(!strcmp(kehopsActuators.dout[doutID].hw_driver.type, DRIVER_PCA9629)){
+        ptrDev = getDriverConfig_ptr(DRIVER_PCA9629, kehopsActuators.dout[doutID].hw_driver.name);
+        if(ptrDev>=0){
+    #ifdef INFO_DEBUG            
+            printf("SET DOUT VALUE FROM <%s> DRIVERS:  NAME:%s TYPE:%s I2C add: 0x%2x    dout_id: %d     channel: %d     state: %d\n",DRIVER_PCA9629, kehopsActuators.dout[doutID].hw_driver.name, kehopsActuators.dout[doutID].hw_driver.type, dev_mcp230xx[ptrDev].deviceAddress, doutID, channel, value);        
+    #endif            
+            if(dev_pca9629[ptrDev].deviceAddress > 0)
+                PCA9629_setChannel(&dev_pca9629[ptrDev], channel, value);
             else
                 {
                 #ifdef INFO_BUS_DEBUG
@@ -705,7 +727,7 @@ int actuator_setStepperStepAction(int stepperID, int direction, int stepCount){
  * \fn char actuator_setStepperSpeed()
  * \brief Get the STEPPER hardware id of and setup the speed
  *
- * \param motorNumber, direction, stepCount
+ * \param stepperID, speed
  * \return -
  */
 
@@ -744,6 +766,54 @@ int actuator_setStepperSpeed(int stepperID, int speed){
             }                
             
         }else printf ("#! Function [actuator_setStepperSpeed] -> Unknown driver name: %s\n", kehopsActuators.stepper_motors[stepperID].hw_driver.name);
+     }
+
+    // SUBDRIVER ACTION Check if driver IC need a subdriver and make a post-action if required
+    subDriver_onDeactivate(kehopsActuators.stepper_motors[stepperID].hw_driver.name);
+    
+    return (1);
+}
+
+/*
+ * \fn char actuator_setStepperDriveMode()
+ * \brief Set the STEPPER drive mode bipolar or unipolar
+ *
+ * \param stepperID, drivemode
+ * \return -
+ */
+
+int actuator_setStepperDriveMode(int stepperID, int driveMode){
+   printf("SET STEPPER DRIVE MODE: NAME: %s TYPE:%s   stepper_id: %d     DRIVEMODE: %d \n", kehopsActuators.stepper_motors[stepperID].hw_driver.name,kehopsActuators.stepper_motors[stepperID].hw_driver.type, stepperID, driveMode);    
+    // SUBDRIVER ACTION Check if driver IC need a subdriver and make a pre-action if required
+    subDriver_onActivate(kehopsActuators.stepper_motors[stepperID].hw_driver.name);
+    
+    // USE DRIVER FOR PCA9629
+     if(!strcmp(kehopsActuators.stepper_motors[stepperID].hw_driver.type, DRIVER_PCA9629)){    
+        int ptrDev;
+        unsigned char modeValue;
+
+        switch(driveMode){
+            case 0 : modeValue = 0x00; break;           // One phase
+            case 1 : modeValue = 0x01; break;           // two phase
+            case 2 : modeValue = 0x03; break;           // two phase half step
+            default: modeValue = 0x01; break;
+        }
+
+        ptrDev = getDriverConfig_ptr(DRIVER_PCA9629, kehopsActuators.stepper_motors[stepperID].hw_driver.name);
+        if(ptrDev>=0){
+#ifdef INFO_DEBUG
+            printf("SET STEPPER DRIVE MODE: NAME: %s TYPE:%s  I2Cadd: 0x%2x    stepper_id: %d     DRIVEMODE: %d \n", kehopsActuators.stepper_motors[stepperID].hw_driver.name,kehopsActuators.stepper_motors[stepperID].hw_driver.type, dev_pca9629[ptrDev].deviceAddress, stepperID, driveMode);    
+#endif            
+            if(dev_pca9629[ptrDev].deviceAddress > 0)
+            PCA9629_StepperDriveMode(&dev_pca9629[ptrDev], modeValue);
+            else
+                {
+                #ifdef INFO_BUS_DEBUG                
+                printf("#! Function [actuator_setStepperDriveMode] -> I2C Error: Bad address or device not connected\n");
+                #endif 
+            }                
+            
+        }else printf ("#! Function [actuator_setStepperDriveMode] -> Unknown driver name: %s\n", kehopsActuators.stepper_motors[stepperID].hw_driver.name);
      }
 
     // SUBDRIVER ACTION Check if driver IC need a subdriver and make a post-action if required
@@ -918,6 +988,25 @@ int actuator_getDigitalInput(unsigned char dinID){
         //printf ("#! NOW USING  DRIVER 'MCP230xx' for DIN #%d\n", dinID);
     }    
    
+        // USE DRIVER FOR PCA9629 (P0-P3)
+    if(!strcmp(kehopsActuators.din[dinID].hw_driver.type, DRIVER_PCA9629)){
+        ptrDev = getDriverConfig_ptr(DRIVER_PCA9629, kehopsActuators.din[dinID].hw_driver.name);                
+        if(ptrDev>=0){
+            if(dev_pca9629[ptrDev].deviceAddress > 0)
+                value = PCA9629_getChannel(&dev_pca9629[ptrDev], kehopsActuators.din[dinID].hw_driver.attributes.device_channel);
+            else
+                {
+                #ifdef INFO_BUS_DEBUG                
+                printf("#! Function [actuator_getDigitalInput] -> I2C Error: Bad address or device not connected\n");
+                #endif             
+            }              
+        }else{
+                printf ("#! Function [actuator_getDigitalInput] -> Unknown driver name: %s\n", kehopsActuators.din[dinID].hw_driver.name);
+                value = -1;
+        }
+        //printf ("#! NOW USING  DRIVER 'PCA9629' for DIN #%d\n", dinID);
+    }
+    
     // SUBDRIVER ACTION Check if driver IC need a subdriver and make a post-action if required
     subDriver_onDeactivate(kehopsActuators.din[dinID].hw_driver.name);
     
@@ -1336,12 +1425,13 @@ int getDriverConfig_ptr(char * driverType, char * name){
         }        
     }
     if(!strcmp(driverType, DRIVER_MCP23017)){
-    for(i=0; refFound<0 && i<mcp230xx_count ;i++){
-        if(!strcmp(dev_mcp230xx[i].deviceName, name)){
-            refFound = i;
-        }
-    }        
+        for(i=0; refFound<0 && i<mcp230xx_count ;i++){
+            if(!strcmp(dev_mcp230xx[i].deviceName, name)){
+                refFound = i;
+            }
+        }        
     }
+    
     if(!strcmp(driverType, DRIVER_PCA9629)){
         for(i=0; refFound<0 && i<pca9629_count ;i++){
             if(!strcmp(dev_pca9629[i].deviceName, name)){
