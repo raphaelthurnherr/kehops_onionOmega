@@ -10,6 +10,8 @@
  * 
  */
 
+//#define DEBUG_INFO
+
 #define MAX_FILE_BUFF 32768
 
 #define FILE_KEY_CONFIG_ROBOT "{'robot'"
@@ -318,10 +320,14 @@ void extractKehopsConfig(char * srcDataBuffer){
     // LED Setting
         jRead((char *)srcDataBuffer, FILE_KEY_CONFIG_LED, &cfg_devices_list );
 
+           
         // RECHERCHE DATA DE TYPE ARRAY
         if(cfg_devices_list.dataType == JREAD_ARRAY ){
-            // Get the number of motors in array
+            // Get the number of led in array
             nbOfDeviceInConf=cfg_devices_list.elements;
+            #ifdef DEBUG_INFO
+            printf("LOADING LED.....  nbOfDeviceInConf: %d", nbOfDeviceInConf);
+            #endif  
 
             // Reset led config before reading
             for(i=0;i<nbOfDeviceInConf;i++){

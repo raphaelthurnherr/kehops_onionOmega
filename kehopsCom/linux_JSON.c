@@ -8,7 +8,7 @@
  ============================================================================
  */
 
-
+#define DEBUG_INFO
 
 #define KEY_TO "{'MsgTo'"
 #define KEY_FROM "{'MsgFrom'"
@@ -188,8 +188,6 @@ ALGOID myReplyMessage;
 char GetAlgoidMsg(ALGOID *destMessage, char *srcBuffer){
 	struct jReadElement element, cfg_device_list, sysWifiCommand;
 	int i;
-        char readString[128];
-        ALGOID myMessage;
         //myMessage = &destMessage;
 	// ENTETE DE MESSAGE
 		jRead_string((char *)srcBuffer, KEY_TO, destMessage->msgTo, 15, NULL );

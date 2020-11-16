@@ -216,8 +216,6 @@ int PCA9629_setChannel(device_pca9629 *pca9629config, unsigned char channel, uns
     unsigned char GPIOCFGREG;
     
     unsigned char deviceAddress = pca9629config->deviceAddress;
-   
-    printf("HOHHHHHHHHHH--------------  I2C AddR 0x%2x channel %d state: %d\n", pca9629config->deviceAddress, channel, state);
     
     // Get the PORT x GPIO mode (shared register))
     err += i2c_readByte(0, deviceAddress, 0x03, &PCA9629_GPIO_MODE_IO);
