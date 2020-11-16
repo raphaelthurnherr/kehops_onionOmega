@@ -17,7 +17,7 @@
 
 //#define PRINT_MAP_INFO
 
-#define MAX_MQTT_BUFF 8192
+#define MAX_MQTT_BUFF 32768
 
 // Library dependency
 #include <stdlib.h>

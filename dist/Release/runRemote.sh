@@ -11,17 +11,17 @@ echo Build code: \# $((number))
 
 echo "RunRemote.sh RELEASE"
 #md5sum /home/raph/ownCloud/dev/Projets/kehops_onionOmega/dist/Release/GNU_Omega-Linux/kehops | cut -c -32 > dist/Release/GNU_Omega-Linux/kehops.md5
-md5sum /home/raph-pnp/ownCloud/dev/Projets/kehops_onionOmega/dist/Release/GNU_Omega-Linux/kehops | cut -c -32 > dist/Release/GNU_Omega-Linux/kehops.md5
-echo "Fichier MD5 cr�e: "`cat dist/Release/GNU_Omega-Linux/kehops.md5`
+#md5sum /home/raph-pnp/ownCloud/dev/Projets/kehops_onionOmega/dist/Release/GNU_Omega-Linux/kehops | cut -c -32 > dist/Release/GNU_Omega-Linux/kehops.md5
+echo "Fichier MD5 cree: "`cat dist/Release/GNU_Omega-Linux/kehops.md5`
 
-echo "Compression des fichiers binaires \"kehops.tar\""
-tar -cvf dist/Release/kehops.tar -C dist/Release/GNU_Omega-Linux/ deviceMap.cfg devices.cfg kehops.cfg kehops_wifi.sh kehops kehops.md5
+#echo "Compression des fichiers binaires \"kehops.tar\""
+#tar -cvf dist/Release/kehops.tar -C dist/Release/GNU_Omega-Linux/ deviceMap.cfg devices.cfg kehops.cfg kehops_wifi.sh kehops kehops.md5
 
 echo "Transfere des fichiers binaire..."
 #rsync -a /home/raph/ownCloud/dev/Projets/kehops_onionOmega/dist/Release/GNU_Omega-Linux/kehops root@192.168.3.1:~/kehops
-rsync -a /home/raph-pnp/ownCloud/dev/Projets/kehops_onionOmega/dist/Release/GNU_Omega-Linux/kehops root@192.168.3.1:~/kehops
+rsync -a /home/raph-pnp/ownCloud/dev/Projets/kehops_onionOmega/dist/Debug/GNU_Omega-Linux/kehops root@192.168.3.1:~/kehops
 
-echo "Transfere du fichier MD5 du binaire..."
+#echo "Transfere du fichier MD5 du binaire..."
 #rsync -a /home/raph-pnp/Documents/dev/embedded_soft/kehops_onionOmega/dist/Release/GNU_Omega-Linux/kehops.md5  root@192.168.3.1:~/kehops
 #echo "Transfere du script de mise à jour"
 #rsync -a /home/raph-pnp/Documents/dev/embedded_soft/kehops_onionOmega/dist/Release/GNU_Omega-Linux/kehopsManager.sh  root@192.168.3.1:~       

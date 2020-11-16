@@ -1,4 +1,4 @@
-#define FIRMWARE_VERSION "1.3.2"
+#define FIRMWARE_VERSION "1.3.3"
 
 #define DEFAULT_EVENT_STATE 1   
 
@@ -129,7 +129,7 @@ int main(int argc, char *argv[]) {
         
 // Cr�ation de la t�che pour la gestion de la messagerie avec ALGOID
 
-	if(InitMessager(&sysApp.info.name, &sysApp.info.group)) printf ("#[CORE] Creation t�che messagerie : ERREUR\n");
+	if(InitMessager(&sysApp.info.name, &sysApp.info.group)) printf ("#[CORE] Creation tache messagerie : ERREUR\n");
 	else printf ("#[CORE] Demarrage tache Messager: OK\n");
 
         
@@ -207,7 +207,6 @@ int main(int argc, char *argv[]) {
                     default : break;
             }
         }
-
 
 	// Gestion de la v�locit� pour une acceleration proggressive
     	// modification de la v�locit� environ chaque 50mS
@@ -661,6 +660,8 @@ int processmessage(void){
                                 // CONFIG COMMAND FOR LED SETTING
                                     for(i=0;i<message.Config.ledValueCnt; i++){
                                         messageResponse[valCnt].CONFIGresponse.ledValueCnt=message.Config.ledValueCnt;
+//                                        messageResponse[valCnt].CONFIGresponse.ledValueCnt=NBLED;
+                                        
                                         
                                         // Check if led exist...
                                         if(message.Config.led[i].id >= 0){
@@ -675,7 +676,7 @@ int processmessage(void){
                                             }
 
                                             if(!strcmp(message.Config.led[i].name, "delete")){
-                            // TODO: DELETE MOTOR FROM FILE
+                            // TODO: DELETE LED FROM FILE
                                             }else{                           
                                             
                                                 // Save config for led name
@@ -719,7 +720,7 @@ int processmessage(void){
                                             }
 
                                             if(!strcmp(message.Config.pwm[i].name, "delete")){
-                            // TODO: DELETE MOTOR FROM FILE
+                            // TODO: DELETE PWM FROM FILE
                                             }else{                                            
                                                 // Save config for pwm name
                                                 strcpy(kehops.pwm[message.Config.pwm[i].id].config.name,message.Config.pwm[i].name);
@@ -762,7 +763,7 @@ int processmessage(void){
                                             }
 
                                             if(!strcmp(message.Config.Aout[i].name, "delete")){
-                            // TODO: DELETE MOTOR FROM FILE
+                            // TODO: DELETE AOUT FROM FILE
                                             }else{                                            
                                                 // Save config for pwm name
                                                 strcpy(kehops.aout[message.Config.Aout[i].id].config.name,message.Config.Aout[i].name);
@@ -805,7 +806,7 @@ int processmessage(void){
                                             }
 
                                             if(!strcmp(message.Config.din[i].name, "delete")){
-                            // TODO: DELETE MOTOR FROM FILE
+                            // TODO: DELETE DIN FROM FILE
                                             }else{ 
                                                 
                                                 // Save config for din name
