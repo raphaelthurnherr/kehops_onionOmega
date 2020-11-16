@@ -1,6 +1,7 @@
 #define MAX_MQTT_BUFF 32768
 
 #include "../type.h"
+#include "../buggy_descriptor.h"
 
 // DEFINITION DES TYPES DE MESSAGE
 typedef enum msgformat{
@@ -303,18 +304,18 @@ struct mConfig{
         struct mBroker broker;
         struct mAppConf action;
         struct mInfoID robot;
-        struct mMotConfig motor[10];
-        struct mWheelConfig wheel[10];
-        struct mStepperConfig stepper[10];
-        struct mLedConfig led[10];
-        struct mLedConfig pwm[10];
-        struct mAoutConfig Aout[10];
-        struct mRGB rgb[10];
-        struct mDisplayConfig display[10];
-        struct mDin btn[10];
-        struct mDin din[10];
-        struct mAin sonar[10];
-        struct mAin ain[10];        
+        struct mMotConfig motor[MAXMOTOR];
+        struct mWheelConfig wheel[MAXMOTOR];
+        struct mStepperConfig stepper[MAXSTEPPER];
+        struct mLedConfig led[MAXLED];
+        struct mLedConfig pwm[MAXPWM];
+        struct mAoutConfig Aout[MAXAOUT];
+        struct mRGB rgb[MAXRGBC];
+        struct mDisplayConfig display[MAXGFX];
+        struct mDin btn[MAXBTN];
+        struct mDin din[MAXDIN];
+        struct mAin sonar[MAXSONAR];
+        struct mAin ain[MAXAIN];        
 };
 
 // Structure d'un message algoid recu
