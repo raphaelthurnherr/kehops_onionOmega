@@ -13,6 +13,8 @@
 #ifndef PCA9629_H
 #define PCA9629_H
 
+#define PCA_9629A_CLK_PRESCALER_REGVALUE  1
+
 /**
  * \struct device_pca9629 [pca9629.h] Configuration structure definition
  */
@@ -20,7 +22,8 @@
 typedef struct pca9629{
     char deviceName[25];                        // Device Name of IC
     unsigned char deviceAddress;                // Bus device address
-    float pulsesWidth_ms;                       // Specify the pulse width for motor driving
+    //float pulsesWidth_ms;                       // Specify the pulse width for motor driving
+    int frequency;                       // Specify the pulse width for motor driving
     unsigned char driveMode;                    // Set the drive mode (0 wavedrive, 1 fullstep, 2 halfstep)
     unsigned char gpioDirection;                // Specify the GPIO's port dirtection, 1 input, 0 output
 } device_pca9629;

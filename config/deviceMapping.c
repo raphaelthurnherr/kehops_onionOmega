@@ -15,7 +15,7 @@
  * 
  */
 
-//#define PRINT_MAP_INFO
+#define PRINT_MAP_INFO
 
 #define MAX_MQTT_BUFF 32768
 
@@ -94,9 +94,9 @@ char LoadDevicesDescriptor(char * srcDataBuffer, devices_list * boardDevice){
                     
                     jRead((char *)deviceData.pValue, KEY_DRIVER_STR_ADDRESS, &deviceSetting);
                     if(deviceSetting.dataType == JREAD_STRING){
-                        // Convert string to int
+                        // Convert string HEX format to to int
                         if(jRead_string((char *)deviceData.pValue, KEY_DRIVER_STR_ADDRESS, strValue, 25, NULL )>0)
-                            deviceAddress = strtol(strValue, NULL, 0);
+                            deviceAddress = strtol(strValue, NULL, 0) & 0xFF;
                         else 
                             deviceAddress = -1;
                     }
@@ -106,22 +106,81 @@ char LoadDevicesDescriptor(char * srcDataBuffer, devices_list * boardDevice){
                             else
                                 deviceAddress = -1;
                     }                    
-
+                    
+                    // DEVICES DATA VALIDE WITH ADDRESS
                     if(deviceAddress >= 0){
                         boardDevice[i].address = deviceAddress;
                         // Get the type of the device
                         if(jRead_string((char *)deviceData.pValue, KEY_DRIVER_STR_TYPE, strValue, 25, NULL )>0)
                             strcpy(boardDevice[i].type, strValue);
                         else strcpy(boardDevice[i].type, "error");
+
+                        // Get the GPIO DIRECTION attributes
+                        jRead((char *)deviceData.pValue, KEY_DEVICE_OBJ_ATTRIBUTES_GPIODIRECTION, &deviceSetting);
+                        if(deviceSetting.dataType == JREAD_STRING){
+                        // Convert string HEX format to to int
+                            if(jRead_string((char *)deviceData.pValue, KEY_DEVICE_OBJ_ATTRIBUTES_GPIODIRECTION, strValue, 25, NULL )>0){
+                                boardDevice[i].attributes.gpioDirection = strtol(strValue, NULL, 0) & 0xFFFF;
+                            }
+                            else 
+                                boardDevice[i].attributes.gpioDirection = -1;
+                        }
+                        else{
+                               if(deviceSetting.dataType == JREAD_NUMBER)
+                                   boardDevice[i].attributes.gpioDirection = jRead_int((char *)deviceData.pValue, KEY_DEVICE_OBJ_ATTRIBUTES_GPIODIRECTION, NULL); 
+                               else
+                                   boardDevice[i].attributes.gpioDirection = -1;
+                       }
                         
+                        // Get the GPIO PULLUP attributes
+                        jRead((char *)deviceData.pValue, KEY_DEVICE_OBJ_ATTRIBUTES_GPIOPULLUP, &deviceSetting);
+                        if(deviceSetting.dataType == JREAD_STRING){
+                        // Convert string HEX format to to int
+                            if(jRead_string((char *)deviceData.pValue, KEY_DEVICE_OBJ_ATTRIBUTES_GPIOPULLUP, strValue, 25, NULL )>0){
+                                boardDevice[i].attributes.gpioPullupEnable = strtol(strValue, NULL, 0) & 0xFFFF;
+                            }
+                            else 
+                                boardDevice[i].attributes.gpioPullupEnable = -1;
+                        }
+                        else{
+                               if(deviceSetting.dataType == JREAD_NUMBER)
+                                   boardDevice[i].attributes.gpioPullupEnable = jRead_int((char *)deviceData.pValue, KEY_DEVICE_OBJ_ATTRIBUTES_GPIOPULLUP, NULL); 
+                               else
+                                   boardDevice[i].attributes.gpioPullupEnable = -1;
+                       }                        
 
                         // Get the frequency attributes for frequency                       
                         boardDevice[i].attributes.frequency = jRead_int((char *)deviceData.pValue, KEY_DEVICE_OBJ_ATTRIBUTES_FREQUENCY, NULL); 
-                        
-                        // Get the frequency attributes for width and height
+                           
+                        // Get the screen attributes for width and height
                         boardDevice[i].attributes.width = jRead_int((char *)deviceData.pValue, KEY_DEVICE_OBJ_ATTRIBUTES_WIDTH, NULL); 
                         boardDevice[i].attributes.height = jRead_int((char *)deviceData.pValue, KEY_DEVICE_OBJ_ATTRIBUTES_HEIGHT, NULL); 
-                        
+      
+                        // Get the DRIVEMODE attributes
+                        jRead((char *)deviceData.pValue, KEY_DEVICE_OBJ_ATTRIBUTES_DRIVEMODE, &deviceSetting);
+                        if(deviceSetting.dataType == JREAD_STRING){
+                        // Get the drivemode from string
+                            jRead_string((char *)deviceData.pValue, KEY_DEVICE_OBJ_ATTRIBUTES_DRIVEMODE, strValue, 25, &i );
+                            if(!strcmp(strValue, "wave")){
+                               //kehops.stepperWheel[deviceId].config.motor.inverted = 1;
+                                boardDevice[i].attributes.driveMode = 0;
+                            }else
+                                if(!strcmp(strValue, "fullstep")){
+                                    boardDevice[i].attributes.driveMode = 1;
+                                }else
+                                    if(!strcmp(strValue, "halfstep")){
+                                        boardDevice[i].attributes.driveMode = 2;
+                                    }else
+                                        boardDevice[i].attributes.driveMode = -1;            // Default drivemode to wavdrive
+                        }
+                        else{
+                               if(deviceSetting.dataType == JREAD_NUMBER)
+                                   boardDevice[i].attributes.driveMode = jRead_int((char *)deviceData.pValue, KEY_DEVICE_OBJ_ATTRIBUTES_DRIVEMODE, NULL); 
+                               else
+                                   boardDevice[i].attributes.driveMode = -1;
+                       }                                                
+                                   
+                
                         // Get the init data attributes for devInit                       
                         jRead((char *)deviceData.pValue, KEY_DEVICE_OBJ_ATTRIBUTES_DEVINIT, &deviceSetting);
                         if(deviceSetting.dataType == JREAD_ARRAY){
@@ -548,9 +607,14 @@ unsigned char printBoardData(int partsNb, struct device * device){
 unsigned char printDeviceData(int deviceNb, devices_list * device){
     int i,j;
     
-    printf("\n#%d \n |__ Name: %s\n |__ Type: %s\n |__ Address: 0x%2x\n", deviceNb,device->name, device->type, device->address);
+    printf("\n#%d \n |__ Name: %s\n |__ Type: %s\n |__ Address: 0x%2x\n |__ Attributes:\n", deviceNb,device->name, device->type, device->address);
+    printf("     |__frequency: %d\n", device->attributes.frequency);
+    printf("     |__gpioDirection: 0x%2x (%d)\n", device->attributes.gpioDirection & 0xFFFF, device->attributes.gpioDirection);
+    printf("     |__gpioPullupEnable: 0x%2x (%d)\n", device->attributes.gpioPullupEnable & 0xFFFF, device->attributes.gpioPullupEnable);
+    printf("     |__driveMode: 0x%2x (%d)\n", device->attributes.driveMode & 0xFFFF, device->attributes.driveMode);
+    
     if(device->attributes.deviceInit[0].regAddr > 0){
-        printf(" |__ Attributes:\n     |__deviceInit\n");
+        printf("     |__deviceInit\n");
         for(i=0;i<32;i++){
             if(device->attributes.deviceInit[i].regAddr > 0){
                  printf("        |__RegAdr: %d    RegData: %d\n",
@@ -620,6 +684,10 @@ void clearDeviceSettings(devices_list * boardDevice){
     // Init ID of device to "unknown"
     for(i=0;i<MAX_BOARD_DEVICE; i++){
         boardDevice[i].address = -1;
+        boardDevice[i].attributes.frequency = -1;
+        boardDevice[i].attributes.gpioDirection = -1;
+        boardDevice[i].attributes.gpioPullupEnable = -1;
+        boardDevice[i].attributes.driveMode = -1;
         strcpy(boardDevice[i].sub_driver.name, "");
         for(j=0;j<32;j++){
             boardDevice[i].attributes.deviceInit[j].regAddr = -1;

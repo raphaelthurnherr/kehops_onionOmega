@@ -48,6 +48,9 @@ struct addrReg {
 struct deviceAttributes{
     struct addrReg deviceInit[32];
     int frequency;
+    int gpioDirection;
+    int gpioPullupEnable;
+    int driveMode;
     int width;
     int height;
 };

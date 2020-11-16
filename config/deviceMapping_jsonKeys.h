@@ -53,6 +53,9 @@
 #define KEY_DRIVER_STR_TYPE "{'type'"
 #define KEY_DEVICE_OBJ_ATTRIBUTES_DEVINIT "{'attributes'{'deviceInit'"
 #define KEY_DEVICE_OBJ_ATTRIBUTES_FREQUENCY "{'attributes'{'frequency'"
+#define KEY_DEVICE_OBJ_ATTRIBUTES_GPIODIRECTION "{'attributes'{'gpioDirection'"
+#define KEY_DEVICE_OBJ_ATTRIBUTES_GPIOPULLUP "{'attributes'{'gpioPullupEnable'"
+#define KEY_DEVICE_OBJ_ATTRIBUTES_DRIVEMODE "{'attributes'{'driveMode'"
 #define KEY_DEVICE_OBJ_ATTRIBUTES_WIDTH "{'attributes'{'width'"
 #define KEY_DEVICE_OBJ_ATTRIBUTES_HEIGHT "{'attributes'{'height'"
 

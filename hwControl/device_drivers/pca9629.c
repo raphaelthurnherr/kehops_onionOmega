@@ -63,10 +63,10 @@ int pca9629_init(device_pca9629 *pca9629config){
     err+= i2c_write(0, devAddress, 0x13, 0xFF);    // CWSCOUNTH
     err+= i2c_write(0, devAddress, 0x14, 0xFF);    // CCWSCOUNTL - Nombre de pas CCW
     err+= i2c_write(0, devAddress, 0x15, 0xFF);    // CCWSCOUNTH
-    err+= i2c_write(0, devAddress, 0x16, 0x9A);    // CWPWL - Vitesse / Largeur d'impulsion pour CW (1mS)
-    err+= i2c_write(0, devAddress, 0x17, 0x02);    // CWPWH
-    err+= i2c_write(0, devAddress, 0x18, 0x9A);    // CCWPWL - Vitesse / Largeur d'impulsion pour CCW
-    err+= i2c_write(0, devAddress, 0x19, 0x02);    // CCWPWH
+    err+= i2c_write(0, devAddress, 0x16, 0x4D);    // CWPWL - Vitesse / Largeur d'impulsion pour CW (1mS)
+    err+= i2c_write(0, devAddress, 0x17, 0x01);    // CWPWH
+    err+= i2c_write(0, devAddress, 0x18, 0x4D);    // CCWPWL - Vitesse / Largeur d'impulsion pour CCW
+    err+= i2c_write(0, devAddress, 0x19, 0x01);    // CCWPWH
     err+= i2c_write(0, devAddress, 0x1A, 0x00);    // MCNTL - Registre contrôle moteur
     err+= i2c_write(0, devAddress, 0x1B, 0xE2);    // SUBA1
     err+= i2c_write(0, devAddress, 0x1C, 0xE4);    // SUBA2

@@ -21,6 +21,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+#include <math.h>
 
 #include "hardwareDrivers.h"
 #include "../configManager.h"
@@ -127,12 +128,13 @@ int boardHWinit(void){
             if(!strcmp(boardDevice[i].type, DRIVER_PCA9685)){              
                 // Setting up the pca9685 device
                 strcpy(dev_pca9685[pca9685_count].deviceName, boardDevice[i].name);
+                dev_pca9685[pca9685_count].deviceAddress = boardDevice[i].address; 
+                                
                 if(boardDevice[i].attributes.frequency <= 0)
                     dev_pca9685[pca9685_count].frequency =200;
                 else
-                    dev_pca9685[pca9685_count].frequency = boardDevice[i].attributes.frequency;     
+                    dev_pca9685[pca9685_count].frequency = boardDevice[i].attributes.frequency;
                 dev_pca9685[pca9685_count].totemPoleOutput=1;                 
-                dev_pca9685[pca9685_count].deviceAddress = boardDevice[i].address; 
                 
                 if(pca9685_init(&dev_pca9685[pca9685_count]) != 0){
                     err++;
@@ -153,7 +155,24 @@ int boardHWinit(void){
                 // Setting up the pca9629 device               
                 strcpy(dev_pca9629[pca9629_count].deviceName, boardDevice[i].name);
                 dev_pca9629[pca9629_count].deviceAddress = boardDevice[i].address;
-                dev_pca9629[pca9629_count].gpioDirection = 0x03;                   // NEED TO BE DEFINE VIA CONFIG DEVICE.CFG (Output active low)
+
+                if(boardDevice[i].attributes.frequency <= 0)
+                    dev_pca9629[pca9629_count].frequency =150;
+                else
+                    dev_pca9629[pca9629_count].frequency = boardDevice[i].attributes.frequency;
+   
+                if(boardDevice[i].attributes.gpioDirection <= 0)
+                    dev_pca9629[pca9629_count].gpioDirection = 0xFF;
+                else
+                    dev_pca9629[pca9629_count].gpioDirection = boardDevice[i].attributes.gpioDirection;
+                
+                // Get the drive mode, (wavedrive, fullstep, halfstep)
+                if(boardDevice[i].attributes.driveMode <= 0)
+                    dev_pca9629[pca9629_count].driveMode = 0;               // Define wavedrive as default
+                else
+                    dev_pca9629[pca9629_count].driveMode = boardDevice[i].attributes.driveMode;              
+                
+                
                 if(pca9629_init(&dev_pca9629[pca9629_count]) != 0){
                     err++;
                     printf(" -> ERROR");
@@ -166,7 +185,8 @@ int boardHWinit(void){
                 pca9629_count++;
                 NoDriverFound=0;
             }
-            
+//            dev_pca9629[pca9629_count].pulsesWidth_ms
+                    
             // DEVICES TYPE EFM8 MICROCONTROLER KEHOPS FIRMWARE CONFIGURATION
             if(!strcmp(boardDevice[i].type, DRIVER_EFM8BB)){              
                 // Setting up the efm8bb MCU device               
@@ -190,8 +210,19 @@ int boardHWinit(void){
                 // Setting up the mcp23008GPIO extender              
                 strcpy(dev_mcp230xx[mcp230xx_count].deviceName, boardDevice[i].name);
                 dev_mcp230xx[mcp230xx_count].deviceAddress = boardDevice[i].address;
-                dev_mcp230xx[mcp230xx_count].pullupEnable  = 0xff;                   // NEED TO BE DEFINE VIA CONFIG DEVICE.CFG
-                dev_mcp230xx[mcp230xx_count].gpioDirection = 0x60;                   // NEED TO BE DEFINE VIA CONFIG DEVICE.CFG
+
+                // Setting up the mcp23008GPIO port direction 
+                if(boardDevice[i].attributes.gpioDirection <= 0)
+                    dev_mcp230xx[mcp230xx_count].gpioDirection = 0x00;
+                else
+                    dev_mcp230xx[mcp230xx_count].gpioDirection = boardDevice[i].attributes.gpioDirection;
+                
+                // Setting up the mcp23008GPIO port pullup
+                if(boardDevice[i].attributes.gpioDirection <= 0)
+                    dev_mcp230xx[mcp230xx_count].pullupEnable = 0xFF;
+                else
+                    dev_mcp230xx[mcp230xx_count].pullupEnable = boardDevice[i].attributes.gpioPullupEnable;                
+                
                 if(mcp23008_init(&dev_mcp230xx[mcp230xx_count]) != 0){
                     err++;
                     printf(" -> ERROR");
@@ -733,6 +764,8 @@ int actuator_setStepperStepAction(int stepperID, int direction, int stepCount){
 
 
 int actuator_setStepperSpeed(int stepperID, int speed){
+
+    float mappingResult;
    
         // V�rification ratio max et min comprise entre 0..100%
 	if(speed > 100)
@@ -746,18 +779,25 @@ int actuator_setStepperSpeed(int stepperID, int speed){
     // USE DRIVER FOR PCA9629
      if(!strcmp(kehopsActuators.stepper_motors[stepperID].hw_driver.type, DRIVER_PCA9629)){    
         int regData;
-        int ptrDev;
-
-        // Periode minimum (2mS) + vitesse en % (max 22.5mS)
-        regData = 0x029A + ((100-speed) * 75);
-
+        int ptrDev;       
+     
         ptrDev = getDriverConfig_ptr(DRIVER_PCA9629, kehopsActuators.stepper_motors[stepperID].hw_driver.name);
         if(ptrDev>=0){
 #ifdef INFO_DEBUG
             printf("SET STEPPER STEP SPEED FROM NEW DRIVERS: NAME: %s TYPE:%s  I2Cadd: 0x%2x    stepper_id: %d     SPEED: %d \n", kehopsActuators.stepper_motors[stepperID].hw_driver.name,kehopsActuators.stepper_motors[stepperID].hw_driver.type, dev_pca9685[ptrDev].deviceAddress, stepperID, speed);    
 #endif            
+            //MAPPING (0->100) to STEPPER_MAX_PULSEWIDTH_MS -> STEPPER_MIN_PULSEWIDTH_MS define in pca9629a.h
+            int STEPPER_MIN_PULSEWIDTH_MS = 1000/dev_pca9629[ptrDev].frequency;
+            int STEPPER_MAX_PULSEWIDTH_MS = STEPPER_MIN_PULSEWIDTH_MS*10;
+            
+            mappingResult = (STEPPER_MIN_PULSEWIDTH_MS + ((STEPPER_MAX_PULSEWIDTH_MS-STEPPER_MIN_PULSEWIDTH_MS)/100.0)*(100-speed));
+            
+            // CALCUL FOR CONVERT xmS to register value  (3uS is PCA962+9a minimum pulse width)
+            // ROUND(    (mS*1000)/(3uS*(2^PRESCALE VALUE))-1             )
+            regData = (mappingResult * 1000.0)/(3*pow(2,PCA_9629A_CLK_PRESCALER_REGVALUE))-1; 
+        
             if(dev_pca9629[ptrDev].deviceAddress > 0)
-            PCA9629_StepperMotorPulseWidth(&dev_pca9629[ptrDev], regData);
+                PCA9629_StepperMotorPulseWidth(&dev_pca9629[ptrDev], regData);
             else
                 {
                 #ifdef INFO_BUS_DEBUG                
